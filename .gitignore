@@ -1,0 +1,17 @@
+bin
+lib
+src/multiverso/*.o
+src/multiverso_server/*.o
+third_party/bin
+third_party/etc
+third_party/include
+third_party/lib
+third_party/share
+windows/Debug/*
+windows/Release/*
+windows/multiverso/Debug
+windows/multiverso/Release
+windows/*.sdf
+windows/*.suo
+windows/multiverso/*.user
+windows/multiverso_server/*.user
