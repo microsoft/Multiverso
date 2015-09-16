@@ -10,7 +10,9 @@
 #include <atomic>
 #include <thread>
 #include <mutex>
+#include <vector>
 #include "meta.h"
+#include "mt_queue.h"
 
 namespace multiverso
 {
@@ -18,9 +20,8 @@ namespace multiverso
     class RowBase;
     template <typename T>
     class Row;
-    template <typename T>
-    class MtQueueMove;
     class Barrier;
+    class Table;
 
     /*! 
      * \brief The TrainerBase class defines an interface for user-customized

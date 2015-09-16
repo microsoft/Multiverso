@@ -10,7 +10,7 @@
 #include <queue>
 #include <memory>
 #if defined (_MPI_VERSION_)
-#include "mpi.h"
+#include <mpi.h>
 #endif
 
 namespace multiverso
