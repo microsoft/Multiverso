@@ -13,6 +13,8 @@
 #include <thread>
 #include "zmq.hpp"
 #include "meta.h"
+#include "mt_queue.h"
+#include "lock.h"
 
 namespace multiverso
 {
@@ -42,9 +44,10 @@ namespace multiverso
         void WaitToComplete();
 
     private:
-        void StartThread(); // server thread method
-        void Init();        // initialization at the beginning of server thread
-        void Clear();       // clean up at the end of server thread
+        void StartThread();        // server thread method
+        void StartUpdateThread();  // server update thread method
+        void Init();   // initialization at the beginning of server thread
+        void Clear();  // clean up at the end of server thread
 
         // message processing rountine
         void Process_Register(std::shared_ptr<MsgPack> msg_pack);
@@ -76,11 +79,15 @@ namespace multiverso
         bool is_working_;
         std::thread server_thread_;
 
+        std::thread update_thread_;
+
         int max_delay_;
         std::vector<int> clocks_;
         std::vector<std::shared_ptr<MsgPack>> clock_msg_;
         std::vector<Table*> tables_;
 
+        MtQueueMove<std::shared_ptr<MsgPack>> update_queue_;
+        LockManager lock_pool_;
         // No copying allowed
         Server(const Server&);
         void operator=(const Server&);
