@@ -37,6 +37,8 @@ namespace multiverso
     //class Server;
     template <class Container>
     class DoubleBuffer;
+    template <typename T>
+    class Row;
 
     class Multiverso
     {
@@ -56,6 +58,14 @@ namespace multiverso
         static int Init(std::vector<TrainerBase*> &trainers, 
             ParameterLoaderBase *param_loader, const Config &config, 
             int *argc, char **argv[]);
+
+        /*!
+         * \brief Initializes the Multiverso environment, this version won't 
+         *        handle multi-thread logic
+         * \param see \ref Init above
+         */
+        static int Init(const Config &config, int *argc, char **argv[]);
+
         /*!
          * \brief Closes Multiverso environment.
          * \param finalize Only applied in MPI version. If finalize == true, 
@@ -198,6 +208,7 @@ namespace multiverso
         /*! \brief Flush the aggregation to sever */
         static void Flush();
 
+        // -- BEGIN: API option 1: Data API code area ----------------------- //
         /*! \brief Beginning of training code area.*/
         static void BeginTrain();
         /*! \brief End of training code area.*/
@@ -210,7 +221,19 @@ namespace multiverso
         static void PushDataBlock(DataBlockBase *data_block);
         /*! \brief Wait all data block */
         static void Wait();
+        // -- END:   API option 1: Data API code area ----------------------- //
 
+        // -- BEGIN: API option 2: Data API code area ----------------------- //
+        template <typename T>
+        static Row<T>& GetRow(integer_t table_id, integer_t row_id);
+        
+        template <typename T>
+        static void Add(integer_t table_id, integer_t row_id,
+            integer_t col_id, T delta);
+
+        static void Clock();
+
+        // -- END:   API option 2: Data API code area ----------------------- //
     private:
         static void FlushSetServerRow();
         static void AddToServerPtr(
@@ -218,6 +241,7 @@ namespace multiverso
 
         // area of member variables ------------------------------------------/
         static RegisterInfo reg_info_;
+        static int num_trainers_;
 
         //static int proc_rank_;              // process rank
         //static int proc_count_;             // total process count

@@ -83,7 +83,7 @@ namespace multiverso
          *  this function.
          * \prama data_block data block to parse
          */
-        virtual void ParseAndRequest(DataBlockBase *data_block) = 0;
+        virtual void ParseAndRequest(DataBlockBase *data_block);
         /*!
          * \brief Requests a table from server
          * \param table table id
@@ -102,11 +102,15 @@ namespace multiverso
          * \param col col id
          */
         void RequestElement(integer_t table, integer_t row, integer_t col);
+
+        /*! \brief underlying implementation of parameter request */
+        void ProcessRequest();
+       
+        void BeginIteration();
+        void EndIteration();
     private:
         /*! \brief The entrance function of backgroud thread */
         void StartThread();
-        /*! \brief underlying implementation of parameter request */
-        void ProcessRequest(zmq::socket_t *socket);
 
         /*! \brief queue storing data for parse and request */
         MtQueueMove<DataBlockBase*> data_queue_;

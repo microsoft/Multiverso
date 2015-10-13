@@ -122,6 +122,7 @@ namespace multiverso
         {
             num_servers = 0;    // all process are servers
             num_aggregator = 1;
+            num_trainers = 1;
             max_delay = 0;
             num_lock = 100;
             lock_option = LockOption::Immutable;
@@ -136,6 +137,7 @@ namespace multiverso
         */
         int num_servers;
         int num_aggregator;     ///< Number of aggregation threads.
+        int num_trainers;       ///< Number of local trainer threads.
         int max_delay;          ///< the delay bound (max staleness)
         int num_lock;           ///< Number of locks in Locked option
         LockOption lock_option; ///< Lock option
