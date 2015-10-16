@@ -4,7 +4,7 @@ multiverso
 Multiverso is a parameter server based framework for training machine learning models on big data with numbers of machines. It is currently a standard C++ library and provides a series of friendly programming interfaces. With such easy-to-use APIs, machine learning researchers and practitioners do not need to worry about the system routine issues such as distributed model storage and operation, inter-process and inter-thread communication, multi-threading management, and so on.
 Instead, they are able to focus on the core machine learning logics: data, model, and training.
 
-For more details, please view our [http://www.dmtk.io](www.dmtk.io).
+For more details, please view our website[http://www.dmtk.io](www.dmtk.io).
 
 Build
 ----------
