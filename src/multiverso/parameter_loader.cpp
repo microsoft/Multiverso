@@ -45,9 +45,13 @@ namespace multiverso{
         }
     }
 
+    void ParameterLoaderBase::ParseAndRequest(DataBlockBase* data_block)
+    {
+        Log::Fatal("You need to override this method\n");
+    }
+
     void ParameterLoaderBase::StartThread()
     {
-        zmq::socket_t *socket = ZMQUtil::CreateSocket();
         DataBlockBase* data_block;
        
         while (data_queue_.Pop(data_block))
@@ -59,12 +63,12 @@ namespace multiverso{
             if (data_block->Type() != DataBlockType::BeginClock
                 && data_block->Type() != DataBlockType::EndClock) // skip Clock
             {
-                Multiverso::double_buffer_->Start(0);
+                BeginIteration();
                 requests_.clear();
                 // Parse data block
                 ParseAndRequest(data_block);
-                ProcessRequest(socket);
-                Multiverso::double_buffer_->End(0);
+                ProcessRequest();
+                EndIteration();
             }
             if (!Multiverso::is_pipeline_)
             {
@@ -75,7 +79,6 @@ namespace multiverso{
         {
             Multiverso::pipeline_barrier_->Wait();
         }
-        delete socket;
     }
 
     void ParameterLoaderBase::Start()
@@ -90,8 +93,9 @@ namespace multiverso{
     }
 
     // Underlying implemention of parameter request 
-    void ParameterLoaderBase::ProcessRequest(zmq::socket_t *socket)
+    void ParameterLoaderBase::ProcessRequest()
     {
+        zmq::socket_t *socket = ZMQUtil::CreateSocket();
         std::vector<Table*>& cache =
             Multiverso::double_buffer_->IOBuffer();
         for (int i = 0; i < cache.size(); ++i)
@@ -181,5 +185,16 @@ namespace multiverso{
                 --num_send_msg;
             }
         }
+        delete socket;
+    }
+
+    void ParameterLoaderBase::BeginIteration()
+    {
+        Multiverso::double_buffer_->Start(0);
+    } 
+
+    void ParameterLoaderBase::EndIteration()
+    {
+        Multiverso::double_buffer_->End(0);
     }
 }

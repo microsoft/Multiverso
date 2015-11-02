@@ -6,12 +6,15 @@
 #include "zmq_util.h"
 #include "msg_pack.h"
 #include "server.h"
+#include "stop_watch.h"
 
 namespace multiverso
 {
     // Initializes the basic info and starts a server thread.
-    Server::Server(int server_id, int num_worker_process, std::string endpoint)
-        : clocks_(num_worker_process, 0), clock_msg_(num_worker_process, nullptr)
+    Server::Server(int server_id, int num_worker_process, std::string endpoint) : 
+        clocks_(num_worker_process, 0), 
+        clock_msg_(num_worker_process, nullptr),
+        lock_pool_(41)
     {
         server_id_ = server_id;
         worker_proc_count_ = num_worker_process;
@@ -59,7 +62,7 @@ namespace multiverso
         //poll_items_[0].fd = 0;
         //poll_items_[0].events = ZMQ_POLLIN;
         //poll_items_[0].revents = 0;
-
+        update_thread_ = std::thread(&Server::StartUpdateThread, this);
         Log::Info("Server %d starts: num_workers=%d endpoint=%s\n", 
             server_id_, worker_proc_count_, endpoint_.c_str());
     }
@@ -67,6 +70,11 @@ namespace multiverso
     // Clean up at the end of the server thread
     void Server::Clear()
     {
+        update_queue_.Exit();
+        if (update_thread_.joinable())
+        {
+            update_thread_.join();
+        }
         delete router_;
         delete []poll_items_;
         for (auto &table : tables_)
@@ -95,6 +103,7 @@ namespace multiverso
                 std::shared_ptr<MsgPack> msg_pack = msg_queue.front();
                 msg_queue.pop();
                 msg_pack->GetHeaderInfo(&msg_type, &arrow, &src, &dst);
+                StopWatch watch;
                 switch (msg_type)
                 {
                 case MsgType::Register: Process_Register(msg_pack); break;
@@ -105,12 +114,22 @@ namespace multiverso
                 case MsgType::Clock: Process_Clock(msg_pack); break;
                 case MsgType::EndTrain: Process_EndTrain(msg_pack); break;
                 case MsgType::Get: Process_Get(msg_pack); break;
-                case MsgType::Add: Process_Add(msg_pack); break;
+                case MsgType::Add: update_queue_.Push(msg_pack); break;
+                // case MsgType::Add: Process_Add(msg_pack); break;
                 // other message process...
                 }
             }
         }
         Clear();
+    }
+
+    void Server::StartUpdateThread()
+    {
+        std::shared_ptr<MsgPack> msg_pack;
+        while (update_queue_.Pop(msg_pack))
+        {
+            Process_Add(msg_pack);
+        }
     }
 
     // REMARK (feiyan): consider a Register pattern
@@ -308,14 +327,18 @@ namespace multiverso
                 while (iter.HasNext())
                 {
                     integer_t request_row = iter.RowId();
+                    lock_pool_.Lock(row);
                     Process_GetRow(table, request_row, col, msg_pack, 
                         send_ret_size, reply);
+                    lock_pool_.Unlock(row);
                     iter.Next();
                 }
             }
             else
             {
+                lock_pool_.Lock(row);
                 Process_GetRow(table, row, col, msg_pack, send_ret_size, reply);
+                lock_pool_.Unlock(row);
             }
         }
         zmq::message_t *tail = new zmq::message_t(sizeof(integer_t));
@@ -374,7 +397,9 @@ namespace multiverso
             integer_t* buffer = static_cast<integer_t*>(msg->data());
             integer_t table = buffer[0];
             integer_t row = buffer[1];
+            lock_pool_.Lock(row);
             tables_[table]->GetRow(row)->BatchAdd(buffer + 2);
+            lock_pool_.Unlock(row);
         }
     }
     //-- end of server process routine ---------------------------------------/

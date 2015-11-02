@@ -37,6 +37,8 @@ namespace multiverso
     //class Server;
     template <class Container>
     class DoubleBuffer;
+    template <typename T>
+    class Row;
 
     class Multiverso
     {
@@ -44,6 +46,7 @@ namespace multiverso
         friend class ParameterLoaderBase;
 
     public:
+        // 1. -- BEGIN: Multiverso global environment API code area --------- //
         /*!
          * \brief Initializes the Multiverso environment.
          * \param trainers Local trainers
@@ -56,6 +59,14 @@ namespace multiverso
         static int Init(std::vector<TrainerBase*> &trainers, 
             ParameterLoaderBase *param_loader, const Config &config, 
             int *argc, char **argv[]);
+
+        /*!
+         * \brief Initializes the Multiverso environment, this version won't 
+         *        handle multi-thread logic
+         * \param see \ref Init above
+         */
+        static int Init(const Config &config, int *argc, char **argv[]);
+
         /*!
          * \brief Closes Multiverso environment.
          * \param finalize Only applied in MPI version. If finalize == true, 
@@ -73,12 +84,14 @@ namespace multiverso
         static int TotalTrainerCount() { return reg_info_.total_trainer_count; }
         /*! \brief Returns the total number of servers. */
         static int TotalServerCount() { return reg_info_.server_count; }
+        // -- END: Multiverso global environment API code area -------------- //
 
+        // 2. -- BEGIN: Parameter Server Initialization API code area ------- //
         /*! \brief Beginning of initialization code area. */
         static void BeginConfig();
+        
         /*! \brief End of initialization code area. Barrier all worker processes. */
         static void EndConfig();
-
         /*!
          * \brief Add a logic table to Multiverso environment. This table will
          *        have 3 copies actually: in server, in local cache and in 
@@ -197,7 +210,9 @@ namespace multiverso
 
         /*! \brief Flush the aggregation to sever */
         static void Flush();
+        // -- END: Parameter Server Initialization API code area ------------ //
 
+        // 3. -- BEGIN: Data API code area ---------------------------------- //
         /*! \brief Beginning of training code area.*/
         static void BeginTrain();
         /*! \brief End of training code area.*/
@@ -210,6 +225,7 @@ namespace multiverso
         static void PushDataBlock(DataBlockBase *data_block);
         /*! \brief Wait all data block */
         static void Wait();
+        // -- END: Data API code area --------------------------------------- //
 
     private:
         static void FlushSetServerRow();
@@ -218,11 +234,7 @@ namespace multiverso
 
         // area of member variables ------------------------------------------/
         static RegisterInfo reg_info_;
-
-        //static int proc_rank_;              // process rank
-        //static int proc_count_;             // total process count
-        //static int server_count_;           // total number of server
-        //static int total_trainer_count_;    // total worker count
+        static int num_trainers_;
 
         static zmq::socket_t *socket_;
        

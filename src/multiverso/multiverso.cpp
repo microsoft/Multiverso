@@ -14,6 +14,7 @@ namespace multiverso
 {
     //-- Static member definition area ---------------------------------------/
     RegisterInfo Multiverso::reg_info_;
+    int Multiverso::num_trainers_;
 
     zmq::socket_t *Multiverso::socket_ = nullptr;
     LockManager *Multiverso::lock_manager_ = nullptr;
@@ -83,6 +84,39 @@ namespace multiverso
         return ret;
     }
 
+    int Multiverso::Init(const Config &config, int *argc, char **argv[])
+    {
+#if defined (_MULTIVERSO_DEBUG_)
+        Log::ResetLogLevel(LogLevel::Debug);
+#endif
+        int ret = 0;
+        num_trainers_ = static_cast<int>(config.num_trainers);
+        // Starts the background communicator
+        communicator_ = new Communicator(config, argc, argv);
+        socket_ = communicator_->CreateSocket();
+        reg_info_ = communicator_->Register(socket_, config, num_trainers_);
+        // Starts the background aggregator
+        aggregator_ = new Aggregator(config.num_aggregator, num_trainers_);
+
+        row_config_.resize(reg_info_.server_count, nullptr);
+        row_config_size_.resize(reg_info_.server_count, 0);
+
+        // prepare local data structures
+        double_buffer_ = new DoubleBuffer<std::vector<Table*>>(
+            static_cast<int>(num_trainers_), &tables0_, &tables1_);
+        if ((lock_option_ = config.lock_option) == LockOption::Locked)
+        {
+            lock_manager_ = new LockManager(std::max<int>(config.num_lock, 1));
+        }
+
+        if (ret == 0)
+        {
+            Log::Info("Rank %d/%d: Multiverso initialized successfully.\n", 
+                reg_info_.proc_rank, reg_info_.proc_count);
+        }
+        return ret;
+    }
+
     // Close Multiverso environment
     void Multiverso::Close(bool finalize) 
     {
@@ -136,7 +170,7 @@ namespace multiverso
 
         // Send flush and clock signal to aggregator, let the aggregator send
         // the update to server.
-        for (int trainer = 0; trainer < trainers_.size(); ++trainer)
+        for (int trainer = 0; trainer < num_trainers_; ++trainer)
         {
             aggregator_->Add(trainer, 0, -1, 0, nullptr);   // flush
             aggregator_->Add(trainer, 0, -2, 0, nullptr);   // clock
