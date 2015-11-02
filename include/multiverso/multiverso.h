@@ -46,6 +46,7 @@ namespace multiverso
         friend class ParameterLoaderBase;
 
     public:
+        // 1. -- BEGIN: Multiverso global environment API code area --------- //
         /*!
          * \brief Initializes the Multiverso environment.
          * \param trainers Local trainers
@@ -83,12 +84,14 @@ namespace multiverso
         static int TotalTrainerCount() { return reg_info_.total_trainer_count; }
         /*! \brief Returns the total number of servers. */
         static int TotalServerCount() { return reg_info_.server_count; }
+        // -- END: Multiverso global environment API code area -------------- //
 
+        // 2. -- BEGIN: Parameter Server Initialization API code area ------- //
         /*! \brief Beginning of initialization code area. */
         static void BeginConfig();
+        
         /*! \brief End of initialization code area. Barrier all worker processes. */
         static void EndConfig();
-
         /*!
          * \brief Add a logic table to Multiverso environment. This table will
          *        have 3 copies actually: in server, in local cache and in 
@@ -207,8 +210,9 @@ namespace multiverso
 
         /*! \brief Flush the aggregation to sever */
         static void Flush();
+        // -- END: Parameter Server Initialization API code area ------------ //
 
-        // -- BEGIN: API option 1: Data API code area ----------------------- //
+        // 3. -- BEGIN: Data API code area ---------------------------------- //
         /*! \brief Beginning of training code area.*/
         static void BeginTrain();
         /*! \brief End of training code area.*/
@@ -221,19 +225,8 @@ namespace multiverso
         static void PushDataBlock(DataBlockBase *data_block);
         /*! \brief Wait all data block */
         static void Wait();
-        // -- END:   API option 1: Data API code area ----------------------- //
+        // -- END: Data API code area --------------------------------------- //
 
-        // -- BEGIN: API option 2: Data API code area ----------------------- //
-        template <typename T>
-        static Row<T>& GetRow(integer_t table_id, integer_t row_id);
-        
-        template <typename T>
-        static void Add(integer_t table_id, integer_t row_id,
-            integer_t col_id, T delta);
-
-        static void Clock();
-
-        // -- END:   API option 2: Data API code area ----------------------- //
     private:
         static void FlushSetServerRow();
         static void AddToServerPtr(
@@ -242,11 +235,6 @@ namespace multiverso
         // area of member variables ------------------------------------------/
         static RegisterInfo reg_info_;
         static int num_trainers_;
-
-        //static int proc_rank_;              // process rank
-        //static int proc_count_;             // total process count
-        //static int server_count_;           // total number of server
-        //static int total_trainer_count_;    // total worker count
 
         static zmq::socket_t *socket_;
        

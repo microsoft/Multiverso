@@ -14,7 +14,7 @@ namespace multiverso
     Server::Server(int server_id, int num_worker_process, std::string endpoint) : 
         clocks_(num_worker_process, 0), 
         clock_msg_(num_worker_process, nullptr),
-        lock_pool_(100)
+        lock_pool_(41)
     {
         server_id_ = server_id;
         worker_proc_count_ = num_worker_process;
