@@ -22,6 +22,7 @@ namespace multiverso
         max_delay_ = -1;
 
         is_working_ = false;
+        inited_ = false;
         server_thread_ = std::thread(&Server::StartThread, this);
         // keep waiting until the server thread goes into the working routine
         while (!is_working_) 
@@ -77,6 +78,8 @@ namespace multiverso
         }
         delete router_;
         delete []poll_items_;
+        // Dump model before Clear
+        DumpModel();
         for (auto &table : tables_)
         {
             delete table;
@@ -103,18 +106,18 @@ namespace multiverso
                 std::shared_ptr<MsgPack> msg_pack = msg_queue.front();
                 msg_queue.pop();
                 msg_pack->GetHeaderInfo(&msg_type, &arrow, &src, &dst);
-                StopWatch watch;
                 switch (msg_type)
                 {
                 case MsgType::Register: Process_Register(msg_pack); break;
                 case MsgType::Close: Process_Close(msg_pack); break;
-                case MsgType::Barrier: Process_Barrier(msg_pack); break;
+                case MsgType::Barrier: inited_ = Process_Barrier(msg_pack); break;
                 case MsgType::CreateTable: Process_CreateTable(msg_pack); break;
                 case MsgType::SetRow: Process_SetRow(msg_pack); break;
                 case MsgType::Clock: Process_Clock(msg_pack); break;
                 case MsgType::EndTrain: Process_EndTrain(msg_pack); break;
                 case MsgType::Get: Process_Get(msg_pack); break;
-                case MsgType::Add: update_queue_.Push(msg_pack); break;
+                case MsgType::Add: inited_ ? update_queue_.Push(msg_pack) 
+                    : Process_Add(msg_pack); break;
                 // case MsgType::Add: Process_Add(msg_pack); break;
                 // other message process...
                 }
@@ -194,8 +197,6 @@ namespace multiverso
         {
             is_working_ = false;
         }
-        // Dump model before Close
-        DumpModel();
     }
 
     // process barrier message, returns true if the last one comes, 

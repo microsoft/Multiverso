@@ -51,19 +51,19 @@ namespace multiverso
 #endif
 
         int ret = 0;
-        int num_trainers = static_cast<int>(trainers.size());
+        num_trainers_ = static_cast<int>(trainers.size());
         // Starts the background communicator
         communicator_ = new Communicator(config, argc, argv);
         socket_ = communicator_->CreateSocket();
-        reg_info_ = communicator_->Register(socket_, config, num_trainers);
+        reg_info_ = communicator_->Register(socket_, config, num_trainers_);
         // Starts the background aggregator
-        aggregator_ = new Aggregator(config.num_aggregator, num_trainers);
+        aggregator_ = new Aggregator(config.num_aggregator, num_trainers_);
 
         row_config_.resize(reg_info_.server_count, nullptr);
         row_config_size_.resize(reg_info_.server_count, 0);
 
         is_pipeline_ = config.is_pipeline;
-        pipeline_barrier_ = is_pipeline_ ? nullptr : new Barrier(num_trainers+1);
+        pipeline_barrier_ = is_pipeline_ ? nullptr : new Barrier(num_trainers_+1);
 
         // prepare local data structures
         data_tag_.resize(trainers.size());

@@ -77,6 +77,7 @@ namespace multiverso
         std::vector<std::shared_ptr<MsgPack>> waiting_msg_;
 
         bool is_working_;
+        bool inited_;
         std::thread server_thread_;
 
         std::thread update_thread_;
