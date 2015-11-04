@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>../third_party/ZeroMQ/include/;../third_party/MPI/Include/;../../include/multiverso/;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)/../include/multiverso;../third_party/ZeroMQ/include/;../third_party/MPI/Include/;$(IncludePath)</IncludePath>
     <LibraryPath>..\third_party\ZeroMQ\lib;../third_party/MPI/Lib/amd64/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
