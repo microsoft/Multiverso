@@ -19,7 +19,7 @@ Build
 For windows users, please refer to README in windows folder.
 
 
-Related Porjests
+Related Projects
 ----------
 
 Current distributed systems based on multiverso:
