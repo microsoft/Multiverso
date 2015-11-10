@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_DOUBLE_BUFFER_H_
-#define _MULTIVERSO_DOUBLE_BUFFER_H_
+#ifndef MULTIVERSO_DOUBLE_BUFFER_H_
+#define MULTIVERSO_DOUBLE_BUFFER_H_
 
 /*!
  * \brief Defines DoubleBuffer 
@@ -165,4 +165,4 @@ namespace multiverso
     }
 }
 
-#endif //_MULTIVERSO_DOUBLE_BUFFER_H_
+#endif //MULTIVERSO_DOUBLE_BUFFER_H_

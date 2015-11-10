@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_META_H_
-#define _MULTIVERSO_META_H_
+#ifndef MULTIVERSO_META_H_
+#define MULTIVERSO_META_H_
 
 /*!
  * \file meta.h
@@ -157,4 +157,4 @@ namespace multiverso
 
 }
 
-#endif // _MULTIVERSO_META_H_
+#endif // MULTIVERSO_META_H_

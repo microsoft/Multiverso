@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_MPI_UTIL_H_
-#define _MULTIVERSO_MPI_UTIL_H_
+#ifndef MULTIVERSO_MPI_UTIL_H_
+#define MULTIVERSO_MPI_UTIL_H_
 
 /*!
  * \file mpi_util.h
@@ -71,4 +71,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_MPI_UTIL_H_
+#endif // MULTIVERSO_MPI_UTIL_H_

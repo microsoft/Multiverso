@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_ZMQ_UTIL_H_
-#define _MULTIVERSO_ZMQ_UTIL_H_
+#ifndef MULTIVERSO_ZMQ_UTIL_H_
+#define MULTIVERSO_ZMQ_UTIL_H_
 
 /*!
  * \file zmq_util.h
@@ -54,4 +54,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_ZMQ_UTIL_H_
+#endif // MULTIVERSO_ZMQ_UTIL_H_

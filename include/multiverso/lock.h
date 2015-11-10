@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_LOCK_H_
-#define _MULTIVERSO_LOCK_H_
+#ifndef MULTIVERSO_LOCK_H_
+#define MULTIVERSO_LOCK_H_
 
 /*!
 * \file lock.h
@@ -54,4 +54,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_LOCK_H_
+#endif // MULTIVERSO_LOCK_H_

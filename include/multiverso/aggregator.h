@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_AGGREGATOR_H_
-#define _MULTIVERSO_AGGREGATOR_H_
+#ifndef MULTIVERSO_AGGREGATOR_H_
+#define MULTIVERSO_AGGREGATOR_H_
 
 /*!
 * \brief Defines aggregator
@@ -109,4 +109,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_AGGREGATOR_H_
+#endif // MULTIVERSO_AGGREGATOR_H_

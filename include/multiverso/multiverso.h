@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_MULTIVRSO_H_
-#define _MULTIVERSO_MULTIVRSO_H_
+#ifndef MULTIVERSO_MULTIVRSO_H_
+#define MULTIVERSO_MULTIVRSO_H_
 
 /*!
  * \file multiverso.h
@@ -262,4 +262,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_MULTIVRSO_H_
+#endif // MULTIVERSO_MULTIVRSO_H_

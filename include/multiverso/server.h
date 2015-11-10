@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_SERVER_H_
-#define _MULTIVERSO_SERVER_H_
+#ifndef MULTIVERSO_SERVER_H_
+#define MULTIVERSO_SERVER_H_
 
 /*!
  * \file server.h
@@ -95,4 +95,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_SERVER_H_
+#endif // MULTIVERSO_SERVER_H_

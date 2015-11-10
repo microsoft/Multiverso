@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_STOP_WATCH_
-#define _MULTIVERSO_STOP_WATCH_
+#ifndef MULTIVERSO_STOP_WATCH_
+#define MULTIVERSO_STOP_WATCH_
 
 #include <cstdint>
 
@@ -51,4 +51,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_STOP_WATCH_
+#endif // MULTIVERSO_STOP_WATCH_

@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_MT_QUEUE_H_
-#define _MULTIVERSO_MT_QUEUE_H_
+#ifndef MULTIVERSO_MT_QUEUE_H_
+#define MULTIVERSO_MT_QUEUE_H_
 /*! 
  * \brief Defines a thread safe queue
  */
@@ -131,4 +131,4 @@ namespace multiverso
     }
 }
 
-#endif // _MULTIVERSO_MT_QUEUE_H_
+#endif // MULTIVERSO_MT_QUEUE_H_

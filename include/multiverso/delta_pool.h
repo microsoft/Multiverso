@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_DELTA_POOL_H_
-#define _MULTIVERSO_DELTA_POOL_H_
+#ifndef MULTIVERSO_DELTA_POOL_H_
+#define MULTIVERSO_DELTA_POOL_H_
 
 /*!
  * \file delta_pool.h
@@ -65,4 +65,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_DELTA_POOL_H_
+#endif // MULTIVERSO_DELTA_POOL_H_

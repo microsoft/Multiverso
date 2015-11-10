@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_LOG_H_
-#define _MULTIVERSO_LOG_H_
+#ifndef MULTIVERSO_LOG_H_
+#define MULTIVERSO_LOG_H_
 
 /*!
  * \file log.h
@@ -140,4 +140,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_LOG_H_
+#endif // MULTIVERSO_LOG_H_

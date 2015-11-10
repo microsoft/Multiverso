@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_COMMUNICATOR_H_
-#define _MULTIVERSO_COMMUNICATOR_H_
+#ifndef MULTIVERSO_COMMUNICATOR_H_
+#define MULTIVERSO_COMMUNICATOR_H_
 
 /*!
  * \file communicator.h
@@ -102,4 +102,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_COMMUNICATOR_H_
+#endif // MULTIVERSO_COMMUNICATOR_H_

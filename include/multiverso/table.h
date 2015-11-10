@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_TABLE_H_
-#define _MULTIVERSO_TABLE_H_
+#ifndef MULTIVERSO_TABLE_H_
+#define MULTIVERSO_TABLE_H_
 
 /*!
  * \file table.h
@@ -89,4 +89,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_TABLE_H_
+#endif // MULTIVERSO_TABLE_H_

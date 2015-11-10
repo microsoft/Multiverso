@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_BARRIER_H_
-#define _MULTIVERSO_BARRIER_H_
+#ifndef MULTIVERSO_BARRIER_H_
+#define MULTIVERSO_BARRIER_H_
 
 /*!
  * \file barrier.h
@@ -51,4 +51,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_BARRIER_H_
+#endif // MULTIVERSO_BARRIER_H_

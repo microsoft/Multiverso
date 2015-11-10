@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_DATA_BLOCK_H_
-#define _MULTIVERSO_DATA_BLOCK_H_
+#ifndef MULTIVERSO_DATA_BLOCK_H_
+#define MULTIVERSO_DATA_BLOCK_H_
 
 #include <atomic>
 
@@ -29,4 +29,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_DATA_BLOCK_H_
+#endif // MULTIVERSO_DATA_BLOCK_H_

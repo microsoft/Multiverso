@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_MSG_PACK_H_
-#define _MULTIVERSO_MSG_PACK_H_
+#ifndef MULTIVERSO_MSG_PACK_H_
+#define MULTIVERSO_MSG_PACK_H_
 
 /*!
  * \file msg_pack.h
@@ -119,4 +119,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_MSG_PACK_H_
+#endif // MULTIVERSO_MSG_PACK_H_

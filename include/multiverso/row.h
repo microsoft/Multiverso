@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_ROW_H_
-#define _MULTIVERSO_ROW_H_
+#ifndef MULTIVERSO_ROW_H_
+#define MULTIVERSO_ROW_H_
 
 /*!
  * \file row.h
@@ -204,4 +204,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_ROW_H_
+#endif // MULTIVERSO_ROW_H_

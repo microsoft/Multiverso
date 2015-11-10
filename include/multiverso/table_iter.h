@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_TABLE_ITER_H_
-#define _MULTIVERSO_TABLE_ITER_H_
+#ifndef MULTIVERSO_TABLE_ITER_H_
+#define MULTIVERSO_TABLE_ITER_H_
 
 /*!
  * \file table_iter.h
@@ -42,4 +42,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_TABLE_ITER_H_
+#endif // MULTIVERSO_TABLE_ITER_H_

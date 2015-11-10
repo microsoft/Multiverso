@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_VECTOR_CLOCK_
-#define _MULTIVERSO_VECTOR_CLOCK_
+#ifndef MULTIVERSO_VECTOR_CLOCK_
+#define MULTIVERSO_VECTOR_CLOCK_
 
 /*!
  * \file vector_clock.h
@@ -28,4 +28,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_VECTOR_CLOCK_
+#endif // MULTIVERSO_VECTOR_CLOCK_

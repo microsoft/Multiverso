@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_ENDPOINT_LIST_H_
-#define _MULTIVERSO_ENDPOINT_LIST_H_
+#ifndef MULTIVERSO_ENDPOINT_LIST_H_
+#define MULTIVERSO_ENDPOINT_LIST_H_
 
 /*
  * \file endpoint_list.h
@@ -42,4 +42,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_ENDPOINT_LIST_H_
+#endif // MULTIVERSO_ENDPOINT_LIST_H_

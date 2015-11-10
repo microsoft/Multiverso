@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_TRAINER_H_
-#define _MULTIVERSO_TRAINER_H_
+#ifndef MULTIVERSO_TRAINER_H_
+#define MULTIVERSO_TRAINER_H_
 
 /*!
  * \file trainer.h
@@ -126,4 +126,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_TRAINER_H_
+#endif // MULTIVERSO_TRAINER_H_

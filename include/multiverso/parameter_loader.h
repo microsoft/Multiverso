@@ -1,5 +1,5 @@
-#ifndef _MULTIVERSO_PARAMETER_LOADER_H_
-#define _MULTIVERSO_PARAMETER_LOADER_H_
+#ifndef MULTIVERSO_PARAMETER_LOADER_H_
+#define MULTIVERSO_PARAMETER_LOADER_H_
 
 /*!
  * \file parameter_loader.h
@@ -124,4 +124,4 @@ namespace multiverso
     };
 }
 
-#endif // _MULTIVERSO_PARAMETER_LOADER_H_
+#endif // MULTIVERSO_PARAMETER_LOADER_H_
