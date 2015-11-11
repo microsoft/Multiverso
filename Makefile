@@ -5,7 +5,8 @@ CXXFLAGS = -O3 \
            -std=c++11 \
            -Wall \
            -Wno-sign-compare \
-           -fno-omit-frame-pointer
+           -fno-omit-frame-pointer \
+           -fpermissive
 
 HEADERS_DIR = $(PROJECT)/include/multiverso
 MULTIVERSO_SRC = $(PROJECT)/src/multiverso
@@ -17,7 +18,7 @@ THIRD_PARTY_LIB = $(THIRD_PARTY)/lib
 
 INC_FLAGS = -I$(HEADERS_DIR)
 INC_FLAGS += -I$(THIRD_PARTY_INC)
-LD_FLAGS = -L$(THIRD_PARTY_LIB) -lzmq -lmpi -lmpl
+LD_FLAGS = -L$(THIRD_PARTY_LIB) -lzmq -lmpich -lmpl
 
 LIB_SRC_DIR = $(PROJECT)/src/multiverso
 SERVER_SRC_DIR = $(PROJECT)/src/multiverso_server
