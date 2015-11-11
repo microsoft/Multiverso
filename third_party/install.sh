@@ -21,7 +21,7 @@ cd ..
 rm -rf $ZMQ_DIR
 
 # Get the C++ Wrapper zmq.hpp
-wget https://raw.githubusercontent.com/zeromq/cppzmq/master/zmq.hpp --no-check-certificate
+wget https://raw.githubusercontent.com/zeromq/cppzmq/master/zmq.hpp
 mv zmq.hpp $THIRD_PARTY_DIR/include
 
 # Get MPICH2
