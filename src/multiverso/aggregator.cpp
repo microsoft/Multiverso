@@ -41,10 +41,7 @@ namespace multiverso
         }
         for (auto& table : tables_)
         {
-            if (table != nullptr)
-            {
-                delete table;
-            }
+            delete table;
         }
         delete barrier_;
     }

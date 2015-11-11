@@ -53,10 +53,7 @@ namespace multiverso
     // Destroies the Communicator object.
     Communicator::~Communicator()
     {
-        if (server_ != nullptr)
-        {
-            delete server_;
-        }
+        delete server_;
 
         // POTENTIAL ISSUE: if stoping the communicator too early, there might
         //                  be unprocessed messages. We should design a method

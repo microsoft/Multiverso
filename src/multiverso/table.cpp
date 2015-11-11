@@ -42,10 +42,7 @@ namespace multiverso
     {
         Clear();
         delete row_factory_;
-        if (memory_pool_ != nullptr)
-        {
-            delete memory_pool_;
-        }
+        delete memory_pool_;
     }
 
     int Table::SetRow(integer_t row_id, Format format, integer_t capacity)
