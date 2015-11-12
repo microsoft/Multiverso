@@ -11,7 +11,7 @@ Build
 
 **Linux** (Tested on Ubuntu 12.04)
 
-1. Run ```./third_party/install.sh``` to install the dependence.
+1. Run ```cd third_party```; ```./install.sh``` to install the dependence.
 2. Run ```make all -j4``` to build the multiverso.
 
 **Windows**
