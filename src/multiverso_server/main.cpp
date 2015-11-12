@@ -17,7 +17,7 @@ void Help()
         + "-serverid <id> -workers <num_of_workers> "
         + "[-config <filename> | -endpoint <ip:port>] "
         + "[-logfile <filename>] [-loglevel <level>]\n\n"
-        + "-server <id> -- The server id\n"
+        + "-serverid <id> -- The server id\n"
         + "-workers <num_of_workers> -- Number of worker processes\n"
         + "-config <filename> -- A server ZMQ socket endpoint list file\n"
         + "-endpoint <ip:port> -- The ZMQ socket endpoint of the current server\n"
