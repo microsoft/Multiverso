@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{1854DC05-1A4D-4ACF-8C38-FCB4DC5957CC}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>multiverso</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>../third_party/ZeroMQ/include/;../third_party/MPI/Include/;../../include/multiverso/;$(IncludePath)</IncludePath>
+    <LibraryPath>../third_party/MPI/Lib/;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)/../include/multiverso;../third_party/ZeroMQ/include/;../third_party/MPI/Include/;$(IncludePath)</IncludePath>
+    <LibraryPath>..\third_party\ZeroMQ\lib;../third_party/MPI/Lib/amd64/;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>msmpi.lib;libzmq-v120-mt-4_0_4.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\third_party\ZeroMQ\lib;..\third_party\MPI\Lib\x64</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>msmpi.lib;libzmq-v120-mt-4_0_4.lib;</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>..\third_party\ZeroMQ\lib;..\third_party\MPI\Lib\x64</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\multiverso\aggregator.h" />
+    <ClInclude Include="..\..\include\multiverso\barrier.h" />
+    <ClInclude Include="..\..\include\multiverso\communicator.h" />
+    <ClInclude Include="..\..\include\multiverso\data_block.h" />
+    <ClInclude Include="..\..\include\multiverso\delta_pool.h" />
+    <ClInclude Include="..\..\include\multiverso\double_buffer.h" />
+    <ClInclude Include="..\..\include\multiverso\endpoint_list.h" />
+    <ClInclude Include="..\..\include\multiverso\lock.h" />
+    <ClInclude Include="..\..\include\multiverso\log.h" />
+    <ClInclude Include="..\..\include\multiverso\meta.h" />
+    <ClInclude Include="..\..\include\multiverso\mpi_util.h" />
+    <ClInclude Include="..\..\include\multiverso\msg_pack.h" />
+    <ClInclude Include="..\..\include\multiverso\mt_queue.h" />
+    <ClInclude Include="..\..\include\multiverso\multiverso.h" />
+    <ClInclude Include="..\..\include\multiverso\parameter_loader.h" />
+    <ClInclude Include="..\..\include\multiverso\row.h" />
+    <ClInclude Include="..\..\include\multiverso\row_iter.h" />
+    <ClInclude Include="..\..\include\multiverso\server.h" />
+    <ClInclude Include="..\..\include\multiverso\stop_watch.h" />
+    <ClInclude Include="..\..\include\multiverso\table.h" />
+    <ClInclude Include="..\..\include\multiverso\table_iter.h" />
+    <ClInclude Include="..\..\include\multiverso\trainer.h" />
+    <ClInclude Include="..\..\include\multiverso\vector_clock.h" />
+    <ClInclude Include="..\..\include\multiverso\zmq_util.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\multiverso\aggregator.cpp" />
+    <ClCompile Include="..\..\src\multiverso\barrier.cpp" />
+    <ClCompile Include="..\..\src\multiverso\communicator.cpp" />
+    <ClCompile Include="..\..\src\multiverso\data_block.cpp" />
+    <ClCompile Include="..\..\src\multiverso\delta_pool.cpp" />
+    <ClCompile Include="..\..\src\multiverso\endpoint_list.cpp" />
+    <ClCompile Include="..\..\src\multiverso\lock.cpp" />
+    <ClCompile Include="..\..\src\multiverso\log.cpp" />
+    <ClCompile Include="..\..\src\multiverso\mpi_util.cpp" />
+    <ClCompile Include="..\..\src\multiverso\msg_pack.cpp" />
+    <ClCompile Include="..\..\src\multiverso\multiverso.cpp" />
+    <ClCompile Include="..\..\src\multiverso\parameter_loader.cpp" />
+    <ClCompile Include="..\..\src\multiverso\row.cpp" />
+    <ClCompile Include="..\..\src\multiverso\row_iter.cpp" />
+    <ClCompile Include="..\..\src\multiverso\server.cpp" />
+    <ClCompile Include="..\..\src\multiverso\stop_watch.cpp" />
+    <ClCompile Include="..\..\src\multiverso\table.cpp" />
+    <ClCompile Include="..\..\src\multiverso\table_iter.cpp" />
+    <ClCompile Include="..\..\src\multiverso\trainer.cpp" />
+    <ClCompile Include="..\..\src\multiverso\vector_clock.cpp" />
+    <ClCompile Include="..\..\src\multiverso\zmq_util.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
