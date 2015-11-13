@@ -14,52 +14,52 @@ namespace multiverso {
 // Arena is not thread-safe and is designed to use within one thread.
 class Arena {
  public:
-	Arena();
-	~Arena();
+  Arena();
+  ~Arena();
 
-	// Allocate a block memory
-	// TODO(feiga): consider memory alignment
-	char* Allocate(size_t bytes);
+  // Allocate a block memory
+  // TODO(feiga): consider memory alignment
+  char* Allocate(size_t bytes);
 
-	void Reset();
+  void Reset();
 
-	std::string DebugString() const;
+  std::string DebugString() const;
 
  private:
-	struct MemBlock {
-		char* memory;
-		size_t size;
-	};
+  struct MemBlock {
+    char* memory;
+    size_t size;
+  };
 
-	// The initial memory is relatively big. The best case is this memory
-	// is enough for use, as well not too big to waste. 
-	MemBlock initial_mem_; 
+  // The initial memory is relatively big. The best case is this memory
+  // is enough for use, as well not too big to waste. 
+  MemBlock initial_mem_; 
 
-	// After initial_mem_ is exhausted, we allocate a series of default-size
-	// block for further use.
-	std::vector<MemBlock> mem_blocks_;
+  // After initial_mem_ is exhausted, we allocate a series of default-size
+  // block for further use.
+  std::vector<MemBlock> mem_blocks_;
 
-	char* next_ptr_;
-	size_t available_size_;
+  char* next_ptr_;
+  size_t available_size_;
 
-	size_t total_size_;      // total size arena holds
-	size_t allocated_size_;  // total size allocated
+  size_t total_size_;      // total size arena holds
+  size_t allocated_size_;  // total size allocated
 
-	size_t request_size_;    // sum of requested size 
-	size_t reqeust_time_;    // time of request
+  size_t request_size_;    // sum of requested size 
+  size_t reqeust_time_;    // time of request
 
-	size_t initial_block_size_;
-	size_t block_unit_size_;
+  size_t initial_block_size_;
+  size_t block_unit_size_;
 
-	MemBlock AllocateNew(size_t bytes);
-	void FreeBlocks();
-	void Resize();
+  MemBlock AllocateNew(size_t bytes);
+  void FreeBlocks();
+  void Resize();
 
   DISALLOW_COPY_AND_ASSGIN(Arena);
 };
 
 inline char* Arena::Allocate(size_t bytes) {
-	// TODO
+  // TODO
 }
 
 } // namespace multiverso

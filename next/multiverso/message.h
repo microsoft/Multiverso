@@ -20,35 +20,35 @@ typedef std::function<void(Arena&)> MsgDeleteCallBack;
 // a kind of implementation.
 class Message {
  public:
-	Message();
-	explicit Message(size_t size);
+  Message();
+  explicit Message(size_t size);
 
-	// Allocate a message from arena 
-	Message(Arena& arena, size_t size);
+  // Allocate a message from arena 
+  Message(Arena& arena, size_t size);
 
-	// Construct a Message from a pre-allocated memory
-	Message(char* mem, size_t size);
+  // Construct a Message from a pre-allocated memory
+  Message(char* mem, size_t size);
 
   // Delete message
-	~Message();
+  ~Message();
   
-	void* RawPtr();
+  void* RawPtr();
 
-	template<typename T>
-	T* RawPtr() { return reinterpret_cast<T*>(RawPtr()); }
+  template<typename T>
+  T* RawPtr() { return reinterpret_cast<T*>(RawPtr()); }
 
  private:
-	enum MemOwner {
-		kArena,
-		kInternal,
-		kOutside
-	};
+  enum MemOwner {
+    kArena,
+    kInternal,
+    kOutside
+  };
 
-	char* mem_;
-	size_t size_;
-	MemOwner owner_;
-	
-	// TODO: Whether copy allowed?
+  char* mem_;
+  size_t size_;
+  MemOwner owner_;
+  
+  // TODO: Whether copy allowed?
 
 }
 
