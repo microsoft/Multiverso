@@ -17,8 +17,4 @@ windows/*.sdf
 windows/*.suo
 windows/multiverso/*.user
 windows/multiverso_server/*.user
-windows/third_party/MPI/Include
-windows/third_party/MPI/Lib
-windows/third_party/ZeroMQ/include
-windows/third_party/ZeroMQ/lib
 windows/*/x64
