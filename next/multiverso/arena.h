@@ -46,20 +46,31 @@ class Arena {
   size_t allocated_size_;  // total size allocated
 
   size_t request_size_;    // sum of requested size 
-  size_t reqeust_time_;    // time of request
+  size_t request_time_;    // time of request
 
   size_t initial_block_size_;
   size_t block_unit_size_;
 
   MemBlock AllocateNew(size_t bytes);
+  char* AllocateFallback(size_t bytes);
   void FreeBlocks();
   void Resize();
 
-  DISALLOW_COPY_AND_ASSGIN(Arena);
+  DISALLOW_COPY_AND_ASSIGN(Arena);
 };
 
 inline char* Arena::Allocate(size_t bytes) {
   // TODO
+  request_size_ += bytes;
+  ++request_time_;
+  if (available_size_ >= bytes) {
+    available_size_ -= bytes;
+    char* result = next_ptr_;
+    next_ptr_ += bytes;
+    return result;
+  } else {
+    return AllocateFallback(bytes);
+  }
 }
 
 } // namespace multiverso
