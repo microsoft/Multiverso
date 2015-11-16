@@ -1,4 +1,5 @@
-Multiverso-ZMQ-Yarn: Running multiverso job(use zmq to communicate) on Yarn clusters
+Multiverso-ZMQ-Yarn: Running multiverso job(use zmq to communicate) on Yarn clusters.
+Tested on Windows 8
 
 Dependency
 ==========
@@ -37,23 +38,23 @@ How it works
 	   
 Commandline Options
 ==========
- -alloctime <arg>   Maximum time to wait while allocating containers,
-                    default 120 in seconds
- -appname <arg>     App name
- -c <arg>           Number of cores used by each process. Default 1
- -d                 Enable debug info
- -exectime <arg>    Maximum time to wait while executing app, default
-                    2592000 in seconds
- -h                 Print usage
- -jar_file <arg>    AM jar file
- -m <arg>           Memory used by each process (in MB). Default 1024
- -p <arg>           The port am should use to communicate with client
- -q <arg>           Job queue
- -s                 Wait till the ZMQ program exits
- -sa <arg>          The args for server/start.bat
- -sn <arg>          The number of servers. Default 1
- -v                 Enable verbose output
- -wa <arg>          The args for worker/start.bat
- -wn <arg>          The number of workers. Default 1
- -wsp <arg>         The port ZMQ servers should use to communicate with
-                    workers
+	-alloctime <arg>   Maximum time to wait while allocating containers,
+					   default 120 in seconds
+	-appname <arg>     App name
+	-c <arg>           Number of cores used by each process. Default 1
+	-d                 Enable debug info
+	-exectime <arg>    Maximum time to wait while executing app, default
+                       2592000 in seconds
+	-h                 Print usage
+	-jar_file <arg>    AM jar file
+	-m <arg>           Memory used by each process (in MB). Default 1024
+	-p <arg>           The port am should use to communicate with client
+	-q <arg>           Job queue
+	-s                 Wait till the ZMQ program exits
+	-sa <arg>          The args for server/start.bat
+	-sn <arg>          The number of servers. Default 1
+	-v                 Enable verbose output
+	-wa <arg>          The args for worker/start.bat
+	-wn <arg>          The number of workers. Default 1
+	-wsp <arg>         The port ZMQ servers should use to communicate with
+					   workers
