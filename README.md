@@ -14,6 +14,14 @@ Build
 1. Run ```./third_party/install.sh``` to install the dependence.
 2. Run ```make all -j4``` to build the multiverso.
 
+**Cmake**
+
+0. Run ```./third_party/install.sh``` to install the dependence.
+1. ``` mkdir build ```
+2. ``` cd build ```
+3. ``` cmake .. ```
+4. ``` make ```
+
 **Windows**
 
 For windows users, please refer to README in windows folder.
