@@ -12,6 +12,6 @@ LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 ADD_EXECUTABLE(multiverso.server ${MULTIVERSO_SERVER_SRC})
 
 
-TARGET_LINK_LIBRARIES(multiverso.server mpich mpl zmq multiverso)
+TARGET_LINK_LIBRARIES(multiverso.server mpich mpl zmq pthread multiverso)
 
 SET_PROPERTY(TARGET multiverso.server PROPERTY CXX_STANDARD 11)
