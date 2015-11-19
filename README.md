@@ -17,7 +17,9 @@ Build
 
 **Cmake**
 
-0. Run ```./third_party/install.sh``` to install the dependence.
+0. Run ``` cd third_party ``` 
+1. Run ``` ./install.sh ``` to install the dependence.
+1. Run ``` cd .. ```
 1. Run ``` mkdir build ```
 2. Run ``` cd build ```
 3. Run ``` cmake .. ```
