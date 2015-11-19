@@ -10,6 +10,6 @@ LINK_DIRECTORIES(${THIRD_PARTY_LIB})
 
 ADD_LIBRARY(multiverso ${MULTIVERSO_SRC})
 
-TARGET_LINK_LIBRARIES(multiverso mpich mpl zmq)
+TARGET_LINK_LIBRARIES(multiverso mpich mpl zmq pthread)
 
 SET_PROPERTY(TARGET multiverso PROPERTY CXX_STANDARD 11)
