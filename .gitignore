@@ -1,5 +1,6 @@
 bin
 lib
+build
 src/multiverso/*.o
 src/multiverso_server/*.o
 third_party/bin
