@@ -307,7 +307,7 @@ public class ApplicationMaster {
     }
     
     commandFileGenerator = new CommandFileGenerator(isVerboseOn, workerServerPort,
-      numWorkers, workerArgs, serverArgs);
+      numWorkers, numServers, workerArgs, serverArgs);
 
     // Creating the Timeline Client
     timelineClient = TimelineClient.createTimelineClient();
