@@ -13,15 +13,25 @@ namespace multiverso
 
 /*!
  * \brief the reference positon for seeking
- * the positon point of Reader or Writer
+ * the position point of Stream
  */
 enum SeekOrigin
 {
     kBegin, kCurrent, kEnd
 };
 
+class Stream
+{
+    /*!
+    * \brief move the position point to seekOrigin + offset
+    * \param offset the offset(bytes number) to change the position point
+    * \param seekOrigin the reference position
+    */
+    virtual void Seek(size_t offset, SeekOrigin seekOrigin) = 0;
+};
+
 /*! \brief use to write binary data to a file*/
-class BinaryWriter
+class BinaryWriter : public Stream
 {
 public:
     /*!
@@ -44,15 +54,10 @@ public:
     */
     virtual void Flush();
 
-    /*!
-    *  \brief move the 
-    */
-    virtual void Seek(size_t offset, SeekOrigin seekOrigin) = 0;
-
     virtual ~BinaryWriter(void) {}
 }；
 
-class BinaryReader
+class BinaryReader : public Stream
 {
 public:
     virtual size_t Read(void *buf, size_t size) ＝ 0;
@@ -60,34 +65,20 @@ public:
     template<typename T>
     virtual bool Read(T *out_data) = 0;
 
-    virtual void Seek(size_t offset, SeekOrigin seekOrigin) = 0;
-
     virtual ~BinaryReader(void) {}
 }；
 
-class TextWriter
+class TextWriter : public BinaryWriter
 {
 public:
-    virtual void Write(const char *buf, size_t size) = 0;
-
-    template<typename T>
-    virtual void Write(const T *data) = 0;
-
     virtual void WriteLine(void *buf, size_t size);
-
-    virtual void Flush();
-
-    virtual void Seek(size_t offset, SeekOrigin seekOrigin) = 0;
 
     virtual ~TextWriter(void) {}
 }；
 
-class TextReader
+class TextReader : public BinaryReader
 {
 public:
-    template<typename T>
-    virtual bool Read(T *out_data) = 0;
-
     /*!
     * \brief read characters until read '\n' or exceed size
     * \param buf the buffer to store text
@@ -95,8 +86,6 @@ public:
     * \return the length of text data
     */
     virtual size_t ReadLine(void *buf, size_t size);
-
-    virtual void Seek(size_t offset, SeekOrigin seekOrigin) = 0;
 
     virtual ~TextReader(void) {}
 }；
@@ -118,6 +107,9 @@ struct FileInfo
 class FileSystem
 {
 public:
+    /*!
+    * /brief the constro
+    */
     FileSystem(const std::string protocol, const std::string hostname);
 
     virtual BinaryReader CreateBinaryReader(const std::string path) = 0;
@@ -153,6 +145,8 @@ public:
     virtual void Copy(const std::string src, const std::string dst) = 0;
 
     virtual void GetFiles(const std::string path, std::std::vector<FileInfo> files) = 0;
+
+    virtual ~FileSystem(void) {}
 };
 }
 
