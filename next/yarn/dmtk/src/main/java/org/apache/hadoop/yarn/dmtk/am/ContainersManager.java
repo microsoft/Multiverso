@@ -127,8 +127,6 @@ public class ContainersManager {
 		if (Start(allocateTime, maxRetryTime, maxWaitTime,
 				DSConstants.SERVER, Status.StartingServer, pendingServer)) {
 			LOG.info("Succeed to start all Servers");
-			GenerateServersList();
-			requestingContainersNum.set(0);
 		  	LOG.info("Starting Workers ...");
 		  	if (Start(allocateTime, maxRetryTime, maxWaitTime,
 					DSConstants.WORKER, Status.StartingWorker, pendingWorker)) {
@@ -280,6 +278,8 @@ public class ContainersManager {
 		// tranfer the status of ContainersManager
 		if (status == Status.StartingServer) {
 			if (startedServerNum == numServers) {
+				GenerateServersList();
+				requestingContainersNum.set(0);
 				status = Status.StartingWorker; // change to StartingWorker
 			}
 		} else if (status == Status.StartingWorker) {
@@ -375,6 +375,7 @@ public class ContainersManager {
     // generate the endpointList file and machinelist file to workerDir
     private void GenerateServersList() {
       try {
+      	LOG.info("Generating server list...\n");
         BufferedWriter endpointlist_out = new BufferedWriter(new FileWriter(
             DSConstants.WORKERDIR + File.separator + DSConstants.ENDPOINTLIST));
         BufferedWriter machinelist_out = new BufferedWriter(new FileWriter(

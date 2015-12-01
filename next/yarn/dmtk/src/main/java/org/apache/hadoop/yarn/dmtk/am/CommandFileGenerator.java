@@ -30,13 +30,14 @@ public class CommandFileGenerator {
   private void GenerateWorkerCommandFile(int workerId, String fileName) throws IOException {
     BufferedWriter out = new BufferedWriter(new FileWriter(
         fileName));
+    out.write("cd " + DSConstants.WORKERDIR + " \n");
     if (DSConstants.isWindow) {
-    	  out.write("cd " + DSConstants.WORKERDIR + "\n");
 	    if (isVerboseOn_) {
 	      out.write("dir /s \n");
 	      out.write("whoami\n");
-	      out.write("type " + " " + DSConstants.STARTFILE + " " + "\n");
+	      out.write("type " + DSConstants.STARTFILE + " " + "\n");
 	      out.write("type " + DSConstants.ENDPOINTLIST + "\n");
+	      out.write("type " + DSConstants.MACHINELISTFILE + "\n");
 	    }
 	
 	    out.write("call " + DSConstants.STARTFILE + " "
@@ -48,12 +49,12 @@ public class CommandFileGenerator {
 	    out.write("exit /b %errorlevel%\n");
 	    out.close();
     } else {
-    	out.write("cd " + DSConstants.WORKERDIR + "\n");
 	    if (isVerboseOn_) {
 		      out.write("ls \n");
 		      out.write("whoami\n");
-		      out.write("cat " + " " + DSConstants.STARTFILE + " " + "\n");
+		      out.write("cat " + DSConstants.STARTFILE + " " + "\n");
 		      out.write("cat " + DSConstants.ENDPOINTLIST + "\n");
+		      out.write("cat " + DSConstants.MACHINELISTFILE + "\n");
 		    }
 		
 		    out.write("./" + DSConstants.STARTFILE + " "
@@ -69,8 +70,8 @@ public class CommandFileGenerator {
   private void GenerateServerCommandFile(int serverId, String ip, String fileName) throws IOException {
     BufferedWriter out = new BufferedWriter(
         new FileWriter(fileName));
+    out.write("cd " + DSConstants.SERVERDIR + " \n");
     if (DSConstants.isWindow) {
-    	out.write("cd " + DSConstants.SERVERDIR + "\n");
 	    if (isVerboseOn_) {
 	      out.write("dir /s \n");
 	      out.write("whoami\n");
@@ -84,7 +85,6 @@ public class CommandFileGenerator {
 	    out.write("exit /b %errorlevel%\n");
 	    out.close();
     } else {
-    	out.write("cd " + DSConstants.SERVERDIR + "\n");
 	    if (isVerboseOn_) {
 		      out.write("ls \n");
 		      out.write("whoami\n");
