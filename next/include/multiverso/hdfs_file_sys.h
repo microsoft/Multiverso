@@ -1,19 +1,26 @@
-#ifndef MULTIVERSO_LOCAL_FILE_SYS_H_
-#define MULTIVERSO_LOCAL_FILE_SYS_H_
+#ifndef MULTIVERSO_HDFS_FILE_SYS_H_
+#define MULTIVERSO_HDFS_FILE_SYS_H_
 
 /*!
  * \file local_file_sys.h
- * \brief the implement of local io interface.
+ * \brief The implement of hdfs io interface.
  */
 
 #include "io.h"
 
-namespace multiverso
+extern "C" 
 {
-class LocalStream : public Stream
+#include <hdfs.h>
+}
+
+ namespace multiverso
+{
+class HDFSStream : public Stream
 {
 public:
-    explicit LocalStream(FILE * fp, std::string path);
+    HDFSStream(hdfsFS fs, hdfsFile fp, std::string path);
+
+    ~HDFSStream(void);
 
     /*!
     * \brief write data to a file
@@ -21,6 +28,7 @@ public:
     * \param size data size
     */
     virtual void Write(const void *buf, size_t size) override;
+
 
     /*!
     * \brief read data from Stream
@@ -41,17 +49,17 @@ public:
     */
     virtual void Flush() override;
 
-    ~LocalStream();
-
 private:
-    FILE *fp_;
+    hdfsFS fs_;
+    hdfsFile fp_;
     std::string path_;
 };
 
-class LocalFileSystem : public FileSystem
+class HDFSFileSystem : public FileSystem
 {
 public:
-    LocalFileSystem(std::string host);
+    explicit HDFSFileSystem(const std::string host);
+    ~HDFSFileSystem(void);
 
     /*!
     * \brief create a Stream
@@ -61,7 +69,7 @@ public:
     *             "r" - open the file to read
     * \return the Stream which is used to write or read data
     */
-    virtual Stream* Open(const std::string path,
+    virtual Stream *Open(const std::string path,
         const char *mode) override;
 
     /*!
@@ -76,17 +84,17 @@ public:
     */
     virtual void Delete(const std::string path) override;
 
-    virtual FileInfo* GetPathInfo(const std::string path) override;
+    virtual FileInfo*GetPathInfo(const std::string path) override;
 
     virtual void Rename(const std::string old_path, const std::string new_path) override;
 
     virtual void Copy(const std::string src, const std::string dst) override;
 
-    virtual void ListDirectory(const std::string path, std::vector<FileInfo*> & files) override;
+    virtual void ListDirectory(const std::string path, std::vector<FileInfo*> &files) override;
 
 private:
-    std::string host_;
+    std::string namenode_;
+    hdfsFS fs_;
 };
 }
-
-#endif // MULTIVERSO_LOCAL_FILE_SYS_H_
+#endif // MULTIVERSO_HDFS_FILE_SYS_H_
