@@ -59,7 +59,7 @@ class HDFSFileSystem : public FileSystem
 {
 public:
     explicit HDFSFileSystem(const std::string host);
-    ~HDFSFileSystem(void);
+    virtual ~HDFSFileSystem(void);
 
     /*!
     * \brief create a Stream

@@ -41,7 +41,7 @@ public:
     */
     virtual void Flush() override;
 
-    ~LocalStream();
+    virtual ~LocalStream();
 
 private:
     FILE *fp_;
@@ -52,6 +52,7 @@ class LocalFileSystem : public FileSystem
 {
 public:
     LocalFileSystem(std::string host);
+    ~LocalFileSystem(void);
 
     /*!
     * \brief create a Stream
