@@ -9,7 +9,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cerrno>
- 
+
 #include <string>
 #include <vector>
 
@@ -57,8 +57,6 @@ public:
     * \brief flush local buffer
     */
     virtual void Flush();
-
-    virtual ~Stream(void) {}
 };
 
 
@@ -119,8 +117,6 @@ public:
     virtual void Copy(const std::string src, const std::string dst) = 0;
 
     virtual void ListDirectory(const std::string path, std::vector<FileInfo*> &files) = 0;
-
-    virtual ~FileSystem(void) {}
 
 protected:
     FileSystem() {}
