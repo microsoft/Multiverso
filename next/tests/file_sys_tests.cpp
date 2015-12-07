@@ -17,26 +17,41 @@ void file_sys_test(string testdirpath,
     string host)
 {
     FileSystem *fs = FileSystem::GetInstance(file_sys_type, host);
-	fs->Delete(testdirpath);
+	if (fs->Exists(testdirpath))
+		fs->Delete(testdirpath);
     assert(fs->Exists(testdirpath) == false);
     assert(fs->Exists(testfilepath) == false);
 	
 	fs->CreateDirectory(testdirpath);
     assert(fs->Exists(testdirpath) == true);
     Stream *write_stream = fs->Open(testfilepath, "w");
-    Stream *read_stream = fs->Open(testfilepath, "r");
 
-    assert(fs->Open("/null", "r") == nullptr);
     assert(fs->Exists(testdirpath) == true);
     assert(fs->Exists(testfilepath) == true);
 
-    write_stream->Write("abc", 3);
+    char buf[10000] = {"abcdefghij"};
+	for (int i = 6; i < 10000; ++i)
+		buf[i] = 'a';
+    write_stream->Write((void*)buf, 10000);
     write_stream->Flush();
-    char buf[20] = {0};
-    assert(read_stream->Read(buf, 3) == 0);
+	delete write_stream;
+	write_stream = nullptr;
+
+    Stream *read_stream = fs->Open(testfilepath, "r");
+    assert(read_stream->Read((void*)buf, 3) == 3);
+    
+	FileInfo * fi = fs->GetPathInfo(testfilepath);
+    assert(fi != nullptr);
+    assert(fi->path == testfilepath);
+    assert(fi->size == 3);
+    assert(fi->type == FileType::kFile);
+    delete fi;
+    fi = nullptr;
+   
+    assert(fs->Open("/null", "r") == nullptr);
 
     read_stream->Seek(-3, SeekOrigin::kEnd);
-    assert(read_stream->Read(buf, 3) == 3);
+    assert(read_stream->Read((void*)buf, 3) == 3);
 
     read_stream->Seek(1, SeekOrigin::kBegin);
     buf[0] = 0;
@@ -74,13 +89,6 @@ void file_sys_test(string testdirpath,
     assert(read_stream->Read(buf, 20) == 4);
     assert(buf[3] == 'd');
 
-    FileInfo * fi = fs->GetPathInfo(testfilepath);
-    assert(fi != nullptr);
-    assert(fi->path == testfilepath);
-    assert(fi->size == 4);
-    assert(fi->type == FileType::kFile);
-    delete fi;
-    fi = nullptr;
 
     fi = fs->GetPathInfo(testdirpath);
     assert(fi != nullptr);
@@ -120,9 +128,9 @@ void file_sys_test(string testdirpath,
 
 int main()
 {
-    file_sys_test("/unittestdir",
-    "/unittestdir/file1", "/unittestdir/file2",
-    "/unittestdir/file3", "hdfs",
+    file_sys_test("/unittestdir1",
+    "/unittestdir1/file1", "/unittestdir1/file2",
+    "/unittestdir1/file3", "hdfs",
     "");
 
 	return 0;

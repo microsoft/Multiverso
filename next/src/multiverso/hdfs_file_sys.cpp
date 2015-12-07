@@ -210,7 +210,7 @@ bool HDFSFileSystem::Exists(const std::string path)
 */
 void HDFSFileSystem::Delete(const std::string path)
 {
-    if (hdfsDelete(fs_, path.c_str(), 0) != 0)
+    if (hdfsDelete(fs_, path.c_str(), 1) != 0)
     {
         int errsv = errno;
         Log::Error("Failed to delete %s, %s\n", path.c_str(), strerror(errsv));
