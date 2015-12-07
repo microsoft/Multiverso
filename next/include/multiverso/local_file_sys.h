@@ -65,6 +65,8 @@ public:
     virtual Stream* Open(const std::string path,
         const char *mode) override;
 
+    virtual void CreateDirectory(const std::string path) override;
+    
     /*!
     * \brief check if the path exists
     * \param path the file or directory

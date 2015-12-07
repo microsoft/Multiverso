@@ -186,6 +186,15 @@ Stream *HDFSFileSystem::Open(const std::string path,
     }       
 }
 
+void HDFSFileSystem::CreateDirectory(const std::string path)
+{
+    if (hdfsCreateDirectory(fs_, path.c_str()) != 0)
+    {
+        int errsv = errno;
+        Log::Error("Failed to CreateDirectory %s, %s\n", path.c_str(), strerror(errsv));
+    }
+}
+
 /*!
 * \brief check if the path exists
 * \param path the file or directory

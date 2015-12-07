@@ -100,6 +100,11 @@ Stream * LocalFileSystem::Open(const std::string path,
         return new LocalStream(fp, path);
 }
 
+void LocalFileSystem::CreateDirectory(const std::string path)
+{
+
+}
+
 /*!
 * \brief check if the path exists
 * \param path the file or directory

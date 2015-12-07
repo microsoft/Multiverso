@@ -99,6 +99,8 @@ public:
     virtual Stream *Open(const std::string path,
         const char *mode) = 0;
 
+    virtual void CreateDirectory(const std::string path) = 0;
+
     /*!
     * \brief check if the path exists
     * \param path the file or directory
