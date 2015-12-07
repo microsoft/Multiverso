@@ -32,6 +32,7 @@ enum class SeekOrigin : int
 class Stream
 {
 public:
+
     /*!
     * \brief write data to a file
     * \param buf pointer to a memory buffer
@@ -56,7 +57,7 @@ public:
     /*!
     * \brief flush local buffer
     */
-    virtual void Flush();
+    virtual void Flush() = 0;
 };
 
 

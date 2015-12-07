@@ -41,7 +41,7 @@ public:
     */
     virtual void Flush() override;
 
-    virtual ~LocalStream();
+    ~LocalStream();
 
 private:
     FILE *fp_;
