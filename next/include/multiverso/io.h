@@ -6,6 +6,10 @@
  * \brief Defines io interface.
  */
 
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+ 
 #include <string>
 #include <vector>
 

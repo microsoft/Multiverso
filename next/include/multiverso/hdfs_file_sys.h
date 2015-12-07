@@ -8,6 +8,12 @@
 
 #include "io.h"
 
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+
+#include <algorithm>
+
 extern "C" 
 {
 #include <hdfs.h>
