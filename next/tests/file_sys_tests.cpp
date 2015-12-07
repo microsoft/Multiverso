@@ -4,9 +4,9 @@
 #include <vector>
 #include <cstdio>
 
-#include "io.h"
 #include "local_file_sys.h"
 #include "hdfs_file_sys.h"
+#include "io.h"
 
 using namespace std;
 using namespace multiverso;
@@ -17,9 +17,12 @@ void file_sys_test(string testdirpath,
     string host)
 {
     FileSystem *fs = FileSystem::GetInstance(file_sys_type, host);
+	fs->Delete(testdirpath);
     assert(fs->Exists(testdirpath) == false);
     assert(fs->Exists(testfilepath) == false);
-
+	
+	fs->CreateDirectory(testdirpath);
+    assert(fs->Exists(testdirpath) == true);
     Stream *write_stream = fs->Open(testfilepath, "w");
     Stream *read_stream = fs->Open(testfilepath, "r");
 
@@ -122,6 +125,7 @@ int main()
     "/unittestdir/file3", "hdfs",
     "");
 
+	return 0;
     file_sys_test("/unittestdir",
     "/unittestdir/file1", "/unittestdir/file2",
     "/unittestdir/file3", "",

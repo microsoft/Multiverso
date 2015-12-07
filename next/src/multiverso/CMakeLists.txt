@@ -7,6 +7,7 @@ SET(MULTIVERSO_SRC multiverso.cpp aggregator.cpp  endpoint_list.cpp   stop_watch
 )
 
 LINK_DIRECTORIES(${THIRD_PARTY_LIB})
+LINK_DIRECTORIES(${JVM_LIB})
 
 ADD_LIBRARY(multiverso ${MULTIVERSO_SRC})
 
