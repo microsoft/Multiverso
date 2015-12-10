@@ -1,7 +1,10 @@
 #ifndef MULTIVERSO_ARENA_H_
 #define MULTIVERSO_ARENA_H_
 
+#include <sstream>
+
 #include "base.h"
+#include "waiter.h"
 
 namespace multiverso {
 
@@ -20,10 +23,18 @@ class Arena {
   // Allocate a block memory
   // TODO(feiga): consider memory alignment
   char* Allocate(size_t bytes);
-
+  void Before() { waiter_.Wait(); }
+  void After() { waiter_.Reset(); }
   void Reset();
 
-  std::string DebugString() const;
+  std::string DebugString() const {
+      std::ostringstream ss;
+      ss << "[Arena]: Total size = " << total_size_
+          << " Request size = " << request_size_
+          << " Request time = " << request_time_
+          << std::endl;
+      return ss.str();
+  }
 
  private:
   struct MemBlock {
@@ -38,12 +49,12 @@ class Arena {
   // After initial_mem_ is exhausted, we allocate a series of default-size
   // block for further use.
   std::vector<MemBlock> mem_blocks_;
+  Waiter waiter_;
 
   char* next_ptr_;
   size_t available_size_;
 
   size_t total_size_;      // total size arena holds
-  size_t allocated_size_;  // total size allocated
 
   size_t request_size_;    // sum of requested size 
   size_t request_time_;    // time of request

@@ -1,12 +1,12 @@
 #ifndef MULTIVERSO_MESSAGE_H_
 #define MULTIVERSO_MESSAGE_H_
 
-#include <function>
+#include <functional>
 
 #include "base.h"
 
 // NOTE(feiga): using zmq c api instead of c++
-#include <third_party/zmq/zmq.h> 
+//#include <third_party/zmq/zmq.h> 
 
 namespace multiverso {
 
@@ -38,11 +38,13 @@ class Message {
   T* RawPtr() { return reinterpret_cast<T*>(RawPtr()); }
 
  private:
+    
   enum MemOwner {
     kArena,
     kInternal,
     kOutside
   };
+  char header_[16];
 
   char* mem_;
   size_t size_;
