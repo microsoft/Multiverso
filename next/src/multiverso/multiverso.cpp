@@ -20,7 +20,7 @@ namespace multiverso
     LockManager *Multiverso::lock_manager_ = nullptr;
     LockOption Multiverso::lock_option_ = LockOption::Immutable;
     Communicator *Multiverso::communicator_ = nullptr;
-    Aggregator *Multiverso::aggregator_ = nullptr;
+    IAggregator *Multiverso::aggregator_ = nullptr;
 
     bool Multiverso::is_pipeline_ = true;
     Barrier* Multiverso::pipeline_barrier_ = nullptr;
@@ -57,7 +57,8 @@ namespace multiverso
         socket_ = communicator_->CreateSocket();
         reg_info_ = communicator_->Register(socket_, config, num_trainers_);
         // Starts the background aggregator
-        aggregator_ = new Aggregator(config.num_aggregator, num_trainers_);
+        aggregator_ = IAggregator::CreateAggregator(
+            config.num_aggregator, config.num_trainers);//new Aggregator(config.num_aggregator, num_trainers_);
 
         row_config_.resize(reg_info_.server_count, nullptr);
         row_config_size_.resize(reg_info_.server_count, 0);
@@ -96,7 +97,8 @@ namespace multiverso
         socket_ = communicator_->CreateSocket();
         reg_info_ = communicator_->Register(socket_, config, num_trainers_);
         // Starts the background aggregator
-        aggregator_ = new Aggregator(config.num_aggregator, num_trainers_);
+        aggregator_ = IAggregator::CreateAggregator(
+            config.num_aggregator, config.num_trainers);
 
         row_config_.resize(reg_info_.server_count, nullptr);
         row_config_size_.resize(reg_info_.server_count, 0);
@@ -172,8 +174,8 @@ namespace multiverso
         // the update to server.
         for (int trainer = 0; trainer < num_trainers_; ++trainer)
         {
-            aggregator_->Add(trainer, 0, -1, 0, nullptr);   // flush
-            aggregator_->Add(trainer, 0, -2, 0, nullptr);   // clock
+            aggregator_->Flush(trainer); // Add(trainer, 0, -1, 0, nullptr);   // flush
+            aggregator_->Clock(trainer); // Add(trainer, 0, -2, 0, nullptr);   // clock
         }
         aggregator_->Wait();
 
@@ -337,7 +339,7 @@ namespace multiverso
     {
         for (int trainer = 0; trainer < trainers_.size(); ++trainer)
         {
-            aggregator_->Add(trainer, 0, -1, 0, nullptr);   // flush
+            aggregator_->Flush(trainer); // Add(trainer, 0, -1, 0, nullptr);   // flush
         }
     }
 

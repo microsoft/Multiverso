@@ -116,7 +116,7 @@ for sparse row: Table=%d Row=%d.\n",
     {
         // REMARK (feiyan): consider a better interface and include these two 
         //                  methods.
-        Multiverso::aggregator_->Add(trainer_id_, 0, -2, 0, nullptr);
+        Multiverso::aggregator_->Clock(trainer_id_); // Add(trainer_id_, 0, -2, 0, nullptr);
         Multiverso::aggregator_->Wait();
     }
 
@@ -128,7 +128,7 @@ for sparse row: Table=%d Row=%d.\n",
     void TrainerBase::EndIteration()
     {
         // send a flush message to the aggregator
-        Multiverso::aggregator_->Add(trainer_id_, 0, -1, 0, nullptr);
+        Multiverso::aggregator_->Flush(trainer_id_); // Add(trainer_id_, 0, -1, 0, nullptr);
         Multiverso::double_buffer_->End(trainer_id_ + 1);
     }
 

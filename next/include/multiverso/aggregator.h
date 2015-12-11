@@ -21,16 +21,12 @@ namespace zmq
 namespace multiverso
 {
     class Table;
-    class DeltaPool;
-    class Barrier;
 
     /*!
      * \brief Aggregator is responsble for collecting, aggregating, storing
-     *        and sending local updates. It provides interface for trainers to
-     *        concurrently add delta to local cache (almost) without confilict.
-     *        and also provide pipeline for training and networking.
+     *        and sending local updates. 
      */
-    class Aggregator
+    class IAggregator
     {
     public:
         /*!
@@ -38,8 +34,7 @@ namespace multiverso
          * \param num_threads number of background aggregator threads
          * \param num_trainers number of trainer thread
          */
-        Aggregator(int num_threads, int num_trainers);
-        ~Aggregator();
+        virtual ~IAggregator() = default;
 
         /*!
          * \brief Create table for local updates aggregation
@@ -51,10 +46,10 @@ namespace multiverso
          * \param memory_pool_size Memory pool size. When creating rows,
          *        the table will reuse the memory pool if available.
          */
-        void CreateTable(integer_t table_id, integer_t rows, integer_t cols, 
+        void CreateTable(integer_t table_id, integer_t rows, integer_t cols,
             Type type, Format default_format, int64_t memory_pool_size = 0);
 
-        /*! 
+        /*!
          * \brief Configures a row of aggregation tables
          * \param table_id Table id
          * \param row_id Row id
@@ -68,44 +63,33 @@ namespace multiverso
             Format format, integer_t capacity);
 
         /*!
-         * \brief Push sparse delta into queues. The delta would be depatched
-         *        to different aggregator thread based on the row_id. The
-         *        process is (in spirit) similar with MapReduce.
+         * \brief Add to 
          * \param trainer trainer id
          * \param table table id
          * \param row row id
          * \param col col id
          * \param delta pointer to delta
          */
-        void Add(int trainer,
-            integer_t table, integer_t row, integer_t col, void* delta);
+        virtual void Add(int trainer, integer_t table,
+            integer_t row, integer_t col, void* delta) = 0;
+
+        virtual void BatchAdd(int trainer, integer_t table,
+            integer_t row, void* row_delta) = 0;
+
+        virtual void Flush(int trainer) = 0;
+
+        virtual void Clock(int trainer) = 0;
 
         /*! \brief Wait until all client finish sync up */
-        void Wait();
-    private:
-        /*! \brief Entrance function of aggregator threads */
-        void StartThread();
-        /*! \brief Send local updates */
-        void Send(int id, zmq::socket_t* socket);
-        /*! \brief Clock to server */
-        void Clock(zmq::socket_t* socket);
-    private:
-        bool done_;                     // whether aggregators is done 
-        int num_threads_;               // number of aggregator threads
-        int num_trainers_;              // number of trainers
-        std::vector<Table*> tables_;    // buffer to store update 
-        std::vector<DeltaPool*> delta_pools_;
-        std::vector<std::thread> threads_;
-        std::atomic<int> thread_counter_;
-        /*! \brief synchronization barrier used by multiple aggregator */
-        Barrier* barrier_;
-        std::mutex mutex_;
-        std::condition_variable sync_cv_;
-        bool sync_;
+        virtual void Wait() {}
 
-        // No copying allowed
-        Aggregator(const Aggregator&);
-        void operator=(const Aggregator&);
+        static IAggregator* CreateAggregator(
+            int num_aggregators, int num_trainers);
+    protected:
+        std::vector<Table*> tables_;    // buffer to store update 
+
+        /*! \brief Send local updates */
+        void Send(int id, zmq::socket_t* socket, int num_threads = 1);
     };
 }
 

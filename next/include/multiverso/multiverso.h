@@ -33,7 +33,7 @@ namespace multiverso
     class MsgPack;
     class LockManager;
     class Communicator;
-    class Aggregator;
+    class IAggregator;
     //class Server;
     template <class Container>
     class DoubleBuffer;
@@ -241,7 +241,7 @@ namespace multiverso
         static LockManager *lock_manager_;
         static LockOption lock_option_;
         static Communicator *communicator_;
-        static Aggregator *aggregator_;
+        static IAggregator *aggregator_;
         
         static bool is_pipeline_;
         static Barrier* pipeline_barrier_;
