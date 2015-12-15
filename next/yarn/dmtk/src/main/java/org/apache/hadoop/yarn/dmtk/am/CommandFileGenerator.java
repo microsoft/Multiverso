@@ -58,7 +58,9 @@ public class CommandFileGenerator {
 		    }
 		
 		    out.write("./" + DSConstants.STARTFILE + " "
-		        + DSConstants.ENDPOINTLIST + " " + workerId + " " 
+		        + DSConstants.ENDPOINTLIST + " "
+                + DSConstants.MACHINELISTFILE + " " + workerId + " " 
+                + workerNum_ + " " + serverNum_ + " "
 		        + workerServerPort_ + " " + workerArgs_ + " 2>&1 \n");
 		    out.close();
     }
@@ -92,7 +94,7 @@ public class CommandFileGenerator {
 		    }
 		
 		    out.write("./" + DSConstants.STARTFILE + " "
-		        + serverId + " " + workerNum_ + " "+ ip + ":"
+		        + serverId + " " + workerNum_ + " " + serverNum_ + " " + ip + ":"
 		        + workerServerPort_ + " " + serverArgs_ + " 2>&1 \n");
 		    out.close();
     }
