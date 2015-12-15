@@ -590,8 +590,12 @@ public class Client {
       LOG.info("Setting up app master command");
     }
 
-    vargs.add("dir /s \n");
-    vargs.add("ls  \n");
+    if (DSConstants.isWindow) {
+      vargs.add("dir /s \n");
+    } else {
+      vargs.add("ls  \n");
+    }
+    
     vargs.add(Environment.JAVA_HOME.$$() + "/bin/java");
     // Set Xmx based on am memory size
     vargs.add("-Xmx1024m");

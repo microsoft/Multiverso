@@ -33,11 +33,11 @@ public class CommandFileGenerator {
     out.write("cd " + DSConstants.WORKERDIR + " \n");
     if (DSConstants.isWindow) {
 	    if (isVerboseOn_) {
-	      out.write("dir /s \n");
-	      out.write("whoami\n");
-	      out.write("type " + DSConstants.STARTFILE + " " + "\n");
-	      out.write("type " + DSConstants.ENDPOINTLIST + "\n");
-	      out.write("type " + DSConstants.MACHINELISTFILE + "\n");
+	      out.write("echo 'files:'\ndir /s \n");
+	      out.write("echo 'user:'\nwhoami\n");
+	      out.write("echo 'content of cmd:'\ntype " + DSConstants.STARTFILE + " " + "\n");
+	      out.write("echo 'content of endpointlist:'\ntype " + DSConstants.ENDPOINTLIST + "\n");
+	      out.write("echo 'content of machinelist:'\ntype " + DSConstants.MACHINELISTFILE + "\n");
 	    }
 	
 	    out.write("call " + DSConstants.STARTFILE + " "
@@ -50,11 +50,11 @@ public class CommandFileGenerator {
 	    out.close();
     } else {
 	    if (isVerboseOn_) {
-		      out.write("ls \n");
-		      out.write("whoami\n");
-		      out.write("cat " + DSConstants.STARTFILE + " " + "\n");
-		      out.write("cat " + DSConstants.ENDPOINTLIST + "\n");
-		      out.write("cat " + DSConstants.MACHINELISTFILE + "\n");
+		      out.write("echo 'files:'\nls \n");
+		      out.write("echo 'user:'\nwhoami\n");
+		      out.write("echo 'content of cmd:'\ncat " + DSConstants.STARTFILE + " " + "\n");
+		      out.write("echo 'content of endpointlist:'\ncat " + DSConstants.ENDPOINTLIST + "\n");
+		      out.write("echo 'content of machinelist:'\ncat " + DSConstants.MACHINELISTFILE + "\n");
 		    }
 		
 		    out.write("./" + DSConstants.STARTFILE + " "
@@ -73,9 +73,9 @@ public class CommandFileGenerator {
     out.write("cd " + DSConstants.SERVERDIR + " \n");
     if (DSConstants.isWindow) {
 	    if (isVerboseOn_) {
-	      out.write("dir /s \n");
-	      out.write("whoami\n");
-	      out.write("type " + " " + DSConstants.STARTFILE + " \n");
+	      out.write("echo 'fileslist:'\ndir /s \n");
+	      out.write("echo 'user:'\nwhoami\n");
+	      out.write("echo 'content of cmd:'\ntype " + " " + DSConstants.STARTFILE + " \n");
 	    }
 	
 	    out.write("call " + DSConstants.STARTFILE + " "
@@ -86,9 +86,9 @@ public class CommandFileGenerator {
 	    out.close();
     } else {
 	    if (isVerboseOn_) {
-		      out.write("ls \n");
-		      out.write("whoami\n");
-		      out.write("cat " + " " + DSConstants.STARTFILE + " \n");
+		      out.write("echo 'fileslist:'\nls \n");
+		      out.write("echo 'user:'\nwhoami\n");
+		      out.write("echo 'content of cmd:'\ncat " + " " + DSConstants.STARTFILE + " \n");
 		    }
 		
 		    out.write("./" + DSConstants.STARTFILE + " "

@@ -65,7 +65,7 @@ public class DSConstants {
   public static final String OPT_JAR_FILE = "jar_file";
 
   // only for application master
-  public static final boolean isWindow = true;
+  public static final boolean isWindow = false;
   public static final String ENV_AMCLIENTPORT = "_amclientport";
   public static final String ENV_WORKERSERVERPORT = "_workerserverport";  
   public static final String ENV_NUMWORKERS = "_numworkers";

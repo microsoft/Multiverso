@@ -81,7 +81,8 @@ public class LaunchContainerRunnable implements Runnable {
 	          + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout" + " 2>"
 	          + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr");
       } else {
-    	  commands.add("./" + DSConstants.CMD + " 1>"
+    	  commands.add("chmod +x ./" + DSConstants.CMD + 
+                "; ./" + DSConstants.CMD +" 1>"
     	          + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout" + " 2>"
     	          + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr");
       }
