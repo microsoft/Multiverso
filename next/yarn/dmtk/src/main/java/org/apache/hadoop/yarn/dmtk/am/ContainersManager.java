@@ -186,8 +186,6 @@ public class ContainersManager {
 	              continue;
 	            }
 	          
-	            // not enough ready containers, request for more and wait
-	            needNum += Math.max(2, needNum / 2);
 	            int askCount = needNum - requestingContainersNum.get();
 	            if (askCount < 0) askCount = 0; 
 	            requestingContainersNum.getAndAdd(askCount);

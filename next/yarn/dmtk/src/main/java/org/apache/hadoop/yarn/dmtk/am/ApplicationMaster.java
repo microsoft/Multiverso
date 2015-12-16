@@ -267,9 +267,7 @@ public class ApplicationMaster {
       executeTimeout = Integer.MAX_VALUE;
     }
 
-    Double np = new Double(1.5);
-    np = np * numProcesses;
-    maxProcessesToRequest = np.intValue() + 1;
+    maxProcessesToRequest = numProcesses + 1;
 
     if (!envs.containsKey(Environment.CONTAINER_ID.name())) {
       throw new IllegalArgumentException(

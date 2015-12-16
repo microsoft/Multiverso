@@ -598,7 +598,7 @@ public class Client {
     
     vargs.add(Environment.JAVA_HOME.$$() + "/bin/java");
     // Set Xmx based on am memory size
-    vargs.add("-Xmx1024m");
+    vargs.add("-Xmx4096m");
     // Set class name
     vargs.add(appMasterMainClass);
     vargs.add("1>" + ApplicationConstants.LOG_DIR_EXPANSION_VAR
@@ -623,7 +623,7 @@ public class Client {
     // For now, both memory and vcores are supported, so we set memory and
     // vcores requirements
     Resource capability = Records.newRecord(Resource.class);
-    capability.setMemory(1024);
+    capability.setMemory(4096);
     capability.setVirtualCores(4);
     appContext.setResource(capability);
 
