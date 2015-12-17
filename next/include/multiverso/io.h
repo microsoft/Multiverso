@@ -9,9 +9,11 @@
 #include <cstring>
 #include <cstdio>
 #include <cerrno>
+#include <cassert>
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include "log.h"
 
@@ -59,6 +61,7 @@ public:
     */
     virtual void Flush() = 0;
 };
+
 
 
 enum class FileType : int
@@ -121,8 +124,30 @@ public:
 
     virtual void ListDirectory(const std::string path, std::vector<FileInfo*> &files) = 0;
 
+    virtual void Close() = 0;
+
+    ~FileSystem();
+
 protected:
+    static std::map<std::pair<std::string, std::string>, FileSystem *>instances_;
     FileSystem() {}
 };
+
+class TextReader
+{
+public:
+    TextReader(Stream *stream, size_t buf_size);
+
+    size_t GetLine(char *line);
+
+    ~TextReader();
+private:
+    size_t LoadBuffer();
+
+    char * buf_;
+    size_t pos_, buf_size_, length_;
+    Stream *stream_;
+};
+
 }
 #endif // MULTIVERSO_IO_H_

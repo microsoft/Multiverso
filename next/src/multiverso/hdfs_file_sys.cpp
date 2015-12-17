@@ -11,6 +11,7 @@ HDFSStream::HDFSStream(hdfsFS fs, hdfsFile fp, std::string path)
 
 HDFSStream::~HDFSStream(void)
 {
+    Flush();
     if (hdfsCloseFile(fs_, fp_) != -1)
     {
         int errsv = errno;
@@ -121,7 +122,7 @@ void HDFSStream::Seek(size_t offset, SeekOrigin seekOrigin)
 */
 void HDFSStream::Flush()
 {
-    if (hdfsFlush(fs_, fp_) == -1)
+    if (hdfsHSync(fs_, fp_) == -1)
     {
         int errsv = errno;
         Log::Error("Failed to Flush HDFSStream: %s\n", strerror(errsv));
@@ -141,6 +142,11 @@ HDFSFileSystem::HDFSFileSystem(const std::string host)
 }
 
 HDFSFileSystem::~HDFSFileSystem(void)
+{
+
+}
+
+void HDFSFileSystem::Close(void)
 {
     if (fs_ != nullptr && hdfsDisconnect(fs_) != 0)
     {
@@ -279,7 +285,13 @@ void HDFSFileSystem::ListDirectory(const std::string path,
 
     out_list.clear();
     for (int i = 0; i < nentry; ++i)
-        out_list.push_back(ConvertFileInfo(path, files[i]));
+    {
+        std::string tmp(files[i].mName);
+        size_t pos = tmp.find('/', 7);
+        Log::Debug("ListDirectory file_name=%s, %d\n", tmp.c_str(), pos);
+        assert(pos >= 0);
+        out_list.push_back(ConvertFileInfo(tmp.substr(pos, std::string::npos), files[i]));
+    }
     hdfsFreeFileInfo(files, nentry);
 }
 }

@@ -11,6 +11,7 @@
 #include <cstring>
 #include <cstdio>
 #include <cerrno>
+#include <cassert>
 
 #include <algorithm>
 
@@ -98,6 +99,8 @@ public:
     virtual void Copy(const std::string src, const std::string dst) override;
 
     virtual void ListDirectory(const std::string path, std::vector<FileInfo*> &files) override;
+
+    virtual void Close() override;
 
 private:
     std::string namenode_;

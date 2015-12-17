@@ -87,6 +87,8 @@ public:
 
     virtual void ListDirectory(const std::string path, std::vector<FileInfo*> & files) override;
 
+    virtual void Close() override;
+
 private:
     std::string host_;
 };

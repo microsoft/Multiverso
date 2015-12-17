@@ -154,6 +154,11 @@ void LocalFileSystem::Copy(const std::string src, const std::string dst)
     ///TODO
 }
 
+void LocalFileSystem::Close()
+{
+    ///TODO
+}
+
 void LocalFileSystem::ListDirectory(const std::string path, std::vector<FileInfo*> & out_list)
 {
 #ifndef _MSC_VER
