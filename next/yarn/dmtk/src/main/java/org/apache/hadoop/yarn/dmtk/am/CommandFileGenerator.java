@@ -27,7 +27,7 @@ public class CommandFileGenerator {
   }
 
   /**
-  * start.bat endpointlist machinelist workerId workerNum serverNum workerServerPort workerArgs appId
+  * start.bat endpointlist machinelist workerId workerNum serverNum workerServerPort appId workerArgs
   */
   private void GenerateWorkerCommandFile(int workerId, String fileName) throws IOException {
     BufferedWriter out = new BufferedWriter(new FileWriter(
@@ -46,7 +46,7 @@ public class CommandFileGenerator {
 	        + DSConstants.ENDPOINTLIST + " " 
 	    	+ DSConstants.MACHINELISTFILE + " " + workerId + " "
 	    	+ workerNum_ + " " + serverNum_ + " "
-	        + workerServerPort_ + " " + workerArgs_ + " " + appId_ + " 2>&1 \n");
+	        + workerServerPort_ + " " + appId_ + " " + workerArgs_ + " 2>&1 \n");
 	    out.write("echo worker " + workerId + " exit with code %errorlevel%\n");
 	    out.write("exit /b %errorlevel%\n");
 	    out.close();
@@ -63,13 +63,13 @@ public class CommandFileGenerator {
 		        + DSConstants.ENDPOINTLIST + " "
                 + DSConstants.MACHINELISTFILE + " " + workerId + " " 
                 + workerNum_ + " " + serverNum_ + " "
-		        + workerServerPort_ + " " + workerArgs_ + " " + appId_ + " 2>&1 \n");
+		        + workerServerPort_ + " " + appId_ + " " + workerArgs_ + " 2>&1 \n");
 		    out.close();
     }
   }
 
   /**
-  * start.bat serverId workerNum serverNum ip workerServerPort serverArgs
+  * start.bat serverId workerNum serverNum ip workerServerPort appId serverArgs
   */
   private void GenerateServerCommandFile(int serverId, String ip, String fileName) throws IOException {
     BufferedWriter out = new BufferedWriter(
@@ -84,7 +84,7 @@ public class CommandFileGenerator {
 	
 	    out.write("call " + DSConstants.STARTFILE + " "
 	        + serverId + " " + workerNum_ + " " + serverNum_ + " " + ip + " "
-	        + workerServerPort_ + " " + serverArgs_ + " " + appId_ + " 2>&1 \n");
+	        + workerServerPort_ + " " + appId_ + " " + serverArgs_ + " 2>&1 \n");
 	    out.write("echo server " + serverId +" exit with code %errorlevel%\n");
 	    out.write("exit /b %errorlevel%\n");
 	    out.close();
@@ -97,7 +97,7 @@ public class CommandFileGenerator {
 		
 		    out.write("./" + DSConstants.STARTFILE + " "
 		        + serverId + " " + workerNum_ + " " + serverNum_ + " " + ip + " "
-		        + workerServerPort_ + " " + serverArgs_ + " " + appId_ + " 2>&1 \n");
+		        + workerServerPort_ + " " + appId_ + " " + serverArgs_ + " 2>&1 \n");
 		    out.close();
     }
   }
