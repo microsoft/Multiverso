@@ -8,13 +8,15 @@ import org.apache.hadoop.yarn.dmtk.DSConstants;
 
 public class CommandFileGenerator {
   CommandFileGenerator(boolean isVerboseOn, int workerServerPort,
-      int workerNum, int serverNum, String workerArgs, String serverArgs) {
+      int workerNum, int serverNum, String workerArgs, String serverArgs,
+      String appId) {
     isVerboseOn_ = isVerboseOn;
     workerServerPort_ = workerServerPort;
     workerNum_ = workerNum;
     serverNum_ = serverNum;
     workerArgs_ = workerArgs;
     serverArgs_ = serverArgs;
+    appId_ = appId;
   }
 
   public void GenerateCommandFile(String type, int id, String fileName, String ip) throws Exception {
@@ -25,7 +27,7 @@ public class CommandFileGenerator {
   }
 
   /**
-  * start.bat endpointlist machinelist workerId workerNum serverNum workerServerPort workerArgs
+  * start.bat endpointlist machinelist workerId workerNum serverNum workerServerPort workerArgs appId
   */
   private void GenerateWorkerCommandFile(int workerId, String fileName) throws IOException {
     BufferedWriter out = new BufferedWriter(new FileWriter(
@@ -44,7 +46,7 @@ public class CommandFileGenerator {
 	        + DSConstants.ENDPOINTLIST + " " 
 	    	+ DSConstants.MACHINELISTFILE + " " + workerId + " "
 	    	+ workerNum_ + " " + serverNum_ + " "
-	        + workerServerPort_ + " " + workerArgs_ + " 2>&1 \n");
+	        + workerServerPort_ + " " + workerArgs_ + " " + appId_ + " 2>&1 \n");
 	    out.write("echo worker " + workerId + " exit with code %errorlevel%\n");
 	    out.write("exit /b %errorlevel%\n");
 	    out.close();
@@ -61,7 +63,7 @@ public class CommandFileGenerator {
 		        + DSConstants.ENDPOINTLIST + " "
                 + DSConstants.MACHINELISTFILE + " " + workerId + " " 
                 + workerNum_ + " " + serverNum_ + " "
-		        + workerServerPort_ + " " + workerArgs_ + " 2>&1 \n");
+		        + workerServerPort_ + " " + workerArgs_ + " " + appId_ + " 2>&1 \n");
 		    out.close();
     }
   }
@@ -82,7 +84,7 @@ public class CommandFileGenerator {
 	
 	    out.write("call " + DSConstants.STARTFILE + " "
 	        + serverId + " " + workerNum_ + " " + serverNum_ + " " + ip + " "
-	        + workerServerPort_ + " " + serverArgs_ + " 2>&1 \n");
+	        + workerServerPort_ + " " + serverArgs_ + " " + appId_ + " 2>&1 \n");
 	    out.write("echo server " + serverId +" exit with code %errorlevel%\n");
 	    out.write("exit /b %errorlevel%\n");
 	    out.close();
@@ -95,7 +97,7 @@ public class CommandFileGenerator {
 		
 		    out.write("./" + DSConstants.STARTFILE + " "
 		        + serverId + " " + workerNum_ + " " + serverNum_ + " " + ip + " "
-		        + workerServerPort_ + " " + serverArgs_ + " 2>&1 \n");
+		        + workerServerPort_ + " " + serverArgs_ + " " + appId_ + " 2>&1 \n");
 		    out.close();
     }
   }
@@ -105,4 +107,5 @@ public class CommandFileGenerator {
   private int workerNum_, serverNum_;
   private String workerArgs_;
   private String serverArgs_;
+  private String appId_;
 }
