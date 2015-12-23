@@ -152,7 +152,6 @@ public class ApplicationMaster {
   private int processCores = 0;
   private int numWorkers = 0;
   private int numServers = 0;
-  private boolean is_win = false;
   private boolean isSyncOn = false;
   private boolean isVerboseOn = false;
   private String hdfsAppDir = "";
@@ -218,11 +217,6 @@ public class ApplicationMaster {
     
     if (envs.containsKey(DSConstants.ENV_VERBOSE)) {
       isVerboseOn = Boolean.parseBoolean(envs.get(DSConstants.ENV_VERBOSE));
-    }
-    
-    if (envs.containsKey(DSConstants.ENV_IS_WIN)) {
-      String str = envs.get(DSConstants.ENV_IS_WIN);
-      is_win = Boolean.parseBoolean(str);
     }
 
 
@@ -302,9 +296,8 @@ public class ApplicationMaster {
           + " not set in the environment");
     }
 
-    DSConstants.isWindow = is_win;
     String sys_platform = "linux";
-    if (is_win)
+    if (DSConstants.isWindow == true)
     {
         sys_platform = "window";
     }

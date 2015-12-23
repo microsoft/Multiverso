@@ -20,6 +20,8 @@ package org.apache.hadoop.yarn.dmtk;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
+import java.util.Properties;
+import java.util.*;
 
 /**
  * Constants used in both Client and Application Master
@@ -66,7 +68,7 @@ public class DSConstants {
   public static final String OPT_IS_WIN = "win";
 
   // only for application master
-  public static boolean isWindow;
+  public static final boolean isWindow = System.getProperties().getProperty("os.name").toUpperCase().matches("WINDOW");
   public static final String ENV_AMCLIENTPORT = "_amclientport";
   public static final String ENV_WORKERSERVERPORT = "_workerserverport";  
   public static final String ENV_NUMWORKERS = "_numworkers";

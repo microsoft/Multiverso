@@ -155,7 +155,6 @@ public class Client {
   private int numServers = 0;
   private int allocateTimeout = 0;
   private int executeTimeout = 0;
-  private boolean is_win = false;
   private String amJarPath = "";
   private String workerArgs = "";
   private String serverArgs = "";
@@ -281,8 +280,6 @@ public class Client {
     opts.addOption(DSConstants.OPT_EXECUTE_TIMEOUT, true, "Maximum time to wait while executing app, default " + 
     		DSConstants.DEFAULT_EXECUTE_TIMEOUT + " in seconds");
     opts.addOption(DSConstants.OPT_JAR_FILE, true, "AM jar file");
-    opts.addOption(DSConstants.OPT_IS_WIN, false,
-        "run in window");
   }
 
   /**
@@ -338,10 +335,6 @@ public class Client {
     
     if (cliParser.hasOption(DSConstants.OPT_SYNCHRONOUS)) {
         isSyncOn = true;
-    }
-    
-    if (cliParser.hasOption(DSConstants.OPT_IS_WIN)) {
-        is_win = true;
     }
     
     if (isSyncOn) {
@@ -562,7 +555,6 @@ public class Client {
     env.put(DSConstants.ENV_SYNCHRONOUS, String.valueOf(isSyncOn));
     env.put(DSConstants.ENV_ALLOCATE_TIMEOUT, String.valueOf(allocateTimeout));
     env.put(DSConstants.ENV_EXECUTE_TIMEOUT, String.valueOf(executeTimeout));
-    env.put(DSConstants.ENV_IS_WIN, String.valueOf(is_win));
 
     String homeDir = fs.getHomeDirectory().toUri().getRawPath();
     String appDir = homeDir + "/" + appName + "/" + appId.getId() + "/";
