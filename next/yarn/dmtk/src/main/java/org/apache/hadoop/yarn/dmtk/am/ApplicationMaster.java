@@ -152,6 +152,7 @@ public class ApplicationMaster {
   private int processCores = 0;
   private int numWorkers = 0;
   private int numServers = 0;
+  private boolean is_win = false;
   private boolean isSyncOn = false;
   private boolean isVerboseOn = false;
   private String hdfsAppDir = "";
@@ -219,6 +220,12 @@ public class ApplicationMaster {
       isVerboseOn = Boolean.parseBoolean(envs.get(DSConstants.ENV_VERBOSE));
     }
     
+    if (envs.containsKey(DSConstants.ENV_IS_WIN)) {
+      String str = envs.get(DSConstants.ENV_IS_WIN);
+      is_win = Boolean.parseBoolean(str);
+    }
+
+
     //Logger.getRootLogger().addAppender(new ConsoleAppender(null, "System.out"));
     ConsoleAppender console = new ConsoleAppender(); //create appender
     //configure the appender
@@ -295,7 +302,14 @@ public class ApplicationMaster {
           + " not set in the environment");
     }
 
-    LOG.info("Application master for app" + ", appId="
+    DSConstants.isWindow = is_win;
+    String sys_platform = "linux";
+    if (is_win)
+    {
+        sys_platform = "window";
+    }
+
+    LOG.info("Application master for app running on " + sys_platform + ", appId="
         + appAttemptID.getApplicationId().getId() + ", clustertimestamp="
         + appAttemptID.getApplicationId().getClusterTimestamp()
         + ", attemptId=" + appAttemptID.getAttemptId());

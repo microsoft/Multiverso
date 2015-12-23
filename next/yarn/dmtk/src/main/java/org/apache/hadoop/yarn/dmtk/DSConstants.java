@@ -63,16 +63,17 @@ public class DSConstants {
   public static final String OPT_ALLOCATE_TIMEOUT = "alloctime";
   public static final String OPT_EXECUTE_TIMEOUT = "exectime";
   public static final String OPT_JAR_FILE = "jar_file";
+  public static final String OPT_IS_WIN = "win";
 
   // only for application master
-  public static final boolean isWindow = false;
+  public static boolean isWindow;
   public static final String ENV_AMCLIENTPORT = "_amclientport";
   public static final String ENV_WORKERSERVERPORT = "_workerserverport";  
   public static final String ENV_NUMWORKERS = "_numworkers";
   public static final String ENV_NUMSERVERS = "_numservers";   
   public static final String ENV_PROCESSMEMORY = "_processmemory";
   public static final String ENV_PROCESSCORES = "_processcores";
-
+  public static final String ENV_IS_WIN = "_is_win";
   public static final String ENV_DEBUG = "_debug";
   public static final String ENV_WORKERARGS = "_workerargs";
   public static final String ENV_SERVERARGS = "_serverargs";
