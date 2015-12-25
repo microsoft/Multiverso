@@ -68,7 +68,8 @@ public class DSConstants {
   public static final String OPT_IS_WIN = "win";
 
   // only for application master
-  public static final boolean isWindow = System.getProperties().getProperty("os.name").toUpperCase().matches("WINDOW");
+  public static final String os_name = System.getProperties().getProperty("os.name").toUpperCase();
+  public static final boolean isWindow = os_name.matches("(.*)WINDOW(.*)");
   public static final String ENV_AMCLIENTPORT = "_amclientport";
   public static final String ENV_WORKERSERVERPORT = "_workerserverport";  
   public static final String ENV_NUMWORKERS = "_numworkers";

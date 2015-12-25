@@ -296,13 +296,8 @@ public class ApplicationMaster {
           + " not set in the environment");
     }
 
-    String sys_platform = "linux";
-    if (DSConstants.isWindow == true)
-    {
-        sys_platform = "window";
-    }
-
-    LOG.info("Application master for app running on " + sys_platform + ", appId="
+  
+    LOG.info("Application master for app running on " + DSConstants.os_name + ", appId="
         + appAttemptID.getApplicationId().getId() + ", clustertimestamp="
         + appAttemptID.getApplicationId().getClusterTimestamp()
         + ", attemptId=" + appAttemptID.getAttemptId());

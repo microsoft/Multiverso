@@ -428,7 +428,7 @@ public class Client {
   public boolean run() throws IOException, YarnException {
 
     if (isVerboseOn) {
-      LOG.info("Running Client");
+      LOG.info("Running Client on " + DSConstants.os_name);
     }
     yarnClient.start();
 
