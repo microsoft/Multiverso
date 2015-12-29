@@ -10,14 +10,30 @@ import java.util.Comparator;
 import org.apache.hadoop.yarn.api.records.NodeState;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.api.records.NodeState;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.yarn.api.records.NodeReport;
 import org.apache.hadoop.yarn.api.records.Resource;
 
 public class MachineSelector {
-	public ArrayList<String> GetAdjecentMachines(int nMachines)
+	public ArrayList<String> GetAdjecentMachines(YarnClient amRMClient, int memory, int core)
 	{
-		ArrayList<String> r = new ArrayList<String>(nMachines);
-		return r;
+		ArrayList<String> ret = new ArrayList<String>();
+		try
+		{
+			Map<String, List<String>> mp = getRacksAndNodes(amRMClient, memory, core);
+			for (Map.Entry<String, List<String>> entry : mp.entrySet()) {  
+				for (String node : entry.getValue())
+					ret.add(node);
+			}  
+		}
+		catch(Exception e)
+		{
+			LOG.error("Failed to GetAdjecentMachines " + e);
+		}
+		
+		
+		return ret;
 	}
 	
 	public void Init() throws Exception
@@ -76,6 +92,7 @@ public class MachineSelector {
         return racksAndNodes;
     }
 	
+	private static final Log LOG = LogFactory.getLog(MachineSelector.class);
 	private SortedMap<String, String> machineLists_ = new TreeMap<String, String>();
 	private YarnClient yarnClient_;
 };

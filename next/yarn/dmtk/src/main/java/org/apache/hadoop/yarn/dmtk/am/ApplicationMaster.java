@@ -306,7 +306,7 @@ public class ApplicationMaster {
     
     commandFileGenerator = new CommandFileGenerator(isVerboseOn, workerServerPort,
       numWorkers, numServers, workerArgs, serverArgs,
-      String.valueOf(appAttemptID.getApplicationId().getId()));
+      String.valueOf(appAttemptID.getApplicationId()));
 
     // Creating the Timeline Client
     timelineClient = TimelineClient.createTimelineClient();

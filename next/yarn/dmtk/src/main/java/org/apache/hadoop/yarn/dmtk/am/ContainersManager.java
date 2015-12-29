@@ -234,7 +234,7 @@ public class ContainersManager {
     capability.setVirtualCores(processCores_);
 
     //ContainerRequest request = new ContainerRequest(capability, nodes, racks, pri, false);
-    ContainerRequest request = new ContainerRequest(capability, null, null, pri);
+    ContainerRequest request = new ContainerRequest(capability, nodes, racks, pri);
 
      //LOG.info("Requested container ask: " + request.toString());
     return request;
@@ -329,17 +329,25 @@ public class ContainersManager {
 	
 	public void PutContainers(List<Container> containers) {
 		synchronized(this) {
+			List<Container> leftContainers = new ArrayList<Container>();
 			LOG.info("Get " + containers.size() + " containers");
 			requestingContainersNum.getAndAdd(-containers.size());
 			while (pendingServer.size() > 0 && containers.size() > 0
 					&& status == Status.StartingServer) {
 				MyContainer myContainer = pendingServer.get(0);
 				Container container = containers.get(0);
-				pendingServer.remove(0);
 				containers.remove(0);
-				allocatedContainers_.put(container, myContainer);
-				allocatedContainerIds_.put(container.getId(), myContainer);
-				myContainer.Start(container);
+				if (!allocatedContainers_.containsKey(container))
+				{
+					pendingServer.remove(0);
+					allocatedContainers_.put(container, myContainer);
+					allocatedContainerIds_.put(container.getId(), myContainer);
+					myContainer.Start(container);
+				}
+				else
+				{
+					leftContainers.add(container);
+				}
 			}
 			
 			while (pendingWorker.size() > 0 && containers.size() > 0
@@ -354,6 +362,13 @@ public class ContainersManager {
 			}
 			
 			 for (Container container : containers) {
+			      LOG.info("Releasing container " + container.getId()
+			          + ", containerNode=" + container.getNodeId().getHost()
+			          + ":" + container.getNodeId().getPort());
+			      amRMClient_.releaseAssignedContainer(container.getId());
+			  }
+			 
+			 for (Container container : leftContainers) {
 			      LOG.info("Releasing container " + container.getId()
 			          + ", containerNode=" + container.getNodeId().getHost()
 			          + ":" + container.getNodeId().getPort());
