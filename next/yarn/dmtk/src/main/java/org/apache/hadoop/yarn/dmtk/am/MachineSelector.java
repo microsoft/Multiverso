@@ -36,31 +36,7 @@ public class MachineSelector {
 		return ret;
 	}
 	
-	public void Init() throws Exception
-	{
-		try {
-			YarnClient amRMClient = YarnClient.createYarnClient();
-			amRMClient.start();
-			List<NodeReport> nodeReports = amRMClient
-					.getNodeReports(NodeState.RUNNING);
-			for (NodeReport report : nodeReports) {
-				Resource total = report.getCapability();
-				Resource used = report.getUsed();
-				int memoryLeft = total.getMemory() - used.getMemory();
-				int coresLeft = total.getVirtualCores() - used.getVirtualCores();
-				String host = report.getNodeId().getHost();
-				String DC = host.substring(0, 3);
-				String service = host.substring(3, 6);
-				String podSet = host.substring(6, 11);
-				String pod = host.substring(11, 13);
-				String mid = host.substring(13, 15);
-				
-			}
-		} 
-		catch (Exception e) {
-			throw e;
-		}
-	}
+
 	public Map<String, List<String>> getRacksAndNodes(YarnClient amRMClient, int memory, int core) throws Exception{
         TreeMap<String, List<String>> racksAndNodes = new TreeMap<String, List<String>>(new Comparator<String>(){
         	public int compare(String o1, String o2){

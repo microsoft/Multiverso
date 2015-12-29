@@ -77,10 +77,12 @@ public class LaunchContainerRunnable implements Runnable {
       List<String> commands = new ArrayList<String>();
 
       if (DSConstants.isWindow) {
+        LOG.info("Launch Container on windows\n");
 	      commands.add(DSConstants.CMD + " 1>"
 	          + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout" + " 2>"
 	          + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stderr");
       } else {
+        LOG.info("Launch Container on linux\n");
     	  commands.add("chmod +x ./" + DSConstants.CMD + 
                 "; ./" + DSConstants.CMD +" 1>"
     	          + ApplicationConstants.LOG_DIR_EXPANSION_VAR + "/stdout" + " 2>"

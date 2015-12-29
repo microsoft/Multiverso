@@ -218,7 +218,8 @@ public class ApplicationMaster {
     if (envs.containsKey(DSConstants.ENV_VERBOSE)) {
       isVerboseOn = Boolean.parseBoolean(envs.get(DSConstants.ENV_VERBOSE));
     }
-    
+
+
     //Logger.getRootLogger().addAppender(new ConsoleAppender(null, "System.out"));
     ConsoleAppender console = new ConsoleAppender(); //create appender
     //configure the appender
@@ -295,7 +296,8 @@ public class ApplicationMaster {
           + " not set in the environment");
     }
 
-    LOG.info("Application master for app" + ", appId="
+  
+    LOG.info("Application master for app running on " + DSConstants.os_name + ", appId="
         + appAttemptID.getApplicationId().getId() + ", clustertimestamp="
         + appAttemptID.getApplicationId().getClusterTimestamp()
         + ", attemptId=" + appAttemptID.getAttemptId());

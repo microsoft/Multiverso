@@ -262,7 +262,7 @@ public class Client {
     opts.addOption(DSConstants.OPT_AMCLIENTPORT, true,
             "The port am should use to communicate with client");
     opts.addOption(DSConstants.OPT_WORKERSERVERPORT, true,
-            "The port ZMQ servers should use to communicate with workers");
+            "The port servers should use to communicate with workers");
     opts.addOption(DSConstants.OPT_PROCESSMEMORY, true,
         "Memory used by each process (in MB). Default 1024");
     opts.addOption(DSConstants.OPT_PROCESSCORES, true,
@@ -274,7 +274,7 @@ public class Client {
     opts.addOption(DSConstants.OPT_DEBUG, false, "Enable debug info");
     opts.addOption(DSConstants.OPT_VERBOSE, false, "Enable verbose output");
     opts.addOption(DSConstants.OPT_SYNCHRONOUS, false,
-            "Wait till the ZMQ program exits");
+            "Wait till the program exits");
     opts.addOption(DSConstants.OPT_ALLOCATE_TIMEOUT, true, "Maximum time to wait while allocating containers, default "
             + DSConstants.DEFAULT_ALLOCATE_TIMEOUT + " in seconds");
     opts.addOption(DSConstants.OPT_EXECUTE_TIMEOUT, true, "Maximum time to wait while executing app, default " + 
@@ -428,7 +428,7 @@ public class Client {
   public boolean run() throws IOException, YarnException {
 
     if (isVerboseOn) {
-      LOG.info("Running Client");
+      LOG.info("Running Client on " + DSConstants.os_name);
     }
     yarnClient.start();
 
