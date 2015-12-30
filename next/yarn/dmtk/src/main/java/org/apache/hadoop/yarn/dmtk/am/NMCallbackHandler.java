@@ -78,7 +78,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.PatternLayout;
 
 public class NMCallbackHandler implements NMClientAsync.CallbackHandler {
-	private static final long statusUpdateInterval = 2000;
+	private static final long statusUpdateInterval = 20000;
 	private static final Log LOG = LogFactory.getLog(NMCallbackHandler.class);
 	private ContainersManager containersManager_;
 	private NMClientAsync nmClientAsync_;
