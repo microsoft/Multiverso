@@ -52,6 +52,7 @@ public class ContainersManager {
 	private int startedServerNum = 0, startedWorkerNum = 0;
 	private int processMemory_ = 0, processCores_ = 0;
 	private AtomicInteger requestingContainersNum = new AtomicInteger();
+	private int containerReportNum_;
 	private AMRMClientAsync amRMClient_;
 	private HashMap<Container, MyContainer> allocatedContainers_ =
 			new HashMap<Container, MyContainer>();
@@ -60,7 +61,7 @@ public class ContainersManager {
 	public Status status = Status.New;
 
 	public ContainersManager() {
-		
+		containerReportNum_ = 0;
 	}
 	
 	public void PrintLog() {
@@ -299,8 +300,12 @@ public class ContainersManager {
 	
 	public void ReportContainerStatus(ContainerId containerId, MyContainer.MyContainerStatus status) {
 		synchronized(this) {
-			LOG.info("ReportContainerStatus: containerId=" + containerId
-				+ ",status=" + status);
+			++containerReportNum_;
+			if (containerReportNum_ % 999 == 0) {
+				LOG.info("ReportContainerStatus: containerId=" + containerId
+					+ ",status=" + status + ",reportNum=" + containerReportNum_);
+			}
+
 			MyContainer myContainer = allocatedContainerIds_.get(containerId);
 			if (myContainer == null) {
 				LOG.error("Report non-existing container " + containerId);
@@ -314,8 +319,11 @@ public class ContainersManager {
 	
 	public void ReportContainerStatus(Container container, MyContainer.MyContainerStatus status) {
 		synchronized(this) {
+			++containerReportNum_;
+			if (containerReportNum_ % 999 == 0) {
 			LOG.info("ReportContainerStatus: containerId=" + container.getId()
-				+ ",status=" + status);
+				+ ",status=" + status + ",reportNum=" + containerReportNum_);
+			}
 			MyContainer myContainer = allocatedContainers_.get(container);
 			if (myContainer == null)
 				LOG.error("Report non-existing container " + container.getId());

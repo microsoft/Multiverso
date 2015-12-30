@@ -83,6 +83,7 @@ public class NMCallbackHandler implements NMClientAsync.CallbackHandler {
 	private ContainersManager containersManager_;
 	private NMClientAsync nmClientAsync_;
 	private Timer timer_;
+  private int containerStatusReceivedNum_;
 	private ConcurrentMap<ContainerId, Container> containers = new ConcurrentHashMap<ContainerId, Container>();
 
     public NMCallbackHandler() {}
@@ -92,6 +93,7 @@ public class NMCallbackHandler implements NMClientAsync.CallbackHandler {
     	containersManager_ = containersManager;
     	timer_ = timer;
     	nmClientAsync_ = nmClientAsync;
+      containerStatusReceivedNum_ = 0;
     }
 
     public void addContainer(ContainerId containerId, Container container) {
@@ -110,8 +112,7 @@ public class NMCallbackHandler implements NMClientAsync.CallbackHandler {
     @Override
     public void onContainerStatusReceived(ContainerId containerId,
         ContainerStatus containerStatus) {
-      LOG.info("Container Status: id=" + containerId + ", status="
-          + containerStatus.getExitStatus());
+      ++containerStatusReceivedNum_;
       Container container = containers.get(containerId);
       if (container == null) {
         LOG.error("got status report from non-existing container "
@@ -122,8 +123,14 @@ public class NMCallbackHandler implements NMClientAsync.CallbackHandler {
       if (containerStatus.getState() == ContainerState.RUNNING) {
     	containersManager_.ReportContainerStatus(container,
     	    		  MyContainer.MyContainerStatus.Running);
+       if (containerStatusReceivedNum_ % 1000 == 0) {
+          LOG.info("Query Status of Containers " + containerStatusReceivedNum_ + " times\n");
+      }
+
         scheduleStatusUpdate(container);
       } else if (containerStatus.getState() == ContainerState.COMPLETE) {
+        LOG.info("Container Status: id=" + containerId + ", status="
+          + containerStatus.getExitStatus());
         if (containerStatus.getExitStatus() == ContainerExitStatus.SUCCESS)
             containersManager_.ReportContainerStatus(container,
           		  MyContainer.MyContainerStatus.Succeed);
