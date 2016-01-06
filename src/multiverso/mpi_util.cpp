@@ -43,6 +43,7 @@ namespace multiverso
     std::shared_ptr<MsgPack> MPIUtil::ProbeAndRecv()
     {
         int flag;
+		int count = 0;
         MPI_Status status;
         // test if there is new message comes
         MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &flag, &status);
@@ -50,8 +51,9 @@ namespace multiverso
         {
             MPI_Recv(recv_buffer_, kMPIBufferSize, MPI_BYTE, status.MPI_SOURCE,
                 status.MPI_TAG, MPI_COMM_WORLD, &status);
+			MPI_Get_count(&status, MPI_BYTE, &count);	
             std::shared_ptr<MsgPack> request(
-                new MsgPack(recv_buffer_, status.count));
+                new MsgPack(recv_buffer_, count));
             return request;
         }
         return nullptr;
@@ -62,6 +64,7 @@ namespace multiverso
     //{
     //    try{
     //        int flag;
+	//        int count = 0;
     //        MPI_Status status;
     //        // if there is message being received
     //        if (recv_request_ != MPI_REQUEST_NULL)
@@ -71,8 +74,9 @@ namespace multiverso
     //            if (flag) // recv completed, deserialize the data into ZMQ messages
     //            {
     //                recv_request_ = MPI_REQUEST_NULL;
+			//MPI_Get_count(&status, MPI_BYTE, &count);	
     //                std::shared_ptr<MsgPack> request(
-    //                    new MsgPack(recv_buffer_, status.count));
+    //                    new MsgPack(recv_buffer_, count));
     //                return request;
     //            }
     //            else // recv not completed yet
@@ -89,7 +93,8 @@ namespace multiverso
     //            //    status.MPI_TAG, MPI_COMM_WORLD, &recv_request_);
     //            MPI_Recv(recv_buffer_, kMPIBufferSize, MPI_BYTE, status.MPI_SOURCE, 
     //                status.MPI_TAG, MPI_COMM_WORLD, &status);
-    //            std::shared_ptr<MsgPack> request(new MsgPack(recv_buffer_, status.count));
+	//            MPI_Get_count(&status, MPI_BYTE, &count);	
+    //            std::shared_ptr<MsgPack> request(new MsgPack(recv_buffer_, count));
     //            return request;
     //        }
     //        return nullptr;
