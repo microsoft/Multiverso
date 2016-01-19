@@ -52,6 +52,7 @@ public class ContainersManager {
 	private int startedServerNum = 0, startedWorkerNum = 0;
 	private int processMemory_ = 0, processCores_ = 0;
 	private AtomicInteger requestingContainersNum = new AtomicInteger();
+	private int containerReportNum_;
 	private AMRMClientAsync amRMClient_;
 	private HashMap<Container, MyContainer> allocatedContainers_ =
 			new HashMap<Container, MyContainer>();
@@ -60,7 +61,7 @@ public class ContainersManager {
 	public Status status = Status.New;
 
 	public ContainersManager() {
-		
+		containerReportNum_ = 0;
 	}
 	
 	public void PrintLog() {
@@ -242,7 +243,7 @@ public class ContainersManager {
     capability.setVirtualCores(processCores_);
 
     //ContainerRequest request = new ContainerRequest(capability, nodes, racks, pri, false);
-    ContainerRequest request = new ContainerRequest(capability, null, null, pri);
+    ContainerRequest request = new ContainerRequest(capability, nodes, racks, pri);
 
      //LOG.info("Requested container ask: " + request.toString());
     return request;
@@ -307,8 +308,12 @@ public class ContainersManager {
 	
 	public void ReportContainerStatus(ContainerId containerId, MyContainer.MyContainerStatus status) {
 		synchronized(this) {
-			LOG.info("ReportContainerStatus: containerId=" + containerId
-				+ ",status=" + status);
+			++containerReportNum_;
+			if (containerReportNum_ % 999 == 0) {
+				LOG.info("ReportContainerStatus: containerId=" + containerId
+					+ ",status=" + status + ",reportNum=" + containerReportNum_);
+			}
+
 			MyContainer myContainer = allocatedContainerIds_.get(containerId);
 			if (myContainer == null) {
 				LOG.error("Report non-existing container " + containerId);
@@ -322,8 +327,11 @@ public class ContainersManager {
 	
 	public void ReportContainerStatus(Container container, MyContainer.MyContainerStatus status) {
 		synchronized(this) {
+			++containerReportNum_;
+			if (containerReportNum_ % 999 == 0) {
 			LOG.info("ReportContainerStatus: containerId=" + container.getId()
-				+ ",status=" + status);
+				+ ",status=" + status + ",reportNum=" + containerReportNum_);
+			}
 			MyContainer myContainer = allocatedContainers_.get(container);
 			if (myContainer == null)
 				LOG.error("Report non-existing container " + container.getId());
@@ -337,17 +345,25 @@ public class ContainersManager {
 	
 	public void PutContainers(List<Container> containers) {
 		synchronized(this) {
+			List<Container> leftContainers = new ArrayList<Container>();
 			LOG.info("Get " + containers.size() + " containers");
 			requestingContainersNum.getAndAdd(-containers.size());
 			while (pendingServer.size() > 0 && containers.size() > 0
 					&& status == Status.StartingServer) {
 				MyContainer myContainer = pendingServer.get(0);
 				Container container = containers.get(0);
-				pendingServer.remove(0);
 				containers.remove(0);
-				allocatedContainers_.put(container, myContainer);
-				allocatedContainerIds_.put(container.getId(), myContainer);
-				myContainer.Start(container);
+				if (!allocatedContainers_.containsKey(container))
+				{
+					pendingServer.remove(0);
+					allocatedContainers_.put(container, myContainer);
+					allocatedContainerIds_.put(container.getId(), myContainer);
+					myContainer.Start(container);
+				}
+				else
+				{
+					leftContainers.add(container);
+				}
 			}
 			
 			while (pendingWorker.size() > 0 && containers.size() > 0
@@ -362,6 +378,13 @@ public class ContainersManager {
 			}
 			
 			 for (Container container : containers) {
+			      LOG.info("Releasing container " + container.getId()
+			          + ", containerNode=" + container.getNodeId().getHost()
+			          + ":" + container.getNodeId().getPort());
+			      amRMClient_.releaseAssignedContainer(container.getId());
+			  }
+			 
+			 for (Container container : leftContainers) {
 			      LOG.info("Releasing container " + container.getId()
 			          + ", containerNode=" + container.getNodeId().getHost()
 			          + ":" + container.getNodeId().getPort());
