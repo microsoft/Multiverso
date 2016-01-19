@@ -623,8 +623,8 @@ public class Client {
     // For now, both memory and vcores are supported, so we set memory and
     // vcores requirements
     Resource capability = Records.newRecord(Resource.class);
-    capability.setMemory(4096);
-    capability.setVirtualCores(4);
+    capability.setMemory(processMemory);
+    capability.setVirtualCores(processCores);
     appContext.setResource(capability);
 
     // Service data is a binary blob that can be passed to the application

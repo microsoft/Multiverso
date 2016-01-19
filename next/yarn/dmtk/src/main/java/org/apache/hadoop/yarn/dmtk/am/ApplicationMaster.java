@@ -18,6 +18,8 @@
 
 package org.apache.hadoop.yarn.dmtk.am;
 
+
+import java.io.PrintStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.File;
@@ -382,7 +384,7 @@ public class ApplicationMaster {
     amRMClient.start();
     nmClientAsync.init(conf);
     allocListener.Init(containersManager, amRMClient);
-    containersManager.Init(numServers, numWorkers, workerServerPort,
+    MyContainer worker0 = containersManager.Init(numServers, numWorkers, workerServerPort,
         processMemory, processCores, 
         commandFileGenerator, containerListener, allTokens, conf,
         nmClientAsync, amRMClient, containerLauncher);
@@ -409,21 +411,80 @@ public class ApplicationMaster {
 	LOG.info("Starting ContainersManager ...");
 	containersManager.Start(allocateTimeout, 5, 300);
 	try {
-	    while (containersManager.status == Status.Running) {
+       // wait to start all servers and workers except worker 0
+	     while (containersManager.status == Status.StartingServer
+        || containersManager.status == Status.StartingWorker) {
 	      Thread.sleep(1000);
 	    }
-	
-	    if (containersManager.status == Status.Succeed) {
-	    	masterRetVal.set(0);
-	    } else {
-	    	masterRetVal.set(-3);
-	    }
+
+      // start worker0
+      worker0.GenerateCmdFile();
+      String cmdFileName = worker0.cmdFileName;
+      String[] cmd = new String[1];;
+      if (DSConstants.isWindow) {
+        LOG.info("Launch Container on windows\n");
+        cmd[0] = cmdFileName;
+      } else {
+        LOG.info("Launch Container on linux\n");
+        File file = new File(cmdFileName);
+        file.setExecutable(true);
+        cmd[0] = "./" + cmdFileName;
+      }
+
+    LOG.info("starting worker 0 on AM\n");
+    Process pcs = Runtime.getRuntime().exec(cmd);
+    PipeStreamThread stdoutStreamThread = new PipeStreamThread(new InputStreamReader(pcs.getInputStream()), System.out, "stdout");
+    PipeStreamThread stderrStreamThread = new PipeStreamThread(new InputStreamReader(pcs.getErrorStream()), System.err, "stderr");
+       
+    stdoutStreamThread.start();
+    stderrStreamThread.start();
+        
+    pcs.waitFor();
+    Thread.sleep(10000);// wait for 10s
+    stdoutStreamThread.interrupt();
+    stderrStreamThread.interrupt();
+    masterRetVal.set(pcs.exitValue());
 	    
 	    Thread.sleep(10*1000);
-	    isWorkDone.set(true);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+
+    isWorkDone.set(true);
+  }
+
+  class PipeStreamThread extends Thread {
+    InputStreamReader inputStreamReader;
+    PrintStream out;
+    String name;
+    
+    public PipeStreamThread(InputStreamReader inputStreamReader_, PrintStream out_, String name_) {
+      inputStreamReader = inputStreamReader_;
+      out = out_;
+      name = name_;
+    }
+    
+    public void run() {
+      try {
+        out.println("Begin to output " + name + " of Worker0 ...");
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String line = null;
+        
+        while (this.isInterrupted() == false)
+        {
+          line = bufferedReader.readLine();
+          if (line == null)
+            break;
+          out.println(line);
+        }
+      
+        bufferedReader.close();
+        out.println("Finish outputing " + name + " of Worker0");
+      }
+      catch (Exception e) {
+            e.printStackTrace();
+      }
+    }
   }
 
   @VisibleForTesting

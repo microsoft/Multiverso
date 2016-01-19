@@ -76,6 +76,22 @@ class MyContainer {
       }
 	}
 	
+	public void GenerateCmdFile() {
+		try {
+      		InetAddress address = InetAddress.getLocalHost();
+    		commandFileGenerator_.GenerateCommandFile(type,
+    			  id_, cmdFileName, address.getHostAddress());
+
+    		LOG.info("Launching " + name_ + " on "
+          		+ address
+          		+ ", amContainerIp=" + address.getHostAddress());
+      	} catch (Exception e) {
+        	LOG.error("Failed to generate " + name_ +
+        		"'s command file " + cmdFileName + "\n"
+          		);
+      	}
+	}
+
 	public static enum MyContainerStatus {
 		Null, Starting, Running, Failed, Succeed;
 	}

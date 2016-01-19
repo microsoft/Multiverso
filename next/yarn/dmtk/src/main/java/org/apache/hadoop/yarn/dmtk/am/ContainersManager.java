@@ -79,7 +79,7 @@ public class ContainersManager {
 		return allocatedContainers_.keySet();
 	}
 	
-	public void Init(int numServers, int numWorkers,
+	public MyContainer Init(int numServers, int numWorkers,
 			int workerServerPort,
 			int processMemory,
 			int processCores,
@@ -109,7 +109,7 @@ public class ContainersManager {
 			serverBackup.add(myContainer);
 		}
 
-		for (int i = 0; i < numWorkers; ++i) {
+		for (int i = 1; i < numWorkers; ++i) {
 			pendingWorker.add(new MyContainer(DSConstants.WORKER,
 					i, commandFileGenerator,
 					containerListener,
@@ -118,6 +118,14 @@ public class ContainersManager {
 					nmClientAsync,
 					containerLauncher));
 		}
+
+		return new MyContainer(DSConstants.WORKER,
+					0, commandFileGenerator,
+					containerListener,
+					allTokens,
+					conf,
+					nmClientAsync,
+					containerLauncher);
 	}
 
 	public void Start(int allocateTime, int maxRetryTime, int maxWaitTime) {
@@ -284,7 +292,7 @@ public class ContainersManager {
 			if (to.equals(MyContainer.MyContainerStatus.Failed)
 					&& myContainer.type.equals(DSConstants.SERVER)) {
 				status = Status.Failed;
-			} else if (startedWorkerNum == numWorkers) {
+			} else if (startedWorkerNum + 1 == numWorkers) {
 				status = Status.Running; // change to Running
 			}
 		} else if (status == Status.Running) {

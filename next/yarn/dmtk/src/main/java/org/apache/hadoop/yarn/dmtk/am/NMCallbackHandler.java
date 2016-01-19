@@ -122,7 +122,7 @@ public class NMCallbackHandler implements NMClientAsync.CallbackHandler {
       if (containerStatus.getState() == ContainerState.RUNNING) {
     	containersManager_.ReportContainerStatus(container,
     	    		  MyContainer.MyContainerStatus.Running);
-        scheduleStatusUpdate(container);
+        //scheduleStatusUpdate(container);
       } else if (containerStatus.getState() == ContainerState.COMPLETE) {
         if (containerStatus.getExitStatus() == ContainerExitStatus.SUCCESS)
             containersManager_.ReportContainerStatus(container,
