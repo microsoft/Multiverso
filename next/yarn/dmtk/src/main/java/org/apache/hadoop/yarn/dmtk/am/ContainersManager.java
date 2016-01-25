@@ -139,6 +139,7 @@ public class ContainersManager {
 		  	LOG.info("Starting Workers ...");
 		  	if (Start(allocateTime, maxRetryTime, maxWaitTime,
 					DSConstants.WORKER, Status.StartingWorker, pendingWorker)) {
+		  		status = Status.Running;
 		  		LOG.info("Succeed to start all Workers");
 			} else {
 				status = Status.Failed;
@@ -156,6 +157,9 @@ public class ContainersManager {
 	    	int failedTime = 0;
 	    	int totalAllocateTime = 0;
 	    	int waitTime = 0;
+	    	if (pending.size() <= 0)
+	    		return true;
+	    	
 	        while (status == workingStatus) {
 	        	PrintLog();
 	        	int needNum = pending.size();

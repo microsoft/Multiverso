@@ -412,39 +412,21 @@ public class ApplicationMaster {
 	containersManager.Start(allocateTimeout, 5, 300);
 	try {
        // wait to start all servers and workers except worker 0
+       LOG.info("Wait to start all servers and workers except worker 0\n");
 	     while (containersManager.status == Status.StartingServer
         || containersManager.status == Status.StartingWorker) {
 	      Thread.sleep(1000);
 	    }
 
       // start worker0
-      worker0.GenerateCmdFile();
-      String cmdFileName = worker0.cmdFileName;
-      String[] cmd = new String[1];;
-      if (DSConstants.isWindow) {
-        LOG.info("Launch Container on windows\n");
-        cmd[0] = cmdFileName;
-      } else {
-        LOG.info("Launch Container on linux\n");
-        File file = new File(cmdFileName);
-        file.setExecutable(true);
-        cmd[0] = "./" + cmdFileName;
-      }
+      LOG.info("Starting worker0 thread\n");
+      WorkerThread workerThread = new WorkerThread(worker0);
+      workerThread.start();
 
-    LOG.info("starting worker 0 on AM\n");
-    Process pcs = Runtime.getRuntime().exec(cmd);
-    PipeStreamThread stdoutStreamThread = new PipeStreamThread(new InputStreamReader(pcs.getInputStream()), System.out, "stdout");
-    PipeStreamThread stderrStreamThread = new PipeStreamThread(new InputStreamReader(pcs.getErrorStream()), System.err, "stderr");
-       
-    stdoutStreamThread.start();
-    stderrStreamThread.start();
-        
-    pcs.waitFor();
-    Thread.sleep(10000);// wait for 10s
-    stdoutStreamThread.interrupt();
-    stderrStreamThread.interrupt();
-    masterRetVal.set(pcs.exitValue());
-	    
+      LOG.info("Wait worker0 thread to exit\n");
+      workerThread.join();
+	    LOG.info("Worker0 exited\n");
+
 	    Thread.sleep(10*1000);
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -452,6 +434,51 @@ public class ApplicationMaster {
 
     isWorkDone.set(true);
   }
+
+  class WorkerThread extends Thread {
+    MyContainer worker0;
+    WorkerThread(MyContainer worker) {
+      worker0 = worker;
+    }
+    
+    public void run() {
+      try {
+            worker0.GenerateCmdFile();
+            String cmdFileName = worker0.cmdFileName;
+            String[] cmd = new String[1];;
+            if (DSConstants.isWindow) {
+              LOG.info("Launch Container on windows\n");
+              cmd[0] = cmdFileName;
+            } else {
+              LOG.info("Launch Container on linux\n");
+              File file = new File(cmdFileName);
+              file.setExecutable(true);
+              cmd[0] = "./" + cmdFileName;
+            }
+
+          LOG.info("starting worker 0 on AM\n");
+          Process pcs = Runtime.getRuntime().exec(cmd);
+          PipeStreamThread stdoutStreamThread = new PipeStreamThread(new InputStreamReader(pcs.getInputStream()), System.out, "stdout");
+          PipeStreamThread stderrStreamThread = new PipeStreamThread(new InputStreamReader(pcs.getErrorStream()), System.err, "stderr");
+             
+          stdoutStreamThread.start();
+          stderrStreamThread.start();
+          
+          try {
+            pcs.waitFor();
+            masterRetVal.set(pcs.exitValue());
+          } catch (InterruptedException e) {
+              LOG.info("Worker0 was interrupted\n");
+          } finally {
+            stdoutStreamThread.interrupt();
+            stderrStreamThread.interrupt();
+          }
+      }  catch (Exception e) {
+            e.printStackTrace();
+      }
+    }
+  }
+
 
   class PipeStreamThread extends Thread {
     InputStreamReader inputStreamReader;
