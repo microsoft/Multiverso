@@ -160,9 +160,9 @@ public class NMCallbackHandler implements NMClientAsync.CallbackHandler {
     @Override
     public void onGetContainerStatusError(ContainerId containerId, Throwable t) {
       LOG.info("Failed to query the status of Container " + containerId);
-      if (containers.containsKey(containerId)) {
-        scheduleStatusUpdate(containers.get(containerId));
-      }
+      //if (containers.containsKey(containerId)) {
+      //  scheduleStatusUpdate(containers.get(containerId));
+      //}
     }
 
     @Override

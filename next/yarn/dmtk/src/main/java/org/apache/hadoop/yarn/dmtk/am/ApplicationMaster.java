@@ -424,7 +424,8 @@ public class ApplicationMaster {
       workerThread.start();
 
       LOG.info("Wait worker0 thread to exit\n");
-      workerThread.join();
+      while (workerThread.isAlive() == true && containersManager.status == Status.Running)
+        Thread.sleep(1000);
 	    LOG.info("Worker0 exited\n");
 
 	    Thread.sleep(10*1000);
