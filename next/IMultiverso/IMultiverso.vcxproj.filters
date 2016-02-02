@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="new\kv_table.h">
+      <Filter>include\table</Filter>
+    </ClInclude>
+    <ClInclude Include="new\multiverso.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="new\table_interface.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="new\log.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="new\zoo.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="new\worker.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="new\actor.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="new\server.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="new\controller.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="new\communicator.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="new\waiter.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="new\mt_queue.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="new\net.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="new\message.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="new\blob.h">
+      <Filter>system</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="new\array_table.h">
+      <Filter>include\table</Filter>
+    </ClCompile>
+    <ClCompile Include="new\log.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="new\zoo.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="new\worker.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="new\actor.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="new\server.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="new\controller.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="new\communicator.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="new\net.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="new\table.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="new\multiverso.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{befa27d3-15da-409a-a02e-fc1d9e676f80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{f1d6488a-2e66-4610-8676-304c070d7b49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{4e63d643-6e66-4f5c-832b-232b5a5ad239}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\table">
+      <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
