@@ -19,3 +19,7 @@ windows/*.suo
 windows/multiverso/*.user
 windows/multiverso_server/*.user
 windows/*/x64
+*.opensdf
+*.user
+*sdf
+*.suo
