@@ -21,6 +21,7 @@ public:
   void Get(Blob& keys) { Wait(GetAsync(keys)); }
   void Add(Blob& keys, Blob& values) { Wait(AddAsync(keys, values)); }
 
+
   // NOTE(feiga): currently the async interface still doesn't work
   int GetAsync(Blob& keys); 
   int AddAsync(Blob& keys, Blob& values);
