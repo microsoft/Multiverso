@@ -1,84 +1,84 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="new\kv_table.h">
+    <ClInclude Include="source\array_table.h">
       <Filter>include\table</Filter>
     </ClInclude>
-    <ClInclude Include="new\multiverso.h">
+    <ClInclude Include="source\kv_table.h">
+      <Filter>include\table</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="new\table_interface.h">
+    <ClInclude Include="include\table_interface.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="new\log.h">
+    <ClInclude Include="source\util\log.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="new\zoo.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="new\worker.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="new\actor.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="new\server.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="new\controller.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="new\communicator.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="new\waiter.h">
+    <ClInclude Include="source\util\mt_queue.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="new\mt_queue.h">
+    <ClInclude Include="source\util\waiter.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="new\net.h">
+    <ClInclude Include="source\actor.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="new\message.h">
+    <ClInclude Include="source\blob.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="new\blob.h">
+    <ClInclude Include="source\communicator.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="source\controller.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="source\message.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="source\net.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="source\server.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="source\worker.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="source\zoo.h">
       <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="new\array_table.h">
-      <Filter>include\table</Filter>
-    </ClCompile>
-    <ClCompile Include="new\log.cpp">
+    <ClCompile Include="source\util\log.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="new\zoo.cpp">
+    <ClCompile Include="source\actor.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="new\worker.cpp">
+    <ClCompile Include="source\communicator.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="new\actor.cpp">
+    <ClCompile Include="source\controller.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="new\server.cpp">
+    <ClCompile Include="source\multiverso.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="new\controller.cpp">
+    <ClCompile Include="source\net.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="new\communicator.cpp">
+    <ClCompile Include="source\server.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="new\net.cpp">
+    <ClCompile Include="source\table.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="new\table.cpp">
+    <ClCompile Include="source\worker.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="new\multiverso.cpp">
+    <ClCompile Include="source\zoo.cpp">
       <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>

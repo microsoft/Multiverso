@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <multiverso.h>
-#include <log.h>
+#include <util/log.h>
 
 #include <array_table.h>
 #include <kv_table.h>

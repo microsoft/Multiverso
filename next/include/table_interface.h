@@ -6,8 +6,8 @@
 #include <unordered_map>
 
 #include "blob.h"
-#include "log.h"
-#include "waiter.h"
+#include "util/log.h"
+#include "util/waiter.h"
 #include "message.h"
 
 namespace multiverso {

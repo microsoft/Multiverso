@@ -1,7 +1,7 @@
 #include "communicator.h"
 #include "zoo.h"
 #include "net.h"
-#include "log.h"
+#include "util/log.h"
 
 namespace multiverso {
 

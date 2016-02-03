@@ -2,7 +2,7 @@
 #define MULTIVERSO_LOG_H_
 
 /*!
-* \file log.h
+* \file util/log.h
 * \brief Provides simple logging tools.
 */
 

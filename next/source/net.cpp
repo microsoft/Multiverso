@@ -1,6 +1,6 @@
 #include "net.h"
 
-#include "log.h"
+#include "util/log.h"
 #include "message.h"
 
 // TODO(feiga) remove this 

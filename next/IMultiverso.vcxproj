@@ -71,7 +71,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(MSMPI_INC);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(MSMPI_INC);$(SolutionDir)\source;$(SolutionDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(MSMPI_INC);$(SolutionDir)\source;$(SolutionDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -140,34 +143,34 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="new\actor.h" />
-    <ClInclude Include="new\blob.h" />
-    <ClInclude Include="new\communicator.h" />
-    <ClInclude Include="new\controller.h" />
-    <ClInclude Include="new\kv_table.h" />
-    <ClInclude Include="new\log.h" />
-    <ClInclude Include="new\message.h" />
-    <ClInclude Include="new\mt_queue.h" />
-    <ClInclude Include="new\multiverso.h" />
-    <ClInclude Include="new\net.h" />
-    <ClInclude Include="new\server.h" />
-    <ClInclude Include="new\table_interface.h" />
-    <ClInclude Include="new\waiter.h" />
-    <ClInclude Include="new\worker.h" />
-    <ClInclude Include="new\zoo.h" />
+    <ClInclude Include="include\multiverso.h" />
+    <ClInclude Include="include\table_interface.h" />
+    <ClInclude Include="source\actor.h" />
+    <ClInclude Include="source\array_table.h" />
+    <ClInclude Include="source\blob.h" />
+    <ClInclude Include="source\communicator.h" />
+    <ClInclude Include="source\controller.h" />
+    <ClInclude Include="source\kv_table.h" />
+    <ClInclude Include="source\message.h" />
+    <ClInclude Include="source\net.h" />
+    <ClInclude Include="source\server.h" />
+    <ClInclude Include="source\util\log.h" />
+    <ClInclude Include="source\util\mt_queue.h" />
+    <ClInclude Include="source\util\waiter.h" />
+    <ClInclude Include="source\worker.h" />
+    <ClInclude Include="source\zoo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="new\actor.cpp" />
-    <ClCompile Include="new\communicator.cpp" />
-    <ClCompile Include="new\controller.cpp" />
-    <ClCompile Include="new\log.cpp" />
-    <ClCompile Include="new\multiverso.cpp" />
-    <ClCompile Include="new\net.cpp" />
-    <ClCompile Include="new\server.cpp" />
-    <ClCompile Include="new\array_table.h" />
-    <ClCompile Include="new\table.cpp" />
-    <ClCompile Include="new\worker.cpp" />
-    <ClCompile Include="new\zoo.cpp" />
+    <ClCompile Include="source\actor.cpp" />
+    <ClCompile Include="source\communicator.cpp" />
+    <ClCompile Include="source\controller.cpp" />
+    <ClCompile Include="source\multiverso.cpp" />
+    <ClCompile Include="source\net.cpp" />
+    <ClCompile Include="source\server.cpp" />
+    <ClCompile Include="source\table.cpp" />
+    <ClCompile Include="source\util\log.cpp" />
+    <ClCompile Include="source\worker.cpp" />
+    <ClCompile Include="source\zoo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

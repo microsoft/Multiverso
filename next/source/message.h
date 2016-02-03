@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "blob.h"
-#include "log.h"
+#include "util/log.h"
 
 namespace multiverso {
 

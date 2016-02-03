@@ -1,5 +1,5 @@
 #include "worker.h"
-#include "mt_queue.h"
+#include "util/mt_queue.h"
 #include "zoo.h"
 
 namespace multiverso {
