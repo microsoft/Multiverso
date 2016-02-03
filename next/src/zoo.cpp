@@ -45,14 +45,14 @@ void Zoo::Start(int role) {
   Log::Info("Rank %d: Zoo start sucessfully\n", rank());
 }
 
-void Zoo::Stop() {
+void Zoo::Stop(bool finalize_net) {
   // Stop the system
   Barrier();
 
   // Stop all actors
   for (auto actor : zoo_) { actor.second->Stop(); }
   // Stop the network 
-  net_util_->Finalize();
+  if(finalize_net) net_util_->Finalize();
 }
 
 int Zoo::rank() const { return net_util_->rank(); }

@@ -25,7 +25,7 @@ public:
   // Start all actors
   void Start(int role);
   // Stop all actors
-  void Stop();
+  void Stop(bool finalize_net);
 
   void Barrier();
 

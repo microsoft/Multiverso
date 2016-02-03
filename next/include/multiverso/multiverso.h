@@ -15,7 +15,7 @@ void MultiversoInit(int role = kAll);
 
 void MultiversoBarrier();
 
-void MultiversoShutDown();
+void MultiversoShutDown(bool finalize_mpi = true);
 
 }
 

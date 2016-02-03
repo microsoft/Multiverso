@@ -8,8 +8,8 @@ void MultiversoInit(int role) {
   Zoo::Get()->Start(role);
 }
 
-void MultiversoShutDown() {
-  Zoo::Get()->Stop();
+void MultiversoShutDown(bool finalize_net) {
+  Zoo::Get()->Stop(finalize_net);
 }
 
 void MultiversoBarrier() {
