@@ -49,6 +49,9 @@
     <ClInclude Include="source\zoo.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="source\util\double_buffer.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\util\log.cpp">

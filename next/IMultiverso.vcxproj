@@ -154,6 +154,7 @@
     <ClInclude Include="source\message.h" />
     <ClInclude Include="source\net.h" />
     <ClInclude Include="source\server.h" />
+    <ClInclude Include="source\util\double_buffer.h" />
     <ClInclude Include="source\util\log.h" />
     <ClInclude Include="source\util\mt_queue.h" />
     <ClInclude Include="source\util\waiter.h" />
