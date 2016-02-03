@@ -4,18 +4,18 @@
 namespace multiverso {
 
 
-  enum Role {
-    kNull = 0,
-    kWorker = 1,
-    kServer = 2,
-    kAll = 3
-  };
+enum Role {
+  kNull = 0,
+  kWorker = 1,
+  kServer = 2,
+  kAll = 3
+};
 
-  void MultiversoInit(int role = kAll);
+void MultiversoInit(int role = kAll);
 
-  void MultiversoBarrier();
+void MultiversoBarrier();
 
-  void MultiversoShutDown();
+void MultiversoShutDown();
 
 }
 
