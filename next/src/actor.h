@@ -34,8 +34,8 @@ public:
 
 protected:
 
-  void RegisterTask(const MsgType& type, const Task& task) { 
-    handlers_.insert({type, task}); 
+  void RegisterTask(const MsgType& type, const Task& task) {
+    handlers_.insert({ type, task });
   }
   void DeliverTo(const std::string& dst_name, MessagePtr& msg);
 
@@ -53,10 +53,10 @@ protected:
 
 namespace actor {
 
-const std::string kCommunicator = "communicator";
-const std::string kController   = "controller";
-const std::string kServer       = "server";
-const std::string kWorker       = "worker";
+  const std::string kCommunicator = "communicator";
+  const std::string kController = "controller";
+  const std::string kServer = "server";
+  const std::string kWorker = "worker";
 
 }
 

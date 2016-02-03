@@ -1,4 +1,4 @@
-#include "table_interface.h"
+#include "multiverso/table_interface.h"
 #include "zoo.h"
 
 namespace multiverso {

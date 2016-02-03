@@ -7,8 +7,8 @@
 namespace multiverso {
 
 Actor::Actor(const std::string& name) : name_(name) {
-  Zoo::Get()->Register(name, this);
-} 
+  Zoo::Get()->RegisterActor(name, this);
+}
 
 Actor::~Actor() {}
 
@@ -18,7 +18,7 @@ void Actor::Start() {
 }
 
 void Actor::Stop() {
-  while (!mailbox_->Empty()) {;}
+  while (!mailbox_->Empty()) { ; }
   mailbox_->Exit();
   thread_->join();
 }
@@ -31,9 +31,11 @@ void Actor::Main() {
   while (mailbox_->Pop(msg)) {
     if (handlers_.find(msg->type()) != handlers_.end()) {
       handlers_[msg->type()](msg);
-    } else if (handlers_.find(MsgType::Default) != handlers_.end()) {
+    }
+    else if (handlers_.find(MsgType::Default) != handlers_.end()) {
       handlers_[MsgType::Default](msg);
-    } else {
+    }
+    else {
       CHECK(false); // Fatal error
     }
   }

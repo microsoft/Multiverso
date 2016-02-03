@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include <multiverso.h>
+#include <multiverso/multiverso.h>
 #include <util/log.h>
 
-#include <array_table.h>
-#include <kv_table.h>
+#include <multiverso/table/array_table.h>
+#include <multiverso/table/kv_table.h>
 #include <net.h>
 
 using namespace multiverso;

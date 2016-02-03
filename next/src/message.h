@@ -18,6 +18,8 @@ enum class MsgType : int {
   Reply_Add = -2,
   Control_Barrier = 33, // 0x100001
   Control_Reply_Barrier = -33,
+  Control_Register = 34,
+  Control_Reply_Register = -34,
   Default = 0
 };
 
@@ -65,7 +67,7 @@ public:
     reply->set_msg_id(this->msg_id());
     return reply;
   }
-  
+
   void Push(const Blob& blob) { data_.push_back(blob); }
 
   void DebugString() {

@@ -1,7 +1,7 @@
 #ifndef MULTIVERSO_STATIC_TABLE_H_
 #define MULTIVERSO_STATIC_TABLE_H_
 
-#include "table_interface.h"
+#include "multiverso/table_interface.h"
 
 namespace multiverso {
 

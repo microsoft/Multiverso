@@ -1,7 +1,7 @@
 #ifndef MULTIVERSO_KV_TABLE_H_
 #define MULTIVERSO_KV_TABLE_H_
 
-#include "table_interface.h"
+#include "multiverso/table_interface.h"
 #include "util/log.h"
 #include "zoo.h"
 

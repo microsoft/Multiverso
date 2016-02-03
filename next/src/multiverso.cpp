@@ -1,11 +1,11 @@
-#include "multiverso.h"
+#include "multiverso/multiverso.h"
 
 #include "zoo.h"
 
 namespace multiverso {
 
-void MultiversoInit() {
-  Zoo::Get()->Start();
+void MultiversoInit(int role) {
+  Zoo::Get()->Start(role);
 }
 
 void MultiversoShutDown() {

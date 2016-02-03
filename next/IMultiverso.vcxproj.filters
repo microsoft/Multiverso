@@ -1,89 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="source\array_table.h">
-      <Filter>include\table</Filter>
+    <ClInclude Include="src\actor.h">
+      <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="source\kv_table.h">
-      <Filter>include\table</Filter>
+    <ClInclude Include="src\blob.h">
+      <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso.h">
+    <ClInclude Include="src\communicator.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\controller.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\message.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\net.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\server.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\worker.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zoo.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\double_buffer.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\log.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\mt_queue.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\waiter.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\multiverso.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\table_interface.h">
+    <ClInclude Include="include\multiverso\table_interface.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="source\util\log.h">
-      <Filter>util</Filter>
+    <ClInclude Include="include\multiverso\table\array_table.h">
+      <Filter>include\table</Filter>
     </ClInclude>
-    <ClInclude Include="source\util\mt_queue.h">
-      <Filter>util</Filter>
+    <ClInclude Include="include\multiverso\table\kv_table.h">
+      <Filter>include\table</Filter>
     </ClInclude>
-    <ClInclude Include="source\util\waiter.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="source\actor.h">
+    <ClInclude Include="src\node.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="source\blob.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="source\communicator.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="source\controller.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="source\message.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="source\net.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="source\server.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="source\worker.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="source\zoo.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="source\util\double_buffer.h">
-      <Filter>util</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="source\util\log.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="source\actor.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="source\communicator.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="source\controller.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="source\multiverso.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="source\net.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="source\server.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="source\table.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="source\worker.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
-    <ClCompile Include="source\zoo.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -98,5 +69,40 @@
     <Filter Include="include\table">
       <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\actor.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\communicator.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\controller.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\multiverso.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\server.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\table.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\worker.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zoo.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\log.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\node.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

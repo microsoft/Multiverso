@@ -6,10 +6,11 @@
 #include <unordered_map>
 
 #include "actor.h"
-#include "table_interface.h"
+#include "node.h"
+#include "multiverso/table_interface.h"
 
 namespace multiverso {
- 
+
 class NetInterface;
 
 // The dashboard 
@@ -22,7 +23,7 @@ public:
   static Zoo* Get() { static Zoo zoo; return &zoo; };
 
   // Start all actors
-  void Start();
+  void Start(int role);
   // Stop all actors
   void Stop();
 
@@ -35,20 +36,22 @@ public:
   int size() const;
 
   // TODO(to change)
-  int num_workers() const { return size(); }
-  int num_servers() const { return size(); }
+  int num_workers() const { return num_workers_; }
+  int num_servers() const { return num_servers_; }
 
-  
+
   int RegisterTable(WorkerTable* worker_table);
   int RegisterTable(ServerTable* server_table);
 
 private:
   // private constructor
   Zoo();
-  void Register(const std::string name, Actor* actor) { 
+  void RegisterActor(const std::string name, Actor* actor) {
     CHECK(zoo_[name] == nullptr);
     zoo_[name] = actor;
   }
+
+  void RegisterNode();
 
   friend class Actor;
 
@@ -56,8 +59,13 @@ private:
 
   std::unique_ptr<MtQueue<MessagePtr>> mailbox_;
   std::atomic_int id_;
-  
+
   NetInterface* net_util_;
+
+  std::vector<Node> nodes_;
+  int num_workers_;
+  int num_servers_;
+
 };
 
 }
