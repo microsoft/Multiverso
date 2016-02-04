@@ -2,6 +2,8 @@
 #define MULTIVERSO_STATIC_TABLE_H_
 
 #include "multiverso/table_interface.h"
+#include "multiverso/util/log.h"
+#include "multiverso/zoo.h"
 
 namespace multiverso {
 
