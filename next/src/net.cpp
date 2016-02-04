@@ -1,7 +1,7 @@
-#include "net.h"
+#include "multiverso/net.h"
 
-#include "util/log.h"
-#include "message.h"
+#include "multiverso/util/log.h"
+#include "multiverso/message.h"
 
 // TODO(feiga) remove this 
 #define MULTIVERSO_USE_MPI

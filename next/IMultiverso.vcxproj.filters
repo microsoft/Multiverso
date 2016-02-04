@@ -1,33 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="src\actor.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\blob.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\communicator.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\controller.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\message.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\net.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\server.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\worker.h">
-      <Filter>system</Filter>
-    </ClInclude>
-    <ClInclude Include="src\zoo.h">
-      <Filter>system</Filter>
-    </ClInclude>
     <ClInclude Include="src\util\double_buffer.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -52,7 +25,34 @@
     <ClInclude Include="include\multiverso\table\kv_table.h">
       <Filter>include\table</Filter>
     </ClInclude>
-    <ClInclude Include="src\node.h">
+    <ClInclude Include="include\multiverso\actor.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\blob.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\communicator.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\controller.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\message.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\net.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\node.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\server.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\worker.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\zoo.h">
       <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>

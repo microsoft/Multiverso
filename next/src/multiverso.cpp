@@ -1,6 +1,6 @@
 #include "multiverso/multiverso.h"
 
-#include "zoo.h"
+#include "multiverso/zoo.h"
 
 namespace multiverso {
 

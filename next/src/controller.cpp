@@ -1,8 +1,8 @@
-#include "controller.h"
+#include "multiverso/controller.h"
 
-#include "message.h"
-#include "node.h"
-#include "zoo.h"
+#include "multiverso/message.h"
+#include "multiverso/node.h"
+#include "multiverso/zoo.h"
 
 namespace multiverso {
 

@@ -1,8 +1,8 @@
 #ifndef MULTIVERSO_COMMUNICATION_H_
 #define MULTIVERSO_COMMUNICATION_H_
 
-#include "actor.h"
-#include "message.h"
+#include "multiverso/actor.h"
+#include "multiverso/message.h"
 
 namespace multiverso {
 

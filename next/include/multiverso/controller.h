@@ -1,8 +1,8 @@
 #ifndef MULTIVERSO_CONTROLLER_H_
 #define MULTIVERSO_CONTROLLER_H_
 
-#include "actor.h"
-#include "message.h"
+#include "multiverso/actor.h"
+#include "multiverso/message.h"
 
 namespace multiverso {
 

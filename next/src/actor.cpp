@@ -1,8 +1,8 @@
-#include "actor.h"
-#include "message.h"
-#include "util/mt_queue.h"
-#include "zoo.h"
-#include "util/log.h"
+#include "multiverso/actor.h"
+#include "multiverso/message.h"
+#include "multiverso/util/mt_queue.h"
+#include "multiverso/zoo.h"
+#include "multiverso/util/log.h"
 
 namespace multiverso {
 

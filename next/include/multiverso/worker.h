@@ -1,7 +1,7 @@
 #ifndef MULTIVERSO_WORKER_H_
 #define MULTIVERSO_WORKER_H_
 
-#include "actor.h"
+#include "multiverso/actor.h"
 
 namespace multiverso {
 

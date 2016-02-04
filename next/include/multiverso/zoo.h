@@ -5,8 +5,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "actor.h"
-#include "node.h"
+#include "multiverso/actor.h"
+#include "multiverso/node.h"
 #include "multiverso/table_interface.h"
 
 namespace multiverso {

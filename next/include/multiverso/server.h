@@ -1,7 +1,7 @@
 #ifndef MULTIVERSO_SERVER_H_
 #define MULTIVERSO_SERVER_H_
 
-#include "actor.h"
+#include "multiverso/actor.h"
 #include <vector>
 
 namespace multiverso {

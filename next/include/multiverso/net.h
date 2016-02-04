@@ -3,7 +3,7 @@
 
 
 #include <string>
-#include "message.h"
+#include "multiverso/message.h"
 
 namespace multiverso {
 // Interface of inter process communication method

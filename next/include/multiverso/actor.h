@@ -7,7 +7,7 @@
 #include <thread>
 #include <unordered_map>
 
-#include "message.h"
+#include "multiverso/message.h"
 
 namespace multiverso {
 

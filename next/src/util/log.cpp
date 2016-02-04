@@ -1,7 +1,7 @@
 #include <ctime>
 #include <cstdarg>
 
-#include "log.h"
+#include "multiverso/util/log.h"
 
 namespace multiverso
 {

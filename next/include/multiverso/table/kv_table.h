@@ -2,8 +2,8 @@
 #define MULTIVERSO_KV_TABLE_H_
 
 #include "multiverso/table_interface.h"
-#include "util/log.h"
-#include "zoo.h"
+#include "multiverso/util/log.h"
+#include "multiverso/zoo.h"
 
 #include <unordered_map>
 #include <vector>

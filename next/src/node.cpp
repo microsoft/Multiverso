@@ -1,4 +1,4 @@
-#include "node.h"
+#include "multiverso/node.h"
 
 namespace multiverso {
 

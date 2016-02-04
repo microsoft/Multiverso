@@ -5,10 +5,10 @@
 #include <string>
 #include <unordered_map>
 
-#include "blob.h"
-#include "util/log.h"
-#include "util/waiter.h"
-#include "message.h"
+#include "multiverso/blob.h"
+#include "multiverso/util/log.h"
+#include "multiverso/util/waiter.h"
+#include "multiverso/message.h"
 
 namespace multiverso {
 

@@ -71,10 +71,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(MSMPI_INC);$(ProjectDir)\include;$(ProjectDir)\src;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(MSMPI_INC);$(ProjectDir)\include;$(ProjectDir)\src;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -143,24 +143,24 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\multiverso\actor.h" />
+    <ClInclude Include="include\multiverso\blob.h" />
+    <ClInclude Include="include\multiverso\communicator.h" />
+    <ClInclude Include="include\multiverso\controller.h" />
+    <ClInclude Include="include\multiverso\message.h" />
     <ClInclude Include="include\multiverso\multiverso.h" />
+    <ClInclude Include="include\multiverso\net.h" />
+    <ClInclude Include="include\multiverso\node.h" />
+    <ClInclude Include="include\multiverso\server.h" />
     <ClInclude Include="include\multiverso\table\array_table.h" />
     <ClInclude Include="include\multiverso\table\kv_table.h" />
     <ClInclude Include="include\multiverso\table_interface.h" />
-    <ClInclude Include="src\actor.h" />
-    <ClInclude Include="src\blob.h" />
-    <ClInclude Include="src\communicator.h" />
-    <ClInclude Include="src\controller.h" />
-    <ClInclude Include="src\message.h" />
-    <ClInclude Include="src\net.h" />
-    <ClInclude Include="src\node.h" />
-    <ClInclude Include="src\server.h" />
+    <ClInclude Include="include\multiverso\worker.h" />
+    <ClInclude Include="include\multiverso\zoo.h" />
     <ClInclude Include="src\util\double_buffer.h" />
     <ClInclude Include="src\util\log.h" />
     <ClInclude Include="src\util\mt_queue.h" />
     <ClInclude Include="src\util\waiter.h" />
-    <ClInclude Include="src\worker.h" />
-    <ClInclude Include="src\zoo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\actor.cpp" />

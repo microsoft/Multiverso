@@ -1,8 +1,8 @@
-#include "server.h"
+#include "multiverso/server.h"
 
-#include "actor.h"
+#include "multiverso/actor.h"
 #include "multiverso/table_interface.h" 
-#include "zoo.h"
+#include "multiverso/zoo.h"
 
 namespace multiverso {
 
