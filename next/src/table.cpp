@@ -1,4 +1,7 @@
 #include "multiverso/table_interface.h"
+
+#include "multiverso/util/log.h"
+#include "multiverso/util/waiter.h"
 #include "multiverso/zoo.h"
 
 namespace multiverso {
@@ -7,7 +10,11 @@ WorkerTable::WorkerTable() {
   table_id_ = Zoo::Get()->RegisterTable(this);
 }
 
-int WorkerTable::GetAsync(Blob& keys) {
+ServerTable::ServerTable() {
+  Zoo::Get()->RegisterTable(this);
+}
+
+int WorkerTable::GetAsync(Blob keys) {
   int id = msg_id_++;
   waitings_[id] = new Waiter();
   MessagePtr msg = std::make_unique<Message>();
@@ -20,7 +27,7 @@ int WorkerTable::GetAsync(Blob& keys) {
   return id;
 }
 
-int WorkerTable::AddAsync(Blob& keys, Blob& values) {
+int WorkerTable::AddAsync(Blob keys, Blob values) {
   int id = msg_id_++;
   waitings_[id] = new Waiter();
   MessagePtr msg = std::make_unique<Message>();
@@ -34,8 +41,17 @@ int WorkerTable::AddAsync(Blob& keys, Blob& values) {
   return id;
 }
 
-ServerTable::ServerTable() {
-  Zoo::Get()->RegisterTable(this);
+void WorkerTable::Wait(int id) {
+  CHECK(waitings_.find(id) != waitings_.end());
+  waitings_[id]->Wait();
+  delete waitings_[id];
+  waitings_[id] = nullptr;
 }
+
+void WorkerTable::Reset(int msg_id, int num_wait) {
+  waitings_[msg_id]->Reset(num_wait);
+}
+
+void WorkerTable::Notify(int id) { waitings_[id]->Notify(); }
 
 }

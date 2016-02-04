@@ -1,18 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="src\util\double_buffer.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="src\util\log.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="src\util\mt_queue.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="src\util\waiter.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\multiverso.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -54,6 +42,21 @@
     </ClInclude>
     <ClInclude Include="include\multiverso\zoo.h">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\net_util.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\mt_queue.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\waiter.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\double_buffer.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\log.h">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

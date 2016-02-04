@@ -84,6 +84,45 @@ private:
 
 #endif
 
+// #define MULTIVERSO_USE_ZEROMQ
+#ifdef MULTIVERSO_USE_ZEROMQ
+
+#include <zmq.h>
+
+class ZeroMQNetWrapper : public NetInterface {
+public:
+  void Init(int* argc, char** argv) override {
+    // get machine file 
+    // format is same with MPI machine file
+
+    Log::Info("%s net util inited, rank = %d, size = %d\n",
+      name().c_str(), rank(), size());
+}
+
+  void Finalize() override {  }
+
+  int rank() const override { return rank_; }
+  int size() const override { return size_; }
+  std::string name() const override { return "ZeroMQ"; }
+
+  size_t Send(const MessagePtr& msg) override {
+    
+  }
+
+  size_t Recv(MessagePtr* msg_ptr) override {
+    // Receiving a Message from multiple recv
+    
+  }
+
+private:
+  const int more_;
+  int inited_;
+  int rank_;
+  int size_;
+};
+
+#endif
+
 NetInterface* NetInterface::Get() {
 #ifdef MULTIVERSO_USE_ZMQ
   Log::Fatal("Not implemented yet\n");
@@ -93,7 +132,6 @@ NetInterface* NetInterface::Get() {
   static MPINetWrapper net_impl;
 #endif
 #endif
-  // FATAL Msg
   return &net_impl; // net_util.get();
 }
 

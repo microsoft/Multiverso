@@ -23,8 +23,6 @@ enum class MsgType : int {
   Default = 0
 };
 
-// using DoneCallBack = std::function<void()>;
-
 class Message {
 public:
   Message() { }
@@ -42,9 +40,6 @@ public:
   void set_dst(int dst) { header_[1] = dst; }
   void set_table_id(int table_id) { header_[3] = table_id; }
   void set_msg_id(int msg_id) { header_[4] = msg_id; }
-
-  // DoneCallBack done() { return done_; }
-  // void set_done(DoneCallBack& done) { done_ = done; }
 
   void set_data(const std::vector<Blob>& data) { data_ = std::move(data); }
   std::vector<Blob>& data() { return data_; }
@@ -70,14 +65,9 @@ public:
 
   void Push(const Blob& blob) { data_.push_back(blob); }
 
-  void DebugString() {
-    Log::Info("msg header: src = %d, dst = %d, type = %d, table = %d, id = %d, data_size = %d",
-      src(), dst(), type(), table_id(), msg_id(), data_.size());
-  }
 private:
   int header_[8];
   std::vector<Blob> data_;
-  // DoneCallBack done_; // only use in worker
 };
 
 typedef std::unique_ptr<Message> MessagePtr;

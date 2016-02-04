@@ -6,34 +6,28 @@
 #include <unordered_map>
 
 #include "multiverso/blob.h"
-#include "multiverso/util/log.h"
-#include "multiverso/util/waiter.h"
-#include "multiverso/message.h"
 
 namespace multiverso {
 
+class Waiter;
 // User implementent this
 class WorkerTable {
 public:
   WorkerTable();
   virtual ~WorkerTable() {}
 
-  void Get(Blob& keys) { Wait(GetAsync(keys)); }
-  void Add(Blob& keys, Blob& values) { Wait(AddAsync(keys, values)); }
+  void Get(Blob keys) { Wait(GetAsync(keys)); }
+  void Add(Blob keys, Blob values) { Wait(AddAsync(keys, values)); }
 
+  // TODO(feiga): add call back
+  int GetAsync(Blob keys); 
+  int AddAsync(Blob keys, Blob values);
 
-  // NOTE(feiga): currently the async interface still doesn't work
-  int GetAsync(Blob& keys); 
-  int AddAsync(Blob& keys, Blob& values);
+  void Wait(int id);
 
-  void Wait(int id) { 
-    CHECK(waitings_.find(id) != waitings_.end());
-    waitings_[id]->Wait(); 
-    delete waitings_[id];
-    waitings_[id] = nullptr;
-  }
+  void Reset(int msg_id, int num_wait);
 
-  void Notify(int id) { waitings_[id]->Notify(); }
+  void Notify(int id);
   
   virtual int Partition(const std::vector<Blob>& kv,
     std::unordered_map<int, std::vector<Blob> >* out) = 0;
@@ -43,7 +37,6 @@ public:
   // add user defined data structure
 private:
   int table_id_;
-  std::mutex m_;
   std::unordered_map<int, Waiter*> waitings_;
   std::atomic_int msg_id_;
 };

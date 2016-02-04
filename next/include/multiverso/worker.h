@@ -14,6 +14,8 @@ public:
 private:
   void ProcessGet(MessagePtr& msg);
   void ProcessAdd(MessagePtr& msg);
+  void ProcessReplyGet(MessagePtr& msg);
+  void ProcessReplyAdd(MessagePtr& msg);
 
   std::vector<WorkerTable*> cache_; 
 };

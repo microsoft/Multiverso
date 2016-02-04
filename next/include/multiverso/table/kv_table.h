@@ -3,6 +3,7 @@
 
 #include "multiverso/table_interface.h"
 #include "multiverso/util/log.h"
+//TODO(feiga): remove this dependence
 #include "multiverso/zoo.h"
 
 #include <unordered_map>
