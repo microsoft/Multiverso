@@ -29,7 +29,8 @@ public:
   // Get all element
   void Get() {
     int all_key = -1;
-    WorkerTable::Get(Blob(&all_key, sizeof(int))); 
+	Blob whole_table(&all_key, sizeof(int));
+    WorkerTable::Get(whole_table); 
   }
 
   // Add all element
@@ -37,7 +38,9 @@ public:
     CHECK(size == table_.size());
     int all_key = -1;
 
-    WorkerTable::Add(Blob(&all_key, sizeof(int)), Blob(data, size * sizeof(T)));
+	Blob key(&all_key, sizeof(int));
+	Blob val(data, sizeof(T) * size);
+    WorkerTable::Add(key, val);
   }
 
   int Partition(const std::vector<Blob>& kv,
