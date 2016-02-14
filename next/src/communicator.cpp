@@ -1,4 +1,7 @@
 #include "multiverso/communicator.h"
+
+#include <memory>
+
 #include "multiverso/zoo.h"
 #include "multiverso/net.h"
 #include "multiverso/util/log.h"
@@ -44,7 +47,7 @@ void Communicator::ProcessMessage(MessagePtr& msg) {
 
 void Communicator::Communicate() {
   while (true) { // TODO(feiga): should exit properly
-    MessagePtr msg = std::make_unique<Message>();
+    MessagePtr msg(new Message()); //  = std::make_unique<Message>();
     if (!net_util_->Recv(&msg)) break;
     CHECK(msg->dst() == Zoo::Get()->rank());
     LocalForward(msg);

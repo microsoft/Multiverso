@@ -30,7 +30,7 @@ int Logger::ResetLogFile(std::string filename) {
   {
 #ifdef _MSC_VER
     fopen_s(&file_, filename.c_str(), "w");
-#elif
+#else
     file_ = fopen(filename.c_str(), "w");
 #endif
     if (file_ == nullptr) {
@@ -117,7 +117,7 @@ std::string Logger::GetSystemTime() {
   tm time;
   localtime_s(&time, &t);
   strftime(str, sizeof(str), "%Y-%m-%d %H:%M:%S", &time);
-#elif
+#else
   strftime(str, sizeof(str), "%Y-%m-%d %H:%M:%S", localtime(&t));
 #endif
   return str;

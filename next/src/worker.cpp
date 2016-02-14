@@ -28,7 +28,7 @@ void Worker::ProcessGet(MessagePtr& msg) {
   int num = cache_[table_id]->Partition(msg->data(), &partitioned_key);
   cache_[table_id]->Reset(msg_id, num);
   for (auto& it : partitioned_key) {
-    MessagePtr msg = std::make_unique<Message>();
+    MessagePtr msg(new Message()); //  = std::make_unique<Message>();
     msg->set_src(Zoo::Get()->rank());
     msg->set_dst(it.first);
     msg->set_type(MsgType::Request_Get);
@@ -48,7 +48,7 @@ void Worker::ProcessAdd(MessagePtr& msg) {
   int num = cache_[table_id]->Partition(msg->data(), &partitioned_kv);
   cache_[table_id]->Reset(msg_id, num);
   for (auto& it : partitioned_kv) {
-    MessagePtr msg = std::make_unique<Message>();
+    MessagePtr msg(new Message()); //  = std::make_unique<Message>();
     msg->set_src(Zoo::Get()->rank());
     msg->set_dst(it.first);
     msg->set_type(MsgType::Request_Add);

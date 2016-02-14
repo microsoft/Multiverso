@@ -4,6 +4,7 @@
 #include <atomic>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "multiverso/blob.h"
 

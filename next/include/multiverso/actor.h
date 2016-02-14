@@ -25,8 +25,6 @@ public:
   // Accept a message from other actors
   void Accept(MessagePtr&);
 
-  void Wait();
-
   const std::string name() const { return name_; }
 
   // Message response function
@@ -48,7 +46,7 @@ protected:
   std::unique_ptr<std::thread> thread_;
   // message queue
   std::unique_ptr<MtQueue<std::unique_ptr<Message>> > mailbox_;
-  std::unordered_map<MsgType, Task> handlers_;
+  std::unordered_map<int, Task> handlers_;
 };
 
 namespace actor {

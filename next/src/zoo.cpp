@@ -67,7 +67,7 @@ void Zoo::Accept(MessagePtr& msg) {
 }
 
 void Zoo::RegisterNode() {
-  MessagePtr msg = std::make_unique<Message>();
+  MessagePtr msg(new Message()); //  = std::make_unique<Message>();
   msg->set_src(rank());
   msg->set_dst(0);
   msg->set_type(MsgType::Control_Register);
@@ -86,7 +86,7 @@ void Zoo::RegisterNode() {
 }
 
 void Zoo::Barrier() {
-  MessagePtr msg = std::make_unique<Message>();
+  MessagePtr msg(new Message()); //  = std::make_unique<Message>();
   msg->set_src(rank());
   msg->set_dst(0); // rank 0 acts as the controller master. TODO(feiga):
   // consider a method to encapsulate this node information

@@ -11,7 +11,7 @@
 
 namespace multiverso {
 
-enum class MsgType : int {
+enum MsgType {
   Request_Get = 1,
   Request_Add = 2,
   Reply_Get = -1,

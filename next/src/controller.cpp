@@ -34,8 +34,9 @@ private:
 
 class Controller::RegisterController {
 public:
-  explicit RegisterController(Controller* parent) : parent_(parent),
-    num_registered_(0), num_server_(0), num_worker_(0) {
+  explicit RegisterController(Controller* parent) : 
+    num_registered_(0), num_server_(0), num_worker_(0),
+    parent_(parent) {
     all_nodes_.resize(Zoo::Get()->size());
   }
 
@@ -56,7 +57,7 @@ public:
       count_blob.As<int>(0) = num_worker_;
       count_blob.As<int>(1) = num_server_;
       for (int i = Zoo::Get()->size() - 1; i >= 0; --i) { // let rank 0 be last
-        MessagePtr reply = std::make_unique<Message>();
+        MessagePtr reply(new Message());//  = std::make_unique<Message>();
         reply->set_src(Zoo::Get()->rank());
         reply->set_dst(i);
         reply->set_type(MsgType::Control_Reply_Register);

@@ -43,29 +43,24 @@ public:
   int RegisterTable(WorkerTable* worker_table);
   int RegisterTable(ServerTable* server_table);
 
-private:
-  // private constructor
-  Zoo();
   void RegisterActor(const std::string name, Actor* actor) {
     CHECK(zoo_[name] == nullptr);
     zoo_[name] = actor;
   }
-
+private:
+  // private constructor
+  Zoo();
   void RegisterNode();
-
-  friend class Actor;
 
   std::unordered_map<std::string, Actor*> zoo_;
 
   std::unique_ptr<MtQueue<MessagePtr>> mailbox_;
-  std::atomic_int id_;
 
   NetInterface* net_util_;
 
   std::vector<Node> nodes_;
   int num_workers_;
   int num_servers_;
-
 };
 
 }
