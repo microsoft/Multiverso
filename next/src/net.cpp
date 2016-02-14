@@ -92,14 +92,30 @@ private:
 class ZeroMQNetWrapper : public NetInterface {
 public:
   void Init(int* argc, char** argv) override {
+    context_ = zmq_ctx_new();
+    responder_ = zmq_socket(context_, ZMQ_REP);
+    CHECK(zmq_bind(responder_, "tcp://*:5555") == 0);
     // get machine file 
     // format is same with MPI machine file
 
+    // TODO(feiga): parse the machine list config file to get the ip
+    std::vector<std::string> machine_lists;
+    size_ = machine_lists.size();
+    for (auto ip : machine_lists) {
+      void* requester = zmq_socket(context, ZMQ_REQ);
+      zmq_connect(requester, ip.c_str());
+      requester_.push_back(requester);
+    }
+
     Log::Info("%s net util inited, rank = %d, size = %d\n",
       name().c_str(), rank(), size());
-}
+  }
 
-  void Finalize() override {  }
+  void Finalize() override { 
+    zmq_close(responder_);
+    for (auto& p : requester_) if (p) zmq_close(p);
+    zmq_ctx_destroy(context_);
+  }
 
   int rank() const override { return rank_; }
   int size() const override { return size_; }
@@ -115,6 +131,9 @@ public:
   }
 
 private:
+  void* context_;
+  void* responder_;
+  std::vector<void*> requester_;
   const int more_;
   int inited_;
   int rank_;
