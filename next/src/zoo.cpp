@@ -93,6 +93,7 @@ void Zoo::Barrier() {
   msg->set_type(MsgType::Control_Barrier);
   Deliver(actor::kCommunicator, msg);
 
+  Log::Debug("rank %d barried.", rank());
   // wait for reply
   mailbox_->Pop(msg);
   CHECK(msg->type() == MsgType::Control_Reply_Barrier);
