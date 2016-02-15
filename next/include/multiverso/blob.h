@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <cstring>
 
 #include "multiverso/util/log.h"
 

@@ -5,7 +5,7 @@ set(MULTIVERSO_SRC actor.cpp communicator.cpp controller.cpp multiverso.cpp node
 
 link_directories(${THIRD_PARTY_LIB})
 
-add_library(libmultiverso ${MULTIVERSO_SRC})
+add_library(multiverso ${MULTIVERSO_SRC})
 
 #target_link_libraries(mpich)
 
