@@ -6,11 +6,17 @@
 // TODO(feiga) remove this 
 #define MULTIVERSO_USE_MPI
 
+#ifdef MULTIVERSO_USE_MPI
+#include <mpi.h>
+#endif
+
+#ifdef MULTIVERSO_USE_ZEROMQ
+#include <zmq.h>
+#endif
+
 namespace multiverso {
 
 #ifdef MULTIVERSO_USE_MPI
-#include <mpi.h>
-
 class MPINetWrapper : public NetInterface {
 public:
   MPINetWrapper() : more_(std::numeric_limits<int>::max()) {}
@@ -86,9 +92,6 @@ private:
 
 // #define MULTIVERSO_USE_ZEROMQ
 #ifdef MULTIVERSO_USE_ZEROMQ
-
-#include <zmq.h>
-
 class ZeroMQNetWrapper : public NetInterface {
 public:
   void Init(int* argc, char** argv) override {
