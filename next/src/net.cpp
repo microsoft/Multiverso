@@ -6,6 +6,7 @@
 // TODO(feiga) remove this 
 #define MULTIVERSO_USE_MPI
 
+#include <limits>
 #ifdef MULTIVERSO_USE_MPI
 #include <mpi.h>
 #endif
