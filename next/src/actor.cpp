@@ -42,6 +42,7 @@ void Actor::Main() {
 }
 
 void Actor::DeliverTo(const std::string& dst_name, MessagePtr& msg) {
+  Log::Debug("actor delivering msg (type = %d) to %s ,rank = %d.\n", msg->type(), dst_name, msg->dst());
   Zoo::Get()->Deliver(dst_name, msg);
 }
 
