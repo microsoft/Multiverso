@@ -22,6 +22,7 @@ public:
       server_offsets_.push_back(i * length); // may not balance
     }
     server_offsets_.push_back(size_);
+	Log::Debug("worker %d create arrayTable with %d elements.", Zoo::Get()->rank(), size);
   }
 
   std::vector<T>& raw() { return table_; }
@@ -31,6 +32,7 @@ public:
     int all_key = -1;
 	Blob whole_table(&all_key, sizeof(int));
     WorkerTable::Get(whole_table); 
+	Log::Debug("worker %d getting all parameters.", Zoo::Get()->rank());
   }
 
   // Add all element
@@ -41,6 +43,7 @@ public:
 	Blob key(&all_key, sizeof(int));
 	Blob val(data, sizeof(T) * size);
     WorkerTable::Add(key, val);
+	Log::Debug("worker %d adding parameters with size of %d.", Zoo::Get()->rank(), size);
   }
 
   int Partition(const std::vector<Blob>& kv,
@@ -86,6 +89,7 @@ public:
       size_ += size % Zoo::Get()->num_servers();
     }
     storage_.resize(size_);
+	Log::Debug("server %d create arrayTable with %d elements of %d elements.", server_id_, size_, size);
   }
 
   void ProcessAdd(const std::vector<Blob>& data) override {
