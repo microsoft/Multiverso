@@ -74,13 +74,15 @@ void TestArray() {
   MultiversoBarrier();
   Log::Info("Create tables OK\n");
 
-  std::vector<float>& vec = shared_array->raw();
+  // std::vector<float>& vec = shared_array->raw();
 
-  shared_array->Get();
+  // shared_array->Get();
+  float data[10];
+  shared_array->Get(data, 10);
 
   Log::Info("Get OK\n");
 
-  for (int i = 0; i < 10; ++i) std::cout << vec[i] << " "; std::cout << std::endl;
+  for (int i = 0; i < 10; ++i) std::cout << data[i] << " "; std::cout << std::endl;
 
   std::vector<float> delta(10);
   for (int i = 0; i < 10; ++i) delta[i] = static_cast<float>(i);
@@ -89,9 +91,9 @@ void TestArray() {
 
   Log::Info("Add OK\n");
 
-  shared_array->Get();
+  shared_array->Get(data, 10);
 
-  for (int i = 0; i < 10; ++i) std::cout << vec[i] << " "; std::cout << std::endl;
+  for (int i = 0; i < 10; ++i) std::cout << data[i] << " "; std::cout << std::endl;
 
   MultiversoShutDown();
 }

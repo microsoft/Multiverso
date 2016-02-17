@@ -6,7 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "multiverso/blob.h" #include "multiverso/util/log.h"
+#include "multiverso/blob.h" 
+#include "multiverso/util/log.h"
 
 namespace multiverso {
 

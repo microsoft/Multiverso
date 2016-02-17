@@ -1,18 +1,24 @@
 #include "multiverso/net.h"
 
+#include <limits>
 #include "multiverso/util/log.h"
 #include "multiverso/message.h"
 
 // TODO(feiga) remove this 
 #define MULTIVERSO_USE_MPI
+// #define MULTIVERSO_USE_ZEROMQ
 
-#include <limits>
+// TODO(feiga): move to seperate files
 #ifdef MULTIVERSO_USE_MPI
 #include <mpi.h>
 #endif
 
 #ifdef MULTIVERSO_USE_ZEROMQ
 #include <zmq.h>
+#endif
+
+#ifdef _MSC_VER
+#undef max
 #endif
 
 namespace multiverso {
@@ -94,7 +100,6 @@ private:
 
 #endif
 
-// #define MULTIVERSO_USE_ZEROMQ
 #ifdef MULTIVERSO_USE_ZEROMQ
 class ZeroMQNetWrapper : public NetInterface {
 public:
@@ -107,9 +112,9 @@ public:
 
     // TODO(feiga): parse the machine list config file to get the ip
     std::vector<std::string> machine_lists;
-    size_ = machine_lists.size();
+    size_ = static_cast<int>(machine_lists.size());
     for (auto ip : machine_lists) {
-      void* requester = zmq_socket(context, ZMQ_REQ);
+      void* requester = zmq_socket(context_, ZMQ_REQ);
       zmq_connect(requester, ip.c_str());
       requester_.push_back(requester);
     }
@@ -129,15 +134,39 @@ public:
   std::string name() const override { return "ZeroMQ"; }
 
   size_t Send(const MessagePtr& msg) override {
-    
+    size_t size = 0;
+    int dst = msg->dst();
+    void* socket = requester_[dst];
+    CHECK(Message::kHeaderSize == 
+      zmq_send(socket, msg->header(), Message::kHeaderSize, ZMQ_SNDMORE));
+    size += Message::kHeaderSize;
+    for (size_t i = 0; i < msg->data().size(); ++i) {
+      Blob blob = msg->data()[i];
+      CHECK_NOTNULL(blob.data());
+      CHECK(blob.size() == 
+        zmq_send(socket, blob.data(), static_cast<int>(blob.size()), 
+          i == msg->data().size()-1 ? 0 : ZMQ_SNDMORE));
+      size += blob.size();
+    }
+    // Send an extra over tag indicating the finish of this Message
+    Log::Debug("ZMQ-Net: rank %d send msg size = %d\n", rank(), size+4);
+    return size;
   }
 
   size_t Recv(MessagePtr* msg_ptr) override {
+    size_t size = 0;
     // Receiving a Message from multiple recv
-    
+    CHECK_NOTNULL(msg_ptr);
+    MessagePtr& msg = *msg_ptr;
+    zmq_recv(responder_, msg->header(), Message::kHeaderSize, ZMQ_RCVMORE);
+    // zmq_getsockopt()
+    return size;
   }
 
 private:
+  // ZeroMQ free call back function, do nothing 
+  // zmq msg never holds the memory
+  // static void NoFree(void* data, void* hint) { } 
   void* context_;
   void* responder_;
   std::vector<void*> requester_;

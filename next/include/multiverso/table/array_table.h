@@ -13,7 +13,7 @@ template <typename T>
 class ArrayWorker : public WorkerTable {
 public:
   explicit ArrayWorker(size_t size) : WorkerTable(), size_(size) {
-    table_.resize(size);
+    // table_.resize(size);
     num_server_ = Zoo::Get()->num_servers();
     server_offsets_.push_back(0);
     CHECK(size_ > Zoo::Get()->num_servers()); // not support too small size vector
@@ -25,25 +25,29 @@ public:
 	Log::Debug("worker %d create arrayTable with %d elements.\n", Zoo::Get()->rank(), size);
   }
 
-  std::vector<T>& raw() { return table_; }
+  // std::vector<T>& raw() { return table_; }
+  T* raw() { return data_; }
 
   // Get all element
-  void Get() {
+  // data is user-allocated memory
+  void Get(T* data, size_t size) {
+    CHECK(size == size_);
+    data_ = data;
     int all_key = -1;
-	Blob whole_table(&all_key, sizeof(int));
+    Blob whole_table(&all_key, sizeof(int));
     WorkerTable::Get(whole_table); 
-	Log::Debug("worker %d getting all parameters.\n", Zoo::Get()->rank());
+    Log::Debug("worker %d getting all parameters.\n", Zoo::Get()->rank());
   }
 
   // Add all element
   void Add(T* data, size_t size) {
-    CHECK(size == table_.size());
+    CHECK(size == size_);
     int all_key = -1;
 
-	Blob key(&all_key, sizeof(int));
-	Blob val(data, sizeof(T) * size);
+    Blob key(&all_key, sizeof(int));
+    Blob val(data, sizeof(T) * size);
     WorkerTable::Add(key, val);
-	Log::Debug("worker %d adding parameters with size of %d.\n", Zoo::Get()->rank(), size);
+    Log::Debug("worker %d adding parameters with size of %d.\n", Zoo::Get()->rank(), size);
   }
 
   int Partition(const std::vector<Blob>& kv,
@@ -51,7 +55,7 @@ public:
     CHECK(kv.size() == 1 || kv.size() == 2);
     for (int i = 0; i < num_server_; ++i) (*out)[i].push_back(kv[0]);
     if (kv.size() == 2) {
-      CHECK(kv[1].size() == table_.size() * sizeof(T));
+      CHECK(kv[1].size() == size_ * sizeof(T));
       for (int i = 0; i < num_server_; ++i) {
         Blob blob(kv[1].data() + server_offsets_[i] * sizeof(T), 
           (server_offsets_[i + 1] - server_offsets_[i]) * sizeof(T));
@@ -66,12 +70,14 @@ public:
     int id = (reply_data[0]).As<int>();
     CHECK(reply_data[1].size<T>() == (server_offsets_[id+1] - server_offsets_[id]));
 
-    memcpy(table_.data() + server_offsets_[id], //  * sizeof(T), 
-      reply_data[1].data(), reply_data[1].size());
+    memcpy(data_ + server_offsets_[id], reply_data[1].data(), reply_data[1].size());
+    // memcpy(table_.data() + server_offsets_[id], //  * sizeof(T), 
+    //  reply_data[1].data(), reply_data[1].size());
   }
   
 private:
-  std::vector<T> table_;
+  // std::vector<T> table_;
+  T* data_; // not owned
   size_t size_;
   int num_server_;
   std::vector<size_t> server_offsets_;
