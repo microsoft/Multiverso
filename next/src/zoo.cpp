@@ -16,6 +16,7 @@ Zoo::Zoo() {}
 Zoo::~Zoo() {}
 
 void Zoo::Start(int role) {
+  Log::Debug("Zoo started\n");
   CHECK(role >= 0 && role <= 3);
   net_util_ = NetInterface::Get();
   net_util_->Init();
@@ -93,10 +94,11 @@ void Zoo::Barrier() {
   msg->set_type(MsgType::Control_Barrier);
   Deliver(actor::kCommunicator, msg);
 
-  Log::Debug("rank %d barried.\n", rank());
+  Log::Debug("rank %d requested barrier.\n", rank());
   // wait for reply
   mailbox_->Pop(msg);
   CHECK(msg->type() == MsgType::Control_Reply_Barrier);
+  Log::Debug("rank %d reached barrier\n", rank());
 }
 
 int Zoo::RegisterTable(WorkerTable* worker_table) {

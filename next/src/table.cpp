@@ -43,15 +43,20 @@ int WorkerTable::AddAsync(Blob keys, Blob values) {
 
 void WorkerTable::Wait(int id) {
   CHECK(waitings_.find(id) != waitings_.end());
+  CHECK(waitings_[id] != nullptr);
   waitings_[id]->Wait();
   delete waitings_[id];
   waitings_[id] = nullptr;
 }
 
 void WorkerTable::Reset(int msg_id, int num_wait) {
+  CHECK_NOTNULL(waitings_[msg_id]);
   waitings_[msg_id]->Reset(num_wait);
 }
 
-void WorkerTable::Notify(int id) { waitings_[id]->Notify(); }
+void WorkerTable::Notify(int id) { 
+  CHECK_NOTNULL(waitings_[id]);
+  waitings_[id]->Notify(); 
+}
 
 }

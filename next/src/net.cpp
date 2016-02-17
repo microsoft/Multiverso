@@ -32,7 +32,7 @@ public:
     }
     MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
     MPI_Comm_size(MPI_COMM_WORLD, &size_);
-    Log::Info("%s net util inited, rank = %d, size = %d\n", 
+    Log::Debug("%s net util inited, rank = %d, size = %d\n", 
       name().c_str(), rank(), size());
   }
 
@@ -56,11 +56,13 @@ public:
     // Send an extra over tag indicating the finish of this Message
     MPI_Send(&more_, sizeof(int), MPI_BYTE, msg->dst(), 
       0, MPI_COMM_WORLD);
+    Log::Debug("MPI-Net: rank %d send msg size = %d\n", rank(), size+4);
     return size + sizeof(int);
   }
 
   size_t Recv(MessagePtr* msg_ptr) override {
     // Receiving a Message from multiple recv
+    Log::Debug("MPI-Net: rank %d started recv msg\n", rank());
     MessagePtr& msg = *msg_ptr;
     MPI_Status status;
     MPI_Recv(msg->header(), Message::kHeaderSize, 
@@ -79,6 +81,7 @@ public:
       if (count == sizeof(int) && blob.As<int>() == more_) break;
       msg->Push(blob);
     }
+    Log::Debug("MPI-Net: rank %d end recv from src %d, size = %d\n", rank(), msg->src(), size);
     return size;
   }
 
