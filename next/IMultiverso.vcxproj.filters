@@ -58,6 +58,9 @@
     <ClInclude Include="include\multiverso\util\log.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\net\zmq_net.h">
+      <Filter>system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

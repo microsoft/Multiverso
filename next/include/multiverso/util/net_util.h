@@ -17,6 +17,11 @@ std::string HostNameToIP(std::string hostname) {
 std::string IPToHostName(std::string ip) {
   return "";
 }
+
+bool IsLocalAddress(std::string ip) {
+  return true;
+}
+
 }
 
 }

@@ -48,9 +48,12 @@ void Communicator::ProcessMessage(MessagePtr& msg) {
 void Communicator::Communicate() {
   while (true) { // TODO(feiga): should exit properly
     MessagePtr msg(new Message()); //  = std::make_unique<Message>();
-    if (!net_util_->Recv(&msg)) break;
-    CHECK(msg->dst() == Zoo::Get()->rank());
-    LocalForward(msg);
+    size_t size = net_util_->Recv(&msg);
+    if (size > 0) {
+      // a message received
+      CHECK(msg->dst() == Zoo::Get()->rank());
+      LocalForward(msg);
+    }
   }
   Log::Info("Comm recv thread exit\n");
 }

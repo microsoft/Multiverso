@@ -150,6 +150,7 @@
     <ClInclude Include="include\multiverso\message.h" />
     <ClInclude Include="include\multiverso\multiverso.h" />
     <ClInclude Include="include\multiverso\net.h" />
+    <ClInclude Include="include\multiverso\net\zmq_net.h" />
     <ClInclude Include="include\multiverso\node.h" />
     <ClInclude Include="include\multiverso\server.h" />
     <ClInclude Include="include\multiverso\table\array_table.h" />
