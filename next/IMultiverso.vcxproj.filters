@@ -89,9 +89,6 @@
     <ClCompile Include="src\multiverso.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="src\net.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
     <ClCompile Include="src\server.cpp">
       <Filter>system</Filter>
     </ClCompile>
@@ -108,6 +105,9 @@
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="src\node.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mpi_net.cpp">
       <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>
