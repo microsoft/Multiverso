@@ -36,7 +36,15 @@ public:
     MPI_Query_thread(&thread_provided_);
 	if (thread_provided_ < MPI_THREAD_SERIALIZED)
 	{
-		Log::Fatal("At least MPI_THREAD_SERIALIZED supported is needed by multiverso\n");
+		Log::Fatal("At least MPI_THREAD_SERIALIZED supported is needed by multiverso.\n");
+	}
+	else if (thread_provided_ == MPI_THREAD_SERIALIZED)
+	{
+		Log::Info("multiverso MPI-Net is initialized under MPI_THREAD_SERIALIZED mode.\n");
+	}
+	else if (thread_provided_ == MPI_THREAD_MULTIPLE)
+	{
+		Log::Debug("multiverso MPI-Net is initialized under MPI_THREAD_MULTIPLE mode.\n");
 	}
     MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
     MPI_Comm_size(MPI_COMM_WORLD, &size_);
