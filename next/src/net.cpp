@@ -4,7 +4,7 @@
 #include <mutex>
 
 #include "multiverso/message.h"
-#include "multiverso/net/zmq_net.h"
+// #include "multiverso/net/zmq_net.h"
 #include "multiverso/util/log.h"
 
 // TODO(feiga) remove this 
