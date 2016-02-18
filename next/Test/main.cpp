@@ -74,27 +74,27 @@ void TestArray() {
   MultiversoBarrier();
   Log::Info("Create tables OK\n");
 
+  for (int i = 0; i < 100000; ++i) {
   // std::vector<float>& vec = shared_array->raw();
 
   // shared_array->Get();
-  float data[10];
-  shared_array->Get(data, 10);
+    float data[10];
 
-  Log::Info("Get OK\n");
+    std::vector<float> delta(10);
+    for (int i = 0; i < 10; ++i) 
+      delta[i] = static_cast<float>(i);
 
-  for (int i = 0; i < 10; ++i) std::cout << data[i] << " "; std::cout << std::endl;
+    shared_array->Add(delta.data(), 10);
 
-  std::vector<float> delta(10);
-  for (int i = 0; i < 10; ++i) delta[i] = static_cast<float>(i);
+    Log::Info("Rank %d Add OK\n", MultiversoRank());
 
-  shared_array->Add(delta.data(), 10);
+    shared_array->Get(data, 10);
+    Log::Info("Rank %d Get OK\n", MultiversoRank());
+    for (int i = 0; i < 10; ++i) 
+      std::cout << data[i] << " "; std::cout << std::endl;
+    MultiversoBarrier();
 
-  Log::Info("Add OK\n");
-
-  shared_array->Get(data, 10);
-
-  for (int i = 0; i < 10; ++i) std::cout << data[i] << " "; std::cout << std::endl;
-
+  }
   MultiversoShutDown();
 }
 
@@ -122,6 +122,7 @@ void TestNet() {
 }
 
 int main(int argc, char* argv[]) {
+  // Log::ResetLogLevel(LogLevel::Debug);
   if (argc == 2) { 
     if (strcmp(argv[1], "kv") == 0) TestKV();
     else if (strcmp(argv[1], "array") == 0) TestArray();

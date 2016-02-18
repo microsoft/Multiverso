@@ -94,11 +94,11 @@ void Zoo::Barrier() {
   msg->set_type(MsgType::Control_Barrier);
   Deliver(actor::kCommunicator, msg);
 
-  Log::Debug("rank %d requested barrier.\n", rank());
+  // Log::Debug("rank %d requested barrier.\n", rank());
   // wait for reply
   mailbox_->Pop(msg);
   CHECK(msg->type() == MsgType::Control_Reply_Barrier);
-  Log::Debug("rank %d reached barrier\n", rank());
+  // Log::Debug("rank %d reached barrier\n", rank());
 }
 
 int Zoo::RegisterTable(WorkerTable* worker_table) {

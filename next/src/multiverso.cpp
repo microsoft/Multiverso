@@ -16,4 +16,8 @@ void MultiversoBarrier() {
   Zoo::Get()->Barrier();
 }
 
+int MultiversoRank() {
+  return Zoo::Get()->rank();
+}
+
 }

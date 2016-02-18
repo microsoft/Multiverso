@@ -17,6 +17,7 @@ void MultiversoBarrier();
 
 void MultiversoShutDown(bool finalize_mpi = true);
 
+int MultiversoRank();
 }
 
 #endif // MULTIVERSO_INCLUDE_MULTIVERSO_H_

@@ -5,6 +5,7 @@
 #include "multiverso/zoo.h"
 #include "multiverso/net.h"
 #include "multiverso/util/log.h"
+#include "multiverso/util/mt_queue.h"
 
 namespace multiverso {
 
@@ -33,12 +34,21 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
 
 void Communicator::Main() {
   // TODO(feiga): join the thread, make sure it exit properly
-  recv_thread_.reset(new std::thread(&Communicator::Communicate, this));
-  Actor::Main();
+  //recv_thread_.reset(new std::thread(&Communicator::Communicate, this));
+  //Actor::Main();
+  MessagePtr msg;
+  while (mailbox_->Alive()) {
+    while (mailbox_->TryPop(msg)) {
+      ProcessMessage(msg);
+    };
+    size_t size = net_util_->Recv(&msg);
+    if (size > 0) LocalForward(msg);
+  }
 }
 
 void Communicator::ProcessMessage(MessagePtr& msg) {
   if (msg->dst() != net_util_->rank()) {
+    Log::Debug("Send a msg from %d to %d, type = %d\n", msg->src(), msg->dst(), msg->type());
     net_util_->Send(msg);
     return;
   }
@@ -51,6 +61,7 @@ void Communicator::Communicate() {
     size_t size = net_util_->Recv(&msg);
     if (size > 0) {
       // a message received
+      Log::Debug("Recv a msg from %d to %d, size = %d, type = %d\n", msg->src(), msg->dst(), msg->size(), msg->type());
       CHECK(msg->dst() == Zoo::Get()->rank());
       LocalForward(msg);
     }
