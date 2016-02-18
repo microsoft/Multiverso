@@ -169,7 +169,7 @@
     <ClCompile Include="src\communicator.cpp" />
     <ClCompile Include="src\controller.cpp" />
     <ClCompile Include="src\multiverso.cpp" />
-    <ClCompile Include="src\net.cpp" />
+    <ClCompile Include="src\mpi_net.cpp" />
     <ClCompile Include="src\node.cpp" />
     <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\table.cpp" />

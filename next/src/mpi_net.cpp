@@ -10,7 +10,7 @@
 // TODO(feiga) remove this 
 #define MULTIVERSO_USE_MPI
 
-// TODO(feiga): move to seperate files
+// TODO(feiga): move to seperated files
 #ifdef MULTIVERSO_USE_MPI
 #include <mpi.h>
 #endif
@@ -32,9 +32,12 @@ public:
     MPI_Initialized(&inited_);
     if (!inited_) {
       MPI_Init_thread(argc, &argv, MPI_THREAD_MULTIPLE, &thread_provided_);
-      // CHECK(thread_provided_ == MPI_THREAD_MULTIPLE);
     }
     MPI_Query_thread(&thread_provided_);
+	if (thread_provided_ < MPI_THREAD_SERIALIZED)
+	{
+		Log::Fatal("At least MPI_THREAD_SERIALIZED supported is needed by multiverso\n");
+	}
     MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
     MPI_Comm_size(MPI_COMM_WORLD, &size_);
     Log::Debug("%s net util inited, rank = %d, size = %d\n", 
