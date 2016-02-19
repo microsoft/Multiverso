@@ -2,11 +2,12 @@
 
 #include <multiverso/multiverso.h>
 #include <multiverso/net.h>
-#include <multiverso/table/array_table.h>
-#include <multiverso/table/kv_table.h>
 #include <multiverso/util/log.h>
 #include <multiverso/util/net_util.h>
 
+#include <multiverso/table/smooth_array_table.h>
+#include <multiverso/table/array_table.h>
+#include <multiverso/table/kv_table.h>
 using namespace multiverso;
 
 void TestKV(int argc, char* argv[]) {
@@ -98,6 +99,41 @@ void TestArray(int argc, char* argv[]) {
   MultiversoShutDown();
 }
 
+void TestMomArray() {
+  Log::Info("Test smooth_gradient table \n");
+
+  MultiversoInit();
+
+  SmoothArrayWorker<float>* shared_array = new SmoothArrayWorker<float>(10);
+  SmoothArrayServer<float>* server_array = new SmoothArrayServer<float>(10);
+
+  MultiversoBarrier();
+  Log::Info("Create tables OK\n");
+
+  for (int i = 0; i < 10; ++i) {
+    // std::vector<float>& vec = shared_array->raw();
+
+    // shared_array->Get();
+    float data[10];
+
+    std::vector<float> delta(10);
+    for (int i = 1; i <= 10; ++i)
+      delta[i] = static_cast<float>(i);
+
+    shared_array->Add(delta.data(), 10, 0.5f);
+
+    Log::Info("Rank %d Add OK\n", MultiversoRank());
+
+    shared_array->Get(data, 10);
+    Log::Info("Rank %d Get OK\n", MultiversoRank());
+    for (int i = 0; i < 10; ++i)
+      std::cout << data[i] << " "; std::cout << std::endl;
+    MultiversoBarrier();
+
+  }
+  MultiversoShutDown();
+}
+
 
 void TestNet(int argc, char* argv[]) {
   NetInterface* net = NetInterface::Get();
@@ -143,8 +179,11 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
     else if (strcmp(argv[1], "ip") == 0) TestIP();
+    else if (strcmp(argv[1], "momentum") == 0) TestMomArray();
     else CHECK(false);
-  } else if (argc == 4) {
+  } 
+  // argc == 4 is for zeromq test, with two extra arguments: machinefile, port
+  else if (argc == 4) {
     if (strcmp(argv[3], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[3], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[3], "net") == 0) TestNet(argc, argv);

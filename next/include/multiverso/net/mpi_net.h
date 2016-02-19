@@ -54,7 +54,7 @@ public:
 
   size_t Send(const MessagePtr& msg) override {
     if (thread_provided_ == MPI_THREAD_SERIALIZED) {
-      std::lock_guard<std::mutex> lock(mutex_);
+      //std::lock_guard<std::mutex> lock(mutex_);
       return SendMsg(msg);
     }
     else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
@@ -75,7 +75,7 @@ public:
     if (thread_provided_ == MPI_THREAD_SERIALIZED) {
       // a message come
       // block receive with lock guard
-      std::lock_guard<std::mutex> lock(mutex_);
+      //std::lock_guard<std::mutex> lock(mutex_);
       return RecvMsg(msg);
     }
     else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
