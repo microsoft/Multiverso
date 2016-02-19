@@ -29,8 +29,8 @@ public:
 
   void Barrier();
 
-  void Deliver(const std::string& name, MessagePtr&);
-  void Accept(MessagePtr& msg);
+  void SendTo(const std::string& name, MessagePtr&);
+  void Receive(MessagePtr& msg);
 
   int rank() const;
   int size() const;

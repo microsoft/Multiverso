@@ -1,11 +1,11 @@
 #include <iostream>
 
 #include <multiverso/multiverso.h>
-#include <multiverso/util/log.h>
-
+#include <multiverso/net.h>
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
-#include <multiverso/net.h>
+#include <multiverso/util/log.h>
+#include <multiverso/util/net_util.h>
 
 using namespace multiverso;
 
@@ -121,12 +121,17 @@ void TestNet() {
   net->Finalize();
 }
 
+void TestIP() {
+  net::GetLocalIPAddress();
+}
+
 int main(int argc, char* argv[]) {
   // Log::ResetLogLevel(LogLevel::Debug);
   if (argc == 2) { 
     if (strcmp(argv[1], "kv") == 0) TestKV();
     else if (strcmp(argv[1], "array") == 0) TestArray();
     else if (strcmp(argv[1], "net") == 0) TestNet();
+    else if (strcmp(argv[1], "ip") == 0) TestIP();
     else CHECK(false);
   } else {
     TestArray();

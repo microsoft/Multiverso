@@ -23,7 +23,7 @@ int WorkerTable::GetAsync(Blob keys) {
   msg->set_msg_id(id);
   msg->set_table_id(table_id_);
   msg->Push(keys);
-  Zoo::Get()->Deliver(actor::kWorker, msg);
+  Zoo::Get()->SendTo(actor::kWorker, msg);
   return id;
 }
 
@@ -37,7 +37,7 @@ int WorkerTable::AddAsync(Blob keys, Blob values) {
   msg->set_table_id(table_id_);
   msg->Push(keys);
   msg->Push(values);
-  Zoo::Get()->Deliver(actor::kWorker, msg);
+  Zoo::Get()->SendTo(actor::kWorker, msg);
   return id;
 }
 

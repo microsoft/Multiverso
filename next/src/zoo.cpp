@@ -59,11 +59,11 @@ void Zoo::Stop(bool finalize_net) {
 int Zoo::rank() const { return net_util_->rank(); }
 int Zoo::size() const { return net_util_->size(); }
 
-void Zoo::Deliver(const std::string& name, MessagePtr& msg) {
+void Zoo::SendTo(const std::string& name, MessagePtr& msg) {
   CHECK(zoo_.find(name) != zoo_.end());
-  zoo_[name]->Accept(msg);
+  zoo_[name]->Receive(msg);
 }
-void Zoo::Accept(MessagePtr& msg) {
+void Zoo::Receive(MessagePtr& msg) {
   mailbox_->Push(msg);
 }
 
@@ -73,7 +73,7 @@ void Zoo::RegisterNode() {
   msg->set_dst(0);
   msg->set_type(MsgType::Control_Register);
   msg->Push(Blob(&nodes_[rank()], sizeof(Node)));
-  Deliver(actor::kCommunicator, msg);
+  SendTo(actor::kCommunicator, msg);
 
   // waif for reply
   mailbox_->Pop(msg);
@@ -92,7 +92,7 @@ void Zoo::Barrier() {
   msg->set_dst(0); // rank 0 acts as the controller master. TODO(feiga):
   // consider a method to encapsulate this node information
   msg->set_type(MsgType::Control_Barrier);
-  Deliver(actor::kCommunicator, msg);
+  SendTo(actor::kCommunicator, msg);
 
   // Log::Debug("rank %d requested barrier.\n", rank());
   // wait for reply
