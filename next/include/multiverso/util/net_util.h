@@ -2,6 +2,7 @@
 #define MULTIVERSO_UTIL_NET_UTIL_H_
 
 #include <string>
+#include <unordered_set>
 
 namespace multiverso {
 namespace net {
@@ -22,7 +23,7 @@ namespace net {
 //  return true;
 //}
 
-void GetLocalIPAddress();
+void GetLocalIPAddress(std::unordered_set<std::string>* result);
 
 } // namespace net
 } // namespace multiverso

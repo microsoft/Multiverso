@@ -28,7 +28,7 @@ public:
     size_ = static_cast<int>(machine_lists.size());
     for (auto ip : machine_lists) {
       void* requester = zmq_socket(context_, ZMQ_REQ);
-      zmq_connect(requester, ip.c_str());
+      zmq_connect(requester, ("tcp://" + ip).c_str());
       requester_.push_back(requester);
     }
 
@@ -100,14 +100,19 @@ public:
 private:
   void ParseMachineFile(std::string filename, 
                         std::vector<std::string>* result) {
+    CHECK_NOTNULL(result);
     FILE* file;
+    char str[128];
 #ifdef _MSC_VER
     fopen_s(&file, filename.c_str(), "r");
 #else
     file = fopen(filename.c_str(), "r");
 #endif
     CHECK_NOTNULL(file);
-    // while (fscanf(file, "%s"))
+    while (fscanf(file, "%s", &str) > 0) {
+      result->push_back(str);
+    }
+    fclose(file);
   }
 
 

@@ -51,10 +51,10 @@ protected:
 
 namespace actor {
 
-  const std::string kCommunicator = "communicator";
-  const std::string kController = "controller";
-  const std::string kServer = "server";
-  const std::string kWorker = "worker";
+const std::string kCommunicator = "communicator";
+const std::string kController = "controller";
+const std::string kServer = "server";
+const std::string kWorker = "worker";
 
 }
 

@@ -122,7 +122,9 @@ void TestNet() {
 }
 
 void TestIP() {
-  net::GetLocalIPAddress();
+  std::unordered_set<std::string> ip_list;
+  net::GetLocalIPAddress(&ip_list);
+  for (auto ip : ip_list) Log::Info("%s\n", ip);
 }
 
 int main(int argc, char* argv[]) {
