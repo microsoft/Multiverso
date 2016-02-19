@@ -23,7 +23,7 @@ public:
   // Stop to run the Actor
   void Stop();
   // Accept a message from other actors
-  void Accept(MessagePtr&);
+  void Receive(MessagePtr&);
 
   const std::string name() const { return name_; }
 
@@ -35,7 +35,7 @@ protected:
   void RegisterTask(const MsgType& type, const Task& task) {
     handlers_.insert({ type, task });
   }
-  void DeliverTo(const std::string& dst_name, MessagePtr& msg);
+  void SendTo(const std::string& dst_name, MessagePtr& msg);
 
   // Run in a background thread to receive msg from other actors and process
   // messages based on registered handlers
@@ -51,10 +51,10 @@ protected:
 
 namespace actor {
 
-  const std::string kCommunicator = "communicator";
-  const std::string kController = "controller";
-  const std::string kServer = "server";
-  const std::string kWorker = "worker";
+const std::string kCommunicator = "communicator";
+const std::string kController = "controller";
+const std::string kServer = "server";
+const std::string kWorker = "worker";
 
 }
 

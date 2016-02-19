@@ -113,5 +113,8 @@
     <ClCompile Include="src\mpi_net.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\net_util.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

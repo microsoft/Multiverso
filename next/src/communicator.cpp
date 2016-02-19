@@ -72,14 +72,14 @@ void Communicator::Communicate() {
 void Communicator::LocalForward(MessagePtr& msg) {
   CHECK(msg->dst() == Zoo::Get()->rank());
   if (message::to_server(msg->type())) {
-    DeliverTo(actor::kServer, msg);
+    SendTo(actor::kServer, msg);
   } else if (message::to_worker(msg->type())) {
-    DeliverTo(actor::kWorker, msg);
+    SendTo(actor::kWorker, msg);
   } else if (message::to_controler(msg->type())) {
-    DeliverTo(actor::kController, msg);
+    SendTo(actor::kController, msg);
   } else {
     // Send back to the msg queue of zoo
-    Zoo::Get()->Accept(msg);
+    Zoo::Get()->Receive(msg);
   }
 }
 

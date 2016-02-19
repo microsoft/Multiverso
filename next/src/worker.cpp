@@ -35,7 +35,7 @@ void Worker::ProcessGet(MessagePtr& msg) {
     msg->set_msg_id(msg_id);
     msg->set_table_id(table_id);
     msg->set_data(it.second);
-    DeliverTo(actor::kCommunicator, msg);
+    SendTo(actor::kCommunicator, msg);
   }
 }
 
@@ -55,7 +55,7 @@ void Worker::ProcessAdd(MessagePtr& msg) {
     msg->set_msg_id(msg_id);
     msg->set_table_id(table_id);
     msg->set_data(it.second);
-    DeliverTo(actor::kCommunicator, msg);
+    SendTo(actor::kCommunicator, msg);
   }
 }
 

@@ -17,13 +17,13 @@ public:
       for (auto& msg : tasks_) {
         MessagePtr reply(msg->CreateReplyMessage());
         if (reply->dst() != Zoo::Get()->rank()) {
-          parent_->DeliverTo(actor::kCommunicator, reply);
+          parent_->SendTo(actor::kCommunicator, reply);
         }
         else {
           my_reply = std::move(reply);
         }
       }
-      parent_->DeliverTo(actor::kCommunicator, my_reply);
+      parent_->SendTo(actor::kCommunicator, my_reply);
       tasks_.clear();
     }
   }
@@ -63,7 +63,7 @@ public:
         reply->set_type(MsgType::Control_Reply_Register);
         reply->Push(info_blob);
         reply->Push(count_blob);
-        parent_->DeliverTo(actor::kCommunicator, reply);
+        parent_->SendTo(actor::kCommunicator, reply);
       }
     }
   }

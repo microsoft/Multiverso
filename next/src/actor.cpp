@@ -23,7 +23,7 @@ void Actor::Stop() {
   thread_->join();
 }
 
-void Actor::Accept(MessagePtr& msg) { mailbox_->Push(msg); }
+void Actor::Receive(MessagePtr& msg) { mailbox_->Push(msg); }
 
 void Actor::Main() {
   // Log::Info("Start to run actor %s\n", name().c_str());
@@ -41,9 +41,9 @@ void Actor::Main() {
   }
 }
 
-void Actor::DeliverTo(const std::string& dst_name, MessagePtr& msg) {
+void Actor::SendTo(const std::string& dst_name, MessagePtr& msg) {
   // Log::Debug("actors delivering msg (type = %d) from (rank = %d, %s) to (rank = %d, %s).\n", msg->type(), msg->src(),  name().c_str(), msg->dst(), dst_name.c_str());
-  Zoo::Get()->Deliver(dst_name, msg);
+  Zoo::Get()->SendTo(dst_name, msg);
 }
 
 }
