@@ -9,14 +9,14 @@
 
 using namespace multiverso;
 
-void TestKV() {
+void TestKV(int argc, char* argv[]) {
   Log::Info("Test KV map \n");
   // ----------------------------------------------------------------------- //
   // this is a demo of distributed hash table to show how to use the multiverso
   // ----------------------------------------------------------------------- //
 
   // 1. Start the Multiverso engine ---------------------------------------- //
-  MultiversoInit();
+  MultiversoInit(&argc, argv);
 
   // 2. To create the shared table ----------------------------------------- //
 
@@ -63,10 +63,10 @@ void TestKV() {
   MultiversoShutDown();
 }
 
-void TestArray() {
+void TestArray(int argc, char* argv[]) {
   Log::Info("Test Array \n");
 
-  MultiversoInit();
+  MultiversoInit(&argc, argv);
   
   ArrayWorker<float>* shared_array = new ArrayWorker<float>(10);
   ArrayServer<float>* server_array = new ArrayServer<float>(10);
@@ -99,23 +99,32 @@ void TestArray() {
 }
 
 
-void TestNet() {
+void TestNet(int argc, char* argv[]) {
   NetInterface* net = NetInterface::Get();
-  net->Init();
+  net->Init(&argc, argv);
 
-  char* hi = "hello, world";
+  char* hi1 = "hello, world";
+  char* hi2 = "hello, c++";
+  char* hi3 = "hello, multiverso";
   if (net->rank() == 0) {
     MessagePtr msg = std::make_unique<Message>();
     msg->set_src(0);
     msg->set_dst(1);
-    msg->Push(Blob(hi, 13));
+    msg->Push(Blob(hi1, 13));
+    msg->Push(Blob(hi2, 11));
+    msg->Push(Blob(hi3, 18));
     net->Send(msg);
     Log::Info("rank 0 send\n");
   } else if (net->rank() == 1) {
     MessagePtr msg = std::make_unique<Message>();
-    net->Recv(&msg);
+    while (net->Recv(&msg) == 0);
     Log::Info("rank 1 recv\n");
-    CHECK(strcmp(msg->data()[0].data(), hi) == 0);
+    // CHECK(strcmp(msg->data()[0].data(), hi) == 0);
+    std::vector<Blob> recv_data = msg->data();
+    CHECK(recv_data.size() == 3);
+    for (int i = 0; i < msg->size(); ++i) {
+      Log::Info("%s\n", recv_data[i].data());
+    }
   }
 
   net->Finalize();
@@ -130,13 +139,18 @@ void TestIP() {
 int main(int argc, char* argv[]) {
   // Log::ResetLogLevel(LogLevel::Debug);
   if (argc == 2) { 
-    if (strcmp(argv[1], "kv") == 0) TestKV();
-    else if (strcmp(argv[1], "array") == 0) TestArray();
-    else if (strcmp(argv[1], "net") == 0) TestNet();
+    if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
+    else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
+    else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
     else if (strcmp(argv[1], "ip") == 0) TestIP();
     else CHECK(false);
+  } else if (argc == 4) {
+    if (strcmp(argv[3], "kv") == 0) TestKV(argc, argv);
+    else if (strcmp(argv[3], "array") == 0) TestArray(argc, argv);
+    else if (strcmp(argv[3], "net") == 0) TestNet(argc, argv);
+    else if (strcmp(argv[3], "ip") == 0) TestIP();
   } else {
-    TestArray();
+    TestArray(argc, argv);
   }
   return 0;
 }

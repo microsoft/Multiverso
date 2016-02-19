@@ -72,6 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <IncludePath>$(ThirdPartyPath)/ZeroMQ 4.0.4/include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(ThirdPartyPath)/ZeroMQ 4.0.4/lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
@@ -127,7 +128,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MULTIVERSO_USE_MPI;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,7 +137,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>msmpi.lib</AdditionalDependencies>
+      <AdditionalDependencies>msmpi.lib;libzmq-v120-mt-4_0_4.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>C:\Program Files (x86)\Microsoft SDKs\MPI\Lib\x64</AdditionalLibraryDirectories>
@@ -150,6 +151,7 @@
     <ClInclude Include="include\multiverso\message.h" />
     <ClInclude Include="include\multiverso\multiverso.h" />
     <ClInclude Include="include\multiverso\net.h" />
+    <ClInclude Include="include\multiverso\net\mpi_net.h" />
     <ClInclude Include="include\multiverso\net\zmq_net.h" />
     <ClInclude Include="include\multiverso\node.h" />
     <ClInclude Include="include\multiverso\server.h" />
@@ -169,7 +171,7 @@
     <ClCompile Include="src\communicator.cpp" />
     <ClCompile Include="src\controller.cpp" />
     <ClCompile Include="src\multiverso.cpp" />
-    <ClCompile Include="src\mpi_net.cpp" />
+    <ClCompile Include="src\net.cpp" />
     <ClCompile Include="src\node.cpp" />
     <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\table.cpp" />

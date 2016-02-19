@@ -34,8 +34,11 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
 
 void Communicator::Main() {
   // TODO(feiga): join the thread, make sure it exit properly
-  //recv_thread_.reset(new std::thread(&Communicator::Communicate, this));
-  //Actor::Main();
+#ifdef MULTIVERSO_USE_ZMQ
+  recv_thread_.reset(new std::thread(&Communicator::Communicate, this));
+  Actor::Main();
+#else 
+#ifdef MULTIVERSO_USE_MPI 
   MessagePtr msg;
   while (mailbox_->Alive()) {
     while (mailbox_->TryPop(msg)) {
@@ -44,6 +47,8 @@ void Communicator::Main() {
     size_t size = net_util_->Recv(&msg);
     if (size > 0) LocalForward(msg);
   }
+#endif
+#endif
 }
 
 void Communicator::ProcessMessage(MessagePtr& msg) {

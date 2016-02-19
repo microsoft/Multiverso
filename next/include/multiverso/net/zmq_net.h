@@ -1,35 +1,52 @@
 #ifndef MULTIVERSO_NET_ZMQ_NET_H_
 #define MULTIVERSO_NET_ZMQ_NET_H_
 
-#define MULTIVERSO_USE_ZEROMQ
-#ifdef MULTIVERSO_USE_ZEROMQ
+#ifdef MULTIVERSO_USE_ZMQ
 
 #include "multiverso/net.h"
 
 #include <limits>
-#include "multiverso/util/log.h"
+
 #include "multiverso/message.h"
+#include "multiverso/util/log.h"
+#include "multiverso/util/net_util.h"
 
 #include <zmq.h>
 
 namespace multiverso {
-class ZeroMQNetWrapper : public NetInterface {
+class ZMQNetWrapper : public NetInterface {
 public:
+  // argc >= 2
+  // argv[0]: machine file, format is same with MPI machine file
+  // argv[1]: port used
   void Init(int* argc, char** argv) override {
+    // get machine file 
+    CHECK(*argc > 2);
+    std::vector<std::string> machine_lists;
+    ParseMachineFile(argv[1], &machine_lists);
+    int port = atoi(argv[2]);
+
+    size_ = static_cast<int>(machine_lists.size());
+    std::unordered_set<std::string> local_ip;
+    net::GetLocalIPAddress(&local_ip);
+
+    // responder socket
     context_ = zmq_ctx_new();
     responder_ = zmq_socket(context_, ZMQ_REP);
-    CHECK(zmq_bind(responder_, "tcp://*:5555") == 0);
-    // get machine file 
-    // format is same with MPI machine file
+    CHECK(zmq_bind(responder_, 
+      ("tcp://*:" + std::to_string(port)).c_str()) == 0);
 
-    // TODO(feiga): parse the machine list config file to get the ip
-    std::vector<std::string> machine_lists;
-    ParseMachineFile(argv[0], &machine_lists);
-    size_ = static_cast<int>(machine_lists.size());
     for (auto ip : machine_lists) {
-      void* requester = zmq_socket(context_, ZMQ_REQ);
-      zmq_connect(requester, ("tcp://" + ip).c_str());
-      requester_.push_back(requester);
+      if (local_ip.find(ip) != local_ip.end()) {
+        rank_ = static_cast<int>(requester_.size());
+        requester_.push_back(nullptr);
+      } else {
+        void* requester = zmq_socket(context_, ZMQ_REQ);
+        int rc = zmq_connect(requester, 
+          ("tcp://" + ip + ":" + std::to_string(port)).c_str());
+        CHECK(rc == 0);
+        requester_.push_back(requester);
+      }
     }
 
     Log::Info("%s net util inited, rank = %d, size = %d\n",
@@ -102,14 +119,18 @@ private:
                         std::vector<std::string>* result) {
     CHECK_NOTNULL(result);
     FILE* file;
-    char str[128];
+    char str[32];
 #ifdef _MSC_VER
     fopen_s(&file, filename.c_str(), "r");
 #else
     file = fopen(filename.c_str(), "r");
 #endif
     CHECK_NOTNULL(file);
+#ifdef _MSC_VER
+    while (fscanf_s(file, "%s", &str) > 0) {
+#else
     while (fscanf(file, "%s", &str) > 0) {
+#endif
       result->push_back(str);
     }
     fclose(file);
@@ -119,8 +140,6 @@ private:
   void* context_;
   void* responder_;
   std::vector<void*> requester_;
-  const int more_;
-  int inited_;
   int rank_;
   int size_;
 };

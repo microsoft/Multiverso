@@ -59,7 +59,10 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\net\zmq_net.h">
-      <Filter>system</Filter>
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\net\mpi_net.h">
+      <Filter>net</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +77,9 @@
     </Filter>
     <Filter Include="include\table">
       <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{c720657f-d601-4776-956c-b2f892a1402c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -107,11 +113,11 @@
     <ClCompile Include="src\node.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="src\mpi_net.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
     <ClCompile Include="src\util\net_util.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net.cpp">
+      <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

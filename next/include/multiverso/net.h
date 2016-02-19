@@ -5,6 +5,8 @@
 #include <string>
 #include "multiverso/message.h"
 
+#define MULTIVERSO_USE_MPI
+
 namespace multiverso {
 // Interface of inter process communication method
 class NetInterface {
