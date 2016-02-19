@@ -5,6 +5,7 @@
 
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
+#include <multiverso/table/smooth_array_table.h>
 #include <multiverso/net.h>
 
 using namespace multiverso;
@@ -98,6 +99,41 @@ void TestArray() {
   MultiversoShutDown();
 }
 
+void TestMomArray() {
+	Log::Info("Test smooth_gradient table \n");
+
+	MultiversoInit();
+
+	SmoothArrayWorker<float>* shared_array = new SmoothArrayWorker<float>(10);
+	SmoothArrayServer<float>* server_array = new SmoothArrayServer<float>(10);
+
+	MultiversoBarrier();
+	Log::Info("Create tables OK\n");
+
+	for (int i = 0; i < 10; ++i) {
+		// std::vector<float>& vec = shared_array->raw();
+
+		// shared_array->Get();
+		float data[10];
+
+		std::vector<float> delta(10);
+		for (int i = 1; i <= 10; ++i)
+			delta[i] = static_cast<float>(i);
+
+		shared_array->Add(delta.data(), 10, 0.5f);
+
+		Log::Info("Rank %d Add OK\n", MultiversoRank());
+
+		shared_array->Get(data, 10);
+		Log::Info("Rank %d Get OK\n", MultiversoRank());
+		for (int i = 0; i < 10; ++i)
+			std::cout << data[i] << " "; std::cout << std::endl;
+		MultiversoBarrier();
+
+	}
+	MultiversoShutDown();
+}
+
 
 void TestNet() {
   NetInterface* net = NetInterface::Get();
@@ -127,6 +163,7 @@ int main(int argc, char* argv[]) {
     if (strcmp(argv[1], "kv") == 0) TestKV();
     else if (strcmp(argv[1], "array") == 0) TestArray();
     else if (strcmp(argv[1], "net") == 0) TestNet();
+    else if (strcmp(argv[1], "mom") == 0) TestMomArray();
     else CHECK(false);
   } else {
     TestArray();

@@ -61,6 +61,9 @@
     <ClInclude Include="include\multiverso\net\zmq_net.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\table\smooth_array_table.h">
+      <Filter>include\table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
