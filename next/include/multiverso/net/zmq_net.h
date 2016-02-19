@@ -114,6 +114,9 @@ public:
     return size;
   }
 
+  // TODO(feiga): implementation
+  int thread_level_support() override { return 0; }
+
 private:
   void ParseMachineFile(std::string filename, 
                         std::vector<std::string>* result) {

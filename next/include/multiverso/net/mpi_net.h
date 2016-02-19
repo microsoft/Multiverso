@@ -87,6 +87,9 @@ public:
     }
   }
 
+  // TODO(feiga): implementation
+  int thread_level_support() override { return 0; }
+
   size_t SendMsg(const MessagePtr& msg) {
     size_t size = Message::kHeaderSize;
     MPI_Send(msg->header(), Message::kHeaderSize, MPI_BYTE,
