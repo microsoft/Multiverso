@@ -4,8 +4,8 @@
 
 namespace multiverso {
 
-void MultiversoInit(int role) {
-  Zoo::Get()->Start(role);
+void MultiversoInit(int* argc, char* argv[], int role) {
+  Zoo::Get()->Start(argc, argv, role);
 }
 
 void MultiversoShutDown(bool finalize_net) {

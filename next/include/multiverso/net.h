@@ -19,6 +19,8 @@ public:
 
   virtual size_t Send(const MessagePtr& msg) = 0;
   virtual size_t Recv(MessagePtr* msg) = 0;
+
+  virtual int thread_level_support() = 0;
 };
 
 }

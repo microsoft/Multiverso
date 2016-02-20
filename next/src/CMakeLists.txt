@@ -2,7 +2,7 @@ include_directories(${MULTIVERSO_HEADER_DIR})
 include_directories(${THIRD_PARTY_INC})
 include_directories(${MPI_CXX_INCLUDE_PATH})
 
-set(MULTIVERSO_SRC mpi_net.cpp actor.cpp communicator.cpp controller.cpp multiverso.cpp node.cpp server.cpp table.cpp util/log.cpp worker.cpp zoo.cpp )
+set(MULTIVERSO_SRC net.cpp actor.cpp communicator.cpp controller.cpp multiverso.cpp node.cpp server.cpp table.cpp util/log.cpp worker.cpp zoo.cpp )
 
 link_directories(${THIRD_PARTY_LIB})
 

@@ -1,19 +1,17 @@
+#ifndef MULTIVERSO_NET_MPI_NET_H_
+#define MULTIVERSO_NET_MPI_NET_H_
+
+#ifdef MULTIVERSO_USE_MPI
+
 #include "multiverso/net.h"
 
 #include <limits>
 #include <mutex>
 
 #include "multiverso/message.h"
-// #include "multiverso/net/zmq_net.h"
 #include "multiverso/util/log.h"
 
-// TODO(feiga) remove this 
-#define MULTIVERSO_USE_MPI
-
-// TODO(feiga): move to seperated files
-#ifdef MULTIVERSO_USE_MPI
 #include <mpi.h>
-#endif
 
 
 #ifdef _MSC_VER
@@ -22,7 +20,6 @@
 
 namespace multiverso {
 
-#ifdef MULTIVERSO_USE_MPI
 class MPINetWrapper : public NetInterface {
 public:
   MPINetWrapper() : more_(std::numeric_limits<char>::max()) {}
@@ -36,14 +33,16 @@ public:
     MPI_Query_thread(&thread_provided_);
     if (thread_provided_ < MPI_THREAD_SERIALIZED) {
       Log::Fatal("At least MPI_THREAD_SERIALIZED supported is needed by multiverso.\n");
-    } else if (thread_provided_ == MPI_THREAD_SERIALIZED) {
-	  	Log::Info("multiverso MPI-Net is initialized under MPI_THREAD_SERIALIZED mode.\n");
-    } else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
-	  	Log::Debug("multiverso MPI-Net is initialized under MPI_THREAD_MULTIPLE mode.\n");
-	  }
+    }
+    else if (thread_provided_ == MPI_THREAD_SERIALIZED) {
+      Log::Info("multiverso MPI-Net is initialized under MPI_THREAD_SERIALIZED mode.\n");
+    }
+    else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
+      Log::Debug("multiverso MPI-Net is initialized under MPI_THREAD_MULTIPLE mode.\n");
+    }
     MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
     MPI_Comm_size(MPI_COMM_WORLD, &size_);
-    Log::Debug("%s net util inited, rank = %d, size = %d\n", 
+    Log::Debug("%s net util inited, rank = %d, size = %d\n",
       name().c_str(), rank(), size());
   }
 
@@ -57,9 +56,11 @@ public:
     if (thread_provided_ == MPI_THREAD_SERIALIZED) {
       //std::lock_guard<std::mutex> lock(mutex_);
       return SendMsg(msg);
-    } else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
+    }
+    else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
       return SendMsg(msg);
-    } else {
+    }
+    else {
       CHECK(false);
       return 0;
     }
@@ -76,18 +77,23 @@ public:
       // block receive with lock guard
       //std::lock_guard<std::mutex> lock(mutex_);
       return RecvMsg(msg);
-    } else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
+    }
+    else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
       return RecvMsg(msg);
-    } else {
+    }
+    else {
       CHECK(false);
       return 0;
     }
   }
 
+  // TODO(feiga): implementation
+  int thread_level_support() override { return 0; }
+
   size_t SendMsg(const MessagePtr& msg) {
     size_t size = Message::kHeaderSize;
-    MPI_Send(msg->header(), Message::kHeaderSize, MPI_BYTE, 
-             msg->dst(), 0, MPI_COMM_WORLD);
+    MPI_Send(msg->header(), Message::kHeaderSize, MPI_BYTE,
+      msg->dst(), 0, MPI_COMM_WORLD);
     // Send multiple msg 
     for (auto& blob : msg->data()) {
       CHECK_NOTNULL(blob.data());
@@ -96,7 +102,7 @@ public:
       size += blob.size();
     }
     // Send an extra over tag indicating the finish of this Message
-    MPI_Send(&more_, sizeof(char), MPI_BYTE, msg->dst(), 
+    MPI_Send(&more_, sizeof(char), MPI_BYTE, msg->dst(),
       0, MPI_COMM_WORLD);
     // Log::Debug("MPI-Net: rank %d send msg size = %d\n", rank(), size+4);
     return size + sizeof(char);
@@ -109,14 +115,13 @@ public:
     MessagePtr& msg = *msg_ptr;
     msg->data().clear();
     MPI_Status status;
-    MPI_Recv(msg->header(), Message::kHeaderSize, 
-             MPI_BYTE, MPI_ANY_SOURCE, 
-             0, MPI_COMM_WORLD, &status);
+    MPI_Recv(msg->header(), Message::kHeaderSize,
+      MPI_BYTE, MPI_ANY_SOURCE,
+      0, MPI_COMM_WORLD, &status);
     size_t size = Message::kHeaderSize;
     int i = 0;
-    //int flag;
     int num_probe = 0;
-    while (true) { 
+    while (true) {
       int count;
       CHECK(MPI_SUCCESS == MPI_Probe(msg->src(), 0, MPI_COMM_WORLD, &status));
       //CHECK(MPI_SUCCESS == MPI_Iprobe(msg->src(), 0, MPI_COMM_WORLD, &flag, &status));
@@ -127,12 +132,12 @@ public:
       MPI_Get_count(&status, MPI_BYTE, &count);
       Blob blob(count);
       // We only receive from msg->src() until we recv the overtag msg
-      MPI_Recv(blob.data(), count, MPI_BYTE, msg->src(), 
-               0, MPI_COMM_WORLD, &status);
+      MPI_Recv(blob.data(), count, MPI_BYTE, msg->src(),
+        0, MPI_COMM_WORLD, &status);
       size += count;
       if (count == sizeof(char)) {
         if (blob.As<char>() == more_) break;
-        CHECK(1+1 != 2);
+        CHECK(1 + 1 != 2);
       }
       msg->Push(blob);
       // Log::Debug("      VLOG(RECV): i = %d\n", ++i);
@@ -142,7 +147,7 @@ public:
   }
 
 private:
-  const char more_; 
+  const char more_;
   std::mutex mutex_;
   int thread_provided_;
   int inited_;
@@ -150,20 +155,8 @@ private:
   int size_;
 };
 
-#endif
-
-
-
-NetInterface* NetInterface::Get() {
-#ifdef MULTIVERSO_USE_ZMQ
-  Log::Fatal("Not implemented yet\n");
-  static ZeroMQNetWrapper net_impl;
-#else 
-#ifdef MULTIVERSO_USE_MPI
-  static MPINetWrapper net_impl;
-#endif
-#endif
-  return &net_impl; // net_util.get();
 }
 
-}
+#endif // MULTIVERSO_USE_MPI
+
+#endif // MULTIVERSO_NET_MPI_NET_H_

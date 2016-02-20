@@ -15,11 +15,11 @@ Zoo::Zoo() {}
 
 Zoo::~Zoo() {}
 
-void Zoo::Start(int role) {
+void Zoo::Start(int* argc, char** argv, int role) {
   Log::Debug("Zoo started\n");
   CHECK(role >= 0 && role <= 3);
   net_util_ = NetInterface::Get();
-  net_util_->Init();
+  net_util_->Init(argc, argv);
   nodes_.resize(size());
   nodes_[rank()].rank = rank();
   nodes_[rank()].role = role;
