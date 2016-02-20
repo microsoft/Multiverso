@@ -102,6 +102,7 @@ void TestArray() {
 void TestMomArray() {
 	Log::Info("Test smooth_gradient table \n");
 
+	Log::ResetLogLevel(LogLevel::Debug);
 	MultiversoInit();
 
 	SmoothArrayWorker<float>* shared_array = new SmoothArrayWorker<float>(10);
@@ -110,15 +111,15 @@ void TestMomArray() {
 	MultiversoBarrier();
 	Log::Info("Create tables OK\n");
 
-	for (int i = 0; i < 10; ++i) {
+	while (true){
 		// std::vector<float>& vec = shared_array->raw();
 
 		// shared_array->Get();
 		float data[10];
 
 		std::vector<float> delta(10);
-		for (int i = 1; i <= 10; ++i)
-			delta[i] = static_cast<float>(i);
+		for (int i = 0; i < 10; ++i)
+			delta[i] = static_cast<float>(i+1);
 
 		shared_array->Add(delta.data(), 10, 0.5f);
 

@@ -45,9 +45,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <IncludePath>$(ThirdPartyPath)/ZeroMQ 4.0.4/include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <ClCompile>
@@ -61,6 +63,9 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>msmpi.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <ClCompile>
@@ -82,7 +87,8 @@
       <AdditionalDependencies>msmpi.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>C:\Program Files (x86)\Microsoft SDKs\MPI\Lib\x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -96,6 +102,7 @@
     <ClInclude Include="include\multiverso\net\zmq_net.h" />
     <ClInclude Include="include\multiverso\node.h" />
     <ClInclude Include="include\multiverso\server.h" />
+    <ClInclude Include="include\multiverso\table\adam_array_table.h" />
     <ClInclude Include="include\multiverso\table\array_table.h" />
     <ClInclude Include="include\multiverso\table\kv_table.h" />
     <ClInclude Include="include\multiverso\table\smooth_array_table.h" />
