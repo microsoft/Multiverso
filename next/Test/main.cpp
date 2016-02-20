@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include <multiverso/multiverso.h>
 #include <multiverso/net.h>
@@ -103,7 +104,7 @@ void TestMomentum(int argc, char* argv[]) {
 	Log::Info("Test smooth_gradient table \n");
 
 	Log::ResetLogLevel(LogLevel::Debug);
-	MultiversoInit(&argc, argv);
+	MultiversoInit();
 
 	SmoothArrayWorker<float>* shared_array = new SmoothArrayWorker<float>(10);
 	SmoothArrayServer<float>* server_array = new SmoothArrayServer<float>(10);
@@ -129,6 +130,46 @@ void TestMomentum(int argc, char* argv[]) {
 		Log::Info("Rank %d Get OK\n", MultiversoRank());
 		for (int i = 0; i < 10; ++i)
 			std::cout << data[i] << " "; std::cout << std::endl;
+		MultiversoBarrier();
+
+	}
+	MultiversoShutDown();
+}
+
+
+void TestMultipleThread(int argc, char* argv[])
+{
+	Log::Info("Test Multiple threads \n");
+
+	MultiversoInit(&argc, argv);
+
+	ArrayWorker<float>* shared_array = new ArrayWorker<float>(10);
+	ArrayServer<float>* server_array = new ArrayServer<float>(10);
+
+	MultiversoBarrier();
+	Log::Info("Create tables OK\n");
+
+	for (int i = 0; i < 100000; ++i) {
+		// std::vector<float>& vec = shared_array->raw();
+
+		// shared_array->Get();
+		float data[10];
+
+		std::vector<float> delta(10);
+		for (int i = 0; i < 10; ++i)
+			delta[i] = static_cast<float>(i);
+
+		shared_array->Add(delta.data(), 10);
+
+		Log::Info("Rank %d Add OK\n", MultiversoRank());
+		std::thread* m_prefetchThread = new std::thread([&](){
+			shared_array->Get(data, 10);
+			Log::Info("Rank %d Get OK\n", MultiversoRank());
+			for (int i = 0; i < 10; ++i)
+				std::cout << data[i] << " "; std::cout << std::endl;
+		});
+
+		//shared_array->Get(data, 10);
 		MultiversoBarrier();
 
 	}
@@ -181,6 +222,7 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
     else if (strcmp(argv[1], "ip") == 0) TestIP();
 	else if (strcmp(argv[1], "momentum") == 0) TestMomentum(argc, argv);
+	else if (strcmp(argv[1], "threads") == 0) TestMultipleThread(argc, argv);
     else CHECK(false);
   } 
   // argc == 4 is for zeromq test, with two extra arguments: machinefile, port
