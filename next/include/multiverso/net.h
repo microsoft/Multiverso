@@ -6,6 +6,12 @@
 #include "multiverso/message.h"
 
 namespace multiverso {
+
+enum NetThreadLevel {
+  THREAD_SERIALIZED, 
+  THREAD_MULTIPLE
+};
+
 // Interface of inter process communication method
 class NetInterface {
 public:

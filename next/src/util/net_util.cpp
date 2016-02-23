@@ -10,9 +10,11 @@
 
 namespace multiverso {
 namespace net {
+
+#ifdef _MSC_VER
+
 #define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
-
 
 void GetLocalIPAddress(std::unordered_set<std::string>* result) {
   // See MSDN 
@@ -60,6 +62,7 @@ void GetLocalIPAddress(std::unordered_set<std::string>* result) {
   if (pAdapterInfo)
     FREE(pAdapterInfo);
 }
+#endif // _MSC_VER
 
 } 
 }

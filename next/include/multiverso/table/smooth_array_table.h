@@ -15,13 +15,13 @@ public:
   explicit SmoothArrayWorker(size_t size) : WorkerTable(), size_(size) {
     num_server_ = Zoo::Get()->num_servers();
     server_offsets_.push_back(0);
-    CHECK(size_ > Zoo::Get()->num_servers()); 
+    CHECK(size_ > Zoo::Get()->num_servers());
     int length = static_cast<int>(size_) / Zoo::Get()->num_servers();
     for (int i = 1; i < Zoo::Get()->num_servers(); ++i) {
-      server_offsets_.push_back(i * length); 
+      server_offsets_.push_back(i * length);
     }
     server_offsets_.push_back(size_);
-	Log::Debug("worker %d create SmoothArrayTable with %d elements.\n", Zoo::Get()->rank(), size);
+    Log::Debug("worker %d create SmoothArrayTable with %d elements.\n", Zoo::Get()->rank(), size);
   }
 
   T* raw() { return data_; }
@@ -33,7 +33,7 @@ public:
     data_ = data;
     int all_key = -1;
     Blob whole_table(&all_key, sizeof(int));
-    WorkerTable::Get(whole_table); 
+    WorkerTable::Get(whole_table);
     Log::Debug("worker %d getting all parameters.\n", Zoo::Get()->rank());
   }
 
@@ -44,7 +44,7 @@ public:
 
     Blob key(&all_key, sizeof(int));
     Blob val(data, sizeof(T) * size);
-	smooth_momentum_ = smooth_momentum;
+    smooth_momentum_ = smooth_momentum;
     WorkerTable::Add(key, val);
     Log::Debug("worker %d adding parameters with size of %d.\n", Zoo::Get()->rank(), size);
   }
@@ -52,21 +52,21 @@ public:
   int Partition(const std::vector<Blob>& kv,
     std::unordered_map<int, std::vector<Blob> >* out) override {
     CHECK(kv.size() == 1 || kv.size() == 2); // kv.size() == 1 : get msg;
-										     // kv.size() == 2 : add msg;
-	for (int i = 0; i < num_server_; ++i)
-	{
-		(*out)[i].push_back(kv[0]);
-	}
+    // kv.size() == 2 : add msg;
+    for (int i = 0; i < num_server_; ++i)
+    {
+      (*out)[i].push_back(kv[0]);
+    }
 
-    if (kv.size() == 2) 
-	{
+    if (kv.size() == 2)
+    {
       CHECK(kv[1].size() == size_ * sizeof(T));
       for (int i = 0; i < num_server_; ++i)
-	  {
-        Blob blob(kv[1].data() + server_offsets_[i] * sizeof(T), 
+      {
+        Blob blob(kv[1].data() + server_offsets_[i] * sizeof(T),
           (server_offsets_[i + 1] - server_offsets_[i]) * sizeof(T));
         (*out)[i].push_back(blob);
-		Blob momentum(&smooth_momentum_, sizeof(float)); // sending coefficent of smooth gradient to server
+        Blob momentum(&smooth_momentum_, sizeof(float)); // sending coefficent of smooth gradient to server
         (*out)[i].push_back(momentum);
       }
     }
@@ -76,12 +76,12 @@ public:
   void ProcessReplyGet(std::vector<Blob>& reply_data) override {
     CHECK(reply_data.size() == 2);
     int id = (reply_data[0]).As<int>();
-    CHECK(reply_data[1].size<T>() == (server_offsets_[id+1] - server_offsets_[id]));
+    CHECK(reply_data[1].size<T>() == (server_offsets_[id + 1] - server_offsets_[id]));
 
-	// TODO(qiwye): is there a way to reduce this memcpy?
+    // TODO(qiwye): is there a way to reduce this memcpy?
     memcpy(data_ + server_offsets_[id], reply_data[1].data(), reply_data[1].size());
   }
-  
+
 private:
   T* data_; // not owned
   size_t size_;
@@ -97,13 +97,13 @@ public:
   explicit SmoothArrayServer(size_t size) : ServerTable() {
     server_id_ = Zoo::Get()->rank();
     size_ = size / Zoo::Get()->size();
-    if (server_id_ == Zoo::Get()->num_servers()-1) { // last server 
+    if (server_id_ == Zoo::Get()->num_servers() - 1) { // last server 
       size_ += size % Zoo::Get()->num_servers();
     }
     storage_.resize(size_);
-	smooth_gradient_.resize(size_);
-	smooth_momentum_ = 0.0f;
-	Log::Debug("server %d create SmoothArrayTable with %d elements of %d elements.\n", server_id_, size_ * 2, size * 2);
+    smooth_gradient_.resize(size_);
+    smooth_momentum_ = 0.0f;
+    Log::Debug("server %d create SmoothArrayTable with %d elements of %d elements.\n", server_id_, size_ * 2, size * 2);
   }
 
   void ProcessAdd(const std::vector<Blob>& data) override {
@@ -112,14 +112,14 @@ public:
     Log::Fatal("Not implemented yet\n");
 #else
     Blob keys = data[0], values = data[1];
-	smooth_momentum_ = data[2].As<float>();
+    smooth_momentum_ = data[2].As<float>();
     CHECK(keys.size<int>() == 1 && keys.As<int>() == -1); // Always request whole table
     CHECK(values.size() == size_ * sizeof(T));
-	for (int i = 0; i < size_; ++i)
-	{
-		smooth_gradient_[i] = smooth_momentum_ * smooth_gradient_[i] + (1 - smooth_momentum_) * values.As<T>(i);
-		storage_[i] += smooth_gradient_[i];
-	}
+    for (int i = 0; i < size_; ++i)
+    {
+      smooth_gradient_[i] = smooth_momentum_ * smooth_gradient_[i] + (1 - smooth_momentum_) * values.As<T>(i);
+      storage_[i] += smooth_gradient_[i];
+    }
 #endif
   }
 
