@@ -67,6 +67,9 @@
     <ClInclude Include="include\multiverso\table\smooth_array_table.h">
       <Filter>include\table</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\table\adam_array_table.h">
+      <Filter>include\table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
