@@ -17,8 +17,8 @@ namespace multiverso {
 class ZMQNetWrapper : public NetInterface {
 public:
   // argc >= 2
-  // argv[0]: machine file, format is same with MPI machine file
-  // argv[1]: port used
+  // argv[1]: machine file, format is same with MPI machine file
+  // argv[2]: port used
   void Init(int* argc, char** argv) override {
     // get machine file 
     CHECK(*argc > 2);
@@ -27,28 +27,35 @@ public:
     int port = atoi(argv[2]);
 
     size_ = static_cast<int>(machine_lists.size());
+    CHECK(size_ > 0);
     std::unordered_set<std::string> local_ip;
     net::GetLocalIPAddress(&local_ip);
 
-    // responder socket
     context_ = zmq_ctx_new();
-    responder_ = zmq_socket(context_, ZMQ_REP);
-    CHECK(zmq_bind(responder_, 
-      ("tcp://*:" + std::to_string(port)).c_str()) == 0);
+    zmq_ctx_set(context_, ZMQ_MAX_SOCKETS, 256);
 
     for (auto ip : machine_lists) {
-      if (local_ip.find(ip) != local_ip.end()) {
+      if (local_ip.find(ip) != local_ip.end()) { // my rank
         rank_ = static_cast<int>(requester_.size());
         requester_.push_back(nullptr);
+        responder_ = zmq_socket(context_, ZMQ_DEALER);
+        int rc = zmq_bind(responder_, 
+          ("tcp://" + ip + ":" + std::to_string(port)).c_str());
+        CHECK(rc == 0);
       } else {
-        void* requester = zmq_socket(context_, ZMQ_REQ);
+        void* requester = zmq_socket(context_, ZMQ_DEALER);
         int rc = zmq_connect(requester, 
           ("tcp://" + ip + ":" + std::to_string(port)).c_str());
         CHECK(rc == 0);
         requester_.push_back(requester);
       }
     }
+	if (responder_ == NULL) {
+    for (int i = 0; i < machine_lists.size(); ++i) Log::Info("%s\n", machine_lists[i].c_str());
+    for (auto ip : local_ip) Log::Info("%s\n", ip.c_str());
 
+	}
+    CHECK_NOTNULL(responder_);
     Log::Info("%s net util inited, rank = %d, size = %d\n",
       name().c_str(), rank(), size());
   }
@@ -67,8 +74,10 @@ public:
     size_t size = 0;
     int dst = msg->dst();
     void* socket = requester_[dst];
+    CHECK_NOTNULL(socket);
     int send_size;
-    send_size = zmq_send(socket, msg->header(), Message::kHeaderSize, ZMQ_SNDMORE);
+    send_size = zmq_send(socket, msg->header(), 
+      Message::kHeaderSize, msg->data().size() > 0 ? ZMQ_SNDMORE : 0);
     CHECK(Message::kHeaderSize == send_size);
     size += send_size;
     for (size_t i = 0; i < msg->data().size(); ++i) {
@@ -88,34 +97,48 @@ public:
   }
 
   size_t Recv(MessagePtr* msg_ptr) override {
+    if (!msg_ptr->get()) msg_ptr->reset(new Message());
     size_t size = 0;
-    int recv_size, more;
-    size_t blob_size, more_size;
+    int recv_size;
+    size_t blob_size;
+    int more;
+    size_t more_size = sizeof(more);
     // Receiving a Message from multiple recv
     CHECK_NOTNULL(msg_ptr);
     MessagePtr& msg = *msg_ptr;
+    msg->data().clear();
+    CHECK(msg.get());
     recv_size = zmq_recv(responder_, msg->header(), Message::kHeaderSize, 0);
+    if (recv_size < 0) {
+        return -1;
+    }
     CHECK(Message::kHeaderSize == recv_size);
+
+    Log::Debug("In recv, type = %d\n", msg->header()[2]);
     size += recv_size;
-    while (true) {
-      zmq_getsockopt(responder_, ZMQ_RCVMORE, &more, &more_size);
-      CHECK(more);
+    zmq_getsockopt(responder_, ZMQ_RCVMORE, &more, &more_size);
+    Log::Debug("before recv While, more = %d\n", more);
+
+    while (more) {
+        Log::Debug("In recv While, more = %d\n", more);
       recv_size = zmq_recv(responder_, &blob_size, sizeof(size_t), 0);
       size += recv_size;
       CHECK(recv_size == sizeof(size_t));
+      zmq_getsockopt(responder_, ZMQ_RCVMORE, &more, &more_size);
+      CHECK(more);
       Blob blob(blob_size);
       recv_size = zmq_recv(responder_, blob.data(), blob.size(), 0);
       size += recv_size;
       CHECK(recv_size == blob_size);
       msg->Push(blob);
       zmq_getsockopt(responder_, ZMQ_RCVMORE, &more, &more_size);
-      if (!more) break;
     }
     return size;
   }
 
-  // TODO(feiga): implementation
-  int thread_level_support() override { return 0; }
+  int thread_level_support() override { 
+    return NetThreadLevel::THREAD_MULTIPLE; 
+  }
 
 private:
   void ParseMachineFile(std::string filename, 
@@ -123,6 +146,7 @@ private:
     CHECK_NOTNULL(result);
     FILE* file;
     char str[32];
+    int i = 0;
 #ifdef _MSC_VER
     fopen_s(&file, filename.c_str(), "r");
 #else
@@ -130,7 +154,7 @@ private:
 #endif
     CHECK_NOTNULL(file);
 #ifdef _MSC_VER
-    while (fscanf_s(file, "%s", &str) > 0) {
+    while (fscanf_s(file, "%s", &str, 32) > 0) {
 #else
     while (fscanf(file, "%s", &str) > 0) {
 #endif

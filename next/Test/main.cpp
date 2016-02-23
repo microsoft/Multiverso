@@ -75,7 +75,10 @@ void TestArray(int argc, char* argv[]) {
   MultiversoBarrier();
   Log::Info("Create tables OK\n");
 
-  for (int i = 0; i < 100000; ++i) {
+  int iter = 1000;
+  if (argc == 3) iter = atoi(argv[2]);
+
+  for (int i = 0; i < iter; ++i) {
   // std::vector<float>& vec = shared_array->raw();
 
   // shared_array->Get();
@@ -151,9 +154,24 @@ void TestNet(int argc, char* argv[]) {
     msg->Push(Blob(hi3, 18));
     net->Send(msg);
     Log::Info("rank 0 send\n");
+    Log::Info("Hi = %s\n", msg->data()[0].data());
+
+    msg.reset(new Message());
+    while (net->Recv(&msg) == 0) {
+      Log::Info("recv return 0\n");
+    }
+    Log::Info("rank 0 recv\n");
+    // CHECK(strcmp(msg->data()[0].data(), hi) == 0);
+    std::vector<Blob> recv_data = msg->data();
+    CHECK(recv_data.size() == 3);
+    for (int i = 0; i < msg->size(); ++i) {
+      Log::Info("%s\n", recv_data[i].data());
+    };
   } else if (net->rank() == 1) {
     MessagePtr msg = std::make_unique<Message>();
-    while (net->Recv(&msg) == 0);
+    while (net->Recv(&msg) == 0) {
+      Log::Info("recv return 0\n");
+    }
     Log::Info("rank 1 recv\n");
     // CHECK(strcmp(msg->data()[0].data(), hi) == 0);
     std::vector<Blob> recv_data = msg->data();
@@ -161,6 +179,16 @@ void TestNet(int argc, char* argv[]) {
     for (int i = 0; i < msg->size(); ++i) {
       Log::Info("%s\n", recv_data[i].data());
     }
+
+    msg.reset(new Message());
+    msg->set_src(1);
+    msg->set_dst(0);
+    msg->Push(Blob(hi1, 13));
+    msg->Push(Blob(hi2, 11));
+    msg->Push(Blob(hi3, 18));
+    net->Send(msg);
+    Log::Info("rank 0 send\n");
+    Log::Info("Hi = %s\n", msg->data()[0].data());
   }
 
   net->Finalize();
@@ -173,7 +201,7 @@ void TestIP() {
 }
 
 int main(int argc, char* argv[]) {
-  // Log::ResetLogLevel(LogLevel::Debug);
+  Log::ResetLogLevel(LogLevel::Debug);
   if (argc == 2) { 
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);

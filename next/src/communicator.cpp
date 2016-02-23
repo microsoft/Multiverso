@@ -34,21 +34,26 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
 
 void Communicator::Main() {
   // TODO(feiga): join the thread, make sure it exit properly
-#ifdef MULTIVERSO_USE_ZMQ
-  recv_thread_.reset(new std::thread(&Communicator::Communicate, this));
-  Actor::Main();
-#else 
-#ifdef MULTIVERSO_USE_MPI 
-  MessagePtr msg;
-  while (mailbox_->Alive()) {
-    while (mailbox_->TryPop(msg)) {
-      ProcessMessage(msg);
-    };
-    size_t size = net_util_->Recv(&msg);
-    if (size > 0) LocalForward(msg);
+  switch (net_util_->thread_level_support()) {
+  case NetThreadLevel::THREAD_MULTIPLE: {
+    recv_thread_.reset(new std::thread(&Communicator::Communicate, this));
+    Actor::Main();
+    break;
   }
-#endif
-#endif
+  case NetThreadLevel::THREAD_SERIALIZED: {
+    MessagePtr msg;
+    while (mailbox_->Alive()) {
+      while (mailbox_->TryPop(msg)) {
+        ProcessMessage(msg);
+      };
+      size_t size = net_util_->Recv(&msg);
+      if (size > 0) LocalForward(msg);
+    }
+    break;
+  }
+  default:
+    Log::Fatal("Unexpected thread level\n");
+  }
 }
 
 void Communicator::ProcessMessage(MessagePtr& msg) {
@@ -64,6 +69,9 @@ void Communicator::Communicate() {
   while (true) { // TODO(feiga): should exit properly
     MessagePtr msg(new Message()); //  = std::make_unique<Message>();
     size_t size = net_util_->Recv(&msg);
+    if (size == -1) {
+      return;
+    }
     if (size > 0) {
       // a message received
       Log::Debug("Recv a msg from %d to %d, size = %d, type = %d\n", msg->src(), msg->dst(), msg->size(), msg->type());

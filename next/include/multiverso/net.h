@@ -8,6 +8,12 @@
 #define MULTIVERSO_USE_MPI
 
 namespace multiverso {
+
+enum NetThreadLevel {
+  THREAD_SERIALIZED, 
+  THREAD_MULTIPLE
+};
+
 // Interface of inter process communication method
 class NetInterface {
 public:
