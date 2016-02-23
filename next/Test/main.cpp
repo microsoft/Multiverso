@@ -1,5 +1,7 @@
 #include <iostream>
 #include <thread>
+#include <random>
+#include <chrono>
 
 #include <multiverso/multiverso.h>
 #include <multiverso/net.h>
@@ -165,10 +167,17 @@ void TestMultipleThread(int argc, char* argv[])
 			delete m_prefetchThread;
 			m_prefetchThread = nullptr;
 		}
+		std::mt19937_64 eng{ std::random_device{}() };
+		std::uniform_int_distribution<> dist{ 50, 500 };
+		std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
 		shared_array->Add(delta.data(), 10);
 
 		Log::Info("Rank %d Add OK\n", MultiversoRank());
 		m_prefetchThread = new std::thread([&](){
+			
+			std::mt19937_64 eng{ std::random_device{}() };  
+			std::uniform_int_distribution<> dist{ 50, 500 };
+			std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
 			shared_array->Get(data, 10);
 			Log::Info("Rank %d Get OK\n", MultiversoRank());
 			for (int i = 0; i < 10; ++i)
