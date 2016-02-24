@@ -48,7 +48,7 @@ public:
       int flag;
       MPI_Testall(count, handles_.data(), &flag, status);
       delete[] status;
-      return true;
+      return flag;
     }
   private:
     std::vector<MPI_Request> handles_;
