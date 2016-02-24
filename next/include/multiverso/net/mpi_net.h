@@ -63,7 +63,7 @@ public:
     // MPI_Init(argc, &argv);
     MPI_Initialized(&inited_);
     if (!inited_) {
-      MPI_Init_thread(argc, &argv, MPI_THREAD_MULTIPLE, &thread_provided_);
+      MPI_Init_thread(argc, &argv, MPI_THREAD_SERIALIZED, &thread_provided_);
     }
     MPI_Query_thread(&thread_provided_);
     if (thread_provided_ < MPI_THREAD_SERIALIZED) {
