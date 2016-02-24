@@ -27,7 +27,7 @@ bool to_controler(MsgType type) {
 }
 
 Communicator::Communicator() : Actor(actor::kCommunicator) {
-  RegisterTask(MsgType::Default, std::bind(
+  RegisterHandler(MsgType::Default, std::bind(
     &Communicator::ProcessMessage, this, std::placeholders::_1));
   net_util_ = NetInterface::Get();
 }
@@ -43,11 +43,13 @@ void Communicator::Main() {
   case NetThreadLevel::THREAD_SERIALIZED: {
     MessagePtr msg;
     while (mailbox_->Alive()) {
-      while (mailbox_->TryPop(msg)) {
-        ProcessMessage(msg);
-      };
+      // Probe and Recv
       size_t size = net_util_->Recv(&msg);
       if (size > 0) LocalForward(msg);
+      // Try pop and Send
+      if (mailbox_->TryPop(msg)) {
+        ProcessMessage(msg);
+      };
     }
     break;
   }
@@ -74,7 +76,8 @@ void Communicator::Communicate() {
     }
     if (size > 0) {
       // a message received
-      Log::Debug("Recv a msg from %d to %d, size = %d, type = %d\n", msg->src(), msg->dst(), msg->size(), msg->type());
+      Log::Debug("Recv a msg from %d to %d, size = %d, type = %d\n", 
+        msg->src(), msg->dst(), msg->size(), msg->type());
       CHECK(msg->dst() == Zoo::Get()->rank());
       LocalForward(msg);
     }

@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <mutex>
+#include <queue>
 
 #include "multiverso/message.h"
 #include "multiverso/util/log.h"
@@ -23,6 +24,36 @@ namespace multiverso {
 class MPINetWrapper : public NetInterface {
 public:
   MPINetWrapper() : more_(std::numeric_limits<char>::max()) {}
+
+  class MPIMsgHandle {
+  public:
+    void AddHandle(MPI_Request handle) {
+      handles_.push_back(handle);
+    }
+
+    void set_msg(MessagePtr& msg) { msg_ = std::move(msg); }
+
+    void Wait() {
+      CHECK_NOTNULL(msg_.get());
+      int count = static_cast<int>(handles_.size());
+      MPI_Status* status = new MPI_Status[count];
+      MPI_Waitall(count, handles_.data(), status);
+      delete[] status;
+    }
+
+    bool Test() {
+      CHECK_NOTNULL(msg_.get());
+      int count = static_cast<int>(handles_.size());
+      MPI_Status* status = new MPI_Status[count];
+      int flag;
+      MPI_Testall(count, handles_.data(), &flag, status);
+      delete[] status;
+      return true;
+    }
+  private:
+    std::vector<MPI_Request> handles_;
+    MessagePtr msg_;
+  };
 
   void Init(int* argc, char** argv) override {
     // MPI_Init(argc, &argv);
@@ -52,18 +83,22 @@ public:
   int size() const override { return size_; }
   std::string name() const override { return "MPI"; }
 
-  size_t Send(const MessagePtr& msg) override {
-    if (thread_provided_ == MPI_THREAD_SERIALIZED) {
-      //std::lock_guard<std::mutex> lock(mutex_);
-      return SendMsg(msg);
+  size_t Send(MessagePtr& msg) override {
+    while (!msg_handles_.empty()) {
+      MPIMsgHandle* prev = msg_handles_.front();
+      if (prev->Test()) {
+        delete prev;
+        prev = nullptr;
+        msg_handles_.pop();
+      } else {
+        break;
+      }
     }
-    else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
-      return SendMsg(msg);
-    }
-    else {
-      CHECK(false);
-      return 0;
-    }
+    MPIMsgHandle* handle = new MPIMsgHandle();
+    size_t size = SendAsync(msg, handle);
+    handle->set_msg(msg);
+    msg_handles_.push(handle);
+    return size;
   }
 
   size_t Recv(MessagePtr* msg) override {
@@ -72,48 +107,59 @@ public:
     // non-blocking probe whether message comes
     MPI_Iprobe(MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &flag, &status);
     if (!flag) return 0;
-    if (thread_provided_ == MPI_THREAD_SERIALIZED) {
-      // a message come
-      // block receive with lock guard
-      //std::lock_guard<std::mutex> lock(mutex_);
-      return RecvMsg(msg);
-    }
-    else if (thread_provided_ == MPI_THREAD_MULTIPLE) {
-      return RecvMsg(msg);
-    }
-    else {
-      CHECK(false);
-      return 0;
-    }
+    return RecvMsg(msg);
   }
 
   int thread_level_support() override { 
+    if (thread_provided_ == MPI_THREAD_MULTIPLE) 
+      return NetThreadLevel::THREAD_MULTIPLE;
     return NetThreadLevel::THREAD_SERIALIZED; 
   }
 
 private:
-  size_t SendMsg(const MessagePtr& msg) {
+  //size_t SendMsg(const MessagePtr& msg) {
+  //  size_t size = Message::kHeaderSize;
+  //  MPI_Send(msg->header(), Message::kHeaderSize, MPI_BYTE,
+  //    msg->dst(), 0, MPI_COMM_WORLD);
+  //  // Send multiple msg 
+  //  for (auto& blob : msg->data()) {
+  //    CHECK_NOTNULL(blob.data());
+  //    MPI_Send(blob.data(), static_cast<int>(blob.size()), MPI_BYTE, msg->dst(),
+  //      0, MPI_COMM_WORLD);
+  //    size += blob.size();
+  //  }
+  //  // Send an extra over tag indicating the finish of this Message
+  //  MPI_Send(&more_, sizeof(char), MPI_BYTE, msg->dst(),
+  //    0, MPI_COMM_WORLD);
+  //  // Log::Debug("MPI-Net: rank %d send msg size = %d\n", rank(), size+4);
+  //  return size + sizeof(char);
+  //}
+
+  size_t SendAsync(const MessagePtr& msg, 
+                   MPIMsgHandle* msg_handle) {
     size_t size = Message::kHeaderSize;
-    MPI_Send(msg->header(), Message::kHeaderSize, MPI_BYTE,
-      msg->dst(), 0, MPI_COMM_WORLD);
+    MPI_Request handle;
+    MPI_Isend(msg->header(), Message::kHeaderSize, MPI_BYTE,
+      msg->dst(), 0, MPI_COMM_WORLD, &handle);
+    msg_handle->AddHandle(handle);
     // Send multiple msg 
     for (auto& blob : msg->data()) {
       CHECK_NOTNULL(blob.data());
-      MPI_Send(blob.data(), static_cast<int>(blob.size()), MPI_BYTE, msg->dst(),
-        0, MPI_COMM_WORLD);
+      MPI_Isend(blob.data(), static_cast<int>(blob.size()), MPI_BYTE, msg->dst(),
+        0, MPI_COMM_WORLD, &handle);
       size += blob.size();
+      msg_handle->AddHandle(handle);
     }
     // Send an extra over tag indicating the finish of this Message
-    MPI_Send(&more_, sizeof(char), MPI_BYTE, msg->dst(),
-      0, MPI_COMM_WORLD);
+    MPI_Isend(&more_, sizeof(char), MPI_BYTE, msg->dst(),
+      0, MPI_COMM_WORLD, &handle);
     // Log::Debug("MPI-Net: rank %d send msg size = %d\n", rank(), size+4);
+    msg_handle->AddHandle(handle);
     return size + sizeof(char);
   }
 
   size_t RecvMsg(MessagePtr* msg_ptr) {
     if (!msg_ptr->get()) msg_ptr->reset(new Message());
-    // Receiving a Message from multiple recv
-    // Log::Debug("MPI-Net: rank %d started recv msg\n", rank());
     MessagePtr& msg = *msg_ptr;
     msg->data().clear();
     MPI_Status status;
@@ -126,11 +172,6 @@ private:
     while (true) {
       int count;
       CHECK(MPI_SUCCESS == MPI_Probe(msg->src(), 0, MPI_COMM_WORLD, &status));
-      //CHECK(MPI_SUCCESS == MPI_Iprobe(msg->src(), 0, MPI_COMM_WORLD, &flag, &status));
-      //if (!flag) {
-      //  if (num_probe > 100) Log::Debug(" VLOG(RECV), Iprobe failed too much time \n", ++num_probe);
-      //  continue;
-      //}
       MPI_Get_count(&status, MPI_BYTE, &count);
       Blob blob(count);
       // We only receive from msg->src() until we recv the overtag msg
@@ -139,10 +180,9 @@ private:
       size += count;
       if (count == sizeof(char)) {
         if (blob.As<char>() == more_) break;
-        CHECK(1 + 1 != 2);
+        CHECK(false);
       }
       msg->Push(blob);
-      // Log::Debug("      VLOG(RECV): i = %d\n", ++i);
     }
     // Log::Debug("MPI-Net: rank %d end recv from src %d, size = %d\n", rank(), msg->src(), size);
     return size;
@@ -155,6 +195,7 @@ private:
   int inited_;
   int rank_;
   int size_;
+  std::queue<MPIMsgHandle *> msg_handles_;
 };
 
 }

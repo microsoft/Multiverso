@@ -6,11 +6,11 @@ namespace multiverso {
 
 Worker::Worker() : Actor(actor::kWorker) {
   using namespace std::placeholders;
-  RegisterTask(MsgType::Request_Get, std::bind(&Worker::ProcessGet, this, _1));
-  RegisterTask(MsgType::Request_Add, std::bind(&Worker::ProcessAdd, this, _1));
-  RegisterTask(MsgType::Reply_Get, std::bind(
+  RegisterHandler(MsgType::Request_Get, std::bind(&Worker::ProcessGet, this, _1));
+  RegisterHandler(MsgType::Request_Add, std::bind(&Worker::ProcessAdd, this, _1));
+  RegisterHandler(MsgType::Reply_Get, std::bind(
     &Worker::ProcessReplyGet, this, _1));
-  RegisterTask(MsgType::Reply_Add, std::bind(
+  RegisterHandler(MsgType::Reply_Add, std::bind(
     &Worker::ProcessReplyAdd, this, _1));
 }
 

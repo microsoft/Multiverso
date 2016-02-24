@@ -76,9 +76,9 @@ private:
 };
 
 Controller::Controller() : Actor(actor::kController) {
-  RegisterTask(MsgType::Control_Barrier, std::bind(
+  RegisterHandler(MsgType::Control_Barrier, std::bind(
     &Controller::ProcessBarrier, this, std::placeholders::_1));
-  RegisterTask(MsgType::Control_Register, std::bind(
+  RegisterHandler(MsgType::Control_Register, std::bind(
     &Controller::ProcessRegister, this, std::placeholders::_1));
   barrier_controller_ = new BarrierController(this);
   register_controller_ = new RegisterController(this);
