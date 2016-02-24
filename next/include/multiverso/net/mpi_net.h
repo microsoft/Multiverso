@@ -27,11 +27,14 @@ public:
 
   class MPIMsgHandle {
   public:
-    void AddHandle(MPI_Request handle) {
+    void add_handle(MPI_Request handle) {
       handles_.push_back(handle);
     }
 
     void set_msg(MessagePtr& msg) { msg_ = std::move(msg); }
+
+    void set_size(size_t size) { size_ = size; }
+    size_t size() const { return size_; }
 
     void Wait() {
       CHECK_NOTNULL(msg_.get());
@@ -53,6 +56,7 @@ public:
   private:
     std::vector<MPI_Request> handles_;
     MessagePtr msg_;
+    size_t size_;
   };
 
   void Init(int* argc, char** argv) override {
@@ -97,6 +101,7 @@ public:
     MPIMsgHandle* handle = new MPIMsgHandle();
     size_t size = SendAsync(msg, handle);
     handle->set_msg(msg);
+    handle->set_size(size);
     msg_handles_.push(handle);
     return size;
   }
@@ -141,20 +146,20 @@ private:
     MPI_Request handle;
     MPI_Isend(msg->header(), Message::kHeaderSize, MPI_BYTE,
       msg->dst(), 0, MPI_COMM_WORLD, &handle);
-    msg_handle->AddHandle(handle);
+    msg_handle->add_handle(handle);
     // Send multiple msg 
     for (auto& blob : msg->data()) {
       CHECK_NOTNULL(blob.data());
       MPI_Isend(blob.data(), static_cast<int>(blob.size()), MPI_BYTE, msg->dst(),
         0, MPI_COMM_WORLD, &handle);
       size += blob.size();
-      msg_handle->AddHandle(handle);
+      msg_handle->add_handle(handle);
     }
     // Send an extra over tag indicating the finish of this Message
     MPI_Isend(&more_, sizeof(char), MPI_BYTE, msg->dst(),
       0, MPI_COMM_WORLD, &handle);
     // Log::Debug("MPI-Net: rank %d send msg size = %d\n", rank(), size+4);
-    msg_handle->AddHandle(handle);
+    msg_handle->add_handle(handle);
     return size + sizeof(char);
   }
 
