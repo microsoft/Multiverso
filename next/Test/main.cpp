@@ -72,8 +72,8 @@ void TestArray(int argc, char* argv[]) {
 
   MultiversoInit(&argc, argv);
   
-  ArrayWorker<float>* shared_array = new ArrayWorker<float>(10);
-  ArrayServer<float>* server_array = new ArrayServer<float>(10);
+  ArrayWorker<float>* shared_array = new ArrayWorker<float>(1000000);
+  ArrayServer<float>* server_array = new ArrayServer<float>(1000000);
 
   MultiversoBarrier();
   Log::Info("Create tables OK\n");
@@ -85,17 +85,17 @@ void TestArray(int argc, char* argv[]) {
   // std::vector<float>& vec = shared_array->raw();
 
   // shared_array->Get();
-    float data[10];
+    float* data = new float[1000000];
 
-    std::vector<float> delta(10);
-    for (int i = 0; i < 10; ++i) 
+    std::vector<float> delta(1000000);
+    for (int i = 0; i < 1000000; ++i) 
       delta[i] = static_cast<float>(i);
 
-    shared_array->Add(delta.data(), 10);
+    shared_array->Add(delta.data(), 1000000);
 
     Log::Info("Rank %d Add OK\n", MultiversoRank());
 
-    shared_array->Get(data, 10);
+    shared_array->Get(data, 1000000);
     Log::Info("Rank %d Get OK\n", MultiversoRank());
     for (int i = 0; i < 10; ++i) 
       std::cout << data[i] << " "; std::cout << std::endl;
@@ -167,7 +167,7 @@ void TestMultipleThread(int argc, char* argv[])
 		std::fill(delta.begin(), delta.end(), 0);
 		for (int i = 0; i < ARRAY_SIZE; ++i)
 		{
-			std::mt19937_64 eng{ std::random_device{}() };
+		std::mt19937_64 eng{ std::random_device{}() };
 			std::uniform_real_distribution<float> dist{ -1, 1 };
 			delta[i] = dist(eng);
 		}

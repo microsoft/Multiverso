@@ -7,9 +7,9 @@
 namespace multiverso {
 
 Server::Server() : Actor(actor::kServer) {
-  RegisterTask(MsgType::Request_Get, std::bind(
+  RegisterHandler(MsgType::Request_Get, std::bind(
     &Server::ProcessGet, this, std::placeholders::_1));
-  RegisterTask(MsgType::Request_Add, std::bind(
+  RegisterHandler(MsgType::Request_Add, std::bind(
     &Server::ProcessAdd, this, std::placeholders::_1));
 }
 

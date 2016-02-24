@@ -50,11 +50,6 @@ public:
         requester_.push_back(requester);
       }
     }
-	if (responder_ == NULL) {
-    for (int i = 0; i < machine_lists.size(); ++i) Log::Info("%s\n", machine_lists[i].c_str());
-    for (auto ip : local_ip) Log::Info("%s\n", ip.c_str());
-
-	}
     CHECK_NOTNULL(responder_);
     Log::Info("%s net util inited, rank = %d, size = %d\n",
       name().c_str(), rank(), size());
@@ -70,7 +65,7 @@ public:
   int size() const override { return size_; }
   std::string name() const override { return "ZeroMQ"; }
 
-  size_t Send(const MessagePtr& msg) override {
+  size_t Send(MessagePtr& msg) override {
     size_t size = 0;
     int dst = msg->dst();
     void* socket = requester_[dst];
@@ -91,8 +86,6 @@ public:
       CHECK(send_size == blob_size);
       size += blob_size + sizeof(size_t);
     }
-    // Send an extra over tag indicating the finish of this Message
-    Log::Debug("ZMQ-Net: rank %d send msg size = %d\n", rank(), size);
     return size;
   }
 
@@ -103,33 +96,28 @@ public:
     size_t blob_size;
     int more;
     size_t more_size = sizeof(more);
-    // Receiving a Message from multiple recv
+    // Receiving a Message from multiple zmq_recv
     CHECK_NOTNULL(msg_ptr);
     MessagePtr& msg = *msg_ptr;
     msg->data().clear();
     CHECK(msg.get());
     recv_size = zmq_recv(responder_, msg->header(), Message::kHeaderSize, 0);
-    if (recv_size < 0) {
-        return -1;
-    }
+    if (recv_size < 0) { return -1; }
     CHECK(Message::kHeaderSize == recv_size);
 
-    Log::Debug("In recv, type = %d\n", msg->header()[2]);
     size += recv_size;
     zmq_getsockopt(responder_, ZMQ_RCVMORE, &more, &more_size);
-    Log::Debug("before recv While, more = %d\n", more);
 
     while (more) {
-        Log::Debug("In recv While, more = %d\n", more);
       recv_size = zmq_recv(responder_, &blob_size, sizeof(size_t), 0);
-      size += recv_size;
       CHECK(recv_size == sizeof(size_t));
+      size += recv_size;
       zmq_getsockopt(responder_, ZMQ_RCVMORE, &more, &more_size);
       CHECK(more);
       Blob blob(blob_size);
       recv_size = zmq_recv(responder_, blob.data(), blob.size(), 0);
-      size += recv_size;
       CHECK(recv_size == blob_size);
+      size += recv_size;
       msg->Push(blob);
       zmq_getsockopt(responder_, ZMQ_RCVMORE, &more, &more_size);
     }
