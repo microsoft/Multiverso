@@ -77,6 +77,7 @@ public:
     }
     MPI_Comm_rank(MPI_COMM_WORLD, &rank_);
     MPI_Comm_size(MPI_COMM_WORLD, &size_);
+	MPI_Barrier(MPI_COMM_WORLD);
     Log::Debug("%s net util inited, rank = %d, size = %d\n",
       name().c_str(), rank(), size());
   }

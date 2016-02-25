@@ -26,7 +26,7 @@ void Actor::Stop() {
 void Actor::Receive(MessagePtr& msg) { mailbox_->Push(msg); }
 
 void Actor::Main() {
-  // Log::Info("Start to run actor %s\n", name().c_str());
+  Log::Debug("Rank %d: Start to run actor %s\n", Zoo::Get()->rank(), name().c_str());
   MessagePtr msg;
   while (mailbox_->Pop(msg)) {
     if (handlers_.find(msg->type()) != handlers_.end()) {

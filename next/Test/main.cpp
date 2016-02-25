@@ -146,6 +146,9 @@ void TestMomentum(int argc, char* argv[]) {
 void TestMultipleThread(int argc, char* argv[])
 {
 	Log::Info("Test Multiple threads \n");
+	std::mt19937_64 eng{ std::random_device{}() };  
+	std::uniform_int_distribution<> dist{ 5, 10000 };
+	std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
 	//Log::ResetLogLevel(LogLevel::Debug);
 	MultiversoInit(&argc, argv);
 
