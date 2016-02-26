@@ -62,6 +62,16 @@ void GetLocalIPAddress(std::unordered_set<std::string>* result) {
   if (pAdapterInfo)
     FREE(pAdapterInfo);
 }
+
+#else
+
+void GetLocalIPAddress(std::unordered_set<std::string>* result) {
+CHECK(false);
+int i = 0;
+return;
+// todo
+}
+
 #endif // _MSC_VER
 
 } 

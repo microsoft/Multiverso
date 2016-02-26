@@ -202,7 +202,7 @@ void TestNet(int argc, char* argv[]) {
   char* hi2 = "hello, c++";
   char* hi3 = "hello, multiverso";
   if (net->rank() == 0) {
-    MessagePtr msg = std::make_unique<Message>();
+    MessagePtr msg(new Message());// = std::make_unique<Message>();
     msg->set_src(0);
     msg->set_dst(1);
     msg->Push(Blob(hi1, 13));
@@ -224,7 +224,7 @@ void TestNet(int argc, char* argv[]) {
       Log::Info("%s\n", recv_data[i].data());
     };
   } else if (net->rank() == 1) {
-    MessagePtr msg = std::make_unique<Message>();
+    MessagePtr msg(new Message());// = std::make_unique<Message>();
     while (net->Recv(&msg) == 0) {
       Log::Info("recv return 0\n");
     }
@@ -252,8 +252,8 @@ void TestNet(int argc, char* argv[]) {
 
 void TestIP() {
   std::unordered_set<std::string> ip_list;
-  net::GetLocalIPAddress(&ip_list);
-  for (auto ip : ip_list) Log::Info("%s\n", ip);
+  // net::GetLocalIPAddress(&ip_list);
+  for (auto ip : ip_list) Log::Info("%s\n", ip.c_str());
 }
 
 int main(int argc, char* argv[]) {
