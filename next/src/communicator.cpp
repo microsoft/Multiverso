@@ -62,6 +62,7 @@ void Communicator::ProcessMessage(MessagePtr& msg) {
   if (msg->dst() != net_util_->rank()) {
     Log::Debug("Send a msg from %d to %d, type = %d\n", msg->src(), msg->dst(), msg->type());
     net_util_->Send(msg);
+	CHECK(msg.get() == nullptr)
     return;
   }
   LocalForward(msg);
