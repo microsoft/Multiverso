@@ -32,7 +32,7 @@ public:
     }
 
     void set_msg(MessagePtr& msg) { msg_ = std::move(msg); }
-
+    const MessagePtr& msg() const { return msg_; }
     void set_size(size_t size) { size_ = size; }
     size_t size() const { return size_; }
 
@@ -99,8 +99,8 @@ public:
       }
     }
     MPIMsgHandle* handle = new MPIMsgHandle();
-    size_t size = SendAsync(msg, handle);
     handle->set_msg(msg);
+    size_t size = SendAsync(handle->msg(), handle);
     handle->set_size(size);
     msg_handles_.push(handle);
     return size;
@@ -122,24 +122,6 @@ public:
   }
 
 private:
-  //size_t SendMsg(const MessagePtr& msg) {
-  //  size_t size = Message::kHeaderSize;
-  //  MPI_Send(msg->header(), Message::kHeaderSize, MPI_BYTE,
-  //    msg->dst(), 0, MPI_COMM_WORLD);
-  //  // Send multiple msg 
-  //  for (auto& blob : msg->data()) {
-  //    CHECK_NOTNULL(blob.data());
-  //    MPI_Send(blob.data(), static_cast<int>(blob.size()), MPI_BYTE, msg->dst(),
-  //      0, MPI_COMM_WORLD);
-  //    size += blob.size();
-  //  }
-  //  // Send an extra over tag indicating the finish of this Message
-  //  MPI_Send(&more_, sizeof(char), MPI_BYTE, msg->dst(),
-  //    0, MPI_COMM_WORLD);
-  //  // Log::Debug("MPI-Net: rank %d send msg size = %d\n", rank(), size+4);
-  //  return size + sizeof(char);
-  //}
-
   size_t SendAsync(const MessagePtr& msg, 
                    MPIMsgHandle* msg_handle) {
     size_t size = Message::kHeaderSize;
