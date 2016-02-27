@@ -33,10 +33,10 @@ void Zoo::Start(int* argc, char** argv, int role) {
   // All nodes have a communicator, and one(at least one) or more of other three 
   // kinds of actors
   Log::Debug("Rank %d: Initializing Comunicator.\n", rank());
-  Actor* communicator = new Communicator();
   if (rank() == 0)           Actor* controler = new Controller();
   if (node::is_worker(role)) Actor* worker = new Worker();
   if (node::is_server(role)) Actor* server = new Server();
+  Actor* communicator = new Communicator();
 
   Log::Debug("Rank %d: Reseting Mailbox.\n", rank());
   mailbox_.reset(new MtQueue<MessagePtr>);
