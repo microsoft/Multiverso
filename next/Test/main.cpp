@@ -3,6 +3,8 @@
 #include <random>
 #include <chrono>
 
+#include <mpi.h>
+
 #include <multiverso/multiverso.h>
 #include <multiverso/net.h>
 #include <multiverso/util/log.h>
@@ -256,6 +258,54 @@ void TestIP() {
   for (auto ip : ip_list) Log::Info("%s\n", ip.c_str());
 }
 
+void TestNoNet(int argc, char* argv[]) {  
+  int provided;
+  MPI_Init_thread(&argc, &argv, MPI_THREAD_SERIALIZED, &provided);
+
+  MPI_Barrier(MPI_COMM_WORLD);
+  MultiversoInit(&argc, argv);
+
+  ArrayWorker<float>* shared_array = new ArrayWorker<float>(ARRAY_SIZE);
+  ArrayServer<float>* server_array = new ArrayServer<float>(ARRAY_SIZE);
+  std::thread* m_prefetchThread = nullptr;
+  MultiversoBarrier();
+  Log::Info("Create tables OK\n");
+
+  std::vector<float> delta(ARRAY_SIZE);
+  while (true){
+    if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
+    {
+      m_prefetchThread->join();
+      delete m_prefetchThread;
+      m_prefetchThread = nullptr;
+    }
+
+    std::fill(delta.begin(), delta.end(), 0);
+    for (int i = 0; i < ARRAY_SIZE; ++i)
+    {
+      std::mt19937_64 eng{ std::random_device{}() };
+      std::uniform_real_distribution<float> dist{ -1, 1 };
+      delta[i] = dist(eng);
+    }
+    m_prefetchThread = new std::thread([&](){
+
+      //std::mt19937_64 eng{ std::random_device{}() };  
+      //std::uniform_int_distribution<> dist{ 50, 500 };
+      //std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
+      shared_array->Add(delta.data(), ARRAY_SIZE);
+      shared_array->Get(delta.data(), ARRAY_SIZE);
+      Log::Info("Rank %d Get OK\n", MultiversoRank());
+      for (int i = 0; i < 10; ++i)
+        std::cout << delta[i] << " "; std::cout << std::endl;
+    });
+
+    //shared_array->Get(data, 10);
+    MultiversoBarrier();
+
+  }
+  MultiversoShutDown();
+}
+
 int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
   if (argc == 2) { 
@@ -265,6 +315,7 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "ip") == 0) TestIP();
 	else if (strcmp(argv[1], "momentum") == 0) TestMomentum(argc, argv);
 	else if (strcmp(argv[1], "threads") == 0) TestMultipleThread(argc, argv);
+  else if (strcmp(argv[1], "nonet") == 0) TestNoNet(argc, argv);
     else CHECK(false);
   } 
   // argc == 4 is for zeromq test, with two extra arguments: machinefile, port

@@ -50,8 +50,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(SolutionDir)/src;$(SolutionDir)/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(SolutionDir)/x64/$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>$(MSMPI_INC);$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(SolutionDir)/src;$(SolutionDir)/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(MSMPI_LIB64);$(SolutionDir)/x64/$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <ClCompile>
