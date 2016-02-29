@@ -18,11 +18,13 @@ Zoo::~Zoo() {}
 void Zoo::Start(int* argc, char** argv, int role) {
   Log::Debug("Zoo started\n");
   CHECK(role >= 0 && role <= 3);
+  // Init the network
   net_util_ = NetInterface::Get();
   net_util_->Init(argc, argv);
   nodes_.resize(size());
   nodes_[rank()].rank = rank();
   nodes_[rank()].role = role;
+  mailbox_.reset(new MtQueue<MessagePtr>);
   // These actors can either reside in one process, or in different process
   // based on the configuration
   // For example, we can have a kind of configuration, N machines, each have a 
@@ -32,18 +34,16 @@ void Zoo::Start(int* argc, char** argv, int role) {
   // controller, rank 1...M as workers(M < N), and rank M... N-1 as servers
   // All nodes have a communicator, and one(at least one) or more of other three 
   // kinds of actors
-  Log::Debug("Rank %d: Initializing Comunicator.\n", rank());
-  Actor* communicator = new Communicator();
-  if (rank() == 0)           Actor* controler = new Controller();
-  if (node::is_worker(role)) Actor* worker = new Worker();
-  if (node::is_server(role)) Actor* server = new Server();
 
-  Log::Debug("Rank %d: Reseting Mailbox.\n", rank());
-  mailbox_.reset(new MtQueue<MessagePtr>);
-  // Start all actors
-  Log::Debug("Rank %d: Starting .\n", rank());
-  for (auto actor : zoo_) { actor.second->Start(); }
-  // Init the network
+  // Log::Debug("Rank %d: Initializing Comunicator.\n", rank());
+
+  // NOTE(feiga): the start order is non-trivial
+  if (rank() == 0) { Actor* controler = new Controller(); controler->Start(); }
+  if (node::is_server(role)) { Actor* server = new Server(); server->Start(); }
+  if (node::is_worker(role)) { Actor* worker = new Worker(); worker->Start(); }
+  Actor* communicator = new Communicator();
+  communicator->Start();
+
   // activate the system
   RegisterNode();
   Log::Info("Rank %d: Zoo start sucessfully\n", rank());
@@ -64,6 +64,7 @@ int Zoo::size() const { return net_util_->size(); }
 
 void Zoo::SendTo(const std::string& name, MessagePtr& msg) {
   CHECK(zoo_.find(name) != zoo_.end());
+  int type = msg->type();
   zoo_[name]->Receive(msg);
 }
 void Zoo::Receive(MessagePtr& msg) {

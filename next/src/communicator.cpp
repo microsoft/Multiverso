@@ -33,6 +33,8 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
 }
 
 void Communicator::Main() {
+  is_working_ = true;
+  if (Zoo::Get()->rank() == 0) Log::Debug("Rank %d: Start to run actor %s\n", Zoo::Get()->rank(), name().c_str());
   // TODO(feiga): join the thread, make sure it exit properly
   switch (net_util_->thread_level_support()) {
   case NetThreadLevel::THREAD_MULTIPLE: {
@@ -43,6 +45,10 @@ void Communicator::Main() {
   case NetThreadLevel::THREAD_SERIALIZED: {
     MessagePtr msg;
     while (mailbox_->Alive()) {
+      // Try pop and Send
+      if (mailbox_->TryPop(msg)) {
+        ProcessMessage(msg);
+      };
       // Probe and Recv
       size_t size = net_util_->Recv(&msg);
       if (size > 0) LocalForward(msg);
@@ -50,6 +56,8 @@ void Communicator::Main() {
       if (mailbox_->TryPop(msg)) {
         ProcessMessage(msg);
       };
+      CHECK(msg.get() == nullptr);
+      net_util_->Send(msg);
     }
     break;
   }
@@ -60,7 +68,7 @@ void Communicator::Main() {
 
 void Communicator::ProcessMessage(MessagePtr& msg) {
   if (msg->dst() != net_util_->rank()) {
-    Log::Debug("Send a msg from %d to %d, type = %d\n", msg->src(), msg->dst(), msg->type());
+    // Log::Debug("Send a msg from %d to %d, type = %d\n", msg->src(), msg->dst(), msg->type());
     net_util_->Send(msg);
     return;
   }
