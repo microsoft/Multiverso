@@ -1,4 +1,4 @@
-#ifndef MULTIVERSO_NET_MPI_NET_H_
+#ifndef MULTIVERSO_NET_MPI_NET_H_ 
 #define MULTIVERSO_NET_MPI_NET_H_
 
 #ifdef MULTIVERSO_USE_MPI
@@ -142,7 +142,7 @@ public:
     MV_MPI_CALL(MPI_Get_count(&status, MPI_BYTE, &count));
     if (!flag) return 0;
     CHECK(count == Message::kHeaderSize);
-    return RecvMsg(msg);
+    return RecvMsgFrom(status.MPI_SOURCE, msg);
   }
 
   int thread_level_support() override { 
@@ -178,23 +178,22 @@ private:
     return size + sizeof(char);
   }
 
-  size_t RecvMsg(MessagePtr* msg_ptr) {
+  size_t RecvMsgFrom(int source, MessagePtr* msg_ptr) {
     if (!msg_ptr->get()) msg_ptr->reset(new Message());
     MessagePtr& msg = *msg_ptr;
     msg->data().clear();
     MPI_Status status;
     CHECK_NOTNULL(msg->header());
     MV_MPI_CALL(MPI_Recv(msg->header(), Message::kHeaderSize,
-      MPI_BYTE, MPI_ANY_SOURCE,
-      0, MPI_COMM_WORLD, &status));
+      MPI_BYTE, source, 0, MPI_COMM_WORLD, &status));
     size_t size = Message::kHeaderSize;
     while (true) {
       int count;
-      MV_MPI_CALL(MPI_Probe(msg->src(), 0, MPI_COMM_WORLD, &status));
+      MV_MPI_CALL(MPI_Probe(source, 0, MPI_COMM_WORLD, &status));
       MV_MPI_CALL(MPI_Get_count(&status, MPI_BYTE, &count));
       Blob blob(count);
       // We only receive from msg->src() until we recv the overtag msg
-      MV_MPI_CALL(MPI_Recv(blob.data(), count, MPI_BYTE, msg->src(),
+      MV_MPI_CALL(MPI_Recv(blob.data(), count, MPI_BYTE, source,
         0, MPI_COMM_WORLD, &status));
       size += count;
       if (count == sizeof(char)) {

@@ -210,7 +210,7 @@ void TestNet(int argc, char* argv[]) {
     msg->Push(Blob(hi1, 13));
     msg->Push(Blob(hi2, 11));
     msg->Push(Blob(hi3, 18));
-    net->Send(msg);
+    while(net->Send(msg) == 0) ;
     Log::Info("rank 0 send\n");
     Log::Info("Hi = %s\n", msg->data()[0].data());
 
@@ -244,7 +244,7 @@ void TestNet(int argc, char* argv[]) {
     msg->Push(Blob(hi1, 13));
     msg->Push(Blob(hi2, 11));
     msg->Push(Blob(hi3, 18));
-    net->Send(msg);
+    while (net->Send(msg) == 0);
     Log::Info("rank 0 send\n");
     Log::Info("Hi = %s\n", msg->data()[0].data());
   }
