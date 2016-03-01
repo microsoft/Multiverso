@@ -11,6 +11,7 @@
 #include <multiverso/table/smooth_array_table.h>
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
+#include <MPIWrapper.h>
 using namespace multiverso;
 
 void TestKV(int argc, char* argv[]) {
@@ -145,6 +146,7 @@ void TestMomentum(int argc, char* argv[]) {
 #define ARRAY_SIZE 4683776
 void TestMultipleThread(int argc, char* argv[])
 {
+	Microsoft::MSR::CNTK::MPIWrapper *g_mpi = new Microsoft::MSR::CNTK::MPIWrapper();
 	Log::Info("Test Multiple threads \n");
 	std::mt19937_64 eng{ std::random_device{}() };  
 	std::uniform_int_distribution<> dist{ 5, 10000 };
