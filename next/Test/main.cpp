@@ -22,7 +22,7 @@ void TestKV(int argc, char* argv[]) {
   // ----------------------------------------------------------------------- //
 
   // 1. Start the Multiverso engine ---------------------------------------- //
-  MultiversoInit(&argc, argv);
+  MV_Init(&argc, argv);
 
   // 2. To create the shared table ----------------------------------------- //
 
@@ -37,7 +37,7 @@ void TestKV(int argc, char* argv[]) {
   // if the node is server, then create a server storage table
   KVServerTable<int, int>* server_dht = new KVServerTable<int, int>();
 
-  MultiversoBarrier();
+  MV_Barrier();
 
   // 3. User program ------------------------------------------------------- //
 
@@ -66,18 +66,18 @@ void TestKV(int argc, char* argv[]) {
   Log::Info("Get 0 from kv server after add 1: result = %d\n", kv[0]);
 
   // 4. Shutdown the Multiverso engine. ------------------------------------ //
-  MultiversoShutDown();
+  MV_ShutDown();
 }
 
 void TestArray(int argc, char* argv[]) {
   Log::Info("Test Array \n");
 
-  MultiversoInit(&argc, argv);
+  MV_Init(&argc, argv);
   
   ArrayWorker<float>* shared_array = new ArrayWorker<float>(1000000);
   ArrayServer<float>* server_array = new ArrayServer<float>(1000000);
 
-  MultiversoBarrier();
+  MV_Barrier();
   Log::Info("Create tables OK\n");
 
   int iter = 1000;
@@ -95,16 +95,16 @@ void TestArray(int argc, char* argv[]) {
 
     shared_array->Add(delta.data(), 1000000);
 
-    Log::Info("Rank %d Add OK\n", MultiversoRank());
+    Log::Info("Rank %d Add OK\n", MV_Rank());
 
     shared_array->Get(data, 1000000);
-    Log::Info("Rank %d Get OK\n", MultiversoRank());
+    Log::Info("Rank %d Get OK\n", MV_Rank());
     for (int i = 0; i < 10; ++i) 
       std::cout << data[i] << " "; std::cout << std::endl;
-    MultiversoBarrier();
+    MV_Barrier();
 
   }
-  MultiversoShutDown();
+  MV_ShutDown();
 }
 
 void TestMomentum(int argc, char* argv[]) {
@@ -112,12 +112,12 @@ void TestMomentum(int argc, char* argv[]) {
 
 
 	Log::ResetLogLevel(LogLevel::Debug);
-	MultiversoInit();
+	MV_Init();
 
 	SmoothArrayWorker<float>* shared_array = new SmoothArrayWorker<float>(10);
 	SmoothArrayServer<float>* server_array = new SmoothArrayServer<float>(10);
 
-	MultiversoBarrier();
+	MV_Barrier();
 	Log::Info("Create tables OK\n");
 
 	while (true){
@@ -132,16 +132,16 @@ void TestMomentum(int argc, char* argv[]) {
 
 		shared_array->Add(delta.data(), 10, 0.5f);
 
-		Log::Info("Rank %d Add OK\n", MultiversoRank());
+		Log::Info("Rank %d Add OK\n", MV_Rank());
 
 		shared_array->Get(data, 10);
-		Log::Info("Rank %d Get OK\n", MultiversoRank());
+		Log::Info("Rank %d Get OK\n", MV_Rank());
 		for (int i = 0; i < 10; ++i)
 			std::cout << data[i] << " "; std::cout << std::endl;
-		MultiversoBarrier();
+		MV_Barrier();
 
 	}
-	MultiversoShutDown();
+	MV_ShutDown();
 }
 
 #define ARRAY_SIZE 4683776
@@ -152,12 +152,12 @@ void TestMultipleThread(int argc, char* argv[])
 	std::uniform_int_distribution<> dist{ 5, 10000 };
 	std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
 	//Log::ResetLogLevel(LogLevel::Debug);
-	MultiversoInit(&argc, argv);
+	MV_Init(&argc, argv);
 
 	ArrayWorker<float>* shared_array = new ArrayWorker<float>(ARRAY_SIZE);
 	ArrayServer<float>* server_array = new ArrayServer<float>(ARRAY_SIZE);
 	std::thread* m_prefetchThread = nullptr;
-	MultiversoBarrier();
+	MV_Barrier();
 	Log::Info("Create tables OK\n");
 
 	std::vector<float> delta(ARRAY_SIZE);
@@ -183,16 +183,16 @@ void TestMultipleThread(int argc, char* argv[])
 			//std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
 			shared_array->Add(delta.data(), ARRAY_SIZE);
 			shared_array->Get(delta.data(), ARRAY_SIZE);
-			Log::Info("Rank %d Get OK\n", MultiversoRank());
+			Log::Info("Rank %d Get OK\n", MV_Rank());
 			for (int i = 0; i < 10; ++i)
 				std::cout << delta[i] << " "; std::cout << std::endl;
 		});
 
 		//shared_array->Get(data, 10);
-		MultiversoBarrier();
+		MV_Barrier();
 
 	}
-	MultiversoShutDown();
+	MV_ShutDown();
 }
 
 
@@ -263,12 +263,12 @@ void TestNoNet(int argc, char* argv[]) {
   MPI_Init_thread(&argc, &argv, MPI_THREAD_SERIALIZED, &provided);
 
   MPI_Barrier(MPI_COMM_WORLD);
-  MultiversoInit(&argc, argv);
+  MV_Init(&argc, argv);
 
   ArrayWorker<float>* shared_array = new ArrayWorker<float>(ARRAY_SIZE);
   ArrayServer<float>* server_array = new ArrayServer<float>(ARRAY_SIZE);
   std::thread* m_prefetchThread = nullptr;
-  MultiversoBarrier();
+  MV_Barrier();
   Log::Info("Create tables OK\n");
 
   std::vector<float> delta(ARRAY_SIZE);
@@ -294,16 +294,16 @@ void TestNoNet(int argc, char* argv[]) {
       //std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
       shared_array->Add(delta.data(), ARRAY_SIZE);
       shared_array->Get(delta.data(), ARRAY_SIZE);
-      Log::Info("Rank %d Get OK\n", MultiversoRank());
+      Log::Info("Rank %d Get OK\n", MV_Rank());
       for (int i = 0; i < 10; ++i)
         std::cout << delta[i] << " "; std::cout << std::endl;
     });
 
     //shared_array->Get(data, 10);
-    MultiversoBarrier();
+    MV_Barrier();
 
   }
-  MultiversoShutDown();
+  MV_ShutDown();
 }
 
 int main(int argc, char* argv[]) {

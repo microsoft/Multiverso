@@ -24,17 +24,6 @@ int  MV_Size();
 
 int  MV_Worker_Id();
 int  MV_Server_Id();
-
-// will deprecate the following function name
-void MultiversoInit(int* argc = nullptr, 
-                    char* argv[] = nullptr, 
-                    int role = kAll);
-
-void MultiversoBarrier();
-
-void MultiversoShutDown(bool finalize_mpi = true);
-
-int MultiversoRank();
 }
 
 #endif // MULTIVERSO_INCLUDE_MULTIVERSO_H_
