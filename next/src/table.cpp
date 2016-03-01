@@ -17,7 +17,7 @@ ServerTable::ServerTable() {
 int WorkerTable::GetAsync(Blob keys) {
   int id = msg_id_++;
   waitings_[id] = new Waiter();
-  MessagePtr msg(new Message()); //  = std::make_unique<Message>();
+  MessagePtr msg(new Message());
   msg->set_src(Zoo::Get()->rank());
   msg->set_type(MsgType::Request_Get);
   msg->set_msg_id(id);
@@ -30,7 +30,7 @@ int WorkerTable::GetAsync(Blob keys) {
 int WorkerTable::AddAsync(Blob keys, Blob values) {
   int id = msg_id_++;
   waitings_[id] = new Waiter();
-  MessagePtr msg(new Message()); //  = std::make_unique<Message>();
+  MessagePtr msg(new Message());
   msg->set_src(Zoo::Get()->rank());
   msg->set_type(MsgType::Request_Add);
   msg->set_msg_id(id);

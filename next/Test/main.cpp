@@ -204,50 +204,56 @@ void TestNet(int argc, char* argv[]) {
   char* hi2 = "hello, c++";
   char* hi3 = "hello, multiverso";
   if (net->rank() == 0) {
+    for (int rank = 1; rank < net->size(); ++rank) {
     MessagePtr msg(new Message());// = std::make_unique<Message>();
     msg->set_src(0);
-    msg->set_dst(1);
+    msg->set_dst(rank);
     msg->Push(Blob(hi1, 13));
     msg->Push(Blob(hi2, 11));
     msg->Push(Blob(hi3, 18));
-    while(net->Send(msg) == 0) ;
+    net->Send(msg);
     Log::Info("rank 0 send\n");
-    Log::Info("Hi = %s\n", msg->data()[0].data());
-
-    msg.reset(new Message());
-    while (net->Recv(&msg) == 0) {
-      Log::Info("recv return 0\n");
     }
-    Log::Info("rank 0 recv\n");
-    // CHECK(strcmp(msg->data()[0].data(), hi) == 0);
-    std::vector<Blob> recv_data = msg->data();
-    CHECK(recv_data.size() == 3);
-    for (int i = 0; i < msg->size(); ++i) {
-      Log::Info("%s\n", recv_data[i].data());
-    };
-  } else if (net->rank() == 1) {
+
+    for (int i = 1; i < net->size(); ++i) {
+      MessagePtr msg(new Message());
+      msg.reset(new Message());
+      while (net->Recv(&msg) == 0) {
+        // Log::Info("recv return 0\n");
+      }
+      Log::Info("rank 0 recv\n");
+      // CHECK(strcmp(msg->data()[0].data(), hi) == 0);
+      std::vector<Blob> recv_data = msg->data();
+      CHECK(recv_data.size() == 3);
+      for (int i = 0; i < msg->size(); ++i) {
+        Log::Info("recv from srv %d: %s\n", msg->src(), recv_data[i].data());
+      };
+    }
+  } else {// other rank
     MessagePtr msg(new Message());// = std::make_unique<Message>();
     while (net->Recv(&msg) == 0) {
-      Log::Info("recv return 0\n");
+      // Log::Info("recv return 0\n");
     }
-    Log::Info("rank 1 recv\n");
+    Log::Info("rank %d recv\n", net->rank());
     // CHECK(strcmp(msg->data()[0].data(), hi) == 0);
-    std::vector<Blob> recv_data = msg->data();
+    std::vector<Blob>& recv_data = msg->data();
     CHECK(recv_data.size() == 3);
     for (int i = 0; i < msg->size(); ++i) {
       Log::Info("%s\n", recv_data[i].data());
     }
 
     msg.reset(new Message());
-    msg->set_src(1);
+    msg->set_src(net->rank());
     msg->set_dst(0);
     msg->Push(Blob(hi1, 13));
     msg->Push(Blob(hi2, 11));
     msg->Push(Blob(hi3, 18));
-    while (net->Send(msg) == 0);
-    Log::Info("rank 0 send\n");
-    Log::Info("Hi = %s\n", msg->data()[0].data());
+    net->Send(msg);
+    Log::Info("rank %d send\n", net->rank());
   }
+  // while (!net->Test()) {
+  //  // wait all message process finished
+  // }
 
   net->Finalize();
 }
@@ -304,6 +310,12 @@ void TestNoNet(int argc, char* argv[]) {
 
   }
   MV_ShutDown();
+}
+
+void TestComm(int argc, char* argv[]) {
+  
+
+
 }
 
 int main(int argc, char* argv[]) {
