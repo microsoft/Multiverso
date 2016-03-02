@@ -48,14 +48,14 @@ void Communicator::Main() {
       // Try pop and Send
       if (mailbox_->TryPop(msg)) {
         ProcessMessage(msg);
-      };
+      }
       // Probe and Recv
       size_t size = net_util_->Recv(&msg);
       if (size > 0) LocalForward(msg);
       // Try pop and Send
       if (mailbox_->TryPop(msg)) {
         ProcessMessage(msg);
-      };
+      }
       CHECK(msg.get() == nullptr);
       net_util_->Send(msg);
     }
