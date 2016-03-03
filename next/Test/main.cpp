@@ -239,19 +239,25 @@ void TestNet(int argc, char* argv[]) {
   NetInterface* net = NetInterface::Get();
   net->Init(&argc, argv);
 
-  char* hi1 = "hello, world";
-  char* hi2 = "hello, c++";
-  char* hi3 = "hello, multiverso";
+  const char* chi1 = std::string("hello, world").c_str();
+  const char* chi2 = std::string("hello, c++").c_str();
+  const char* chi3 = std::string("hello, multiverso").c_str();
+  char* hi1 = new char[14];
+  strcpy(hi1, chi1);
+  char* hi2 = new char[12];
+  strcpy(hi2, chi2);
+  char* hi3 = new char[19];
+  strcpy(hi3, chi3);
   if (net->rank() == 0) {
     for (int rank = 1; rank < net->size(); ++rank) {
-    MessagePtr msg(new Message());// = std::make_unique<Message>();
-    msg->set_src(0);
-    msg->set_dst(rank);
-    msg->Push(Blob(hi1, 13));
-    msg->Push(Blob(hi2, 11));
-    msg->Push(Blob(hi3, 18));
-    net->Send(msg);
-    Log::Info("rank 0 send\n");
+      MessagePtr msg(new Message());// = std::make_unique<Message>();
+      msg->set_src(0);
+      msg->set_dst(rank);
+      msg->Push(Blob(hi1, 13));
+      msg->Push(Blob(hi2, 11));
+      msg->Push(Blob(hi3, 18));
+      while (net->Send(msg) == 0) ;
+      Log::Info("rank 0 send\n");
     }
 
     for (int i = 1; i < net->size(); ++i) {
@@ -287,7 +293,7 @@ void TestNet(int argc, char* argv[]) {
     msg->Push(Blob(hi1, 13));
     msg->Push(Blob(hi2, 11));
     msg->Push(Blob(hi3, 18));
-    net->Send(msg);
+    while (net->Send(msg) == 0) ;
     Log::Info("rank %d send\n", net->rank());
   }
   // while (!net->Test()) {
