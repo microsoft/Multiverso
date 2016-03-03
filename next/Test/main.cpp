@@ -18,41 +18,6 @@
 
 using namespace multiverso;
 
-void TestMatrix(int argc, char* argv[]){
-	Log::Info("Test Matrix\n");
-	MV_Init(&argc, argv);
-	MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(10, 10);
-	MatrixServerTable<int>* server_table = new MatrixServerTable<int>(10, 10);
-	MV_Barrier();
-
-	std::vector<int> delta(10 * 10);
-
-	for (int i = 0; i < 100; ++i)
-		delta[i] = 0;
-
-	int * data = new int[10 * 10];
-
-	for (int i = 0; i < 100; ++i)
-		delta[i] = 1.0;
-
-	std::vector<int> v = { 0, 1, 5 };
-
-	worker_table->Add(v, delta.data());
-	worker_table->Add(-1, delta.data());
-
-	worker_table->Get(-1, data);
-
-	printf("-----------rank %d begin-----------\n", Zoo::Get()->rank());
-	for (int i = 0; i < 10; ++i){
-		for (int j = 0; j < 10; ++j)
-			printf("%d ", data[i*10+j]);
-		printf("\n");
-	}
-	MV_Barrier();
-
-	MV_ShutDown();
-}
-
 void TestKV(int argc, char* argv[]) {
   Log::Info("Test KV map \n");
   // ----------------------------------------------------------------------- //
@@ -356,6 +321,69 @@ void TestNoNet(int argc, char* argv[]) {
 
   }
   MV_ShutDown();
+}
+
+void TestMatrix(int argc, char* argv[]){
+	Log::Info("Test Matrix\n");
+
+	MV_Init(&argc, argv);
+
+	int num_row = 11, num_col = 10;
+	int size = num_row * num_col;
+
+	MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+	MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+
+	MV_Barrier();
+
+	std::vector<int> v = { 0, 1, 5 };
+	/* test data
+	std::vector<int> delta(size);
+	for (int i = 0; i < size; ++i)
+		delta[i] = 1;
+
+	int * data = new int[size];
+
+	worker_table->Add(v, delta.data());
+	worker_table->Add(-1, delta.data());
+
+	worker_table->Get(-1, data);
+	MV_Barrier();
+
+	printf("----------------------------\n");
+	for (int i = 0; i < num_row; ++i){
+		printf("rank %d output row %d: ", Zoo::Get()->rank(), i);
+		for (int j = 0; j < num_col; ++j)
+			printf("%d ", data[i * num_col + j]);
+		printf("\n");
+	}
+	*/
+
+	//test data_vec
+	std::vector<int*> delta(num_row);
+	std::vector<int*> data(num_row);
+	for (int i = 0; i < num_row; ++i){
+		delta[i] = new int[num_col];
+		data[i] = new int[num_col];
+		for (int j = 0; j < num_col; ++j){
+			delta[i][j] = 1;
+		}
+	}
+
+	worker_table->Add(v, &delta);
+	worker_table->Add(-1, &delta);
+	worker_table->Get(10, &data);
+	MV_Barrier();
+
+	printf("----------------------------\n");
+	for (int i = 0; i < num_row; ++i){
+		printf("rank %d output row %d: ", Zoo::Get()->rank(), i);
+		for (int j = 0; j < num_col; ++j)
+			printf("%d ", data[i][j]);
+		printf("\n");
+	}
+	
+	MV_ShutDown();
 }
 
 void TestComm(int argc, char* argv[]) {
