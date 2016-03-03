@@ -181,12 +181,14 @@
     <ClInclude Include="include\multiverso\table\adam_array_table.h" />
     <ClInclude Include="include\multiverso\table\array_table.h" />
     <ClInclude Include="include\multiverso\table\kv_table.h" />
+    <ClInclude Include="include\multiverso\table\matrix_table.h" />
     <ClInclude Include="include\multiverso\table\smooth_array_table.h" />
     <ClInclude Include="include\multiverso\table_interface.h" />
     <ClInclude Include="include\multiverso\util\double_buffer.h" />
     <ClInclude Include="include\multiverso\util\log.h" />
     <ClInclude Include="include\multiverso\util\mt_queue.h" />
     <ClInclude Include="include\multiverso\util\net_util.h" />
+    <ClInclude Include="include\multiverso\util\quantization_util.h" />
     <ClInclude Include="include\multiverso\util\waiter.h" />
     <ClInclude Include="include\multiverso\worker.h" />
     <ClInclude Include="include\multiverso\zoo.h" />

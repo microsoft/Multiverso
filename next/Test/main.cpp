@@ -13,7 +13,9 @@
 #include <multiverso/table/smooth_array_table.h>
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
+#include <multiverso/table/matrix_table.h>
 #include <MPIWrapper.h>
+
 using namespace multiverso;
 
 void TestKV(int argc, char* argv[]) {
@@ -37,6 +39,7 @@ void TestKV(int argc, char* argv[]) {
   KVWorkerTable<int, int>* dht = new KVWorkerTable<int, int>();
   // if the node is server, then create a server storage table
   KVServerTable<int, int>* server_dht = new KVServerTable<int, int>();
+  Log::Info("table name %s", server_dht->name().c_str());
 
   MV_Barrier();
 
@@ -56,10 +59,10 @@ void TestKV(int argc, char* argv[]) {
   // Get from the server
   dht->Get(0);
   // Check the result. Since no one added, this should be 0
-  Log::Info("Get 0 from kv server: result = %d\n", kv[0]);
+  Log::Info("Get 0 from kv server: result = %d,%d\n", kv[0]);
 
   // Add 1 to the server
-  dht->Add(0, 1);
+  dht->Add(0,1);
 
   // Check the result. Since just added one, this should be 1
   dht->Get(0);
@@ -320,6 +323,69 @@ void TestNoNet(int argc, char* argv[]) {
   MV_ShutDown();
 }
 
+void TestMatrix(int argc, char* argv[]){
+	Log::Info("Test Matrix\n");
+
+	MV_Init(&argc, argv);
+
+	int num_row = 11, num_col = 10;
+	int size = num_row * num_col;
+
+	MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+	MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+
+	MV_Barrier();
+
+	std::vector<int> v = { 0, 1, 5 };
+	/* test data
+	std::vector<int> delta(size);
+	for (int i = 0; i < size; ++i)
+		delta[i] = 1;
+
+	int * data = new int[size];
+
+	worker_table->Add(v, delta.data());
+	worker_table->Add(-1, delta.data());
+
+	worker_table->Get(-1, data);
+	MV_Barrier();
+
+	printf("----------------------------\n");
+	for (int i = 0; i < num_row; ++i){
+		printf("rank %d output row %d: ", Zoo::Get()->rank(), i);
+		for (int j = 0; j < num_col; ++j)
+			printf("%d ", data[i * num_col + j]);
+		printf("\n");
+	}
+	*/
+
+	//test data_vec
+	std::vector<int*> delta(num_row);
+	std::vector<int*> data(num_row);
+	for (int i = 0; i < num_row; ++i){
+		delta[i] = new int[num_col];
+		data[i] = new int[num_col];
+		for (int j = 0; j < num_col; ++j){
+			delta[i][j] = 1;
+		}
+	}
+
+	worker_table->Add(v, &delta);
+	worker_table->Add(-1, &delta);
+	worker_table->Get(10, &data);
+	MV_Barrier();
+
+	printf("----------------------------\n");
+	for (int i = 0; i < num_row; ++i){
+		printf("rank %d output row %d: ", Zoo::Get()->rank(), i);
+		for (int j = 0; j < num_col; ++j)
+			printf("%d ", data[i][j]);
+		printf("\n");
+	}
+	
+	MV_ShutDown();
+}
+
 void TestComm(int argc, char* argv[]) {
   
 
@@ -335,6 +401,7 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "ip") == 0) TestIP();
 	else if (strcmp(argv[1], "momentum") == 0) TestMomentum(argc, argv);
 	else if (strcmp(argv[1], "threads") == 0) TestMultipleThread(argc, argv);
+	else if (strcmp(argv[1], "matrix") == 0) TestMatrix(argc, argv);
   else if (strcmp(argv[1], "nonet") == 0) TestNoNet(argc, argv);
     else CHECK(false);
   } 
