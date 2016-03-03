@@ -181,6 +181,7 @@
     <ClInclude Include="include\multiverso\table\adam_array_table.h" />
     <ClInclude Include="include\multiverso\table\array_table.h" />
     <ClInclude Include="include\multiverso\table\kv_table.h" />
+    <ClInclude Include="include\multiverso\table\matrix_table.h" />
     <ClInclude Include="include\multiverso\table\smooth_array_table.h" />
     <ClInclude Include="include\multiverso\table_interface.h" />
     <ClInclude Include="include\multiverso\util\double_buffer.h" />
