@@ -213,14 +213,14 @@ void TestNet(int argc, char* argv[]) {
   strcpy(hi3, chi3);
   if (net->rank() == 0) {
     for (int rank = 1; rank < net->size(); ++rank) {
-    MessagePtr msg(new Message());// = std::make_unique<Message>();
-    msg->set_src(0);
-    msg->set_dst(rank);
-    msg->Push(Blob(hi1, 13));
-    msg->Push(Blob(hi2, 11));
-    msg->Push(Blob(hi3, 18));
-    net->Send(msg);
-    Log::Info("rank 0 send\n");
+      MessagePtr msg(new Message());// = std::make_unique<Message>();
+      msg->set_src(0);
+      msg->set_dst(rank);
+      msg->Push(Blob(hi1, 13));
+      msg->Push(Blob(hi2, 11));
+      msg->Push(Blob(hi3, 18));
+      while (net->Send(msg) == 0) ;
+      Log::Info("rank 0 send\n");
     }
 
     for (int i = 1; i < net->size(); ++i) {
@@ -256,7 +256,7 @@ void TestNet(int argc, char* argv[]) {
     msg->Push(Blob(hi1, 13));
     msg->Push(Blob(hi2, 11));
     msg->Push(Blob(hi3, 18));
-    net->Send(msg);
+    while (net->Send(msg) == 0) ;
     Log::Info("rank %d send\n", net->rank());
   }
   // while (!net->Test()) {
