@@ -319,4 +319,5 @@ namespace Microsoft {
 	}
 }
 
+int Microsoft::MSR::CNTK::MPIWrapper::s_myRank = 0;
 extern Microsoft::MSR::CNTK::MPIWrapper *g_mpi;
