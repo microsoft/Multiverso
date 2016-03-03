@@ -87,6 +87,14 @@ public:
 
   void Finalize() override { MPI_Finalize(); }
 
+  int Bind(int rank, char* endpoint) override { 
+    Log::Fatal("Shouldn't call this in MPI Net\n"); 
+  }
+
+  int Connect(int* ranks, char* endpoints[], int size) override { 
+    Log::Fatal("Shouldn't call this in MPI Net\n"); 
+  }
+  
   int rank() const override { return rank_; }
   int size() const override { return size_; }
   std::string name() const override { return "MPI"; }

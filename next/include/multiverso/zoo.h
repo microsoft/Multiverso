@@ -36,8 +36,8 @@ public:
   int size() const;
 
   // TODO(to change)
-  int worker_rank() const;
-  int server_rank() const;
+  int worker_rank() const { return nodes_[rank()].worker_id; }
+  int server_rank() const { return nodes_[rank()].server_id; }
 
   int num_workers() const { return num_workers_; }
   int num_servers() const { return num_servers_; }
