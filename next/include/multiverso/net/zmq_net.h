@@ -1,7 +1,6 @@
 #ifndef MULTIVERSO_NET_ZMQ_NET_H_
 #define MULTIVERSO_NET_ZMQ_NET_H_
 
-// #define MULTIVERSO_USE_ZMQ
 #ifdef MULTIVERSO_USE_ZMQ
 
 #include "multiverso/net.h"
