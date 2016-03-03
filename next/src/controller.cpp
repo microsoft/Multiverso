@@ -11,8 +11,10 @@ public:
   explicit BarrierController(Controller* parent) : parent_(parent) {}
 
   void Control(MessagePtr& msg) {
+	  Log::Debug("rank 0 control receive barrier msg from rank %d \n", msg->src());
     tasks_.push_back(std::move(msg));
     if (tasks_.size() == Zoo::Get()->size()) {
+	  Log::Debug("rank 0 control receive all barrier msg\n");
       MessagePtr my_reply; // my reply should be the last one
       for (auto& msg : tasks_) {
         MessagePtr reply(msg->CreateReplyMessage());
