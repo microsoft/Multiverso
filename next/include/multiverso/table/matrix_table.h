@@ -17,6 +17,7 @@ namespace multiverso {
 			data_vec_ = nullptr;
 
 			row_size_ = num_col * sizeof(T);
+			get_reply_count_ = 0;
 
 			num_server_ = Zoo::Get()->num_servers();
 			//compute row offsets in all servers
@@ -34,48 +35,40 @@ namespace multiverso {
 
 		std::vector<T*>* row_vec() { return data_vec_; }
 
-		// get one row, -1 for all
+		// get whole table
 		// data is user-allocated memory
-		void Get(int row_id, T* data){
+		void Get(T* data){
 			data_ = data;
-			WorkerTable::Get(Blob(&row_id, sizeof(int)));
-			Log::Debug("worker %d getting row with id %d.\n", Zoo::Get()->rank(), row_id);
-		}
-
-		// get one row, -1 for all
-		// data_vec is user-allocated memory
-		void Get(int row_id, std::vector<T*>* data_vec){
-			data_vec_ = data_vec;
-			WorkerTable::Get(Blob(&row_id, sizeof(int)));
-			Log::Debug("worker %d getting row with id %d.\n", Zoo::Get()->rank(), row_id);
+			int whole = -1;
+			WorkerTable::Get(Blob(&whole, sizeof(int)));
+			Log::Debug("worker %d getting whole table.\n", Zoo::Get()->rank());
 		}
 
 		// data is user-allocated memory
-		void Get(std::vector<int> row_ids, T* data) {
+		void Get(std::vector<int>& row_ids, T* data) {
 			data_ = data;
 			WorkerTable::Get(Blob(&row_ids[0], sizeof(int)* row_ids.size()));
 			Log::Debug("worker %d getting rows\n", Zoo::Get()->rank());
 		}
 
-		void Get(std::vector<int> row_ids, std::vector<T*>* data_vec) {
-			data_vec_ = data_vec;
-			WorkerTable::Get(Blob(&row_ids[0], sizeof(int)* row_ids.size()));
+		void Get(std::vector<int>& row_ids, std::vector<T*>& data_vec) {
+			data_vec_ = &data_vec;
+			for (int i = 0; i < row_ids.size(); ++i){
+				row_index_[row_ids[i]] = i;
+			}
+			WorkerTable::Get(Blob(&row_ids[0], sizeof(int) * row_ids.size()));
 			Log::Debug("worker %d getting rows\n", Zoo::Get()->rank());
 		}
 
-		// Add one row with row_id, add all with row_id = -1
-		void Add(int row_id, T* data) {
+		// Add whole table
+		void Add(T* data) {
 			CHECK_NOTNULL(data);
-
-			if (row_id == -1){
-				WorkerTable::Add(Blob(&row_id, sizeof(int)), Blob(data, row_size_ * num_row_));
-			}
-			else{
-				WorkerTable::Add(Blob(&row_id, sizeof(int)), Blob(data, row_size_));
-			}
-			Log::Debug("worker %d adding row with id %d.\n", Zoo::Get()->rank(), row_id);
+			int whole = -1;
+			WorkerTable::Add(Blob(&whole, sizeof(int)), Blob(data, row_size_ * num_row_));
+			Log::Debug("worker %d adding whole table.\n", Zoo::Get()->rank());
 		}
 
+		/*
 		// Add one row with row_id, add all with row_id = -1
 		void Add(int row_id, std::vector<T*>* data_vec) {
 			CHECK_NOTNULL(data_vec);
@@ -96,20 +89,21 @@ namespace multiverso {
 			}
 			Log::Debug("worker %d adding row with id %d.\n", Zoo::Get()->rank(), row_id);
 		}
+		*/
 
-		void Add(std::vector<int> row_ids, T* data) {
+		void Add(std::vector<int>& row_ids, T* data) {
 			Blob ids_blob(&row_ids[0], sizeof(int)* row_ids.size());
 			Blob data_blob(data, row_ids.size() * row_size_);
 			WorkerTable::Add(ids_blob, data_blob);
 			Log::Debug("worker %d adding rows\n", Zoo::Get()->rank());
 		}
 
-		void Add(std::vector<int> row_ids, std::vector<T*>* data_vec) {
+		void Add(std::vector<int>& row_ids, const std::vector<T*>& data_vec) {
 			Blob ids_blob(&row_ids[0], sizeof(int)* row_ids.size());
 			Blob data_blob(row_ids.size() * row_size_);
 			//copy each row
 			for (int i = 0; i < row_ids.size(); ++i){
-				memcpy(data_blob.data() + i * row_size_, (*data_vec)[i], row_size_);
+				memcpy(data_blob.data() + i * row_size_, data_vec[i], row_size_);
 			}
 			WorkerTable::Add(ids_blob, data_blob);
 			Log::Debug("worker %d adding rows\n", Zoo::Get()->rank());
@@ -120,7 +114,7 @@ namespace multiverso {
 			CHECK(kv.size() == 1 || kv.size() == 2);
 			CHECK_NOTNULL(out);
 
-			//get all elements
+			//get all elements, only happends in data_
 			if (kv[0].size<int>() == 1 && kv[0].As<int>(0) == -1){
 				for (int i = 0; i < num_server_; ++i){
 					(*out)[i].push_back(kv[0]);
@@ -132,8 +126,13 @@ namespace multiverso {
 						(*out)[i].push_back(blob);
 					}
 				}
+				else {
+					CHECK(get_reply_count_ == 0);
+					get_reply_count_ = static_cast<int>(out->size());
+				}
 				return static_cast<int>(out->size());
 			}
+
 			//count row number in each server
 			Blob row_ids = kv[0];
 			std::unordered_map<int, int> count;
@@ -149,6 +148,7 @@ namespace multiverso {
 				if (kv.size() == 2) vec.push_back(Blob(it.second * row_size_));
 			}
 			count.clear();
+
 			for (int i = 0; i < row_ids.size<int>(); ++i) {
 				int dst = row_ids.As<int>(i) / num_row_each;
 				dst = (dst == num_server_ ? dst - 1 : dst);
@@ -158,6 +158,11 @@ namespace multiverso {
 				}
 				++count[dst];
 			}
+
+			if (kv.size() == 1){
+				CHECK(get_reply_count_ == 0);
+				get_reply_count_ = static_cast<int>(out->size());
+			}
 			return static_cast<int>(out->size());
 		}
 
@@ -165,36 +170,34 @@ namespace multiverso {
 			CHECK(reply_data.size() == 2 || reply_data.size() == 3);//3 for get all rows
 
 			Blob keys = reply_data[0], data = reply_data[1];
-			//get all rows
+
+			//get all rows, only happen in data_
 			if (keys.size<int>() == 1 && keys.As<int>(0) == -1) {
+				CHECK(data_ != nullptr);
 				int server_id = reply_data[2].As<int>();
-				if (data_ != nullptr){ //copy into data_
-					memcpy(data_ + server_offsets_[server_id] * num_col_, data.data(), data.size());
-				}
-				else {	//into data vector
-					int offset_d = 0;
-    				int offset_v = server_offsets_[server_id];
-					int num_row = server_offsets_[server_id + 1] - offset_v;
-					for (int i = 0; i < num_row; ++i){
-						memcpy((*data_vec_)[offset_v + i], data.data() + offset_d, row_size_);
-						offset_d += row_size_;
-					}
-				}
+				memcpy(data_ + server_offsets_[server_id] * num_col_, data.data(), data.size());
+				if ((--get_reply_count_) == 0)	data_ = nullptr;	//in case of wrong operation to user data
 				return;
 			}
 
-			CHECK(data.size() == keys.size<int>() * sizeof(T)* num_col_);
+			CHECK(data.size() == keys.size<int>() * row_size_);
 			int offset = 0;
 			if (data_ != nullptr){
 				for (int i = 0; i < keys.size<int>(); ++i) {
 					memcpy(data_ + keys.As<int>(i) * num_col_, data.data() + offset, row_size_);
 					offset += row_size_;
 				}
+				if ((--get_reply_count_) == 0)	data_ = nullptr;
 			}
-			else {
+			else { //data_vec_
+				CHECK(data_vec_ != nullptr);
 				for (int i = 0; i < keys.size<int>(); ++i) {
-					memcpy((*data_vec_)[keys.As<int>(i)], data.data() + offset, row_size_);
+					memcpy((*data_vec_)[row_index_[keys.As<int>(i)]], data.data() + offset, row_size_);
 					offset += row_size_;
+				}
+				if ((--get_reply_count_) == 0){
+					data_vec_ = nullptr;
+					row_index_.clear();
 				}
 			}
 		}
@@ -202,11 +205,13 @@ namespace multiverso {
 	private:
 		T* data_; // not owned
 		std::vector<T*>* data_vec_;	//not owned
+		std::unordered_map<int, int> row_index_; //index of data with row id in data_vec_
+		int get_reply_count_; //number of unprocessed get reply
 		int num_row_;
 		int num_col_;
-		int row_size_;
+		int row_size_; // = sizeof(T) * num_col_
 		int num_server_;
-		std::vector<int> server_offsets_;
+		std::vector<int> server_offsets_; //row id offset
 	};
 
 	// TODO(feiga): rename. The name static is inherited from last version
@@ -294,4 +299,4 @@ namespace multiverso {
 	};
 }
 
-#endif // MULTIVERSO_ARRAY_TABLE_H_
+#endif // MULTIVERSO_MATRIX_TABLE_H_
