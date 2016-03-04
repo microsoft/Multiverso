@@ -83,21 +83,26 @@ public:
     MPI_Barrier(MPI_COMM_WORLD);
     Log::Debug("%s net util inited, rank = %d, size = %d\n",
       name().c_str(), rank(), size());
+    active_ = true;
   }
 
-  void Finalize() override { MPI_Finalize(); }
+  void Finalize() override { MPI_Finalize(); active_ = false; }
 
   int Bind(int rank, char* endpoint) override { 
     Log::Fatal("Shouldn't call this in MPI Net\n"); 
+    return -1;
   }
 
   int Connect(int* ranks, char* endpoints[], int size) override { 
     Log::Fatal("Shouldn't call this in MPI Net\n"); 
+    return -1;
   }
   
   int rank() const override { return rank_; }
   int size() const override { return size_; }
   std::string name() const override { return "MPI"; }
+
+  bool active() const { return active_; }
 
   //size_t Send(MessagePtr& msg) override {
   //  while (!msg_handles_.empty()) {
@@ -214,6 +219,7 @@ private:
   }
 
 private:
+  bool active_;
   const char more_;
   std::mutex mutex_;
   int thread_provided_;

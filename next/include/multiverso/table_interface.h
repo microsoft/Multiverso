@@ -1,7 +1,6 @@
 #ifndef MULTIVERSO_TABLE_INTERFACE_H_
 #define MULTIVERSO_TABLE_INTERFACE_H_
 
-#include <atomic>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -42,7 +41,7 @@ private:
   std::string table_name_;
   int table_id_;
   std::unordered_map<int, Waiter*> waitings_;
-  std::atomic_int msg_id_;
+  int msg_id_;
 };
 
 // discribe the server parameter storage data structure and related method

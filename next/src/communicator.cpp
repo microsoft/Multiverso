@@ -32,6 +32,11 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
   net_util_ = NetInterface::Get();
 }
 
+Communicator::~Communicator() {
+  if (recv_thread_.get() && recv_thread_->joinable()) 
+    recv_thread_->join();
+}
+
 void Communicator::Main() {
   is_working_ = true;
   if (Zoo::Get()->rank() == 0) Log::Debug("Rank %d: Start to run actor %s\n", Zoo::Get()->rank(), name().c_str());
@@ -76,10 +81,11 @@ void Communicator::ProcessMessage(MessagePtr& msg) {
 }
 
 void Communicator::Communicate() {
-  while (true) { // TODO(feiga): should exit properly
-    MessagePtr msg(new Message()); //  = std::make_unique<Message>();
+  while (net_util_->active()) { 
+    MessagePtr msg(new Message()); 
     size_t size = net_util_->Recv(&msg);
     if (size == -1) {
+      Log::Debug("recv return -1\n");
       return;
     }
     if (size > 0) {

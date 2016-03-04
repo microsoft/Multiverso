@@ -21,7 +21,7 @@ public:
   // argv[2]: port used
   void Init(int* argc, char** argv) override {
     // get machine file 
-    if (inited_) return;
+    if (active_) return;
     CHECK(*argc > 2);
     std::vector<std::string> machine_lists;
     ParseMachineFile(argv[1], &machine_lists);
@@ -52,7 +52,7 @@ public:
       }
     }
     CHECK_NOTNULL(receiver_);
-    inited_ = true;
+    active_ = true;
     Log::Info("%s net util inited, rank = %d, size = %d\n",
       name().c_str(), rank(), size());
   }
@@ -64,7 +64,9 @@ public:
     CHECK_NOTNULL(context_);
     receiver_ = zmq_socket(context_, ZMQ_DEALER);
     int rc = zmq_bind(receiver_, ("tcp://" + ip_port).c_str());
-    if (rc == 0) return 0;
+    if (rc == 0) {
+      return 0;
+    }
     else {
       Log::Error("Failed to bind the socket for receiver, ip:port = %s\n", 
                  endpoint);
@@ -89,16 +91,19 @@ public:
         return -1;
       }
     }
-    inited_ = true;
+    active_ = true;
     return 0;
   }
 
   void Finalize() override {
+    active_ = false;
+    zmq_term(context_);
     zmq_close(receiver_);
     for (auto& p : senders_) if (p) zmq_close(p);
     zmq_ctx_destroy(context_);
   }
 
+  bool active() const override { return active_; }
   int rank() const override { return rank_; }
   int size() const override { return size_; }
   std::string name() const override { return "ZeroMQ"; }
@@ -189,7 +194,7 @@ private:
     fclose(file);
   }
 
-  bool inited_;
+  bool active_;
   void* context_;
   void* receiver_;
   std::vector<void*> senders_;

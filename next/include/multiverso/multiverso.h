@@ -3,7 +3,6 @@
 
 namespace multiverso {
 
-
 enum Role {
   Null = 0,
   Worker = 1,
