@@ -337,6 +337,7 @@ void TestMatrix(int argc, char* argv[]){
 	MV_Barrier();
 
 	std::vector<int> v = { 0, 1, 5 ,10};
+
 	// test data
 	std::vector<int> delta(size);
 	for (int i = 0; i < size; ++i)
@@ -358,6 +359,7 @@ void TestMatrix(int argc, char* argv[]){
 		printf("\n");
 	}
 	MV_Barrier();
+
 	//test data_vec
 	std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10*num_col] };
 	std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };

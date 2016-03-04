@@ -176,7 +176,7 @@ namespace multiverso {
 				CHECK(data_ != nullptr);
 				int server_id = reply_data[2].As<int>();
 				memcpy(data_ + server_offsets_[server_id] * num_col_, data.data(), data.size());
-				if ((--get_reply_count_) == 0)	data_ = nullptr;	//in case of wrong 
+				if ((--get_reply_count_) == 0)	data_ = nullptr;	//in case of wrong operation to user data
 				return;
 			}
 

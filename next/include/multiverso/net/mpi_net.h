@@ -89,10 +89,12 @@ public:
 
   int Bind(int rank, char* endpoint) override { 
     Log::Fatal("Shouldn't call this in MPI Net\n"); 
+	return -1;
   }
 
   int Connect(int* ranks, char* endpoints[], int size) override { 
     Log::Fatal("Shouldn't call this in MPI Net\n"); 
+	return -1;
   }
   
   int rank() const override { return rank_; }
