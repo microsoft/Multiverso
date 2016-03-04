@@ -48,9 +48,10 @@ private:
 class ServerTable {
 public:
   ServerTable();
+  virtual ~ServerTable() {}
   virtual void ProcessAdd(const std::vector<Blob>& data) = 0;
   virtual void ProcessGet(const std::vector<Blob>& data,
-    std::vector<Blob>* result) = 0;
+                          std::vector<Blob>* result) = 0;
 
   const std::string name() { return std::string(typeid(this).name());};
   
@@ -63,7 +64,7 @@ public:
 // TODO(feiga): provide better table creator method
 // Abstract Factory to create server and worker
 class TableFactory {
-  //  static TableFactory* GetTableFactory();
+  // static TableFactory* GetTableFactory();
   virtual WorkerTable* CreateWorker() = 0;
   virtual ServerTable* CreateServer() = 0;
   static TableFactory* fatory_;

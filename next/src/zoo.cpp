@@ -25,19 +25,8 @@ void Zoo::Start(int* argc, char** argv, int role) {
   nodes_[rank()].rank = rank();
   nodes_[rank()].role = role;
   mailbox_.reset(new MtQueue<MessagePtr>);
-  // These actors can either reside in one process, or in different process
-  // based on the configuration
-  // For example, we can have a kind of configuration, N machines, each have a 
-  // worker actor(thread), a server actor. Meanwhile, rank 0 node also servers 
-  // as controller.
-  // We can also have another configuration, N machine, rank 0 acts as 
-  // controller, rank 1...M as workers(M < N), and rank M... N-1 as servers
-  // All nodes have a communicator, and one(at least one) or more of other three 
-  // kinds of actors
 
-  // Log::Debug("Rank %d: Initializing Comunicator.\n", rank());
-
-  // NOTE(feiga): the start order is non-trivial
+  // NOTE(feiga): the start order is non-trivial, communicator should be last.
   if (rank() == 0) { Actor* controler = new Controller(); controler->Start(); }
   if (node::is_server(role)) { Actor* server = new Server(); server->Start(); }
   if (node::is_worker(role)) { Actor* worker = new Worker(); worker->Start(); }
@@ -72,7 +61,7 @@ void Zoo::Receive(MessagePtr& msg) {
 }
 
 void Zoo::RegisterNode() {
-  MessagePtr msg(new Message()); //  = std::make_unique<Message>();
+  MessagePtr msg(new Message()); 
   msg->set_src(rank());
   msg->set_dst(0);
   msg->set_type(MsgType::Control_Register);
@@ -91,18 +80,18 @@ void Zoo::RegisterNode() {
 }
 
 void Zoo::Barrier() {
-  MessagePtr msg(new Message()); //  = std::make_unique<Message>();
+  MessagePtr msg(new Message()); 
   msg->set_src(rank());
-  msg->set_dst(0); // rank 0 acts as the controller master. TODO(feiga):
+  msg->set_dst(0); // rank 0 acts as the controller master. 
   // consider a method to encapsulate this node information
   msg->set_type(MsgType::Control_Barrier);
   SendTo(actor::kCommunicator, msg);
 
-   Log::Debug("rank %d requested barrier.\n", rank());
+  Log::Debug("rank %d requested barrier.\n", rank());
   // wait for reply
   mailbox_->Pop(msg);
   CHECK(msg->type() == MsgType::Control_Reply_Barrier);
-   Log::Debug("rank %d reached barrier\n", rank());
+  Log::Debug("rank %d reached barrier\n", rank());
 }
 
 int Zoo::RegisterTable(WorkerTable* worker_table) {

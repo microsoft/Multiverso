@@ -32,7 +32,7 @@ int  MV_Server_Id();
 // Init Multiverso Net with the provided endpoint. Multiverso Net will bind 
 // the provided endpoint and use this endpoint to listen and recv message
 // \param rank the rank of this MV process
-// \param endpoint endpoint with format ip:port, e.g., 127.0.0.1:9999
+// \param endpoint endpoint with format ip:port, e.g., localhost:9999
 // \return  0 SUCCESS
 // \return -1 FAIL
 int  MV_Net_Bind(int rank, char* endpoint);

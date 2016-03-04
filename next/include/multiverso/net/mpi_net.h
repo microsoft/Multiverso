@@ -85,7 +85,7 @@ public:
       name().c_str(), rank(), size());
   }
 
-  void Finalize() override { MPI_Finalize(); }
+  void Finalize() override { inited_ = 0; MPI_Finalize(); }
 
   int Bind(int rank, char* endpoint) override { 
     Log::Fatal("Shouldn't call this in MPI Net\n"); 
@@ -97,6 +97,7 @@ public:
 	return -1;
   }
   
+  bool active() const { return inited_ != 0; }
   int rank() const override { return rank_; }
   int size() const override { return size_; }
   std::string name() const override { return "MPI"; }
