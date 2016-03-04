@@ -47,15 +47,15 @@ void Communicator::Main() {
     while (mailbox_->Alive()) {
       // Try pop and Send
       if (mailbox_->TryPop(msg)) {
+		  if (msg->type() == MsgType::Control_Barrier)
+		  {
+			  Log::Debug("rank %d send a control_barrier msg\n", Zoo::Get()->rank());
+		  }
         ProcessMessage(msg);
       }
       // Probe and Recv
       size_t size = net_util_->Recv(&msg);
       if (size > 0) LocalForward(msg);
-      // Try pop and Send
-      if (mailbox_->TryPop(msg)) {
-        ProcessMessage(msg);
-      }
       CHECK(msg.get() == nullptr);
       net_util_->Send(msg);
     }
@@ -70,7 +70,6 @@ void Communicator::ProcessMessage(MessagePtr& msg) {
   if (msg->dst() != net_util_->rank()) {
     // Log::Debug("Send a msg from %d to %d, type = %d\n", msg->src(), msg->dst(), msg->type());
     net_util_->Send(msg);
-    CHECK(msg.get() == nullptr)
     return;
   }
   LocalForward(msg);
