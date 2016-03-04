@@ -58,10 +58,10 @@ void TestKV(int argc, char* argv[]) {
   // Get from the server
   dht->Get(0);
   // Check the result. Since no one added, this should be 0
-  Log::Info("Get 0 from kv server: result = %d,%d\n", kv[0]);
+  Log::Info("Get 0 from kv server: result = %d\n", kv[0]);
 
   // Add 1 to the server
-  dht->Add(0,1);
+  dht->Add(0, 1);
 
   // Check the result. Since just added one, this should be 1
   dht->Get(0);
@@ -335,59 +335,48 @@ void TestMatrix(int argc, char* argv[]){
 
 	MV_Barrier();
 
-	std::vector<int> v = { 0, 1, 5 };
-	/* test data
+	std::vector<int> v = { 0, 1, 5 ,10};
+	// test data
 	std::vector<int> delta(size);
 	for (int i = 0; i < size; ++i)
-		delta[i] = 1;
+		delta[i] = i;
 
 	int * data = new int[size];
 
-	worker_table->Add(v, delta.data());
-	worker_table->Add(-1, delta.data());
+	worker_table->Add(v, delta.data()); //add row 0,1,5,10
+	worker_table->Add(delta.data()); //add all
 
-	worker_table->Get(-1, data);
+	worker_table->Get(data); //get all
 	MV_Barrier();
 
 	printf("----------------------------\n");
 	for (int i = 0; i < num_row; ++i){
-		printf("rank %d output row %d: ", Zoo::Get()->rank(), i);
+		printf("rank %d, row %d: ", MV_Rank(), i);
 		for (int j = 0; j < num_col; ++j)
 			printf("%d ", data[i * num_col + j]);
 		printf("\n");
 	}
-	*/
-
+	MV_Barrier();
 	//test data_vec
-	std::vector<int*> delta(num_row);
-	std::vector<int*> data(num_row);
-	for (int i = 0; i < num_row; ++i){
-		delta[i] = new int[num_col];
-		data[i] = new int[num_col];
-		for (int j = 0; j < num_col; ++j){
-			delta[i][j] = 1;
-		}
-	}
-
-	worker_table->Add(v, &delta);
-	worker_table->Add(-1, &delta);
-	worker_table->Get(10, &data);
+	std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10*num_col] };
+	std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
+	worker_table->Add(v, delta_rows);
+	worker_table->Get(v, data_rows);
 	MV_Barrier();
 
 	printf("----------------------------\n");
 	for (int i = 0; i < num_row; ++i){
-		printf("rank %d output row %d: ", Zoo::Get()->rank(), i);
+		printf("rank %d, row %d: ", MV_Rank(), i);
 		for (int j = 0; j < num_col; ++j)
-			printf("%d ", data[i][j]);
+			printf("%d ", data[i * num_col + j]);
 		printf("\n");
 	}
+	MV_Barrier();
 	
 	MV_ShutDown();
 }
 
 void TestComm(int argc, char* argv[]) {
-  
-
 
 }
 
