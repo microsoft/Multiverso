@@ -19,25 +19,33 @@ int  MV_Rank() { return Zoo::Get()->rank(); }
 
 int  MV_Size() { return Zoo::Get()->size(); }
 
-int  MV_Worker_Id() {
+int  MV_WorkerId() {
   return Zoo::Get()->worker_rank();
 }
-int  MV_Server_Id() {
+int  MV_ServerId() {
   return Zoo::Get()->server_rank();
 }
 
-int  MV_Num_Workers() {
+int  MV_NumWorkers() {
   return Zoo::Get()->num_workers();
 }
-int  MV_Num_Servers() {
+int  MV_NumServers() {
   return Zoo::Get()->num_servers();
 }
 
-int  MV_Net_Bind(int rank, char* endpoint) {
+int  MV_WorkerIdToRank(int worker_id) {
+  return Zoo::Get()->worker_id_to_rank(worker_id);
+}
+
+int  MV_ServerIdToRank(int server_id) {
+  return Zoo::Get()->server_id_to_rank(server_id);
+}
+
+int  MV_NetBind(int rank, char* endpoint) {
   return NetInterface::Get()->Bind(rank, endpoint);
 }
 
-int  MV_Net_Connect(int* ranks, char* endpoints[], int size) {
+int  MV_NetConnect(int* ranks, char* endpoints[], int size) {
   return NetInterface::Get()->Connect(ranks, endpoints, size);
 }
 

@@ -360,21 +360,21 @@ void TestMatrix(int argc, char* argv[]){
 	}
 	MV_Barrier();
 
-	////test data_vec
-	//std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10*num_col] };
-	//std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
-	//worker_table->Add(v, delta_rows, num_col);
-	//worker_table->Get(v, data_rows, num_col);
-	//MV_Barrier();
+	//test data_vec
+	std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10*num_col] };
+	std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
+	worker_table->Add(v, delta_rows, num_col);
+	worker_table->Get(v, data_rows, num_col);
+	MV_Barrier();
 
-	//printf("----------------------------\n");
-	//for (int i = 0; i < num_row; ++i){
-	//	printf("rank %d, row %d: ", MV_Rank(), i);
-	//	for (int j = 0; j < num_col; ++j)
-	//		printf("%d ", data[i * num_col + j]);
-	//	printf("\n");
-	//}
-	//MV_Barrier();
+	printf("----------------------------\n");
+	for (int i = 0; i < num_row; ++i){
+		printf("rank %d, row %d: ", MV_Rank(), i);
+		for (int j = 0; j < num_col; ++j)
+			printf("%d ", data[i * num_col + j]);
+		printf("\n");
+	}
+	MV_Barrier();
 	
 	MV_ShutDown();
 }

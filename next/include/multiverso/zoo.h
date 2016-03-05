@@ -39,6 +39,14 @@ public:
   int worker_rank() const { return nodes_[rank()].worker_id; }
   int server_rank() const { return nodes_[rank()].server_id; }
 
+  int worker_id_to_rank(int worker_id) const { 
+    return worker_id_to_rank_[worker_id]; 
+  }
+
+  int server_id_to_rank(int server_id) const {
+    return server_id_to_rank_[server_id];
+  }
+
   int num_workers() const { return num_workers_; }
   int num_servers() const { return num_servers_; }
 
@@ -62,6 +70,9 @@ private:
   NetInterface* net_util_;
 
   std::vector<Node> nodes_;
+  std::vector<int> server_id_to_rank_;
+  std::vector<int> worker_id_to_rank_;
+
   int num_workers_;
   int num_servers_;
 };

@@ -75,8 +75,18 @@ void Zoo::RegisterNode() {
   Blob count_blob = msg->data()[1];
   num_workers_ = count_blob.As<int>(0);
   num_servers_ = count_blob.As<int>(1);
+  worker_id_to_rank_.resize(num_workers_);
+  server_id_to_rank_.resize(num_servers_);
   CHECK(info_blob.size() == size() * sizeof(Node));
   memcpy(nodes_.data(), info_blob.data(), info_blob.size());
+  for (auto node : nodes_) {
+    if (node.worker_id != -1) { 
+      worker_id_to_rank_[node.worker_id] = node.rank; 
+    }
+    if (node.server_id != -1) {
+      server_id_to_rank_[node.server_id] = node.rank;
+    }
+  }
 }
 
 void Zoo::Barrier() {

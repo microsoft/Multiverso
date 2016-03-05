@@ -17,7 +17,7 @@ public:
     row_size_ = num_col * sizeof(T);
     get_reply_count_ = 0;
 
-    num_server_ = MV_Num_Servers();
+    num_server_ = MV_NumServers();
     //compute row offsets in all servers
     server_offsets_.push_back(0);
     int length = num_row / num_server_;
@@ -95,13 +95,15 @@ public:
 
     if (kv[0].size<int>() == 1 && kv[0].As<int>(0) == -1){
       for (int i = 0; i < num_server_; ++i){
-        (*out)[i].push_back(kv[0]);
+        int rank = MV_ServerIdToRank(i);
+        (*out)[rank].push_back(kv[0]);
       }
       if (kv.size() == 2){	//process add values
         for (int i = 0; i < num_server_; ++i){
+          int rank = MV_ServerIdToRank(i);
           Blob blob(kv[1].data() + server_offsets_[i] * row_size_,
             (server_offsets_[i + 1] - server_offsets_[i]) * row_size_);
-          (*out)[i].push_back(blob);
+          (*out)[rank].push_back(blob);
         }
       }
       else {
@@ -121,7 +123,8 @@ public:
       ++count[dst];
     }
     for (auto& it : count) { // Allocate memory
-      std::vector<Blob>& vec = (*out)[it.first];
+      int rank = MV_ServerIdToRank(it.first);
+      std::vector<Blob>& vec = (*out)[rank];
       vec.push_back(Blob(it.second * sizeof(int)));
       if (kv.size() == 2) vec.push_back(Blob(it.second * row_size_));
     }
@@ -130,9 +133,10 @@ public:
     for (int i = 0; i < row_ids.size<int>(); ++i) {
       int dst = row_ids.As<int>(i) / num_row_each;
       dst = (dst == num_server_ ? dst - 1 : dst);
-      (*out)[dst][0].As<int>(count[dst]) = row_ids.As<int>(i);
+      int rank = MV_ServerIdToRank(dst);
+      (*out)[rank][0].As<int>(count[dst]) = row_ids.As<int>(i);
       if (kv.size() == 2){ // copy add values
-        memcpy(&((*out)[dst][1].As<T>(count[dst] * num_col_)),
+        memcpy(&((*out)[rank][1].As<T>(count[dst] * num_col_)),
           &(kv[1].As<T>(i * num_col_)), row_size_);
       }
       ++count[dst];
@@ -171,9 +175,7 @@ public:
   }
 
 private:
-  // T* data_;                                // not owned
-  // std::vector<T*>* data_vec_;	             // not owned
-  std::unordered_map<int, T*> row_index_; // index of data with row id in data_vec_
+  std::unordered_map<int, T*> row_index_;  // index of data with row id in data_vec_
   int get_reply_count_;                    // number of unprocessed get reply
   int num_row_;
   int num_col_;
@@ -189,17 +191,17 @@ public:
   explicit MatrixServerTable(int num_row, int num_col) :
     ServerTable(), num_col_(num_col) {
 
-    server_id_ = MV_Server_Id();
+    server_id_ = MV_ServerId();
     CHECK(server_id_ != -1);
 
-    int size = num_row / MV_Num_Servers();
+    int size = num_row / MV_NumServers();
     row_offset_ = size * MV_Rank(); // Zoo::Get()->rank();
-    if (server_id_ == MV_Num_Servers() - 1){
+    if (server_id_ == MV_NumServers() - 1){
       size = num_row - row_offset_;
     }
     storage_.resize(size * num_col);
 
-    Log::Debug("server %d create matrix table with %d row %d colums of %d rows.\n",
+    Log::Info("server %d create matrix table with %d row %d colums of %d rows.\n",
       server_id_, num_row, num_col, size);
   }
 

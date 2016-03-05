@@ -14,11 +14,11 @@ class ArrayWorker : public WorkerTable {
 public:
   explicit ArrayWorker(size_t size) : WorkerTable(), size_(size) {
     // table_.resize(size);
-    num_server_ = MV_Num_Servers(); 
+    num_server_ = MV_NumServers(); 
     server_offsets_.push_back(0);
-    CHECK(size_ > MV_Num_Workers()); 
-    int length = static_cast<int>(size_) / MV_Num_Servers();
-    for (int i = 1; i < MV_Num_Servers(); ++i) {
+    CHECK(size_ > MV_NumServers()); 
+    int length = static_cast<int>(size_) / MV_NumServers();
+    for (int i = 1; i < MV_NumServers(); ++i) {
       server_offsets_.push_back(i * length); // may not balance
     }
     server_offsets_.push_back(size_);
@@ -88,9 +88,9 @@ class ArrayServer : public ServerTable {
 public:
   explicit ArrayServer(size_t size) : ServerTable() {
     server_id_ = MV_Rank();
-    size_ = size / MV_Num_Servers(); 
-    if (server_id_ == MV_Num_Servers() - 1) { // last server 
-      size_ += size % MV_Num_Servers();
+    size_ = size / MV_NumServers(); 
+    if (server_id_ == MV_NumServers() - 1) { // last server 
+      size_ += size % MV_NumServers();
     }
     storage_.resize(size_);
 	Log::Debug("server %d create arrayTable with %d elements of %d elements.\n", server_id_, size_, size);

@@ -21,11 +21,14 @@ void MV_ShutDown(bool finalize_mpi = true);
 int  MV_Rank();
 int  MV_Size();
 
-int  MV_Num_Workers();
-int  MV_Num_Servers();
+int  MV_NumWorkers();
+int  MV_NumServers();
 
-int  MV_Worker_Id();
-int  MV_Server_Id();
+int  MV_WorkerId();
+int  MV_ServerId();
+
+int  MV_WorkerIdToRank(int worker_id);
+int  MV_ServerIdToRank(int server_id);
 
 // --- Net API -------------------------------------------------------------- //
 // NOTE(feiga): these API is only used for specific situation.
@@ -35,7 +38,7 @@ int  MV_Server_Id();
 // \param endpoint endpoint with format ip:port, e.g., localhost:9999
 // \return  0 SUCCESS
 // \return -1 FAIL
-int  MV_Net_Bind(int rank, char* endpoint);
+int  MV_NetBind(int rank, char* endpoint);
 
 // Connect Multiverso Net with other processes in the system. Multiverso Net 
 // will connect these endpoints and send msgs
@@ -44,7 +47,7 @@ int  MV_Net_Bind(int rank, char* endpoint);
 // \param size size of the array
 // \return  0 SUCCESS
 // \return -1 FAIL
-int  MV_Net_Connect(int* rank, char* endpoint[], int size);
+int  MV_NetConnect(int* rank, char* endpoint[], int size);
 
 } // namespace multiverso
 
