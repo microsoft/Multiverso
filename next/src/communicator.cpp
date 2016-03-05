@@ -52,10 +52,6 @@ void Communicator::Main() {
     while (mailbox_->Alive()) {
       // Try pop and Send
       if (mailbox_->TryPop(msg)) {
-		  if (msg->type() == MsgType::Control_Barrier)
-		  {
-			  Log::Debug("rank %d send a control_barrier msg\n", Zoo::Get()->rank());
-		  }
         ProcessMessage(msg);
       }
       // Probe and Recv
