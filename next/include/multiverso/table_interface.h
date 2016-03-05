@@ -53,7 +53,7 @@ public:
   virtual void ProcessGet(const std::vector<Blob>& data,
                           std::vector<Blob>* result) = 0;
 
-  const std::string name() { return std::string(typeid(this).name());};
+  const std::string name() const { return std::string(typeid(this).name());};
   
   // add user defined server process logic 
   void Process(const std::string instruction, const std::vector<Blob>& data, std::vector<Blob>* result = nullptr);
