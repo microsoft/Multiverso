@@ -222,6 +222,9 @@ void TestNet(int argc, char* argv[]) {
       msg->Push(Blob(hi1, 13));
       msg->Push(Blob(hi2, 11));
       msg->Push(Blob(hi3, 18));
+      for (int i = 0; i < msg->size(); ++i) {
+        Log::Info("In Send: %s\n", msg->data()[i].data());
+      };
       while (net->Send(msg) == 0) ;
       Log::Info("rank 0 send\n");
     }

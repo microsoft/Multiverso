@@ -68,7 +68,8 @@ public:
 
   void Add(int row_id, T* data, size_t size) {
     if (row_id >= 0) CHECK(size == num_col_);
-    Blob ids_blob(&row_id, sizeof(int));
+    int row = row_id;
+    Blob ids_blob(&row, sizeof(int));
     Blob data_blob(data, size * sizeof(T));
     WorkerTable::Add(ids_blob, data_blob);
     Log::Debug("worker %d adding rows\n", MV_Rank());
@@ -195,7 +196,7 @@ public:
     CHECK(server_id_ != -1);
 
     int size = num_row / MV_NumServers();
-    row_offset_ = size * MV_Rank(); // Zoo::Get()->rank();
+    row_offset_ = size * server_id_; // Zoo::Get()->rank();
     if (server_id_ == MV_NumServers() - 1){
       size = num_row - row_offset_;
     }
