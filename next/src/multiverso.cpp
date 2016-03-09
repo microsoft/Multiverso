@@ -5,15 +5,15 @@
 
 namespace multiverso {
 
-void MV_Init(int* argc, char* argv[], int role) {
-  Zoo::Get()->Start(argc, argv, role);
+void MV_Init(int* argc, char* argv[], int role, bool restart) {
+  Zoo::Get()->Start(argc, argv, role, restart);
 }
 
 void MV_ShutDown(bool finalize_net) {
   Zoo::Get()->Stop(finalize_net);
 }
 
-void MV_Barrier() { Zoo::Get()->Barrier(); }
+void MV_Barrier(int iter) { Zoo::Get()->Barrier(iter); }
 
 int  MV_Rank() { return Zoo::Get()->rank(); }
 
@@ -49,4 +49,7 @@ int  MV_NetConnect(int* ranks, char* endpoints[], int size) {
   return NetInterface::Get()->Connect(ranks, endpoints, size);
 }
 
+int MV_RestoreTable(const std::string& dump_file_path){
+  return Zoo::Get()->RestoreTable(dump_file_path);
+}
 }

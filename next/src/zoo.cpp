@@ -11,13 +11,17 @@
 
 namespace multiverso {
 
-Zoo::Zoo() {}
+Zoo::Zoo() { 
+  dump_each_k_ = 5;
+  restart_ = false;
+}
 
 Zoo::~Zoo() {}
 
-void Zoo::Start(int* argc, char** argv, int role) {
+void Zoo::Start(int* argc, char** argv, int role, bool restart) {
   Log::Debug("Zoo started\n");
   CHECK(role >= 0 && role <= 3);
+  restart_ = restart;
   // Init the network
   net_util_ = NetInterface::Get();
   net_util_->Init(argc, argv);
@@ -89,7 +93,7 @@ void Zoo::RegisterNode() {
   }
 }
 
-void Zoo::Barrier() {
+void Zoo::Barrier(const int& iter) {
   MessagePtr msg(new Message()); 
   msg->set_src(rank());
   msg->set_dst(0); // rank 0 acts as the controller master. 
@@ -102,6 +106,11 @@ void Zoo::Barrier() {
   mailbox_->Pop(msg);
   CHECK(msg->type() == MsgType::Control_Reply_Barrier);
   Log::Debug("rank %d reached barrier\n", rank());
+  
+  if (iter >= 0 && iter % dump_each_k_ == 0){
+    static_cast<Server*>(zoo_[actor::kServer])->DumpTable(iter);
+  }
+  
 }
 
 int Zoo::RegisterTable(WorkerTable* worker_table) {
@@ -114,4 +123,12 @@ int Zoo::RegisterTable(ServerTable* server_table) {
     ->RegisterTable(server_table);
 }
 
+int Zoo::RestoreTable(const std::string& dump_file_path){
+  auto server = static_cast<Server*>(zoo_[actor::kServer]);
+  server->SetDumpFilePath(dump_file_path);
+  if (restart_){
+    return server->RestoreTable(dump_file_path);
+  }
+  return 0;
+}
 }

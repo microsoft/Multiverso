@@ -363,9 +363,10 @@ void TestMatrix(int argc, char* argv[]){
 	//test data_vec
 	std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10*num_col] };
 	std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
-	worker_table->Add(v, delta_rows, num_col);
-	worker_table->Get(v, data_rows, num_col);
-	MV_Barrier();
+
+  worker_table->Add(v, delta_rows, num_col);
+  worker_table->Get(v, data_rows, num_col);
+  MV_Barrier();
 
 	printf("----------------------------\n");
 	for (int i = 0; i < num_row; ++i){
@@ -379,21 +380,62 @@ void TestMatrix(int argc, char* argv[]){
 	MV_ShutDown();
 }
 
+void TestCheckPoint(int argc, char* argv[], bool restore){
+  Log::Info("Test CheckPoint\n");
+
+  MV_Init(&argc, argv, All, restore);
+
+  int num_row = 11, num_col = 10;
+  int size = num_row * num_col;
+
+  MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+  MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+  //if restore = true, will restore server data and return the next iter number of last dump file
+  //else do nothing and return 0
+  int begin_iter = MV_RestoreTable("//5FTGDB2/tableData/serverTable_");
+  MV_Barrier();//won't dump data without parameters
+
+  std::vector<int> delta(size);
+  for (int i = 0; i < size; ++i)
+    delta[i] = i;
+  int * data = new int[size];
+
+  Log::Debug("rank %d start from iteration %d\n", MV_Rank(), begin_iter);
+
+  for (int i = begin_iter; i < 50; ++i){
+    worker_table->Add(delta.data(), size);
+    MV_Barrier(i); //dump table data with iteration i each k iterations
+  }
+  worker_table->Get(data, size);
+
+  printf("----------------------------\n");
+  for (int i = 0; i < num_row; ++i){
+    printf("rank %d, row %d: ", MV_Rank(), i);
+    for (int j = 0; j < num_col; ++j)
+      printf("%d ", data[i * num_col + j]);
+    printf("\n");
+  }
+
+  MV_ShutDown();
+}
+
 void TestComm(int argc, char* argv[]) {
 
 }
 
 int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
-  if (argc == 2) { 
+  if (argc == 2) {
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
     else if (strcmp(argv[1], "ip") == 0) TestIP();
-	else if (strcmp(argv[1], "momentum") == 0) TestMomentum(argc, argv);
-	else if (strcmp(argv[1], "threads") == 0) TestMultipleThread(argc, argv);
-	else if (strcmp(argv[1], "matrix") == 0) TestMatrix(argc, argv);
-  else if (strcmp(argv[1], "nonet") == 0) TestNoNet(argc, argv);
+    else if (strcmp(argv[1], "momentum") == 0) TestMomentum(argc, argv);
+    else if (strcmp(argv[1], "threads") == 0) TestMultipleThread(argc, argv);
+    else if (strcmp(argv[1], "matrix") == 0) TestMatrix(argc, argv);
+    else if (strcmp(argv[1], "nonet") == 0) TestNoNet(argc, argv);
+    else if (strcmp(argv[1], "checkpoint") == 0)  TestCheckPoint(argc, argv, false);
+    else if (strcmp(argv[1], "restore") == 0) TestCheckPoint(argc, argv, true);
     else CHECK(false);
   } 
   // argc == 4 is for zeromq test, with two extra arguments: machinefile, port
