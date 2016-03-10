@@ -1,4 +1,4 @@
-#ifndef MULTIVERSO_MATRIX_TABLE_H_
+﻿#ifndef MULTIVERSO_MATRIX_TABLE_H_
 #define MULTIVERSO_MATRIX_TABLE_H_
 
 #include "multiverso/multiverso.h"
@@ -259,6 +259,19 @@ public:
       memcpy(&(vals.As<T>(offset_v)), &storage_[offset_s], row_size);
       offset_v += num_col_;
       Log::Debug("server %d getting row with id %d\n", server_id_, keys.As<int>(i));
+    }
+  }
+
+  void DumpTable(std::ofstream& os) override{
+    char c = '\t';
+    for (int i = 0; i < storage_.size(); ++i){
+      os << storage_[i] << c;
+    }
+  }
+
+  void RecoverTable(std::ifstream& in) override{
+    for (int i = 0; i < storage_.size(); ++i){
+      in >> storage_[i];
     }
   }
 
