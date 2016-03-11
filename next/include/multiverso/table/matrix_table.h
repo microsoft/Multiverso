@@ -281,6 +281,21 @@ private:
   int row_offset_;
   std::vector<T> storage_;
 };
+
+template <typename T>
+class MatrixTableFactory : public TableFactory {
+public:
+  MatrixTableFactory(int num_row, int num_col) : num_row_(num_row), num_col_(num_col) { }
+protected:
+  WorkerTable* CreateWorkerTable() override{
+    return new MatrixWorkerTable<T>(num_row_, num_col_);
+  }
+  ServerTable* CreateServerTable() override{
+    return new MatrixServerTable<T>(num_row_, num_col_);
+  }
+  int num_row_;
+  int num_col_;
+};
 }
 
 #endif // MULTIVERSO_MATRIX_TABLE_H_

@@ -59,4 +59,13 @@ void WorkerTable::Notify(int id) {
   waitings_[id]->Notify(); 
 }
 
+WorkerTable* TableFactory::CreateTable(const std::string& dump_file_path) {
+  if (Zoo::Get()->server_rank() >= 0){
+    CreateServerTable();
+  }
+  if (Zoo::Get()->worker_rank() >= 0){
+    return CreateWorkerTable();
+  }
+  return nullptr;
+}
 }

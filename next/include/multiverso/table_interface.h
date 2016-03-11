@@ -66,10 +66,15 @@ public:
 // TODO(feiga): provide better table creator method
 // Abstract Factory to create server and worker
 class TableFactory {
+public:
+  virtual ~TableFactory() {};
+  WorkerTable* CreateTable(const std::string& dump_file_path_ = "");
   // static TableFactory* GetTableFactory();
-  virtual WorkerTable* CreateWorker() = 0;
-  virtual ServerTable* CreateServer() = 0;
-  static TableFactory* fatory_;
+protected:
+  virtual WorkerTable* CreateWorkerTable() = 0;
+  virtual ServerTable* CreateServerTable() = 0;
+  std::vector<WorkerTable*> worker_table_;
+  //static TableFactory* factory_;
 };
 
 namespace table {

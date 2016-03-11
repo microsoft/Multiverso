@@ -334,8 +334,14 @@ void TestMatrix(int argc, char* argv[]){
 	int num_row = 11, num_col = 10;
 	int size = num_row * num_col;
 
-	MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-	MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+  MatrixTableFactory<int> tableFactory(num_row, num_col); //used to create table
+  MatrixWorkerTable<int>* worker_table = static_cast<MatrixWorkerTable<int>*>(tableFactory.CreateTable());
+  if (worker_table == nullptr){
+    return; //no worker in this node
+  }
+
+	//MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+	//MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
 
 	MV_Barrier();
 
@@ -386,7 +392,7 @@ void TestMatrix(int argc, char* argv[]){
 void TestCheckPoint(int argc, char* argv[], bool restore){
   Log::Info("Test CheckPoint\n");
 
-  MV_Init(&argc, argv, All, restore);
+  MV_Init(&argc, argv, Role::All, restore);
 
   int num_row = 11, num_col = 10;
   int size = num_row * num_col;
