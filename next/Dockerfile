@@ -101,6 +101,7 @@ RUN sed  -i "/^[^#]*UsePAM/ s/.*/#&/"  /etc/ssh/sshd_config \
    && echo "UsePAM no" >> /etc/ssh/sshd_config \
    && echo "Port 2122" >> /etc/ssh/sshd_config
 
+RUN apt-get update
 RUN apt-get install -qqy gdb
 # compile multiverso
 ADD . /project
