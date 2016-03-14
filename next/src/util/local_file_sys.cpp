@@ -18,7 +18,7 @@ namespace multiverso
 LocalStream::LocalStream(const URI& uri, const char *mode)
 {
     path_ = uri.path;
-    fp_ = fopen(uri.path.c_str(), mode);
+    fp_ = fopen(uri.name.c_str(), mode);
     if (fp_ == nullptr)
     {
         is_good_ = false;
