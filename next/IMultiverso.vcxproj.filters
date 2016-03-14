@@ -76,6 +76,9 @@
     <ClInclude Include="include\multiverso\table\matrix_table.h">
       <Filter>include\table</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\util\timer.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
