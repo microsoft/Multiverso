@@ -20,7 +20,7 @@ void MV_Init(int* argc = nullptr,
              int role = All,
              bool restart = false);
 
-void MV_Barrier(int iter = -1);
+void MV_Barrier(const int& iter = -1);
 
 void MV_ShutDown(bool finalize_mpi = true);
 

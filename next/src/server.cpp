@@ -3,6 +3,7 @@
 #include "multiverso/actor.h"
 #include "multiverso/table_interface.h" 
 #include "multiverso/zoo.h"
+#include "multiverso/util/io.h"
 
 namespace multiverso {
 
@@ -46,24 +47,35 @@ void Server::SetDumpFilePath(const std::string& dump_file_path){
 }
 
 void Server::DumpTable(const int& epoch){
-  std::ofstream os(dump_file_path_, std::ios::out);
+  std::shared_ptr<Stream> stream = StreamFactory::GetStream(URI(dump_file_path_), "w");
+  stream->Write(&epoch, sizeof(int));
   char c = '\n';
-  os << epoch << c;
+  stream->Write(&c, sizeof(char));
+  //std::ofstream os(dump_file_path_, std::ios::out);
+  //os << epoch << c;
   for (int i = 0; i < store_.size(); ++i){
-    store_[i]->DumpTable(os);
-    os << c;
+    store_[i]->DumpTable(stream);
+    stream->Write(&c, sizeof(char));
+    //os << c;
   }
-  os.close();
+  //os.close();
+  stream->Flush();
 }
 
 int Server::RestoreTable(const std::string& file_path){
-  std::ifstream in(dump_file_path_, std::ios::in);
+  std::shared_ptr<Stream> stream = StreamFactory::GetStream(URI(dump_file_path_), "r");
+  //std::ifstream in(dump_file_path_, std::ios::in);
   int iter;
-  in >> iter;
+  char c;
+  stream->Read(&iter, sizeof(int));
+  stream->Read(&c, sizeof(char));
+  //in >> iter;
   for (int i = 0; i < store_.size(); ++i){
-    store_[i]->RecoverTable(in);
+    store_[i]->RecoverTable(stream);
+    stream->Read(&c, sizeof(char));
   }
-  in.close();
+  stream->Flush();
+  //in.close();
   return iter + 1; //the next iteration number
 }
 }

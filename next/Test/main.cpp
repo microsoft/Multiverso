@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <thread>
 #include <random>
 #include <chrono>
@@ -398,8 +398,10 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
   int num_row = 11, num_col = 10;
   int size = num_row * num_col;
 
-  MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-  MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+  MatrixWorkerTable<int>* worker_table =
+    static_cast<MatrixWorkerTable<int>*>(MV_CreateTable(new MatrixTableHelper<int>(num_row, num_col)));
+  //MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+  //MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
   //if restore = true, will restore server data and return the next iter number of last dump file
   //else do nothing and return 0
   int begin_iter = MV_RestoreTable("//5FTGDB2/tableData/serverTable_");

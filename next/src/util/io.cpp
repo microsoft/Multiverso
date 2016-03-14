@@ -20,6 +20,8 @@ std::shared_ptr<Stream> StreamFactory::GetStream(const URI& uri,
   return instances_[addr]->Open(uri, mode);
 }
 
+std::map<std::string, std::shared_ptr<StreamFactory> > StreamFactory::instances_;
+
 TextReader::TextReader(const URI& uri, size_t buf_size)
 {
 	stream_ = StreamFactory::GetStream(uri, "r");

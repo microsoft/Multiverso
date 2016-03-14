@@ -100,19 +100,26 @@ public:
     }
   }
 
-  void DumpTable(std::ofstream& os){
-    os << table_.size() << ' ';
+  void DumpTable(std::shared_ptr<Stream> os){
+    size_t size = table_.size();
+    os->Write(&size, sizeof(size_t));
+    //os << table_.size() << ' ';
     for (auto& i : table_){
-      os << i.first << ' ' << i.second << ' ';
+      //os << i.first << ' ' << i.second << ' ';
+      os->Write(&i.first, sizeof(Key));
+      os->Write(&i.second, sizeof(Val));
     }
   }
-  void RecoverTable(std::ifstream& in){
-    int count;
+  void RecoverTable(std::shared_ptr<Stream> in){
+    size_t count;
     Key k;
     Val v;
-    in >> count;
-    for (int i = 0; i < count; ++i){//may get wrong when Key or Val is char?
-      in >> k >> v;
+    //in >> count;
+    in->Read(&count, sizeof(size_t));
+    for (int i = 0; i < count; ++i){
+      //in >> k >> v;
+      in->Read(&k, sizeof(Key));
+      in->Read(&v, sizeof(Val));
       table_[k] = v;
     }
   }

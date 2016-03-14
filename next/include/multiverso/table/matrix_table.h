@@ -262,17 +262,19 @@ public:
     }
   }
 
-  void DumpTable(std::ofstream& os) override{
-    char c = '\t';
-    for (int i = 0; i < storage_.size(); ++i){
-      os << storage_[i] << c;
-    }
+  void DumpTable(std::shared_ptr<Stream> os) override{
+    //char c = '\t';
+    os->Write(storage_.data(), storage_.size() * sizeof(T));
+    //for (int i = 0; i < storage_.size(); ++i){
+//      os << storage_[i] << c;
+    //}
   }
 
-  void RecoverTable(std::ifstream& in) override{
-    for (int i = 0; i < storage_.size(); ++i){
-      in >> storage_[i];
-    }
+  void RecoverTable(std::shared_ptr<Stream> in) override{
+    in->Read(storage_.data(), storage_.size() * sizeof(T));
+//    for (int i = 0; i < storage_.size(); ++i){
+      //in >> storage_[i];
+    //}
   }
 
 private:
@@ -280,21 +282,6 @@ private:
   int num_col_;
   int row_offset_;
   std::vector<T> storage_;
-};
-
-template <typename T>
-class MatrixTableFactory : public TableFactory {
-public:
-  MatrixTableFactory(int num_row, int num_col) : num_row_(num_row), num_col_(num_col) { }
-protected:
-  WorkerTable* CreateWorkerTable() override{
-    return new MatrixWorkerTable<T>(num_row_, num_col_);
-  }
-  ServerTable* CreateServerTable() override{
-    return new MatrixServerTable<T>(num_row_, num_col_);
-  }
-  int num_row_;
-  int num_col_;
 };
 
 template <typename T>

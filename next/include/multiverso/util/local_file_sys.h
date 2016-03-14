@@ -1,4 +1,3 @@
-#include "multiverso/util/io.h"
 #ifndef MULTIVERSO_LOCAL_FILE_SYS_H_
 #define MULTIVERSO_LOCAL_FILE_SYS_H_
 

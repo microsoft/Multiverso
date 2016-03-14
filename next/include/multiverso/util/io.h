@@ -151,7 +151,9 @@ namespace multiverso
     virtual ~StreamFactory() {};
 
   protected:
-    static std::map<std::string, std::shared_ptr<StreamFactory> >instances_;
+
+    static std::map<std::string, std::shared_ptr<StreamFactory> > instances_;
+
     StreamFactory() {}
   };
 

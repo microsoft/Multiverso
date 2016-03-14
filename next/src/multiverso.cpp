@@ -13,7 +13,7 @@ void MV_ShutDown(bool finalize_net) {
   Zoo::Get()->Stop(finalize_net);
 }
 
-void MV_Barrier(int iter) { Zoo::Get()->Barrier(iter); }
+void MV_Barrier(const int& iter) { Zoo::Get()->Barrier(iter); }
 
 int  MV_Rank() { return Zoo::Get()->rank(); }
 
@@ -49,7 +49,6 @@ int  MV_NetConnect(int* ranks, char* endpoints[], int size) {
   return NetInterface::Get()->Connect(ranks, endpoints, size);
 }
 
-//template<typename T, typename V>
 WorkerTable* MV_CreateTable(TableHelper* helper){
   return helper->CreateTable();
 }

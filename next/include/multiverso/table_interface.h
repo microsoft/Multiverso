@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "multiverso/blob.h"
+#include "multiverso/util/io.h"
 
 namespace multiverso {
 
@@ -52,8 +53,8 @@ public:
   virtual void ProcessAdd(const std::vector<Blob>& data) = 0;
   virtual void ProcessGet(const std::vector<Blob>& data,
                           std::vector<Blob>* result) = 0;
-  virtual void DumpTable(std::ofstream& os) = 0;
-  virtual void RecoverTable(std::ifstream& in) = 0;
+  virtual void DumpTable(std::shared_ptr<Stream> os) = 0;
+  virtual void RecoverTable(std::shared_ptr<Stream> in) = 0;
 
   const std::string name() const { return std::string(typeid(this).name());};
   
@@ -78,7 +79,7 @@ protected:
 class TableHelper {
 public:
   TableHelper() {}
-  WorkerTable* CreateTable(const std::string& dump_file_path = "");
+  WorkerTable* CreateTable();
   virtual ~TableHelper() {}
 
 protected:

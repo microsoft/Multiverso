@@ -133,19 +133,28 @@ public:
     result->push_back(value);
   }
 
-  void DumpTable(std::ofstream& os){
+  void DumpTable(std::shared_ptr<Stream> os){
+    os->Write(&smooth_momentum_, sizeof(float));
+    os->Write(storage_.data(), storage_.size() * sizeof(T));
+    os->Write(smooth_gradient_.data(), smooth_gradient_.size() * sizeof(T));
+    /*
     os << smooth_momentum_ << ' ';
     for (int i = 0; i < storage_.size(); ++i)
       os << storage_[i] << ' ';
     for (int i = 0; i < smooth_gradient_.size(); ++i)
       os << smooth_gradient_[i] << ' ';
+      */
   }
-  void RecoverTable(std::ifstream& in){
-    in >> smooth_momentum_;
+  void RecoverTable(std::shared_ptr<Stream> in){
+    in->Read(&smooth_momentum_, sizeof(float));
+    in->Read(storage_.data(), storage_.size() * sizeof(T));
+    in->Read(smooth_gradient_.data(), smooth_gradient_.size() * sizeof(T));
+    /*in >> smooth_momentum_;
     for (int i = 0; i < storage_.size(); ++i)
       in >> storage_[i];
     for (int i = 0; i < smooth_gradient_.size(); ++i)
       in >> smooth_gradient_[i];
+      */
   }
 
 private:
