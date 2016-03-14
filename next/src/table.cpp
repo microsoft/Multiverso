@@ -1,4 +1,9 @@
 #include "multiverso/table_interface.h"
+#include "multiverso/table/matrix_table.h"
+#include "multiverso/table/array_table.h"
+#include "multiverso/table/kv_table.h"
+#include "multiverso/table/smooth_array_table.h"
+#include "multiverso/table/adam_array_table.h"
 
 #include "multiverso/util/log.h"
 #include "multiverso/util/waiter.h"
@@ -59,7 +64,7 @@ void WorkerTable::Notify(int id) {
   waitings_[id]->Notify(); 
 }
 
-WorkerTable* TableFactory::CreateTable(const std::string& dump_file_path) {
+WorkerTable* TableHelper::CreateTable(const std::string& dump_file_path){
   if (Zoo::Get()->server_rank() >= 0){
     CreateServerTable();
   }

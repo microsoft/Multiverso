@@ -16,6 +16,7 @@
 #include <multiverso/table/matrix_table.h>
 #include <MPIWrapper.h>
 
+
 using namespace multiverso;
 
 void TestKV(int argc, char* argv[]) {
@@ -334,10 +335,10 @@ void TestMatrix(int argc, char* argv[]){
 	int num_row = 11, num_col = 10;
 	int size = num_row * num_col;
 
-  MatrixTableFactory<int> tableFactory(num_row, num_col); //used to create table
-  MatrixWorkerTable<int>* worker_table = static_cast<MatrixWorkerTable<int>*>(tableFactory.CreateTable());
-  if (worker_table == nullptr){
-    return; //no worker in this node
+  MatrixWorkerTable<int>* worker_table = 
+    static_cast<MatrixWorkerTable<int>*>(MV_CreateTable(new MatrixTableHelper<int>(num_row, num_col)));
+  if (worker_table == nullptr){ //should have more if statement to avoid nullptr in using worker_table
+    Log::Debug("rank %d has no worker\n", MV_Rank());
   }
 
 	//MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);

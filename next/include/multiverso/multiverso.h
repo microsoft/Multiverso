@@ -1,7 +1,10 @@
 #ifndef MULTIVERSO_INCLUDE_MULTIVERSO_H_
 #define MULTIVERSO_INCLUDE_MULTIVERSO_H_
 
+#include "multiverso/table_interface.h"
+
 #include <string>
+
 
 namespace multiverso {
 
@@ -32,6 +35,8 @@ int  MV_ServerId();
 
 int  MV_WorkerIdToRank(int worker_id);
 int  MV_ServerIdToRank(int server_id);
+
+WorkerTable* MV_CreateTable(TableHelper* helper);
 
 int MV_RestoreTable(const std::string& dump_file_path);
 

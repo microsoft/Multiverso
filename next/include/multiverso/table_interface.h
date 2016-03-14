@@ -65,29 +65,25 @@ public:
 
 // TODO(feiga): provide better table creator method
 // Abstract Factory to create server and worker
-class TableFactory {
+/*class TableFactory {
 public:
+  static WorkerTable* CreateTable(const std::string& dump_file_path_ = "");
   virtual ~TableFactory() {};
-  WorkerTable* CreateTable(const std::string& dump_file_path_ = "");
-  // static TableFactory* GetTableFactory();
 protected:
   virtual WorkerTable* CreateWorkerTable() = 0;
   virtual ServerTable* CreateServerTable() = 0;
-  std::vector<WorkerTable*> worker_table_;
-  //static TableFactory* factory_;
 };
+*/
 
-namespace table {
-
-}
-
-class TableBuilder {
+class TableHelper {
 public:
-  TableBuilder& SetArribute(const std::string& name, const std::string& val);
-  WorkerTable* WorkerTableBuild();
-  ServerTable* ServerTableBuild();
-private:
-  std::unordered_map<std::string, std::string> params_;
+  TableHelper() {}
+  WorkerTable* CreateTable(const std::string& dump_file_path = "");
+  virtual ~TableHelper() {}
+
+protected:
+  virtual WorkerTable* CreateWorkerTable() = 0;
+  virtual ServerTable* CreateServerTable() = 0;
 };
 
 }

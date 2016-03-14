@@ -49,6 +49,11 @@ int  MV_NetConnect(int* ranks, char* endpoints[], int size) {
   return NetInterface::Get()->Connect(ranks, endpoints, size);
 }
 
+//template<typename T, typename V>
+WorkerTable* MV_CreateTable(TableHelper* helper){
+  return helper->CreateTable();
+}
+
 int MV_RestoreTable(const std::string& dump_file_path){
   return Zoo::Get()->RestoreTable(dump_file_path);
 }

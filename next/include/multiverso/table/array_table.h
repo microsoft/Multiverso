@@ -133,6 +133,19 @@ private:
   std::vector<T> storage_;
   size_t size_; // number of element with type T
 };
+
+template<typename T>
+class ArrayTableHelper : public TableHelper {
+  ArrayTableHelper(const size_t& size) : size_(size) { }
+protected:
+  WorkerTable* CreateWorkerTable() override{
+    return new ArrayWorker<T>(size_);
+  }
+  ServerTable* CreateServerTable() override{
+    return new ArrayServer<T>(size_);
+  }
+  size_t size_;
+};
 }
 
 #endif // MULTIVERSO_ARRAY_TABLE_H_

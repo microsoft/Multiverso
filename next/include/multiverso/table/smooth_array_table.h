@@ -155,6 +155,20 @@ private:
   std::vector<T> smooth_gradient_;
   size_t size_; // number of element with type T
 };
+
+template<typename T>
+class SmoothTableHelper : public TableHelper {
+  SmoothTableHelper(const size_t& size) : size_(size) { }
+
+protected:
+  WorkerTable* CreateWorkerTable() override{
+    return new SmoothArrayWorker<T>(size_);
+  }
+  ServerTable* CreateServerTable() override{
+    return new SmoothArrayServer<T>(size_);
+  }
+  size_t size_;
+};
 }
 
 #endif // MULTIVERSO_SMOOTH_ARRAY_TABLE_H_

@@ -52,7 +52,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_zmq|x64'">
     <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_zmq|x64'">
     <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <ClCompile>
@@ -185,10 +185,14 @@
     <ClInclude Include="include\multiverso\table\smooth_array_table.h" />
     <ClInclude Include="include\multiverso\table_interface.h" />
     <ClInclude Include="include\multiverso\util\double_buffer.h" />
+    <ClInclude Include="include\multiverso\util\hdfs.h" />
+    <ClInclude Include="include\multiverso\util\hdfs_file_sys.h" />
+    <ClInclude Include="include\multiverso\util\local_file_sys.h" />
     <ClInclude Include="include\multiverso\util\log.h" />
     <ClInclude Include="include\multiverso\util\mt_queue.h" />
     <ClInclude Include="include\multiverso\util\net_util.h" />
     <ClInclude Include="include\multiverso\util\quantization_util.h" />
+    <ClInclude Include="include\multiverso\util\io.h" />
     <ClInclude Include="include\multiverso\util\waiter.h" />
     <ClInclude Include="include\multiverso\worker.h" />
     <ClInclude Include="include\multiverso\zoo.h" />
@@ -202,6 +206,9 @@
     <ClCompile Include="src\node.cpp" />
     <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\table.cpp" />
+    <ClCompile Include="src\util\hdfs_file_sys.cpp" />
+    <ClCompile Include="src\util\io.cpp" />
+    <ClCompile Include="src\util\local_file_sys.cpp" />
     <ClCompile Include="src\util\log.cpp" />
     <ClCompile Include="src\util\net_util.cpp" />
     <ClCompile Include="src\worker.cpp" />

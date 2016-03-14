@@ -171,6 +171,19 @@ private:
   std::vector<T> smooth_gradient_second_;
   size_t size_; // number of element with type T
 };
+
+template<typename T>
+class AdamTableHelper : public TableHelper {
+  AdamTableHelper(const size_t& size) : size_(size) { }
+protected:
+  WorkerTable* CreateWorkerTable() override{
+    return new AdamArrayWorker<T>(size_);
+  }
+  ServerTable* CreateServerTable() override{
+    return new AdamArrayServer<T>(size_);
+  }
+  size_t size_;
+};
 }
 
 #endif // MULTIVERSO_ADAM_ARRAY_TABLE_H_
