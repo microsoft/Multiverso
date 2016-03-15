@@ -12,10 +12,10 @@ services:
 before_install:
   - docker build -t multiverso .
 install:
-  - docker run -t -i multiverso /bin/bash
-script:
-  - mpiexec -n 2 /project/build/bin/multiverso.test matrix
-  - mpiexec -n 2 /project/build/bin/multiverso.test array
-  - mpiexec -n 2 /project/build/bin/multiverso.test checkpoint
-  - mpiexec -n 2 /project/build/bin/multiverso.test restore
-  - mpiexec -n 2 /project/build/bin/multiverso.test kv
+  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test matrix" 
+#script:
+#  - mpiexec -n 2 /project/build/bin/multiverso.test matrix
+#  - mpiexec -n 2 /project/build/bin/multiverso.test array
+#  - mpiexec -n 2 /project/build/bin/multiverso.test checkpoint
+#  - mpiexec -n 2 /project/build/bin/multiverso.test restore
+#  - mpiexec -n 2 /project/build/bin/multiverso.test kv
