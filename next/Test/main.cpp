@@ -404,6 +404,9 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
   //MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
   //if restore = true, will restore server data and return the next iter number of last dump file
   //else do nothing and return 0
+  if (worker_table == nullptr) {
+    //no worker in this node
+  }
   int begin_iter = MV_RestoreTable("//5FTGDB2/tableData/serverTable_");
   MV_Barrier();//won't dump data without parameters
 
