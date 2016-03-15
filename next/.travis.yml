@@ -1,0 +1,16 @@
+sudo: required
+
+language: cpp
+
+services:
+  - docker
+
+before_install:
+  - docker build -t multiverso .
+
+script:
+  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test matrix"
+#  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test array"
+#  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test checkpoint"
+#  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test restore"
+#  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test kv"
