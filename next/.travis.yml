@@ -1,16 +1,21 @@
 sudo: required
-
+branches:
+  only:
+    - liming
+notifications:
+  email:
+    recipients:
+      - v-limhua@microsoft.com
 language: cpp
-
 services:
   - docker
-
 before_install:
   - docker build -t multiverso .
-
+install:
+  - docker run -t -i multiverso /bin/bash
 script:
-  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test matrix"
-#  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test array"
-#  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test checkpoint"
-#  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test restore"
-#  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test kv"
+  - mpiexec -n 2 /project/build/bin/multiverso.test matrix
+  - mpiexec -n 2 /project/build/bin/multiverso.test array
+  - mpiexec -n 2 /project/build/bin/multiverso.test checkpoint
+  - mpiexec -n 2 /project/build/bin/multiverso.test restore
+  - mpiexec -n 2 /project/build/bin/multiverso.test kv
