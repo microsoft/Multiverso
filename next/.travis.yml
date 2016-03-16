@@ -9,15 +9,15 @@ notifications:
 language: cpp
 services:
   - docker
-before_install:
+install:
   - docker build -t multiverso .
-  - docker run -t -i multiverso /bin/bash -c "cd /project"
-  - docker ps -a
-install: true
-#  - docker run -t -i multiverso /bin/bash -c "mpiexec -n 2 /project/build/bin/multiverso.test matrix" 
+  - docker run -t -i multiverso /etc/bootstrap.sh -c "mpiexec -n 2 build/bin/multiverso.test matrix"
 script:
-  - mpiexec -n 2 build/bin/multiverso.test matrix
-  - mpiexec -n 2 build/bin/multiverso.test array
-  - mpiexec -n 2 build/bin/multiverso.test checkpoint
-  - mpiexec -n 2 build/bin/multiverso.test restore
-  - mpiexec -n 2 build/bin/multiverso.test kv
+  - docker ps
+  - docker run -t -i multiverso /etc/bootstrap.sh -c "mpiexec -n 2 build/bin/multiverso.test checkpoint"
+  - docker run -t -i multiverso /etc/bootstrap.sh -c "mpiexec -n 2 build/bin/multiverso.test ttt"
+#  - mpiexec -n 2 build/bin/multiverso.test matrix
+#  - mpiexec -n 2 build/bin/multiverso.test array
+#  - mpiexec -n 2 build/bin/multiverso.test checkpoint
+#  - mpiexec -n 2 build/bin/multiverso.test restore
+#  - mpiexec -n 2 build/bin/multiverso.test kv

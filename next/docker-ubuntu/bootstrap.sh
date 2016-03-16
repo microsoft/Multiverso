@@ -11,10 +11,4 @@ cd $HADOOP_PREFIX/share/hadoop/common ; for cp in ${ACP//,/ }; do  echo == $cp; 
 export PATH=$PATH:${HADOOP_PREFIX}/bin
 export CLASSPATH=/usr/local/hadoop/lib/native/*:`hadoop classpath --glob`:/usr/local/java/default/lib/*.jar
 
-#/project/build/bin/multiverso.tests
-
-cd /workdir
-ls
-whoami
-$1
-exit
+cd /project
