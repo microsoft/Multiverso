@@ -1,22 +1,28 @@
 sudo: required
-branches:
-  only:
-    - liming
-notifications:
-  email:
-    recipients:
-      - v-limhua@microsoft.com
+
+#use only specify which branches to build
+#or use except to make the blacklist
+#branches:
+#  only: 
+#     - liming
+
+#specify recipients that will be notified about build results
+#default send to the committer and the author
+#notifications:
+#  email:
+#    recipients:
+#      - v-limhua@microsoft.com
+
 language: cpp
+
+#use docker
 services:
   - docker
+
+#build docker
 install:
   - docker build -t multiverso .
+
+#run with the test.sh
 script:
   - docker run -t -i multiverso /etc/bootstrap.sh
-#  - docker run -t -i multiverso /bin/bash -c "/etc/bootstrap.sh /bin/bash; mpiexec -n 2 build/bin/multiverso.test checkpoint"
-#  - docker run -t -i multiverso /bin/bash -c "/etc/bootstrap.sh /bin/bash; mpiexec -n 2 build/bin/multiverso.test ttt"
-#  - mpiexec -n 2 build/bin/multiverso.test matrix
-#  - mpiexec -n 2 build/bin/multiverso.test array
-#  - mpiexec -n 2 build/bin/multiverso.test checkpoint
-#  - mpiexec -n 2 build/bin/multiverso.test restore
-#  - mpiexec -n 2 build/bin/multiverso.test kv
