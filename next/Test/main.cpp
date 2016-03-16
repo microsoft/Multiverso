@@ -407,7 +407,7 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
   if (worker_table == nullptr) {
     //no worker in this node
   }
-  int begin_iter = MV_RestoreTable("hdfs://http://10.172.150.34:9000/test/serverTable_");
+  int begin_iter = MV_RestoreTable("hdfs://http://10.172.150.34:9000/liming");
   MV_Barrier();//won't dump data without parameters
 
   std::vector<int> delta(size);

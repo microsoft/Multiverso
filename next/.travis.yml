@@ -11,11 +11,10 @@ services:
   - docker
 install:
   - docker build -t multiverso .
-  - docker run -t -i multiverso /etc/bootstrap.sh -c "mpiexec -n 2 build/bin/multiverso.test matrix"
 script:
-  - docker ps
-  - docker run -t -i multiverso /etc/bootstrap.sh -c "mpiexec -n 2 build/bin/multiverso.test checkpoint"
-  - docker run -t -i multiverso /etc/bootstrap.sh -c "mpiexec -n 2 build/bin/multiverso.test ttt"
+  - docker run -t -i multiverso /etc/bootstrap.sh
+#  - docker run -t -i multiverso /bin/bash -c "/etc/bootstrap.sh /bin/bash; mpiexec -n 2 build/bin/multiverso.test checkpoint"
+#  - docker run -t -i multiverso /bin/bash -c "/etc/bootstrap.sh /bin/bash; mpiexec -n 2 build/bin/multiverso.test ttt"
 #  - mpiexec -n 2 build/bin/multiverso.test matrix
 #  - mpiexec -n 2 build/bin/multiverso.test array
 #  - mpiexec -n 2 build/bin/multiverso.test checkpoint
