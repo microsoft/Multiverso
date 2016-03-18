@@ -355,49 +355,63 @@ void TestMatrix(int argc, char* argv[]){
 
 	MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
 	MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
-
+	std::thread* m_prefetchThread = nullptr;
 	MV_Barrier();
 
-	std::vector<int> v = { 0, 1, 5 ,10};
+	while (true)
+	{
+		if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
+		{
+			m_prefetchThread->join();
+			delete m_prefetchThread;
+			m_prefetchThread = nullptr;
+		}
+		std::vector<int> v = { 0, 1, 5, 10 };
 
-	// test data
-	std::vector<int> delta(size);
-	for (int i = 0; i < size; ++i)
-		delta[i] = i;
+		// test data
+		std::vector<int> delta(size);
+		for (int i = 0; i < size; ++i)
+			delta[i] = i;
 
-	int * data = new int[size];
+		int * data = new int[size];
+		m_prefetchThread = new std::thread([&](){
 
-	// worker_table->Add(v, delta.data()); //add row 0,1,5,10
-	worker_table->Add(delta.data(), size); //add all
+			worker_table->Add(delta.data(), size); //add all
 
-	worker_table->Get(data, size); //get all
-	MV_Barrier();
+			worker_table->Get(data, size); //get all
+			printf("----------------------------\n");
+			for (int i = 0; i < num_row; ++i){
+				printf("rank %d, row %d: ", MV_Rank(), i);
+				for (int j = 0; j < num_col; ++j)
+					printf("%d ", data[i * num_col + j]);
+				printf("\n");
+			};
+		});
 
-	printf("----------------------------\n");
-	for (int i = 0; i < num_row; ++i){
-		printf("rank %d, row %d: ", MV_Rank(), i);
-		for (int j = 0; j < num_col; ++j)
-			printf("%d ", data[i * num_col + j]);
-		printf("\n");
+		MV_Barrier();
+		if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
+		{
+			m_prefetchThread->join();
+			delete m_prefetchThread;
+			m_prefetchThread = nullptr;
+		}
+		//test data_vec
+		std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10 * num_col] };
+		std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
+		worker_table->Add(v, delta_rows, num_col);
+		worker_table->Get(v, data_rows, num_col);
+		MV_Barrier();
+
+		printf("----------------------------\n");
+		for (int i = 0; i < num_row; ++i){
+			printf("rank %d, row %d: ", MV_Rank(), i);
+			for (int j = 0; j < num_col; ++j)
+				printf("%d ", data[i * num_col + j]);
+			printf("\n");
+		}
+		MV_Barrier();
+
 	}
-	MV_Barrier();
-
-	//test data_vec
-	std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10*num_col] };
-	std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
-	worker_table->Add(v, delta_rows, num_col);
-	worker_table->Get(v, data_rows, num_col);
-	MV_Barrier();
-
-	printf("----------------------------\n");
-	for (int i = 0; i < num_row; ++i){
-		printf("rank %d, row %d: ", MV_Rank(), i);
-		for (int j = 0; j < num_col; ++j)
-			printf("%d ", data[i * num_col + j]);
-		printf("\n");
-	}
-	MV_Barrier();
-	
 	MV_ShutDown();
 }
 

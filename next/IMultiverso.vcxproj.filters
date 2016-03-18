@@ -52,9 +52,6 @@
     <ClInclude Include="include\multiverso\util\waiter.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\util\double_buffer.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\util\log.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -77,6 +74,9 @@
       <Filter>include\table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\util\timer.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\async_buffer.h">
       <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
