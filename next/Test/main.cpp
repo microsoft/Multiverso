@@ -335,8 +335,8 @@ void TestMatrix(int argc, char* argv[]){
 	int num_row = 11, num_col = 10;
 	int size = num_row * num_col;
 
-  MatrixWorkerTable<int>* worker_table = 
-    static_cast<MatrixWorkerTable<int>*>(MV_CreateTable(new MatrixTableHelper<int>(num_row, num_col)));
+  MatrixWorkerTable<int>* worker_table = static_cast<MatrixWorkerTable<int>*>(MV_CreateTable_<int>("matrix", { &num_row, &num_col }));
+//    static_cast<MatrixWorkerTable<int>*>(MV_CreateTable(new MatrixTableHelper<int>(num_row, num_col)));
   if (worker_table == nullptr){ //should have more if statement to avoid nullptr in using worker_table
     Log::Debug("rank %d has no worker\n", MV_Rank());
   }
