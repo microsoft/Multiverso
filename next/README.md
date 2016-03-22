@@ -19,3 +19,5 @@ Make issues for discussion.
 Feel free to push directly. It is unnecessary to folk and pull request. 
 
 Enjoy!
+
+[![Build Status](https://travis-ci.com/Microsoft/multiverso-next.svg?token=3HGpfszLKUkgnzxh5Z6R&branch=master)](https://travis-ci.com/Microsoft/multiverso-next)

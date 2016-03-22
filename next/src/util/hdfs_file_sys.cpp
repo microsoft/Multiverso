@@ -39,14 +39,20 @@ HDFSStream::HDFSStream(hdfsFS fs, const URI &uri, const char *mode)
 
 HDFSStream::~HDFSStream(void)
 {
-	if (mode_ == "a" || mode_ == "w")
-		Flush();
-    if (hdfsCloseFile(fs_, fp_) == -1)
+  if (mode_ == "a" || mode_ == "w"){
+    if (hdfsHSync(fs_, fp_) == -1)  //flush local buffer
     {
-        is_good_ = false;
-        int errsv = errno;
-        Log::Error("Failed to close HDFSStream %s, %s\n", path_.c_str(), strerror(errsv));
+      is_good_ = false;
+      int errsv = errno;
+      Log::Error("Failed to Flush HDFSStream %s: %s\n", path_.c_str(), strerror(errsv));
     }
+  }
+  if (hdfsCloseFile(fs_, fp_) == -1)
+  {
+      is_good_ = false;
+      int errsv = errno;
+      Log::Error("Failed to close HDFSStream %s, %s\n", path_.c_str(), strerror(errsv));
+  }
 }
 
 /*!
@@ -112,69 +118,9 @@ size_t HDFSStream::Read(void *buf, size_t size)
     return i;
 }
 
-/*!
-* \brief move the position point to seekOrigin + offset
-* \param offset the offset(bytes number) to change the position point
-* \param seekOrigin the reference position
-*/
-void HDFSStream::Seek(size_t offset, SeekOrigin seekOrigin)
-{
-    tOffset pos;
-    if (seekOrigin == SeekOrigin::kBegin)
-    {
-        pos = static_cast<tOffset>(offset);
-    }
-    else if (seekOrigin == SeekOrigin::kCurrent)
-    {
-        pos = hdfsTell(fs_, fp_);
-        if (pos == -1)
-        {
-          is_good_ = false;
-          int errsv = errno;
-          Log::Fatal("Failed to get Current position of HDFSStream %s: %s\n", path_.c_str(), strerror(errsv));
-        }
-
-        pos += static_cast<tOffset>(offset); 
-    }
-    else
-    {
-        hdfsFileInfo *info = hdfsGetPathInfo(fs_, path_.c_str());
-        if (info == nullptr)
-        {
-            is_good_ = false;
-            int errsv = errno;
-            Log::Fatal("Failed to get Current position of HDFSStream %s: %s\n", path_.c_str(), strerror(errsv));
-            return;
-        }
-
-        pos = info->mSize + static_cast<tOffset>(offset);
-        hdfsFreeFileInfo(info, 1);
-    }
-
-    if (hdfsSeek(fs_, fp_, pos) != 0)
-    {
-        is_good_ = false;
-        int errsv = errno;
-        Log::Error("Failed to Seek HDFSStream %s: %s\n", path_.c_str(), strerror(errsv));
-    }
-}
-
 bool HDFSStream::Good()
 {
     return is_good_;
-}
-
-/*!
-* \brief flush local buffer
-*/
-void HDFSStream::Flush()
-{
-	if (hdfsHSync(fs_, fp_) == -1)
-	{
-		is_good_ = false;
-		int errsv = errno;
-		Log::Error("Failed to Flush HDFSStream %s: %s\n", path_.c_str(), strerror(errsv));
-	}
 }
 
 HDFSStreamFactory::HDFSStreamFactory(const std::string &host)
@@ -218,9 +164,9 @@ void HDFSStreamFactory::Close(void)
 *             "r" - open the file to read
 * \return the Stream which is used to write or read data
 */
-std::shared_ptr<Stream> HDFSStreamFactory::Open(const URI & uri,
+Stream* HDFSStreamFactory::Open(const URI & uri,
     const char *mode)
 {
-    return std::shared_ptr<Stream>(new HDFSStream(fs_, uri, mode));   
+    return new HDFSStream(fs_, uri, mode);   
 }
 }

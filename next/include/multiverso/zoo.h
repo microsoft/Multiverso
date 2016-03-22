@@ -27,7 +27,7 @@ public:
   // Stop all actors
   void Stop(bool finalize_net);
 
-  void Barrier(const int& iter = -1);
+  void Barrier(int iter = -1);
 
   void SendTo(const std::string& name, MessagePtr&);
   void Receive(MessagePtr& msg);
@@ -59,7 +59,7 @@ public:
     zoo_[name] = actor;
   }
   
-  int RestoreTable(const std::string& dump_file_path);
+  int LoadTable(const std::string& dump_file_path);
 private:
   // private constructor
   Zoo();

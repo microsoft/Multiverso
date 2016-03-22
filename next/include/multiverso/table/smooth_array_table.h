@@ -133,28 +133,15 @@ public:
     result->push_back(value);
   }
 
-  void DumpTable(std::shared_ptr<Stream> os){
-    os->Write(&smooth_momentum_, sizeof(float));
-    os->Write(storage_.data(), storage_.size() * sizeof(T));
-    os->Write(smooth_gradient_.data(), smooth_gradient_.size() * sizeof(T));
-    /*
-    os << smooth_momentum_ << ' ';
-    for (int i = 0; i < storage_.size(); ++i)
-      os << storage_[i] << ' ';
-    for (int i = 0; i < smooth_gradient_.size(); ++i)
-      os << smooth_gradient_[i] << ' ';
-      */
+  void Store(Stream* s) override{
+    s->Write(&smooth_momentum_, sizeof(float));
+    s->Write(storage_.data(), storage_.size() * sizeof(T));
+    s->Write(smooth_gradient_.data(), smooth_gradient_.size() * sizeof(T));
   }
-  void RecoverTable(std::shared_ptr<Stream> in){
-    in->Read(&smooth_momentum_, sizeof(float));
-    in->Read(storage_.data(), storage_.size() * sizeof(T));
-    in->Read(smooth_gradient_.data(), smooth_gradient_.size() * sizeof(T));
-    /*in >> smooth_momentum_;
-    for (int i = 0; i < storage_.size(); ++i)
-      in >> storage_[i];
-    for (int i = 0; i < smooth_gradient_.size(); ++i)
-      in >> smooth_gradient_[i];
-      */
+  void Load(Stream* s) override{
+    s->Read(&smooth_momentum_, sizeof(float));
+    s->Read(storage_.data(), storage_.size() * sizeof(T));
+    s->Read(smooth_gradient_.data(), smooth_gradient_.size() * sizeof(T));
   }
 
 private:

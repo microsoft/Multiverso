@@ -85,6 +85,12 @@
     <ClInclude Include="include\multiverso\util\io.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\util\configure.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\hdfs_file_sys.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -144,6 +150,9 @@
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="src\util\local_file_sys.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\hdfs_file_sys.cpp">
       <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>

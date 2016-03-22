@@ -262,19 +262,12 @@ public:
     }
   }
 
-  void DumpTable(std::shared_ptr<Stream> os) override{
-    //char c = '\t';
-    os->Write(storage_.data(), storage_.size() * sizeof(T));
-    //for (int i = 0; i < storage_.size(); ++i){
-//      os << storage_[i] << c;
-    //}
+  void Store(Stream* s) override{
+    s->Write(storage_.data(), storage_.size() * sizeof(T));
   }
 
-  void RecoverTable(std::shared_ptr<Stream> in) override{
-    in->Read(storage_.data(), storage_.size() * sizeof(T));
-//    for (int i = 0; i < storage_.size(); ++i){
-      //in >> storage_[i];
-    //}
+  void Load(Stream* s) override{
+    s->Read(storage_.data(), storage_.size() * sizeof(T));
   }
 
 private:

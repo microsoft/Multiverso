@@ -100,26 +100,22 @@ public:
     }
   }
 
-  void DumpTable(std::shared_ptr<Stream> os){
+  void Store(Stream* s) override{
     size_t size = table_.size();
-    os->Write(&size, sizeof(size_t));
-    //os << table_.size() << ' ';
+    s->Write(&size, sizeof(size_t));
     for (auto& i : table_){
-      //os << i.first << ' ' << i.second << ' ';
-      os->Write(&i.first, sizeof(Key));
-      os->Write(&i.second, sizeof(Val));
+      s->Write(&i.first, sizeof(Key));
+      s->Write(&i.second, sizeof(Val));
     }
   }
-  void RecoverTable(std::shared_ptr<Stream> in){
+  void Load(Stream* s) override{
     size_t count;
     Key k;
     Val v;
-    //in >> count;
-    in->Read(&count, sizeof(size_t));
+    s->Read(&count, sizeof(size_t));
     for (int i = 0; i < count; ++i){
-      //in >> k >> v;
-      in->Read(&k, sizeof(Key));
-      in->Read(&v, sizeof(Val));
+      s->Read(&k, sizeof(Key));
+      s->Read(&v, sizeof(Val));
       table_[k] = v;
     }
   }

@@ -74,7 +74,6 @@ namespace multiverso
 
       name = uri.substr(start, std::string::npos);
       path = scheme + "://" + host + name;
-      //printf("URI:[%s][%s][%s][%s]\n", uri.c_str(), scheme.c_str(), host.c_str(), name.c_str(), path.c_str());
     }
   };
 
@@ -96,19 +95,7 @@ namespace multiverso
     */
     virtual size_t Read(void *buf, size_t size) = 0;
 
-    /*!
-    * \brief move the position point to seekOrigin + offset
-    * \param offset the offset(bytes number) to change the position point
-    * \param seekOrigin the reference position
-    */
-    virtual void Seek(size_t offset, SeekOrigin seekOrigin) = 0;
-
     virtual bool Good() = 0;
-
-    /*!
-    * \brief flush local buffer
-    */
-    virtual void Flush() = 0;
 
     virtual ~Stream(void) {};
   };
@@ -140,10 +127,10 @@ namespace multiverso
     *             "r" - open the file to read
     * \return the Stream which is used to write or read data
     */
-    static std::shared_ptr<Stream> GetStream(const URI& uri,
+    static Stream* GetStream(const URI& uri,
       const char *mode);
 
-    virtual std::shared_ptr<Stream> Open(const URI& uri,
+    virtual Stream* Open(const URI& uri,
       const char *mode) = 0;
 
     virtual void Close() = 0;
@@ -170,7 +157,7 @@ namespace multiverso
 
     char* buf_;
     size_t pos_, buf_size_, length_;
-    std::shared_ptr<Stream> stream_;
+    Stream* stream_;
   };
 
 }

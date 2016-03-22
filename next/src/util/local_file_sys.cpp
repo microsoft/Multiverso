@@ -62,32 +62,9 @@ size_t LocalStream::Read(void *buf, size_t size)
     return std::fread(buf, 1, size, fp_);
 }
 
-/*!
-* \brief move the position point to seekOrigin + offset
-* \param offset the offset(bytes number) to change the position point
-* \param seekOrigin the reference position
-*/
-void LocalStream::Seek(size_t offset, SeekOrigin seekOrigin)
-{
-    if (seekOrigin == SeekOrigin::kBegin)
-        std::fseek(fp_, static_cast<long>(offset), SEEK_SET);
-    else if (seekOrigin == SeekOrigin::kCurrent)
-        std::fseek(fp_, static_cast<long>(offset), SEEK_CUR);
-    else
-        std::fseek(fp_, static_cast<long>(offset), SEEK_END);
-}
-
 bool LocalStream::Good()
 {
     return is_good_;
-}
-
-/*!
-* \brief flush local buffer
-*/
-void LocalStream::Flush()
-{
-    std::fflush(fp_);
 }
 
 LocalStreamFactory::LocalStreamFactory(const std::string& host)
@@ -107,10 +84,10 @@ LocalStreamFactory::~LocalStreamFactory()
 *             "r" - open the file to read
 * \return the Stream which is used to write or read data
 */
-std::shared_ptr<Stream> LocalStreamFactory::Open(const URI& uri,
+Stream* LocalStreamFactory::Open(const URI& uri,
     const char *mode)
 {
-    return std::shared_ptr<Stream>(new LocalStream(uri, mode));
+    return new LocalStream(uri, mode);
 }
 
 void LocalStreamFactory::Close()

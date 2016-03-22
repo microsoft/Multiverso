@@ -27,6 +27,10 @@ class Configure {
 public:
   using Handler = std::function<void(const std::string&)>;
 
+  Configure(const std::string& configure_file) {
+
+  }
+
   Configure(const char* configure_file): restart_(false) {
     RegisterHandler("LogLevel", std::bind(
       &Configure::ProcessLogLevel, this, std::placeholders::_1));

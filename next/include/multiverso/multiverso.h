@@ -20,7 +20,7 @@ void MV_Init(int* argc = nullptr,
              int role = All,
              bool restart = false);
 
-void MV_Barrier(const int& iter = -1);
+void MV_Barrier(int iter = -1);
 
 void MV_ShutDown(bool finalize_mpi = true);
 
@@ -36,17 +36,14 @@ int  MV_ServerId();
 int  MV_WorkerIdToRank(int worker_id);
 int  MV_ServerIdToRank(int server_id);
 
-//older implementation, similar to previous one
-WorkerTable* MV_CreateTable(TableHelper* helper);
-
-//new implementation
+//new implementation, but template function should be defined in the same file with declaration
 /*
  * param table_type the type string of table, such as "matrix","array"
  * param table_args the parameters of table
  * dump_file_path not used now, to be discussed
  */ 
 template<typename Key, typename Val=void>
-WorkerTable* MV_CreateTable_(const std::string& table_type, const std::vector<void*>& table_args, 
+WorkerTable* MV_CreateTable(const std::string& table_type, const std::vector<void*>& table_args, 
   const std::string& dump_file_path = "") {
   return TableFactory::CreateTable<Key, Val>(table_type, table_args, dump_file_path);
 }

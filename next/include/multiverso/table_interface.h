@@ -53,8 +53,8 @@ public:
   virtual void ProcessAdd(const std::vector<Blob>& data) = 0;
   virtual void ProcessGet(const std::vector<Blob>& data,
                           std::vector<Blob>* result) = 0;
-  virtual void DumpTable(std::shared_ptr<Stream> os) = 0;
-  virtual void RecoverTable(std::shared_ptr<Stream> in) = 0;
+  virtual void Store(Stream* s) = 0;
+  virtual void Load(Stream* s) = 0;
 
   const std::string name() const { return std::string(typeid(this).name());};
   
@@ -94,8 +94,8 @@ protected:
 template<typename Key, typename Val>
 WorkerTable* TableFactory::CreateTable(const std::string& table_type, 
   const std::vector<void*>& table_args, const std::string& dump_file_path) {
-  bool worker = MV_WorkerId() >= 0;
-  bool server = MV_ServerId() >= 0;
+  bool worker = (MV_WorkerId() >= 0);
+  bool server = (MV_ServerId() >= 0);
   TableFactory* factory;
   if (table_type == "matrix") {
     factory = new MatrixTableFactory<Key>(table_args);

@@ -93,7 +93,7 @@ void Zoo::RegisterNode() {
   }
 }
 
-void Zoo::Barrier(const int& iter) {
+void Zoo::Barrier(int iter) {
   MessagePtr msg(new Message()); 
   msg->set_src(rank());
   msg->set_dst(0); // rank 0 acts as the controller master. 
@@ -108,7 +108,7 @@ void Zoo::Barrier(const int& iter) {
   Log::Debug("rank %d reached barrier\n", rank());
   
   if (iter >= 0 && iter % dump_each_k_ == 0){
-    static_cast<Server*>(zoo_[actor::kServer])->DumpTable(iter);
+    static_cast<Server*>(zoo_[actor::kServer])->StoreTable(iter);
   }
   
 }
@@ -123,11 +123,11 @@ int Zoo::RegisterTable(ServerTable* server_table) {
     ->RegisterTable(server_table);
 }
 
-int Zoo::RestoreTable(const std::string& dump_file_path){
+int Zoo::LoadTable(const std::string& dump_file_path){
   auto server = static_cast<Server*>(zoo_[actor::kServer]);
   server->SetDumpFilePath(dump_file_path);
   if (restart_){
-    return server->RestoreTable(dump_file_path);
+    return server->LoadTable(dump_file_path);
   }
   return 0;
 }

@@ -118,15 +118,11 @@ public:
     result->push_back(value);
   }
 
-  void DumpTable(std::shared_ptr<Stream> os){
-    os->Write(storage_.data(), storage_.size() * sizeof(T));
-    //for (int i = 0; i < storage_.size(); ++i)
-//      os << storage_[i] << ' ';
+  void Store(Stream* s) override{
+    s->Write(storage_.data(), storage_.size() * sizeof(T));
   }
-  void RecoverTable(std::shared_ptr<Stream> in){
-    in->Read(storage_.data(), storage_.size() * sizeof(T));
-    //for (int i = 0; i < storage_.size(); ++i)
-//      in >> storage_[i];
+  void Load(Stream* s) override{
+    s->Read(storage_.data(), storage_.size() * sizeof(T));
   }
 
 private:

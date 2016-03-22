@@ -138,40 +138,21 @@ public:
     result->push_back(value);
   }
 
-  void DumpTable(std::shared_ptr<Stream> os){
-    os->Write(&decay_momentum_rate_first_, sizeof(float));
-    os->Write(&decay_momentum_rate_second_, sizeof(float));
-    os->Write(&stepsize_, sizeof(float));
-    os->Write(storage_.data(), storage_.size() * sizeof(T));
-    os->Write(smooth_gradient_first_.data(), smooth_gradient_first_.size() * sizeof(T));
-    os->Write(smooth_gradient_second_.data(), smooth_gradient_second_.size() * sizeof(T));
-    /*os << decay_momentum_rate_first_ << ' ';
-    os << decay_momentum_rate_second_ << ' ';
-    os << stepsize_ << ' ';
-    for (int i = 0; i < storage_[i].size(); ++i)
-      os << storage_[i] << ' ';
-    for (int i = 0; i < smooth_gradient_first_.size(); ++i)
-      os << smooth_gradient_first_[i] << ' ';
-    for (int i = 0; i < smooth_gradient_second_.size(); ++i)
-      os << smooth_gradient_second_[i] << ' ';*/
+  void Store(Stream* s) override{
+    s->Write(&decay_momentum_rate_first_, sizeof(float));
+    s->Write(&decay_momentum_rate_second_, sizeof(float));
+    s->Write(&stepsize_, sizeof(float));
+    s->Write(storage_.data(), storage_.size() * sizeof(T));
+    s->Write(smooth_gradient_first_.data(), smooth_gradient_first_.size() * sizeof(T));
+    s->Write(smooth_gradient_second_.data(), smooth_gradient_second_.size() * sizeof(T));
   }
-  void RecoverTable(std::shared_ptr<Stream> in){
-    in->Read(&decay_momentum_rate_first_, sizeof(float));
-    in->Read(&decay_momentum_rate_second_, sizeof(float));
-    in->Read(&stepsize_, sizeof(float));
-    in->Read(storage_.data(), storage_.size() * sizeof(T));
-    in->Read(smooth_gradient_first_.data(), smooth_gradient_first_.size() * sizeof(T));
-    in->Read(smooth_gradient_second_.data(), smooth_gradient_second_.size() * sizeof(T));
-  /*  in >> decay_momentum_rate_first_;
-    in >> decay_momentum_rate_second_;
-    in >> stepsize_;
-    for (int i = 0; i < storage_[i].size(); ++i)
-      in >> storage_[i];
-    for (int i = 0; i < smooth_gradient_first_.size(); ++i)
-      in >> smooth_gradient_first_[i];
-    for (int i = 0; i < smooth_gradient_second_.size(); ++i)
-      in >> smooth_gradient_second_[i];
-      */
+  void Load(Stream* s) override{
+    s->Read(&decay_momentum_rate_first_, sizeof(float));
+    s->Read(&decay_momentum_rate_second_, sizeof(float));
+    s->Read(&stepsize_, sizeof(float));
+    s->Read(storage_.data(), storage_.size() * sizeof(T));
+    s->Read(smooth_gradient_first_.data(), smooth_gradient_first_.size() * sizeof(T));
+    s->Read(smooth_gradient_second_.data(), smooth_gradient_second_.size() * sizeof(T));
   }
 
 private:

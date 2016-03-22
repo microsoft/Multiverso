@@ -184,8 +184,10 @@
     <ClInclude Include="include\multiverso\table\matrix_table.h" />
     <ClInclude Include="include\multiverso\table\smooth_array_table.h" />
     <ClInclude Include="include\multiverso\table_interface.h" />
+    <ClInclude Include="include\multiverso\util\configure.h" />
     <ClInclude Include="include\multiverso\util\double_buffer.h" />
     <ClInclude Include="include\multiverso\util\hdfs.h" />
+    <ClInclude Include="include\multiverso\util\hdfs_file_sys.h" />
     <ClInclude Include="include\multiverso\util\io.h" />
     <ClInclude Include="include\multiverso\util\local_file_sys.h" />
     <ClInclude Include="include\multiverso\util\log.h" />
@@ -205,6 +207,7 @@
     <ClCompile Include="src\node.cpp" />
     <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\table.cpp" />
+    <ClCompile Include="src\util\hdfs_file_sys.cpp" />
     <ClCompile Include="src\util\io.cpp" />
     <ClCompile Include="src\util\local_file_sys.cpp" />
     <ClCompile Include="src\util\log.cpp" />

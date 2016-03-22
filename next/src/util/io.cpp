@@ -6,7 +6,7 @@
 namespace multiverso
 {
 
-std::shared_ptr<Stream> StreamFactory::GetStream(const URI& uri,
+Stream* StreamFactory::GetStream(const URI& uri,
   const char *mode)
 {
   std::string addr = uri.scheme + "://" + uri.host;
@@ -73,6 +73,7 @@ size_t TextReader::LoadBuffer()
 
 TextReader::~TextReader()
 {
+  delete stream_;
 	delete [] buf_;
 }
 

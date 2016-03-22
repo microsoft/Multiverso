@@ -335,8 +335,10 @@ void TestMatrix(int argc, char* argv[]){
 	int num_row = 11, num_col = 10;
 	int size = num_row * num_col;
 
-  MatrixWorkerTable<int>* worker_table = static_cast<MatrixWorkerTable<int>*>(MV_CreateTable_<int>("matrix", { &num_row, &num_col }));
-//    static_cast<MatrixWorkerTable<int>*>(MV_CreateTable(new MatrixTableHelper<int>(num_row, num_col)));
+  MatrixWorkerTable<int>* worker_table = 
+    static_cast<MatrixWorkerTable<int>*>(MV_CreateTable<int>("matrix", { &num_row, &num_col }));  //new implementation
+    //static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable()); //older one
+
   if (worker_table == nullptr){ //should have more if statement to avoid nullptr in using worker_table
     Log::Debug("rank %d has no worker\n", MV_Rank());
   }
@@ -399,7 +401,7 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
   int size = num_row * num_col;
 
   MatrixWorkerTable<int>* worker_table =
-    static_cast<MatrixWorkerTable<int>*>(MV_CreateTable(new MatrixTableHelper<int>(num_row, num_col)));
+    static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable());
   //MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
   //MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
   //if restore = true, will restore server data and return the next iter number of last dump file

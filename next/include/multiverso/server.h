@@ -12,10 +12,10 @@ class Server : public Actor {
 public:
   Server();
   int RegisterTable(ServerTable* table);
-  //dump server data to file
-  void DumpTable(const int& epoch);
-  //restore data from file and return next iteration number
-  int RestoreTable(const std::string& file_path);
+  //store server data to file
+  void StoreTable(int epoch);
+  //load data from file and return next iteration number
+  int LoadTable(const std::string& file_path);
   void SetDumpFilePath(const std::string& dump_file_path);
 private:
   void ProcessGet(MessagePtr& msg);

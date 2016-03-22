@@ -44,18 +44,7 @@ namespace multiverso
     */
     virtual size_t Read(void *buf, size_t size) override;
 
-    /*!
-    * \brief move the position point to seekOrigin + offset
-    * \param offset the offset(bytes number) to change the position point
-    * \param seekOrigin the reference position
-    */
-    virtual void Seek(size_t offset, SeekOrigin seekOrigin) override;
-
     virtual bool Good() override;
-    /*!
-    * \brief flush local buffer
-    */
-    virtual void Flush() override;
 
   private:
     bool is_good_;
@@ -79,7 +68,7 @@ namespace multiverso
     *             "r" - open the file to read
     * \return the Stream which is used to write or read data
     */
-    virtual std::shared_ptr<Stream> Open(const URI& uri,
+    virtual Stream* Open(const URI& uri,
       const char *mode) override;
 
     virtual void Close() override;
