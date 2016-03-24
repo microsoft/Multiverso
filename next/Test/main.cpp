@@ -124,6 +124,8 @@ void TestArray(int argc, char* argv[]) {
     get_total += std::chrono::duration<double, std::milli>(get_start - get_end).count();
     MV_Barrier();
 
+    if (iter % 100 == 0) MV_Dashboard();
+
   }
   Log::Info("Rank %d GET using %llf ms, ADD using %llf ms.\n", MV_Rank(), get_total, add_total);
   MV_ShutDown();

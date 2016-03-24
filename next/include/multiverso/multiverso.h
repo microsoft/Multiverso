@@ -23,6 +23,9 @@ int  MV_ServerId();
 int  MV_WorkerIdToRank(int worker_id);
 int  MV_ServerIdToRank(int server_id);
 
+// Show the dashboard information about the monitored excuation time
+void MV_Dashboard();
+
 // --- Net API -------------------------------------------------------------- //
 // NOTE(feiga): these API is only used for specific situation.
 // Init Multiverso Net with the provided endpoint. Multiverso Net will bind 

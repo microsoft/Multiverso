@@ -1,5 +1,6 @@
 #include "multiverso/multiverso.h"
 
+#include "multiverso/dashboard.h"
 #include "multiverso/net.h"
 #include "multiverso/zoo.h"
 
@@ -39,6 +40,10 @@ int  MV_WorkerIdToRank(int worker_id) {
 
 int  MV_ServerIdToRank(int server_id) {
   return Zoo::Get()->server_id_to_rank(server_id);
+}
+
+void MV_Dashboard() {
+  Dashboard::Display();
 }
 
 int  MV_NetBind(int rank, char* endpoint) {
