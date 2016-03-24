@@ -107,7 +107,7 @@ RUN apt-get install -qqy gdb
 ADD . /project
 RUN mkdir -p /project/build \
 	&& cd /project/build \
-	&& cmake .. \
+	&& cmake USE_HDFS=OFF .. \
 	&& make 
     
 # clean unnessary packages
