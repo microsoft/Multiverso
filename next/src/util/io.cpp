@@ -7,14 +7,16 @@ namespace multiverso
 {
 
 Stream* StreamFactory::GetStream(const URI& uri,
-  const char *mode)
+  FileOpenMode mode)
 {
   std::string addr = uri.scheme + "://" + uri.host;
   if (instances_.find(addr) == instances_.end()) {
     if (uri.scheme == std::string("file"))
       instances_[addr] = std::shared_ptr<StreamFactory>(new LocalStreamFactory(uri.host));
+#ifdef MULTIVERSO_USE_HDFS
     else if (uri.scheme == std::string("hdfs"))
       instances_[addr] = std::shared_ptr<StreamFactory>(new HDFSStreamFactory(uri.host));
+#endif
     else Log::Error("Can not support the StreamFactory '%s'\n", uri.scheme.c_str());
   }
   return instances_[addr]->Open(uri, mode);
@@ -24,7 +26,7 @@ std::map<std::string, std::shared_ptr<StreamFactory> > StreamFactory::instances_
 
 TextReader::TextReader(const URI& uri, size_t buf_size)
 {
-	stream_ = StreamFactory::GetStream(uri, "r");
+	stream_ = StreamFactory::GetStream(uri, FileOpenMode::Read);
 	buf_size_ = buf_size;
   pos_ = length_ = 0;
   buf_ = new char[buf_size_];

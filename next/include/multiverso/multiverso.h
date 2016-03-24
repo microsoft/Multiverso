@@ -48,7 +48,7 @@ WorkerTable* MV_CreateTable(const std::string& table_type, const std::vector<voi
   return TableFactory::CreateTable<Key, Val>(table_type, table_args, dump_file_path);
 }
 
-int MV_RestoreTable(const std::string& dump_file_path);
+int MV_LoadTable(const std::string& dump_file_path);
 
 // --- Net API -------------------------------------------------------------- //
 // NOTE(feiga): these API is only used for specific situation.

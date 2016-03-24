@@ -1,27 +1,30 @@
+#ifdef MULTIVERSO_USE_HDFS
+
 #include "multiverso/util/hdfs_file_sys.h"
 
 namespace multiverso
 {
-HDFSStream::HDFSStream(hdfsFS fs, const URI &uri, const char *mode)
+HDFSStream::HDFSStream(hdfsFS fs, const URI &uri, FileOpenMode mode)
 {
     using namespace std;
     is_good_ = true;
 	fs_ = fs;
     fp_ = nullptr;
-	mode_ = std::string(mode);
-    int flag = 0;
-    if (!strcmp(mode, "r"))
-        flag = O_RDONLY;
-    else if (!strcmp(mode, "w"))
-        flag = O_WRONLY;
-    else if (!strcmp(mode, "a"))
-        flag = O_WRONLY | O_APPEND;
-    else
-    {
-        Log::Fatal("HDFSStream: unknown flag %s\n", mode);
-        is_good_ = false;
-        return;
+    switch (mode){
+
     }
+    int flag = 0;
+    switch (mode){
+    case FileOpenMode::Write:
+      flag = O_WRONLY | O_BINARY;
+      break;
+    case FileOpenMode::Read:
+      flag = O_RDONLY | O_BINARY;
+      break;
+    default:// FileOpenMode::Append:
+      flag = O_WRONLY | O_APPEND | O_BINARY;
+    }
+    
 
     fp_ = hdfsOpenFile(fs_, uri.name.c_str(), flag,
         0, 0, 0);
@@ -165,8 +168,10 @@ void HDFSStreamFactory::Close(void)
 * \return the Stream which is used to write or read data
 */
 Stream* HDFSStreamFactory::Open(const URI & uri,
-    const char *mode)
+    FileOpenMode mode)
 {
     return new HDFSStream(fs_, uri, mode);   
 }
 }
+
+#endif

@@ -5,6 +5,7 @@ sudo: required
 #branches:
 #  only: 
 #     - liming
+#     - dev
 
 #specify recipients that will be notified about build results
 #default send to the committer and the author

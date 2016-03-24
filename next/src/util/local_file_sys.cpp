@@ -15,10 +15,23 @@ extern "C" {
 
 namespace multiverso
 {
-LocalStream::LocalStream(const URI& uri, const char *mode)
+  LocalStream::LocalStream(const URI& uri, FileOpenMode mode)
 {
     path_ = uri.path;
-    fp_ = fopen(uri.name.c_str(), mode);
+    std::string mode_str;
+    switch (mode){
+    case FileOpenMode::Read:
+      mode_str = "rb";
+      break;
+    case FileOpenMode::Write:
+      mode_str = "wb";
+      break;
+    case FileOpenMode::Append:
+      mode_str = "ab";
+    }
+
+    fp_ = fopen(uri.name.c_str(), mode_str.c_str());
+
     if (fp_ == nullptr)
     {
         is_good_ = false;
@@ -85,7 +98,7 @@ LocalStreamFactory::~LocalStreamFactory()
 * \return the Stream which is used to write or read data
 */
 Stream* LocalStreamFactory::Open(const URI& uri,
-    const char *mode)
+    FileOpenMode mode)
 {
     return new LocalStream(uri, mode);
 }

@@ -90,6 +90,10 @@ protected:
   virtual ServerTable* CreateServerTable() = 0;
 };
 
+template<typename T>
+class MatrixTableFactory;
+int MV_WorkerId();
+int MV_ServerId();
 //template function should be defined in the same file with declaration
 template<typename Key, typename Val>
 WorkerTable* TableFactory::CreateTable(const std::string& table_type, 

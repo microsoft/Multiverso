@@ -47,19 +47,16 @@ void Server::SetDumpFilePath(const std::string& dump_file_path){
 }
 
 void Server::StoreTable(int epoch){
-  Stream* stream = StreamFactory::GetStream(URI(dump_file_path_), "w");
+  Stream* stream = StreamFactory::GetStream(URI(dump_file_path_), FileOpenMode::Write);
   stream->Write(&epoch, sizeof(int));
-  char c = '\n';
-  stream->Write(&c, sizeof(char));
   for (int i = 0; i < store_.size(); ++i){
     store_[i]->Store(stream);
-    stream->Write(&c, sizeof(char));
   }
   delete stream;
 }
 
 int Server::LoadTable(const std::string& file_path){
-  Stream* stream = StreamFactory::GetStream(URI(dump_file_path_), "r");
+  Stream* stream = StreamFactory::GetStream(URI(dump_file_path_), FileOpenMode::Read);
   if (!stream->Good()) {
     Log::Error("Rank %d open file %s error in Server::LoadTable\n", Zoo::Get()->rank(), file_path.c_str());
     delete stream;
@@ -67,18 +64,15 @@ int Server::LoadTable(const std::string& file_path){
   }
 
   int iter;
-  char c;
-  int readsize = stream->Read(&iter, sizeof(int));
+  size_t readsize = stream->Read(&iter, sizeof(int));
   if (readsize == 0) {
     Log::Error("Rank %d read file %s no data in Server::LoadTable\n", Zoo::Get()->rank(), file_path.c_str());
     delete stream;
     return 0; //no store data
   }
 
-  stream->Read(&c, sizeof(char));
   for (int i = 0; i < store_.size(); ++i){
     store_[i]->Load(stream);
-    stream->Read(&c, sizeof(char));
   }
 
   delete stream;

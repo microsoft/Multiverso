@@ -1,6 +1,8 @@
 #ifndef MULTIVERSO_HDFS_FILE_SYS_H_
 #define MULTIVERSO_HDFS_FILE_SYS_H_
 
+#ifdef MULTIVERSO_USE_HDFS
+
 /*!
 * \file local_file_sys.h
 * \brief The implement of hdfs io interface.
@@ -25,7 +27,7 @@ namespace multiverso
   class HDFSStream : public Stream
   {
   public:
-    HDFSStream(hdfsFS fs, const URI& uri, const char *mode);
+    HDFSStream(hdfsFS fs, const URI& uri,  FileOpenMode mode);
 
     virtual ~HDFSStream(void) override;
 
@@ -69,7 +71,7 @@ namespace multiverso
     * \return the Stream which is used to write or read data
     */
     virtual Stream* Open(const URI& uri,
-      const char *mode) override;
+      FileOpenMode mode) override;
 
     virtual void Close() override;
 
@@ -78,4 +80,7 @@ namespace multiverso
     hdfsFS fs_;
   };
 }
+
+#endif
+
 #endif // MULTIVERSO_HDFS_FILE_SYS_H_

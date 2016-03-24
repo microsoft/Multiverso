@@ -409,7 +409,7 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
   if (worker_table == nullptr) {
     //no worker in this node
   }
-  int begin_iter = MV_RestoreTable("./serverTable_");
+  int begin_iter = MV_LoadTable("./serverTable_");
   MV_Barrier();//won't dump data without parameters
 
   std::vector<int> delta(size);

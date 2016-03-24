@@ -49,7 +49,7 @@ int  MV_NetConnect(int* ranks, char* endpoints[], int size) {
   return NetInterface::Get()->Connect(ranks, endpoints, size);
 }
 
-int MV_RestoreTable(const std::string& dump_file_path){
+int MV_LoadTable(const std::string& dump_file_path){
   return Zoo::Get()->LoadTable(dump_file_path);
 }
 }

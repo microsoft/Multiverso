@@ -7,14 +7,20 @@ SET(MULTIVERSO_TEST_SRC MPIWrapper.h main.cpp)
 SET(CMAKE_CXX_COMPILER mpicxx)
 
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
-link_directories(${HDFS_LIB})
-LINK_DIRECTORIES(${JVM_LIB})
+if(USE_HDFS)
+	link_directories(${HDFS_LIB})
+	LINK_DIRECTORIES(${JVM_LIB})
+endif()
 
 MESSAGE(${MPI_LIBRARIES})
 MESSAGE(${MPI_CXX_LIBRARIES})
 
 ADD_EXECUTABLE(multiverso.test ${MULTIVERSO_TEST_SRC})
 
-TARGET_LINK_LIBRARIES(multiverso.test multiverso ${MPI_CXX_LIBRARIES} jvm hdfs)
+if(USE_HDFS)
+	TARGET_LINK_LIBRARIES(multiverso.test multiverso ${MPI_CXX_LIBRARIES} jvm hdfs)
+else()
+	TARGET_LINK_LIBRARIES(multiverso.test multiverso ${MPI_CXX_LIBRARIES})
+endif(USE_HDFS)
 
 SET_PROPERTY(TARGET multiverso.test PROPERTY CXX_STANDARD 11)

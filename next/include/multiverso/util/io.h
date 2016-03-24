@@ -1,4 +1,4 @@
-#ifndef MULTIVERSO_IO_H_
+﻿#ifndef MULTIVERSO_IO_H_
 #define MULTIVERSO_IO_H_
 
 /*!
@@ -101,37 +101,28 @@ namespace multiverso
   };
 
 
-
-  enum class FileType : int
-  {
-    kFile = 0,
-    kDirectory = 1
-  };
-
-  struct FileInfo
-  {
-    FileInfo() : size(0), type(FileType::kFile) {}
-    URI uri;
-    size_t size;
-    FileType type;
+  enum class FileOpenMode :int {
+    Write = 0,
+    Read = 1,
+    Append = 2
   };
 
   class StreamFactory
   {
   public:
     /*!
-    * \brief create a Stream
+    * \brief create a Stream and open in binary mode
     * \param path the path of the file
-    * \param mode "w" - create an empty file to store data;
-    *             "a" - open the file to append data to it
-    *             "r" - open the file to read
+    * \param mode Write - create an empty file to store data;
+    *             Append - open the file to append data to it
+    *             Read - open the file to read
     * \return the Stream which is used to write or read data
     */
     static Stream* GetStream(const URI& uri,
-      const char *mode);
+      FileOpenMode mode);
 
     virtual Stream* Open(const URI& uri,
-      const char *mode) = 0;
+      FileOpenMode mode) = 0;
 
     virtual void Close() = 0;
 

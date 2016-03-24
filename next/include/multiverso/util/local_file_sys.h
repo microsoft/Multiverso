@@ -13,7 +13,7 @@ namespace multiverso
   class LocalStream : public Stream
   {
   public:
-    LocalStream(const URI& uri, const char *mode);
+    LocalStream(const URI& uri, FileOpenMode mode);
     virtual ~LocalStream(void) override;
 
     /*!
@@ -53,7 +53,7 @@ namespace multiverso
     * \return the Stream which is used to write or read data
     */
     virtual Stream* Open(const URI& uri,
-      const char *mode) override;
+      FileOpenMode mode) override;
 
     virtual void Close() override;
 

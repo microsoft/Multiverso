@@ -21,8 +21,10 @@ public:
     //compute row offsets in all servers
     server_offsets_.push_back(0);
     int length = num_row / num_server_;
+    int offset = length;
     for (int i = 1; i < num_server_; ++i) {
-      server_offsets_.push_back(i * length);
+      server_offsets_.push_back(offset);
+      offset += length;
     }
     server_offsets_.push_back(num_row);
 
@@ -68,8 +70,7 @@ public:
 
   void Add(int row_id, T* data, size_t size) {
     if (row_id >= 0) CHECK(size == num_col_);
-    int row = row_id;
-    Blob ids_blob(&row, sizeof(int));
+    Blob ids_blob(&row_id, sizeof(int));
     Blob data_blob(data, size * sizeof(T));
     WorkerTable::Add(ids_blob, data_blob);
     Log::Debug("worker %d adding rows\n", MV_Rank());
@@ -79,7 +80,7 @@ public:
            const std::vector<T*>& data_vec, 
            size_t size) {
     CHECK(size == num_col_);
-    Blob ids_blob(&row_ids[0], sizeof(int)* row_ids.size());
+    Blob ids_blob(&row_ids[0], sizeof(int) * row_ids.size());
     Blob data_blob(row_ids.size() * row_size_);
     //copy each row
     for (int i = 0; i < row_ids.size(); ++i){
@@ -93,8 +94,10 @@ public:
     std::unordered_map<int, std::vector<Blob>>* out) override {
     CHECK(kv.size() == 1 || kv.size() == 2);
     CHECK_NOTNULL(out);
-
-    if (kv[0].size<int>() == 1 && kv[0].As<int>(0) == -1){
+    
+    size_t keys_size = kv[0].size<int>();
+    int *keys = reinterpret_cast<int*>(kv[0].data());
+    if (keys_size == 1 && keys[0] == -1){
       for (int i = 0; i < num_server_; ++i){
         int rank = MV_ServerIdToRank(i);
         (*out)[rank].push_back(kv[0]);
@@ -115,12 +118,13 @@ public:
     }
 
     //count row number in each server
-    Blob row_ids = kv[0];
     std::unordered_map<int, int> count;
+    std::vector<int> dest;
     int num_row_each = num_row_ / num_server_;
-    for (int i = 0; i < row_ids.size<int>(); ++i){
-      int dst = row_ids.As<int>(i) / num_row_each;
+    for (int i = 0; i < keys_size; ++i){
+      int dst = keys[i] / num_row_each;
       dst = (dst == num_server_ ? dst - 1 : dst);
+      dest.push_back(dst);
       ++count[dst];
     }
     for (auto& it : count) { // Allocate memory
@@ -131,18 +135,18 @@ public:
     }
     count.clear();
 
-    for (int i = 0; i < row_ids.size<int>(); ++i) {
-      int dst = row_ids.As<int>(i) / num_row_each;
-      dst = (dst == num_server_ ? dst - 1 : dst);
+    int offset = 0; 
+    for (int i = 0; i < keys_size; ++i) {
+      int dst = dest[i];
       int rank = MV_ServerIdToRank(dst);
-      (*out)[rank][0].As<int>(count[dst]) = row_ids.As<int>(i);
+      (*out)[rank][0].As<int>(count[dst]) = keys[i];
       if (kv.size() == 2){ // copy add values
         memcpy(&((*out)[rank][1].As<T>(count[dst] * num_col_)),
-          &(kv[1].As<T>(i * num_col_)), row_size_);
+          kv[1].data() + offset, row_size_);
+        offset += row_size_;
       }
       ++count[dst];
     }
-
 
     if (kv.size() == 1){
       CHECK(get_reply_count_ == 0);
@@ -153,22 +157,25 @@ public:
 
   void ProcessReplyGet(std::vector<Blob>& reply_data) override {
     CHECK(reply_data.size() == 2 || reply_data.size() == 3); //3 for get all rows
-    Blob keys = reply_data[0], data = reply_data[1];
 
-    //get all rows, only happen in data_
-    if (keys.size<int>() == 1 && keys.As<int>() == -1) {
+    size_t keys_size = reply_data[0].size<int>();
+    int *keys = reinterpret_cast<int*>(reply_data[0].data());
+    T *data = reinterpret_cast<T*>(reply_data[1].data());
+
+    //get all rows, only happen in T*
+    if (keys_size == 1 && keys[0] == -1) {
       int server_id = reply_data[2].As<int>();
       CHECK_NOTNULL(row_index_[-1]);
       memcpy(row_index_[-1] + server_offsets_[server_id] * num_col_, 
-             data.data(), data.size());
+             data, reply_data[1].size());
     }
     else {
-      CHECK(data.size() == keys.size<int>() * row_size_);
+      CHECK(reply_data[1].size() == keys_size * row_size_);
       int offset = 0;
-      for (int i = 0; i < keys.size<int>(); ++i) {
-        CHECK_NOTNULL(row_index_[keys.As<int>(i)]);
-        memcpy(row_index_[keys.As<int>(i)], data.data() + offset, row_size_);
-        offset += row_size_;
+      for (int i = 0; i < keys_size; ++i) {
+        CHECK_NOTNULL(row_index_[keys[i]]);
+        memcpy(row_index_[keys[i]], data + offset, row_size_);
+        offset += num_col_;
       }
     }
     //in case of wrong operation to user data
@@ -208,28 +215,30 @@ public:
 
   void ProcessAdd(const std::vector<Blob>& data) override {
     CHECK(data.size() == 2);
-    Blob values = data[1], keys = data[0];
+    size_t keys_size = data[0].size<int>();
+    int *keys = reinterpret_cast<int*>(data[0].data());
+    T *values = reinterpret_cast<T*>(data[1].data());
     // add all values
-    if (keys.size<int>() == 1 && keys.As<int>() == -1){
-      CHECK(storage_.size() == values.size<T>());
-      for (int i = 0; i < storage_.size(); ++i){
-        storage_[i] += values.As<T>(i);
+    if (keys_size == 1 && keys[0] == -1){
+      size_t ssize = storage_.size();
+      CHECK(ssize == data[1].size<T>());
+      for (int i = 0; i < ssize; ++i){
+        storage_[i] += values[i];
       }
       Log::Debug("server %d adding all rows with row offset %d with %d rows\n",
-        server_id_, row_offset_, storage_.size() / num_col_);
+        server_id_, row_offset_, ssize / num_col_);
       return;
     }
-    CHECK(values.size() == keys.size<int>() * sizeof(T)* num_col_);
+    CHECK(data[1].size() == keys_size * sizeof(T) * num_col_);
 
     int offset_v = 0;
-    for (int i = 0; i < keys.size<int>(); ++i) {
-      int offset_s = (keys.As<int>(i) -row_offset_) * num_col_;
+    for (int i = 0; i < keys_size; ++i) {
+      int offset_s = (keys[i] - row_offset_) * num_col_;
       for (int j = 0; j < num_col_; ++j){
-        storage_[j + offset_s] += values.As<T>(offset_v + j);
+        storage_[offset_s++] += values[offset_v++];
       }
-      offset_v += num_col_;
       Log::Debug("server %d adding row with id %d\n",
-        server_id_, keys.As<int>(i));
+        server_id_, keys[i]);
     }
   }
 
@@ -238,27 +247,29 @@ public:
     CHECK(data.size() == 1);
     CHECK_NOTNULL(result);
 
-    Blob keys = data[0];
-    result->push_back(keys); // also push the key
+    result->push_back(data[0]); // also push the key
+
+    size_t keys_size = data[0].size<int>();
+    int *keys = reinterpret_cast<int*>(data[0].data());
 
     //get all rows
-    if (keys.size<int>() == 1 && keys.As<int>() == -1){
-      result->push_back(Blob(storage_.data(), sizeof(T)* storage_.size()));
+    if (keys_size == 1 && keys[0] == -1){
+      result->push_back(Blob(storage_.data(), sizeof(T) * storage_.size()));
       result->push_back(Blob(&server_id_, sizeof(int)));
       Log::Debug("server %d getting all rows with row offset %d with %d rows\n",
         server_id_, row_offset_, storage_.size() / num_col_);
       return;
     }
 
-    result->push_back(Blob(keys.size<int>() * sizeof(T)* num_col_));
-    Blob& vals = (*result)[1];
-    int row_size = sizeof(T)* num_col_;
+    int row_size = sizeof(T) * num_col_;
+    result->push_back(Blob(keys_size * row_size));
+    T* vals = reinterpret_cast<T*>((*result)[1].data());
     int offset_v = 0;
-    for (int i = 0; i < keys.size<int>(); ++i) {
-      int offset_s = (keys.As<int>(i) -row_offset_) * num_col_;
-      memcpy(&(vals.As<T>(offset_v)), &storage_[offset_s], row_size);
+    for (int i = 0; i < keys_size; ++i) {
+      int offset_s = (keys[i] - row_offset_) * num_col_;
+      memcpy(vals + offset_v, &storage_[offset_s], row_size);
       offset_v += num_col_;
-      Log::Debug("server %d getting row with id %d\n", server_id_, keys.As<int>(i));
+      Log::Debug("server %d getting row with id %d\n", server_id_, keys[i]);
     }
   }
 
