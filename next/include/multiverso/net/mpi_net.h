@@ -10,6 +10,7 @@
 #include <queue>
 
 #include "multiverso/message.h"
+#include "multiverso/dashboard.h"
 #include "multiverso/util/log.h"
 #include "multiverso/util/mt_queue.h"
 
@@ -198,6 +199,7 @@ public:
   size_t SerializeAndSend(MessagePtr& msg, MPIMsgHandle* msg_handle) {
 
     CHECK_NOTNULL(msg_handle);
+    MONITOR_BEGIN(MPI_NET_SEND_SERIALIZE);
     size_t size = sizeof(int) + Message::kHeaderSize;
     for (auto& data : msg->data()) size += sizeof(int) + data.size();
     if (size > send_size_) {
@@ -207,17 +209,18 @@ public:
     memcpy(send_buffer_, msg->header(), Message::kHeaderSize);
     char* p = send_buffer_ + Message::kHeaderSize;
     for (auto& data : msg->data()) {
-      int s = data.size();
-      memcpy(p, &s, sizeof(int));
-      p += sizeof(int);
+      size_t s = data.size();
+      memcpy(p, &s, sizeof(size_t));
+      p += sizeof(size_t);
       memcpy(p, data.data(), s);
       p += s;
     }
     int over = -1;
     memcpy(p, &over, sizeof(int));
+    MONITOR_END(MPI_NET_SEND_SERIALIZE);
 
     MPI_Request handle;
-    MV_MPI_CALL(MPI_Isend(send_buffer_, size, MPI_BYTE, msg->dst(), 0, MPI_COMM_WORLD, &handle));
+    MV_MPI_CALL(MPI_Isend(send_buffer_, static_cast<int>(size), MPI_BYTE, msg->dst(), 0, MPI_COMM_WORLD, &handle));
     msg_handle->add_handle(handle);
     return size;
   }
@@ -229,6 +232,8 @@ public:
     MPI_Status status;
     MV_MPI_CALL(MPI_Recv(recv_buffer_, count,
       MPI_BYTE, src, 0, MPI_COMM_WORLD, &status));
+
+    MONITOR_BEGIN(MPI_NET_RECV_DESERIALIZE)
     char* p = recv_buffer_;
     int s;
     memcpy(msg->header(), p, Message::kHeaderSize);
@@ -243,6 +248,7 @@ public:
       memcpy(&s, p, sizeof(int));
       p += sizeof(int);
     }
+    MONITOR_END(MPI_NET_RECV_DESERIALIZE)
     return count;
   }
 
@@ -317,9 +323,9 @@ private:
   std::unique_ptr<MPIMsgHandle> last_handle_;
   MtQueue<MessagePtr> send_queue_;
   char* send_buffer_;
-  int send_size_;
+  size_t send_size_;
   char* recv_buffer_;
-  int recv_size_;
+  size_t recv_size_;
 };
 
 }

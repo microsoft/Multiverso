@@ -171,6 +171,7 @@
     <ClInclude Include="include\multiverso\blob.h" />
     <ClInclude Include="include\multiverso\communicator.h" />
     <ClInclude Include="include\multiverso\controller.h" />
+    <ClInclude Include="include\multiverso\dashboard.h" />
     <ClInclude Include="include\multiverso\message.h" />
     <ClInclude Include="include\multiverso\multiverso.h" />
     <ClInclude Include="include\multiverso\net.h" />
@@ -193,16 +194,19 @@
     <ClInclude Include="include\multiverso\util\waiter.h" />
     <ClInclude Include="include\multiverso\worker.h" />
     <ClInclude Include="include\multiverso\zoo.h" />
+    <ClInclude Include="table_factory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\actor.cpp" />
     <ClCompile Include="src\communicator.cpp" />
     <ClCompile Include="src\controller.cpp" />
+    <ClCompile Include="src\dashboard.cpp" />
     <ClCompile Include="src\multiverso.cpp" />
     <ClCompile Include="src\net.cpp" />
     <ClCompile Include="src\node.cpp" />
     <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\table.cpp" />
+    <ClCompile Include="src\timer.cpp" />
     <ClCompile Include="src\util\log.cpp" />
     <ClCompile Include="src\util\net_util.cpp" />
     <ClCompile Include="src\worker.cpp" />

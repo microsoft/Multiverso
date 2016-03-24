@@ -8,6 +8,7 @@
 #include "multiverso/worker.h"
 #include "multiverso/server.h"
 #include "multiverso/controller.h"
+#include "multiverso/dashboard.h"
 
 namespace multiverso {
 
@@ -41,6 +42,8 @@ void Zoo::Start(int* argc, char** argv, int role) {
 void Zoo::Stop(bool finalize_net) {
   // Stop the system
   Barrier();
+
+  Dashboard::Display();
 
   // Stop all actors
   for (auto actor : zoo_) { actor.second->Stop(); }

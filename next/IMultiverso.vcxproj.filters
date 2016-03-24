@@ -79,6 +79,12 @@
     <ClInclude Include="include\multiverso\util\timer.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="table_factory.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\dashboard.h">
+      <Filter>system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -132,6 +138,12 @@
       <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="src\net.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\timer.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dashboard.cpp">
       <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>

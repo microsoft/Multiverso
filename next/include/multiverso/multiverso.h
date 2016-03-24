@@ -3,16 +3,9 @@
 
 namespace multiverso {
 
-enum Role {
-  Null = 0,
-  Worker = 1,
-  Server = 2,
-  All = 3
-};
-
 void MV_Init(int* argc = nullptr, 
              char* argv[] = nullptr, 
-             int role = All);
+             int role = 3);
 
 void MV_Barrier();
 
