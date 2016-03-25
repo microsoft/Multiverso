@@ -175,7 +175,9 @@
     <ClInclude Include="include\multiverso\message.h" />
     <ClInclude Include="include\multiverso\multiverso.h" />
     <ClInclude Include="include\multiverso\net.h" />
+    <ClInclude Include="include\multiverso\net\allreduce_engine.h" />
     <ClInclude Include="include\multiverso\net\mpi_net.h" />
+    <ClInclude Include="include\multiverso\net\net_allreduce.h" />
     <ClInclude Include="include\multiverso\net\zmq_net.h" />
     <ClInclude Include="include\multiverso\node.h" />
     <ClInclude Include="include\multiverso\server.h" />
@@ -199,9 +201,10 @@
     <ClInclude Include="include\multiverso\util\waiter.h" />
     <ClInclude Include="include\multiverso\worker.h" />
     <ClInclude Include="include\multiverso\zoo.h" />
-    <ClInclude Include="table_factory.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\multiverso\net\allreduce_engine.cpp" />
+    <ClCompile Include="include\multiverso\net\allreduce_topo.cpp" />
     <ClCompile Include="src\actor.cpp" />
     <ClCompile Include="src\communicator.cpp" />
     <ClCompile Include="src\controller.cpp" />

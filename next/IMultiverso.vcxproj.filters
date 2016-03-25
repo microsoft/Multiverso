@@ -94,11 +94,14 @@
     <ClInclude Include="include\multiverso\util\timer.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="table_factory.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\dashboard.h">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\net\allreduce_engine.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\net\net_allreduce.h">
+      <Filter>net</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +172,12 @@
     </ClCompile>
     <ClCompile Include="src\dashboard.cpp">
       <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="include\multiverso\net\allreduce_engine.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="include\multiverso\net\allreduce_topo.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
