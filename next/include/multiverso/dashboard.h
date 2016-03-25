@@ -65,9 +65,9 @@ private:
 
 // Guard with MONITOR macro in the code to monitor it's excuation
 // Usage:
-// MONITOR_BEGIN(your_code)
+// MONITOR_BEGIN(your_code_short_description)
 // your code
-// MONITOR_END(your_code)
+// MONITOR_END(your_code_short_description)
 #define MONITOR_BEGIN(name)              \
   REGISTER_MONITOR(name)                 \
   g_##name##_monitor.Begin();

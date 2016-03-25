@@ -24,6 +24,7 @@ int  MV_WorkerIdToRank(int worker_id);
 int  MV_ServerIdToRank(int server_id);
 
 // Show the dashboard information about the monitored excuation time
+// used for profile
 void MV_Dashboard();
 
 // --- Net API -------------------------------------------------------------- //
