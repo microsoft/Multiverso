@@ -76,6 +76,21 @@
     <ClInclude Include="include\multiverso\table\matrix_table.h">
       <Filter>include\table</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\util\hdfs.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\local_file_sys.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\io.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\configure.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\hdfs_file_sys.h">
+      <Filter>util</Filter>
+    </ClInclude>
     <ClInclude Include="include\multiverso\util\timer.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -139,6 +154,15 @@
     </ClCompile>
     <ClCompile Include="src\net.cpp">
       <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\io.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\local_file_sys.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\hdfs_file_sys.cpp">
+      <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="src\timer.cpp">
       <Filter>util</Filter>

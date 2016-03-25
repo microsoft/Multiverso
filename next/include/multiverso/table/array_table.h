@@ -118,11 +118,31 @@ public:
     result->push_back(value);
   }
 
+  void Store(Stream* s) override{
+    s->Write(storage_.data(), storage_.size() * sizeof(T));
+  }
+  void Load(Stream* s) override{
+    s->Read(storage_.data(), storage_.size() * sizeof(T));
+  }
+
 private:
   int server_id_;
   // T* storage_;
   std::vector<T> storage_;
   size_t size_; // number of element with type T
+};
+
+template<typename T>
+class ArrayTableHelper : public TableHelper {
+  ArrayTableHelper(const size_t& size) : size_(size) { }
+protected:
+  WorkerTable* CreateWorkerTable() override{
+    return new ArrayWorker<T>(size_);
+  }
+  ServerTable* CreateServerTable() override{
+    return new ArrayServer<T>(size_);
+  }
+  size_t size_;
 };
 }
 
