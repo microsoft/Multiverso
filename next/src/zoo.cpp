@@ -59,7 +59,6 @@ int Zoo::size() const { return net_util_->size(); }
 
 void Zoo::SendTo(const std::string& name, MessagePtr& msg) {
   CHECK(zoo_.find(name) != zoo_.end());
-  int type = msg->type();
   zoo_[name]->Receive(msg);
 }
 void Zoo::Receive(MessagePtr& msg) {

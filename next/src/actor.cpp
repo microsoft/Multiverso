@@ -49,7 +49,6 @@ void Actor::Main() {
 }
 
 void Actor::SendTo(const std::string& dst_name, MessagePtr& msg) {
-  int type = msg->type();
   Zoo::Get()->SendTo(dst_name, msg);
 }
 
