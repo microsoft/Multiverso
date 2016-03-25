@@ -1,5 +1,5 @@
-#ifndef DGBDT_NETWORK_H_
-#define DGBDT_NETWORK_H_
+#ifndef MULTIVERSO_NET_ALLREDUCE_ENGINE_H_
+#define MULTIVERSO_NET_ALLREDUCE_ENGINE_H_
 
 #include <vector>
 
@@ -84,4 +84,4 @@ inline int AllreduceEngine::WorldSize() {
 }
 
 }
-#endif //DGBDT_NETWORK_H_
+#endif //MULTIVERSO_NET_ALLREDUCE_ENGINE_H_
