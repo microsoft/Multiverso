@@ -14,19 +14,18 @@ public:
     ZMQNetWrapper::Init(argc, argv);
     bruck_map_ = BruckMap::Construct(rank_, size_);
     recursive_halving_map_ = RecursiveHalvingMap::Construct(rank_, size_);
-    AllreduceEngine::Init(this);
+    allreduce_engine_.Init(this);
   }
 
   virtual int Connect(int* ranks, char* endpoints[], int size) override {
     ZMQNetWrapper::Connect(ranks, endpoints, size);
     bruck_map_ = BruckMap::Construct(rank_, size_);
     recursive_halving_map_ = RecursiveHalvingMap::Construct(rank_, size_);
-    AllreduceEngine::Init(this);
+    allreduce_engine_.Init(this);
   }
 
   void Finalize() override { 
     ZMQNetWrapper::Finalize();
-    AllreduceEngine::Dispose();
   }
 
   inline void Receive(int rank, byte* data, int start, int len) const {
@@ -53,19 +52,19 @@ public:
   }
 
   void Allreduce(byte* input, int input_size, int type_size, byte* output, ReduceFunction reducer) {
-    AllreduceEngine::Allreduce(input, input_size, type_size, output, reducer);
+    allreduce_engine_.Allreduce(input, input_size, type_size, output, reducer);
   }
 
   void Allgather(byte* input, int send_size, int all_size, byte* output) {
-    AllreduceEngine::Allgather(input, send_size, all_size, output);
+    allreduce_engine_.Allgather(input, send_size, all_size, output);
   }
 
   void Allgather(byte* input, int all_size, int* block_start, int* block_len, byte* output) {
-    AllreduceEngine::Allgather(input, all_size, block_start, block_len, output);
+    allreduce_engine_.Allgather(input, all_size, block_start, block_len, output);
   }
 
   void ReduceScatter(byte* input, int input_size, int type_size, int* block_start, int* block_len, byte* output, ReduceFunction reducer) {
-    AllreduceEngine::ReduceScatter(input, input_size, type_size, block_start, block_len, output, reducer);
+    allreduce_engine_.ReduceScatter(input, input_size, type_size, block_start, block_len, output, reducer);
   }
 
   inline const BruckMap& GetBruckMap() const {
@@ -77,8 +76,11 @@ public:
   }
 
 private:
+
   BruckMap bruck_map_;
   RecursiveHalvingMap recursive_halving_map_;
+  AllreduceEngine allreduce_engine_;
+
 };
 } // namespace multiverso
 
