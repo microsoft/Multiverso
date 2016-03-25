@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <thread>
 #include <random>
 #include <chrono>
@@ -16,6 +16,7 @@
 #include <multiverso/table/kv_table.h>
 #include <multiverso/table/matrix_table.h>
 #include <MPIWrapper.h>
+
 
 using namespace multiverso;
 
@@ -40,6 +41,7 @@ void TestKV(int argc, char* argv[]) {
   KVWorkerTable<int, int>* dht = new KVWorkerTable<int, int>();
   // if the node is server, then create a server storage table
   KVServerTable<int, int>* server_dht = new KVServerTable<int, int>();
+  Log::Info("table name %s", server_dht->name().c_str());
 
   MV_Barrier();
 
@@ -354,8 +356,16 @@ void TestMatrix(int argc, char* argv[]){
 	int num_row = 11, num_col = 10;
 	int size = num_row * num_col;
 
-	MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-	MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+  MatrixWorkerTable<int>* worker_table = 
+    static_cast<MatrixWorkerTable<int>*>(MV_CreateTable<int>("matrix", { &num_row, &num_col }));  //new implementation
+    //static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable()); //older one
+
+  if (worker_table == nullptr){ //should have more if statement to avoid nullptr in using worker_table
+    Log::Debug("rank %d has no worker\n", MV_Rank());
+  }
+
+	//MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+	//MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
 
 	MV_Barrier();
 
@@ -402,6 +412,50 @@ void TestMatrix(int argc, char* argv[]){
 	MV_ShutDown();
 }
 
+void TestCheckPoint(int argc, char* argv[], bool restore){
+  Log::Info("Test CheckPoint\n");
+
+  MV_Init(&argc, argv, 3, restore);
+
+  int num_row = 11, num_col = 10;
+  int size = num_row * num_col;
+
+  MatrixWorkerTable<int>* worker_table =
+    static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable());
+  //MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+  //MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+  //if restore = true, will restore server data and return the next iter number of last dump file
+  //else do nothing and return 0
+  if (worker_table == nullptr) {
+    //no worker in this node
+  }
+  int begin_iter = MV_LoadTable("serverTable_");
+  MV_Barrier();//won't dump data without parameters
+
+  std::vector<int> delta(size);
+  for (int i = 0; i < size; ++i)
+    delta[i] = i;
+  int * data = new int[size];
+
+  Log::Debug("rank %d start from iteration %d\n", MV_Rank(), begin_iter);
+
+  for (int i = begin_iter; i < 50; ++i){
+    worker_table->Add(delta.data(), size);
+    MV_Barrier(i); //dump table data with iteration i each k iterations
+  }
+  worker_table->Get(data, size);
+
+  printf("----------------------------\n");
+  for (int i = 0; i < num_row; ++i){
+    printf("rank %d, row %d: ", MV_Rank(), i);
+    for (int j = 0; j < num_col; ++j)
+      printf("%d ", data[i * num_col + j]);
+    printf("\n");
+  }
+
+  MV_ShutDown();
+}
+
 void TestComm(int argc, char* argv[]) {
 
 }
@@ -413,10 +467,12 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
     else if (strcmp(argv[1], "ip") == 0) TestIP();
-	else if (strcmp(argv[1], "momentum") == 0) TestMomentum(argc, argv);
-	else if (strcmp(argv[1], "threads") == 0) TestMultipleThread(argc, argv);
-	else if (strcmp(argv[1], "matrix") == 0) TestMatrix(argc, argv);
-  else if (strcmp(argv[1], "nonet") == 0) TestNoNet(argc, argv);
+    else if (strcmp(argv[1], "momentum") == 0) TestMomentum(argc, argv);
+    else if (strcmp(argv[1], "threads") == 0) TestMultipleThread(argc, argv);
+    else if (strcmp(argv[1], "matrix") == 0) TestMatrix(argc, argv);
+    else if (strcmp(argv[1], "nonet") == 0) TestNoNet(argc, argv);
+    else if (strcmp(argv[1], "checkpoint") == 0)  TestCheckPoint(argc, argv, false);
+    else if (strcmp(argv[1], "restore") == 0) TestCheckPoint(argc, argv, true);
     else CHECK(false);
   } 
   // argc == 4 is for zeromq test, with two extra arguments: machinefile, port

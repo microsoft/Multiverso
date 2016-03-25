@@ -200,8 +200,8 @@ public:
 
     CHECK_NOTNULL(msg_handle);
     MONITOR_BEGIN(MPI_NET_SEND_SERIALIZE);
-    size_t size = sizeof(int) + Message::kHeaderSize;
-    for (auto& data : msg->data()) size += sizeof(int) + data.size();
+    size_t size = sizeof(size_t) + Message::kHeaderSize;
+    for (auto& data : msg->data()) size += sizeof(size_t) + data.size();
     if (size > send_size_) {
       send_buffer_ = (char*)realloc(send_buffer_, size);
       send_size_ = size;
@@ -215,8 +215,8 @@ public:
       memcpy(p, data.data(), s);
       p += s;
     }
-    int over = -1;
-    memcpy(p, &over, sizeof(int));
+    size_t over = -1;
+    memcpy(p, &over, sizeof(size_t));
     MONITOR_END(MPI_NET_SEND_SERIALIZE);
 
     MPI_Request handle;
@@ -235,18 +235,18 @@ public:
 
     MONITOR_BEGIN(MPI_NET_RECV_DESERIALIZE)
     char* p = recv_buffer_;
-    int s;
+    size_t s;
     memcpy(msg->header(), p, Message::kHeaderSize);
     p += Message::kHeaderSize;
-    memcpy(&s, p, sizeof(int));
-    p += sizeof(int);
+    memcpy(&s, p, sizeof(size_t));
+    p += sizeof(size_t);
     while (s != -1) {
       Blob data(s);
       memcpy(data.data(), p, data.size());
       msg->Push(data);
       p += data.size();
-      memcpy(&s, p, sizeof(int));
-      p += sizeof(int);
+      memcpy(&s, p, sizeof(size_t));
+      p += sizeof(size_t);
     }
     MONITOR_END(MPI_NET_RECV_DESERIALIZE)
     return count;

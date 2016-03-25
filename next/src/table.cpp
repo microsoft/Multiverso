@@ -4,6 +4,12 @@
 #include "multiverso/zoo.h"
 #include "multiverso/dashboard.h"
 
+#include "multiverso/table/matrix_table.h"
+#include "multiverso/table/array_table.h"
+#include "multiverso/table/kv_table.h"
+#include "multiverso/table/smooth_array_table.h"
+#include "multiverso/table/adam_array_table.h"
+
 namespace multiverso {
 
 WorkerTable::WorkerTable() {
@@ -71,4 +77,13 @@ void WorkerTable::Notify(int id) {
   waitings_[id]->Notify(); 
 }
 
+WorkerTable* TableHelper::CreateTable(){
+  if (Zoo::Get()->server_rank() >= 0){
+    CreateServerTable();
+  }
+  if (Zoo::Get()->worker_rank() >= 0){
+    return CreateWorkerTable();
+  }
+  return nullptr;
+}
 }
