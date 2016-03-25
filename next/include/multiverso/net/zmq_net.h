@@ -171,7 +171,7 @@ public:
     return NetThreadLevel::THREAD_MULTIPLE; 
   }
 
-private:
+protected:
   void ParseMachineFile(std::string filename, 
                         std::vector<std::string>* result) {
     CHECK_NOTNULL(result);
