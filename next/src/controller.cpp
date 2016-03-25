@@ -64,6 +64,7 @@ public:
         reply->set_type(MsgType::Control_Reply_Register);
         reply->Push(info_blob);
         reply->Push(count_blob);
+        Log::Debug("rank %d with msg size %d\n", i, reply->data().size());
         parent_->SendTo(actor::kCommunicator, reply);
       }
     }

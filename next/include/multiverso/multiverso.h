@@ -8,17 +8,11 @@
 
 namespace multiverso {
 
-enum Role {
-  Null = 0,
-  Worker = 1,
-  Server = 2,
-  All = 3
-};
-
 void MV_Init(int* argc = nullptr, 
              char* argv[] = nullptr, 
-             int role = All,
-             bool restart = false);
+             int role = 3,
+             bool restart = false,
+             int store_each_k = 5);
 
 void MV_Barrier(int iter = -1);
 
@@ -49,6 +43,9 @@ WorkerTable* MV_CreateTable(const std::string& table_type, const std::vector<voi
 }
 
 int MV_LoadTable(const std::string& dump_file_path);
+
+// Show the dashboard information about the monitored excuation time
+void MV_Dashboard();
 
 // --- Net API -------------------------------------------------------------- //
 // NOTE(feiga): these API is only used for specific situation.

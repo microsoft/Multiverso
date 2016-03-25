@@ -1,4 +1,4 @@
-﻿#ifndef MULTIVERSO_MATRIX_TABLE_H_
+#ifndef MULTIVERSO_MATRIX_TABLE_H_
 #define MULTIVERSO_MATRIX_TABLE_H_
 
 #include "multiverso/multiverso.h"
@@ -28,7 +28,7 @@ public:
     }
     server_offsets_.push_back(num_row);
 
-    Log::Debug("worker %d create matrixTable with %d rows %d colums.\n",
+    Log::Debug("[Init] worker =  %d, type = matrixTable, size =  [ %d x %d ].\n",
       MV_Rank(), num_row, num_col);
   }
 
@@ -45,7 +45,7 @@ public:
     if (row_id >= 0) CHECK(size == num_col_);
     row_index_[row_id] = data; // data_ = data;
     WorkerTable::Get(Blob(&row_id, sizeof(int)));
-    Log::Debug("worker %d getting row %d\n", MV_Rank(), row_id);
+	Log::Debug("[Get] worker = %d, #row = %d\n", MV_Rank(), row_id);
   }
 
   void Get(const std::vector<int>& row_ids,
@@ -57,8 +57,7 @@ public:
       row_index_[row_ids[i]] = data_vec[i];
     }
     WorkerTable::Get(Blob(row_ids.data(), sizeof(int) * row_ids.size()));
-    Log::Debug("worker %d getting rows, request rows number = %d\n",
-      MV_Rank(), row_ids.size());
+	Log::Debug("[Get] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids.size());
   }
 
   // Add whole table
@@ -73,7 +72,7 @@ public:
     Blob ids_blob(&row_id, sizeof(int));
     Blob data_blob(data, size * sizeof(T));
     WorkerTable::Add(ids_blob, data_blob);
-    Log::Debug("worker %d adding rows\n", MV_Rank());
+	Log::Debug("[Add] worker = %d, #row = %d\n", MV_Rank(), row_id);
   }
 
   void Add(const std::vector<int>& row_ids,
@@ -87,7 +86,7 @@ public:
       memcpy(data_blob.data() + i * row_size_, data_vec[i], row_size_);
     }
     WorkerTable::Add(ids_blob, data_blob);
-    Log::Debug("worker %d adding rows\n", MV_Rank());
+	Log::Debug("[Add] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids.size());
   }
 
   int Partition(const std::vector<Blob>& kv,
@@ -209,8 +208,8 @@ public:
     }
     storage_.resize(size * num_col);
 
-    Log::Info("server %d create matrix table with %d row %d colums of %d rows.\n",
-      server_id_, num_row, num_col, size);
+    Log::Debug("[Init] Server =  %d, type = matrixTable, size =  [ %d x %d ], total =  [ %d x %d ].\n",
+      server_id_, size, num_col, num_row, num_col);
   }
 
   void ProcessAdd(const std::vector<Blob>& data) override {
@@ -225,7 +224,7 @@ public:
       for (int i = 0; i < ssize; ++i){
         storage_[i] += values[i];
       }
-      Log::Debug("server %d adding all rows with row offset %d with %d rows\n",
+      Log::Debug("[ProcessAdd] Server = %d, adding rows offset = %d, #rows = %d\n",
         server_id_, row_offset_, ssize / num_col_);
       return;
     }
@@ -237,7 +236,7 @@ public:
       for (int j = 0; j < num_col_; ++j){
         storage_[offset_s++] += values[offset_v++];
       }
-      Log::Debug("server %d adding row with id %d\n",
+      Log::Debug("[ProcessAdd] Server = %d, adding #row = %d\n",
         server_id_, keys[i]);
     }
   }
@@ -256,7 +255,7 @@ public:
     if (keys_size == 1 && keys[0] == -1){
       result->push_back(Blob(storage_.data(), sizeof(T) * storage_.size()));
       result->push_back(Blob(&server_id_, sizeof(int)));
-      Log::Debug("server %d getting all rows with row offset %d with %d rows\n",
+	  Log::Debug("[ProcessGet] Server = %d, getting rows offset = %d, #rows = %d\n",
         server_id_, row_offset_, storage_.size() / num_col_);
       return;
     }
@@ -269,7 +268,8 @@ public:
       int offset_s = (keys[i] - row_offset_) * num_col_;
       memcpy(vals + offset_v, &storage_[offset_s], row_size);
       offset_v += num_col_;
-      Log::Debug("server %d getting row with id %d\n", server_id_, keys[i]);
+      Log::Debug("[ProcessAdd] Server = %d, getting #row = %d\n",
+        server_id_, keys[i]);
     }
   }
 

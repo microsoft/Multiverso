@@ -17,10 +17,9 @@ public:
   WorkerTable();
   virtual ~WorkerTable() {}
 
-  void Get(Blob keys) { Wait(GetAsync(keys)); }
-  void Add(Blob keys, Blob values) { Wait(AddAsync(keys, values)); }
+  void Get(Blob keys);
+  void Add(Blob keys, Blob values);
 
-  // TODO(feiga): add call back
   int GetAsync(Blob keys); 
   int AddAsync(Blob keys, Blob values);
 
@@ -35,14 +34,22 @@ public:
 
   virtual void ProcessReplyGet(std::vector<Blob>&) = 0;
   
-  const std::string name() { return std::string(typeid(this).name());};
-
   // add user defined data structure
 private:
   std::string table_name_;
   int table_id_;
   std::unordered_map<int, Waiter*> waitings_;
   int msg_id_;
+};
+
+// TODO(feiga): move to a seperate file
+class Stream;
+
+// interface for checkpoint table
+class Serializable {
+public:
+  virtual void Store(Stream* s) = 0;
+  virtual void Load(Stream* s) = 0;
 };
 
 // discribe the server parameter storage data structure and related method

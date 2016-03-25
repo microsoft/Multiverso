@@ -119,6 +119,7 @@ public:
       table_[k] = v;
     }
   }
+
 private:
   std::unordered_map<Key, Val> table_;
 };

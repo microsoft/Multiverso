@@ -23,7 +23,7 @@ public:
   static Zoo* Get() { static Zoo zoo; return &zoo; };
 
   // Start all actors
-  void Start(int* argc, char** argv, int role, bool restart);
+  void Start(int* argc, char** argv, int role, bool restart, int store_each_k);
   // Stop all actors
   void Stop(bool finalize_net);
 
@@ -59,7 +59,7 @@ public:
     zoo_[name] = actor;
   }
   
-  int LoadTable(const std::string& dump_file_path);
+  int LoadTable(const std::string& table_file_path);
 private:
   // private constructor
   Zoo();
@@ -79,7 +79,7 @@ private:
   int num_servers_;
 
   bool restart_;
-  int dump_each_k_;
+  int store_each_k_;
 };
 
 }
