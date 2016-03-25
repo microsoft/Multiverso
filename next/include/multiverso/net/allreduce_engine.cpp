@@ -6,16 +6,6 @@
 
 namespace multiverso {
 
-//static member defination
-int AllreduceEngine::world_size_;
-int AllreduceEngine::rank_;
-const AllreduceNetWrapper* AllreduceEngine::linkers_;
-BruckMap AllreduceEngine::bruck_map_;
-RecursiveHalvingMap AllreduceEngine::recursive_halving_map_;
-int* AllreduceEngine::block_start_;
-int* AllreduceEngine::block_len_;
-int AllreduceEngine::buffer_size_;
-byte* AllreduceEngine::buffer_;
 
 void AllreduceEngine::Init(const AllreduceNetWrapper* linkers) {
   linkers_ = linkers;
@@ -29,11 +19,10 @@ void AllreduceEngine::Init(const AllreduceNetWrapper* linkers) {
   buffer_ = new byte[buffer_size_];
 }
 
-void AllreduceEngine::Dispose() {
-  delete[]block_start_;
-  delete[]block_len_;
-  delete[] buffer_;
-  delete linkers_;
+AllreduceEngine::~AllreduceEngine() {
+  if (block_start_ != nullptr) { delete[]block_start_; }
+  if (block_len_ != nullptr) { delete[]block_len_; }
+  if (buffer_ != nullptr) { delete[] buffer_; }
 }
 
 void AllreduceEngine::Allreduce(byte* input, int input_size, int type_size, byte* output, ReduceFunction reducer) {

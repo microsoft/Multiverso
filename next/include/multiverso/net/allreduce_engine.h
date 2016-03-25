@@ -42,37 +42,39 @@ public:
 
 class AllreduceEngine {
 public:
-  static void Init(const AllreduceNetWrapper* linkers);
+  AllreduceEngine() {}
 
-  static void Dispose();
+  void Init(const AllreduceNetWrapper* linkers);
 
-  static inline int Rank();
+  ~AllreduceEngine();
 
-  static inline int WorldSize();
+  inline int Rank();
 
-  static void Allreduce(byte* input, int input_size, int type_size, byte* output, ReduceFunction reducer);
+  inline int WorldSize();
 
-  static void AllreduceByAllGather(byte* input, int input_size, int type_size, byte* output, ReduceFunction reducer);
+  void Allreduce(byte* input, int input_size, int type_size, byte* output, ReduceFunction reducer);
+
+  void AllreduceByAllGather(byte* input, int input_size, int type_size, byte* output, ReduceFunction reducer);
 
   //use bruck Algorithm.
   //Thakur, Rajeev, Rolf Rabenseifner, and William Gropp. 
   //"Optimization of collective communication operations in MPICH." International Journal of High Performance Computing Applications 19.1 (2005): 49-66.
-  static void Allgather(byte* input, int send_size, int all_size, byte* output);
+  void Allgather(byte* input, int send_size, int all_size, byte* output);
 
-  static void Allgather(byte* input, int all_size, int* block_start, int* block_len, byte* output);
+  void Allgather(byte* input, int all_size, int* block_start, int* block_len, byte* output);
 
-  static void ReduceScatter(byte* input, int input_size, int type_size, int* block_start, int* block_len, byte* output, ReduceFunction reducer);
+  void ReduceScatter(byte* input, int input_size, int type_size, int* block_start, int* block_len, byte* output, ReduceFunction reducer);
 
 private:
-  static int world_size_;
-  static int rank_;
-  static const AllreduceNetWrapper *linkers_;
-  static BruckMap bruck_map_;
-  static RecursiveHalvingMap recursive_halving_map_;
-  static int* block_start_;
-  static int* block_len_;
-  static byte* buffer_;
-  static int buffer_size_;
+  int world_size_;
+  int rank_;
+  const AllreduceNetWrapper *linkers_;
+  BruckMap bruck_map_;
+  RecursiveHalvingMap recursive_halving_map_;
+  int* block_start_;
+  int* block_len_;
+  byte* buffer_;
+  int buffer_size_;
 };
 
 inline int AllreduceEngine::Rank() {
