@@ -11,6 +11,7 @@ namespace multiverso {
 
 // Manage a chunk of memory. Blob can share memory with other Blobs. 
 // Never use external memory. All external memory should be managed by itself
+// TODO(feiga): maybe make blob also not hold memory?
 class Blob {
 public:
   // an empty blob
