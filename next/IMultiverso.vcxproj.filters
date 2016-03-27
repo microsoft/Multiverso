@@ -76,19 +76,7 @@
     <ClInclude Include="include\multiverso\table\matrix_table.h">
       <Filter>include\table</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\util\hdfs.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\multiverso\util\local_file_sys.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\multiverso\util\io.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\util\configure.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\multiverso\util\hdfs_file_sys.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\util\timer.h">
@@ -102,6 +90,15 @@
     </ClInclude>
     <ClInclude Include="include\multiverso\net\net_allreduce.h">
       <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\io.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\local_stream.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\hdfs_stream.h">
+      <Filter>io</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +116,9 @@
     </Filter>
     <Filter Include="net">
       <UniqueIdentifier>{c720657f-d601-4776-956c-b2f892a1402c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{42ca0285-0d86-4f90-9e14-9c668890c025}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -158,15 +158,6 @@
     <ClCompile Include="src\net.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\io.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\local_file_sys.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\hdfs_file_sys.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="src\timer.cpp">
       <Filter>util</Filter>
     </ClCompile>
@@ -178,6 +169,15 @@
     </ClCompile>
     <ClCompile Include="include\multiverso\net\allreduce_topo.cpp">
       <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\io.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\local_stream.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\hdfs_stream.cpp">
+      <Filter>io</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
