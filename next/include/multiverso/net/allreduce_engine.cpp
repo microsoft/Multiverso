@@ -1,3 +1,5 @@
+#ifdef MULTIVERSO_USE_ZMQ
+
 #include <string.h>
 #include <algorithm>
 
@@ -169,3 +171,5 @@ void AllreduceEngine::ReduceScatter(byte* input, int input_size, int type_size, 
 }
 
 }
+
+#endif

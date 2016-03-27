@@ -1,6 +1,8 @@
 #ifndef MULTIVERSO_NET_ALLREDUCE_ENGINE_H_
 #define MULTIVERSO_NET_ALLREDUCE_ENGINE_H_
 
+#ifdef MULTIVERSO_USE_ZMQ
+
 #include <vector>
 
 namespace multiverso {
@@ -86,4 +88,7 @@ inline int AllreduceEngine::WorldSize() {
 }
 
 }
+
+#endif // MULTIVERSO_USE_ZMQ
+
 #endif //MULTIVERSO_NET_ALLREDUCE_ENGINE_H_
