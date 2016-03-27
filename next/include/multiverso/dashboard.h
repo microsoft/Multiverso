@@ -57,9 +57,6 @@ private:
   Timer timer_;
 };
 
-// NOTE(feiga): user shouldn't call this, used in MONITOR_BEGIN as a local var
-//              note that static variable under different context may differs
-//              please use either only in global scope or only in local scope
 #define REGISTER_MONITOR(name)           \
   static Monitor g_##name##_monitor(#name);
 
