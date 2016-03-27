@@ -106,7 +106,7 @@ public:
     CHECK(values.size() == size_ * sizeof(T));
     T* pvalues = reinterpret_cast<T*>(values.data());
 
-    #pragma omp parallel schedule(static) num_threads(4)
+    #pragma omp parallel for schedule(static) num_threads(4)
     for (int i = 0; i < size_; ++i) storage_[i] += pvalues[i]; 
 #endif
   }
