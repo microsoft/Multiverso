@@ -55,8 +55,8 @@ public:
     allreduce_engine_.Allreduce(input, input_size, type_size, output, reducer);
   }
 
-  void Allgather(byte* input, int send_size, int all_size, byte* output) {
-    allreduce_engine_.Allgather(input, send_size, all_size, output);
+  void Allgather(byte* input, int send_size, byte* output) {
+    allreduce_engine_.Allgather(input, send_size, output);
   }
 
   void Allgather(byte* input, int all_size, int* block_start, int* block_len, byte* output) {

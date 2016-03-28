@@ -61,7 +61,7 @@ public:
   //use bruck Algorithm.
   //Thakur, Rajeev, Rolf Rabenseifner, and William Gropp. 
   //"Optimization of collective communication operations in MPICH." International Journal of High Performance Computing Applications 19.1 (2005): 49-66.
-  void Allgather(byte* input, int send_size, int all_size, byte* output);
+  void Allgather(byte* input, int send_size, byte* output);
 
   void Allgather(byte* input, int all_size, int* block_start, int* block_len, byte* output);
 

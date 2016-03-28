@@ -74,7 +74,7 @@ void AllreduceEngine::AllreduceByAllGather(byte* input, int input_size, int type
   std::memcpy(output, buffer_, input_size);
 }
 
-void AllreduceEngine::Allgather(byte* input, int send_size, int all_size, byte* output) {
+void AllreduceEngine::Allgather(byte* input, int send_size, byte* output) {
   //assign blocks
   block_start_[0] = 0;
   block_len_[0] = send_size;
@@ -82,7 +82,7 @@ void AllreduceEngine::Allgather(byte* input, int send_size, int all_size, byte* 
     block_start_[i] = block_start_[i - 1] + block_len_[i - 1];
     block_len_[i] = send_size;
   }
-  Allgather(input, all_size, block_start_, block_len_, output);
+  Allgather(input, send_size * world_size_, block_start_, block_len_, output);
 }
 
 void AllreduceEngine::Allgather(byte* input, int all_size, int* block_start, int* block_len, byte* output) {
