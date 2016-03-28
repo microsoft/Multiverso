@@ -8,10 +8,10 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\array_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\kv_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\actor.h">
       <Filter>system</Filter>
@@ -65,16 +65,16 @@
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\smooth_array_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\adam_array_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\util\quantization_util.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\matrix_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\util\configure.h">
       <Filter>util</Filter>
@@ -111,14 +111,14 @@
     <Filter Include="util">
       <UniqueIdentifier>{4e63d643-6e66-4f5c-832b-232b5a5ad239}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\table">
-      <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
-    </Filter>
     <Filter Include="net">
       <UniqueIdentifier>{c720657f-d601-4776-956c-b2f892a1402c}</UniqueIdentifier>
     </Filter>
     <Filter Include="io">
       <UniqueIdentifier>{42ca0285-0d86-4f90-9e14-9c668890c025}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="table">
+      <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
