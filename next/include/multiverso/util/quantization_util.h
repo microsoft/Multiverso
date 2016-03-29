@@ -13,7 +13,9 @@ namespace multiverso {
 
 		virtual ~QuantizationFilter(){}
 
-		virtual bool filter(std::vector< multiverso::Blob> &blobs) = 0;
+		virtual std::vector< multiverso::Blob> FilterIn(const std::vector< multiverso::Blob> &blobs) = 0;
+
+		virtual std::vector< multiverso::Blob> FilterOut(const std::vector< multiverso::Blob> &blobs);
 	private:
 
 	};
@@ -21,14 +23,21 @@ namespace multiverso {
 	class SparseFilter : public QuantizationFilter
 	{
 	public:
-		SparseFilter(){};
+		SparseFilter(double clip):clip_value(clip){};
+
 		~SparseFilter(){};
-		bool filter(std::vector< multiverso::Blob> &blobs);
+
+		std::vector< multiverso::Blob> FilterIn(const std::vector< multiverso::Blob> &blobs);
 
 	private:
+		double clip_value;
 
 	};
 
+	class OneBitsFilter : public QuantizationFilter
+	{
+
+	};
 }
 
 
