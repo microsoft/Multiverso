@@ -3,7 +3,4 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MPIWrapper.h" />
-  </ItemGroup>
 </Project>

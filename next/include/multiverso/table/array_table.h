@@ -104,7 +104,10 @@ public:
     Blob keys = data[0], values = data[1];
     CHECK(keys.size<int>() == 1 && keys.As<int>() == -1); // Always request whole table
     CHECK(values.size() == size_ * sizeof(T));
-    for (int i = 0; i < size_; ++i) storage_[i] += values.As<T>(i);
+    T* pvalues = reinterpret_cast<T*>(values.data());
+
+    #pragma omp parallel for schedule(static) num_threads(4)
+    for (int i = 0; i < size_; ++i) storage_[i] += pvalues[i]; 
 #endif
   }
 
@@ -118,11 +121,31 @@ public:
     result->push_back(value);
   }
 
+  void Store(Stream* s) override{
+    s->Write(storage_.data(), storage_.size() * sizeof(T));
+  }
+  void Load(Stream* s) override{
+    s->Read(storage_.data(), storage_.size() * sizeof(T));
+  }
+
 private:
   int server_id_;
   // T* storage_;
   std::vector<T> storage_;
   size_t size_; // number of element with type T
+};
+
+template<typename T>
+class ArrayTableHelper : public TableHelper {
+  ArrayTableHelper(const size_t& size) : size_(size) { }
+protected:
+  WorkerTable* CreateWorkerTable() override{
+    return new ArrayWorker<T>(size_);
+  }
+  ServerTable* CreateServerTable() override{
+    return new ArrayServer<T>(size_);
+  }
+  size_t size_;
 };
 }
 

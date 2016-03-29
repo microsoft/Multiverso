@@ -138,6 +138,23 @@ public:
     result->push_back(value);
   }
 
+  void Store(Stream* s) override{
+    s->Write(&decay_momentum_rate_first_, sizeof(float));
+    s->Write(&decay_momentum_rate_second_, sizeof(float));
+    s->Write(&stepsize_, sizeof(float));
+    s->Write(storage_.data(), storage_.size() * sizeof(T));
+    s->Write(smooth_gradient_first_.data(), smooth_gradient_first_.size() * sizeof(T));
+    s->Write(smooth_gradient_second_.data(), smooth_gradient_second_.size() * sizeof(T));
+  }
+  void Load(Stream* s) override{
+    s->Read(&decay_momentum_rate_first_, sizeof(float));
+    s->Read(&decay_momentum_rate_second_, sizeof(float));
+    s->Read(&stepsize_, sizeof(float));
+    s->Read(storage_.data(), storage_.size() * sizeof(T));
+    s->Read(smooth_gradient_first_.data(), smooth_gradient_first_.size() * sizeof(T));
+    s->Read(smooth_gradient_second_.data(), smooth_gradient_second_.size() * sizeof(T));
+  }
+
 private:
   int server_id_;
   float decay_momentum_rate_first_;
@@ -147,6 +164,19 @@ private:
   std::vector<T> smooth_gradient_first_;
   std::vector<T> smooth_gradient_second_;
   size_t size_; // number of element with type T
+};
+
+template<typename T>
+class AdamTableHelper : public TableHelper {
+  AdamTableHelper(const size_t& size) : size_(size) { }
+protected:
+  WorkerTable* CreateWorkerTable() override{
+    return new AdamArrayWorker<T>(size_);
+  }
+  ServerTable* CreateServerTable() override{
+    return new AdamArrayServer<T>(size_);
+  }
+  size_t size_;
 };
 }
 

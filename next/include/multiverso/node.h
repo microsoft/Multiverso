@@ -3,6 +3,11 @@
 
 namespace multiverso {
 
+enum Role {
+  WORKER = 1,
+  SERVER = 2
+};
+
 struct Node {
   int rank;
   // role can be 0, 1, 2, 3

@@ -133,12 +133,37 @@ public:
     result->push_back(value);
   }
 
+  void Store(Stream* s) override{
+    s->Write(&smooth_momentum_, sizeof(float));
+    s->Write(storage_.data(), storage_.size() * sizeof(T));
+    s->Write(smooth_gradient_.data(), smooth_gradient_.size() * sizeof(T));
+  }
+  void Load(Stream* s) override{
+    s->Read(&smooth_momentum_, sizeof(float));
+    s->Read(storage_.data(), storage_.size() * sizeof(T));
+    s->Read(smooth_gradient_.data(), smooth_gradient_.size() * sizeof(T));
+  }
+
 private:
   int server_id_;
   float smooth_momentum_;
   std::vector<T> storage_;
   std::vector<T> smooth_gradient_;
   size_t size_; // number of element with type T
+};
+
+template<typename T>
+class SmoothTableHelper : public TableHelper {
+  SmoothTableHelper(const size_t& size) : size_(size) { }
+
+protected:
+  WorkerTable* CreateWorkerTable() override{
+    return new SmoothArrayWorker<T>(size_);
+  }
+  ServerTable* CreateServerTable() override{
+    return new SmoothArrayServer<T>(size_);
+  }
+  size_t size_;
 };
 }
 

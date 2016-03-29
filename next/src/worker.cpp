@@ -1,4 +1,6 @@
 #include "multiverso/worker.h"
+
+#include "multiverso/dashboard.h"
 #include "multiverso/util/mt_queue.h"
 #include "multiverso/zoo.h"
 
@@ -21,6 +23,7 @@ int Worker::RegisterTable(WorkerTable* worker_table) {
 }
 
 void Worker::ProcessGet(MessagePtr& msg) {
+  MONITOR_BEGIN(WORKER_PROCESS_GET)
   int table_id = msg->table_id();
   int msg_id = msg->msg_id();
   std::unordered_map<int, std::vector<Blob>> partitioned_key;
@@ -36,9 +39,11 @@ void Worker::ProcessGet(MessagePtr& msg) {
     msg->set_data(it.second);
     SendTo(actor::kCommunicator, msg);
   }
+  MONITOR_END(WORKER_PROCESS_GET)
 }
 
 void Worker::ProcessAdd(MessagePtr& msg) {  
+  MONITOR_BEGIN(WORKER_PROCESS_ADD)
   int table_id = msg->table_id();
   int msg_id = msg->msg_id();
   std::unordered_map<int, std::vector<Blob>> partitioned_kv;
@@ -47,7 +52,7 @@ void Worker::ProcessAdd(MessagePtr& msg) {
   int num = cache_[table_id]->Partition(msg->data(), &partitioned_kv);
   cache_[table_id]->Reset(msg_id, num);
   for (auto& it : partitioned_kv) {
-    MessagePtr msg(new Message()); //  = std::make_unique<Message>();
+    MessagePtr msg(new Message()); 
     msg->set_src(Zoo::Get()->rank());
     msg->set_dst(it.first);
     msg->set_type(MsgType::Request_Add);
@@ -56,12 +61,15 @@ void Worker::ProcessAdd(MessagePtr& msg) {
     msg->set_data(it.second);
     SendTo(actor::kCommunicator, msg);
   }
+  MONITOR_END(WORKER_PROCESS_ADD)
 }
 
 void Worker::ProcessReplyGet(MessagePtr& msg) {
+  MONITOR_BEGIN(WORKER_PROCESS_REPLY_GET)
   int table_id = msg->table_id();
   cache_[table_id]->ProcessReplyGet(msg->data());
   cache_[table_id]->Notify(msg->msg_id());
+  MONITOR_END(WORKER_PROCESS_REPLY_GET)
 }
 
 void Worker::ProcessReplyAdd(MessagePtr& msg) {

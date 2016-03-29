@@ -52,7 +52,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_zmq|x64'">
     <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
-    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\multiverso-next\lib;</IncludePath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_zmq|x64'">
     <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <ClCompile>
@@ -127,6 +127,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MULTIVERSO_USE_ZMQ;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,6 +152,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MULTIVERSO_USE_MPI;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,10 +173,13 @@
     <ClInclude Include="include\multiverso\blob.h" />
     <ClInclude Include="include\multiverso\communicator.h" />
     <ClInclude Include="include\multiverso\controller.h" />
+    <ClInclude Include="include\multiverso\dashboard.h" />
     <ClInclude Include="include\multiverso\message.h" />
     <ClInclude Include="include\multiverso\multiverso.h" />
     <ClInclude Include="include\multiverso\net.h" />
+    <ClInclude Include="include\multiverso\net\allreduce_engine.h" />
     <ClInclude Include="include\multiverso\net\mpi_net.h" />
+    <ClInclude Include="include\multiverso\net\net_allreduce.h" />
     <ClInclude Include="include\multiverso\net\zmq_net.h" />
     <ClInclude Include="include\multiverso\node.h" />
     <ClInclude Include="include\multiverso\server.h" />
@@ -184,7 +189,11 @@
     <ClInclude Include="include\multiverso\table\matrix_table.h" />
     <ClInclude Include="include\multiverso\table\smooth_array_table.h" />
     <ClInclude Include="include\multiverso\table_interface.h" />
+    <ClInclude Include="include\multiverso\util\configure.h" />
     <ClInclude Include="include\multiverso\util\async_buffer.h" />
+    <ClInclude Include="include\multiverso\util\hdfs_stream.h" />
+    <ClInclude Include="include\multiverso\util\io.h" />
+    <ClInclude Include="include\multiverso\util\local_stream.h" />
     <ClInclude Include="include\multiverso\util\log.h" />
     <ClInclude Include="include\multiverso\util\mt_queue.h" />
     <ClInclude Include="include\multiverso\util\net_util.h" />
@@ -195,14 +204,21 @@
     <ClInclude Include="include\multiverso\zoo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\multiverso\net\allreduce_engine.cpp" />
+    <ClCompile Include="include\multiverso\net\allreduce_topo.cpp" />
     <ClCompile Include="src\actor.cpp" />
     <ClCompile Include="src\communicator.cpp" />
     <ClCompile Include="src\controller.cpp" />
+    <ClCompile Include="src\dashboard.cpp" />
     <ClCompile Include="src\multiverso.cpp" />
     <ClCompile Include="src\net.cpp" />
     <ClCompile Include="src\node.cpp" />
     <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\table.cpp" />
+    <ClCompile Include="src\util\hdfs_stream.cpp" />
+    <ClCompile Include="src\util\io.cpp" />
+    <ClCompile Include="src\util\local_stream.cpp" />
+    <ClCompile Include="src\timer.cpp" />
     <ClCompile Include="src\util\log.cpp" />
     <ClCompile Include="src\util\net_util.cpp" />
     <ClCompile Include="src\worker.cpp" />

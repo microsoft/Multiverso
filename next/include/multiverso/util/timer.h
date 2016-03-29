@@ -2,7 +2,26 @@
 #define MULTIVERSO_TIMER_H_
 
 #include <chrono>
-#include <ctime>
 
+namespace multiverso {
+
+class Timer {
+public:
+  Timer();
+
+  // (Re)start the timer
+  void Start();
+
+  // Get elapsed milliseconds since last Timer::Start
+  double elapse();
+
+private:
+  using Clock = std::chrono::high_resolution_clock;
+  using TimePoint = Clock::time_point;
+ 
+  TimePoint start_point_;
+};
+
+}
 
 #endif //MULTIVERSO_TIMER_H_

@@ -1,8 +1,14 @@
 #include "multiverso/table_interface.h"
-
 #include "multiverso/util/log.h"
 #include "multiverso/util/waiter.h"
 #include "multiverso/zoo.h"
+#include "multiverso/dashboard.h"
+
+#include "multiverso/table/matrix_table.h"
+#include "multiverso/table/array_table.h"
+#include "multiverso/table/kv_table.h"
+#include "multiverso/table/smooth_array_table.h"
+#include "multiverso/table/adam_array_table.h"
 
 namespace multiverso {
 
@@ -12,6 +18,19 @@ WorkerTable::WorkerTable() {
 
 ServerTable::ServerTable() {
   Zoo::Get()->RegisterTable(this);
+}
+
+void WorkerTable::Get(Blob keys) { 
+  MONITOR_BEGIN(WORKER_TABLE_SYNC_GET)
+  Wait(GetAsync(keys)); 
+  MONITOR_END(WORKER_TABLE_SYNC_GET)
+}
+
+void WorkerTable::Add(Blob keys, Blob values) { 
+  MONITOR_BEGIN(WORKER_TABLE_SYNC_ADD)
+  // Wait(AddAsync(keys, values)); 
+  AddAsync(keys, values); 
+  MONITOR_END(WORKER_TABLE_SYNC_ADD)
 }
 
 int WorkerTable::GetAsync(Blob keys) {
@@ -59,4 +78,13 @@ void WorkerTable::Notify(int id) {
   waitings_[id]->Notify(); 
 }
 
+WorkerTable* TableHelper::CreateTable(){
+  if (Zoo::Get()->server_rank() >= 0){
+    CreateServerTable();
+  }
+  if (Zoo::Get()->worker_rank() >= 0){
+    return CreateWorkerTable();
+  }
+  return nullptr;
+}
 }

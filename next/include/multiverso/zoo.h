@@ -35,7 +35,6 @@ public:
   int rank() const;
   int size() const;
 
-  // TODO(to change)
   int worker_rank() const { return nodes_[rank()].worker_id; }
   int server_rank() const { return nodes_[rank()].server_id; }
 
@@ -58,6 +57,8 @@ public:
     CHECK(zoo_[name] == nullptr);
     zoo_[name] = actor;
   }
+  
+  // int LoadTable(const std::string& table_file_path);
 private:
   // private constructor
   Zoo();
@@ -75,6 +76,9 @@ private:
 
   int num_workers_;
   int num_servers_;
+
+  // bool restart_;
+  // int store_each_k_;
 };
 
 }
