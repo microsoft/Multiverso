@@ -15,7 +15,7 @@ namespace multiverso {
 
 		virtual std::vector< multiverso::Blob> FilterIn(const std::vector< multiverso::Blob> &blobs) = 0;
 
-		virtual std::vector< multiverso::Blob> FilterOut(const std::vector< multiverso::Blob> &blobs);
+		virtual std::vector< multiverso::Blob> FilterOut(const std::vector< multiverso::Blob> &blobs) = 0;
 	private:
 
 	};
@@ -27,7 +27,12 @@ namespace multiverso {
 
 		~SparseFilter(){};
 
-		std::vector< multiverso::Blob> FilterIn(const std::vector< multiverso::Blob> &blobs);
+		std::vector< multiverso::Blob> FilterIn(const std::vector< multiverso::Blob> &blobs) override;
+        std::vector< multiverso::Blob> FilterOut(const std::vector< multiverso::Blob> &blobs) override;
+
+    protected:
+        bool try_compress(const multiverso::Blob& in_blob, multiverso::Blob& out_blob);
+        Blob de_compress(const multiverso::Blob& in_blob, size_t size);
 
 	private:
 		double clip_value;

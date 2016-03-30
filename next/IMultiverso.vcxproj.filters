@@ -179,5 +179,8 @@
     <ClCompile Include="src\util\hdfs_stream.cpp">
       <Filter>io</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\quantization_util.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
