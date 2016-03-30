@@ -91,7 +91,10 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gtest\gtest-all.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="test_example.cpp" />
+    <ClCompile Include="test_filter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

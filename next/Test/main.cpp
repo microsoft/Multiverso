@@ -14,7 +14,9 @@
 #include <multiverso/table/smooth_array_table.h>
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
-#include <multiverso/table/matrix_table.h>
+#include <multiverso/table/matrix_table.h>             
+
+#include "gtest\gtest.h"
 
 using namespace multiverso;
 
@@ -452,7 +454,11 @@ void TestComm(int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
-  if (argc == 2) {
+  if (argc == 1){
+      ::testing::InitGoogleTest(&argc, argv);
+      return RUN_ALL_TESTS();
+  }
+  else if (argc == 2) {
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
