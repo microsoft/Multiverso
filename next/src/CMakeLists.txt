@@ -14,7 +14,7 @@ endif(USE_HDFS)
 #target_link_libraries(multiverso ${MPI_CXX_LIBARIES})
 #target_link_libraries(mpi)
 
-add_library(multiverso ${MULTIVERSO_SRC})
+add_library(multiverso SHARED ${MULTIVERSO_SRC})
 
 #set_property(TARGET multiverso PROPERTY CXX_STANDARD 11)
 
