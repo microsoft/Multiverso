@@ -8,17 +8,21 @@
 
 namespace multiverso {
 
+AllreduceEngine::AllreduceEngine()
+  :block_start_(nullptr), block_len_(nullptr), buffer_(nullptr) {
+
+}
 
 void AllreduceEngine::Init(const AllreduceNetWrapper* linkers) {
   linkers_ = linkers;
   rank_ = linkers_->rank();
-  world_size_ = linkers_->size();
+  num_machines_ = linkers_->size();
   bruck_map_ = linkers_->GetBruckMap();
   recursive_halving_map_ = linkers_->GetRecursiveHalfingMap();
-  block_start_ = new int[world_size_];
-  block_len_ = new int[world_size_];
+  block_start_ = new int[num_machines_];
+  block_len_ = new int[num_machines_];
   buffer_size_ = 1024 * 1024;
-  buffer_ = new byte[buffer_size_];
+  buffer_ = new char[buffer_size_];
 }
 
 AllreduceEngine::~AllreduceEngine() {
@@ -27,97 +31,97 @@ AllreduceEngine::~AllreduceEngine() {
   if (buffer_ != nullptr) { delete[] buffer_; }
 }
 
-void AllreduceEngine::Allreduce(byte* input, int input_size, int type_size, byte* output, ReduceFunction reducer) {
+void AllreduceEngine::Allreduce(char* input, int input_size, int type_size, char* output, ReduceFunction reducer) {
 
   int count = input_size / type_size;
   //if small package or small count , do it by all gather.(reduce the communication times.)
-  if (count < world_size_ || input_size < 4096) {
+  if (count < num_machines_ || input_size < 4096) {
     AllreduceByAllGather(input, input_size, type_size, output, reducer);
     return;
   }
   //assign the blocks to every rank_s.
-  int step = (count + world_size_ - 1) / world_size_;
+  int step = (count + num_machines_ - 1) / num_machines_;
   if (step < 1) {
     step = 1;
   }
   block_start_[0] = 0;
-  for (int i = 0; i < world_size_ - 1; ++i) {
+  for (int i = 0; i < num_machines_ - 1; ++i) {
     block_len_[i] = step * type_size < input_size - block_start_[i] ? step * type_size : input_size - block_start_[i];
     block_start_[i + 1] = block_start_[i] + block_len_[i];
   }
-  block_len_[world_size_ - 1] = input_size - block_start_[world_size_ - 1];
+  block_len_[num_machines_ - 1] = input_size - block_start_[num_machines_ - 1];
   //do reduce scatter
   ReduceScatter(input, input_size, type_size, block_start_, block_len_, output, reducer);
   //do all gather
   Allgather(output, input_size, block_start_, block_len_, output);
 }
 
-void AllreduceEngine::AllreduceByAllGather(byte* input, int input_size, int type_size, byte* output, ReduceFunction reducer) {
+void AllreduceEngine::AllreduceByAllGather(char* input, int input_size, int type_size, char* output, ReduceFunction reducer) {
   //assign blocks
-  int all_size = input_size * world_size_;
+  int all_size = input_size * num_machines_;
   block_start_[0] = 0;
   block_len_[0] = input_size;
-  for (int i = 1; i < world_size_; ++i) {
+  for (int i = 1; i < num_machines_; ++i) {
     block_start_[i] = block_start_[i - 1] + block_len_[i - 1];
     block_len_[i] = input_size;
   }
 
-  if (input_size*world_size_ > buffer_size_) {
+  if (input_size*num_machines_ > buffer_size_) {
     delete[] buffer_;
-    buffer_size_ = input_size*world_size_;
-    buffer_ = new byte[buffer_size_];
+    buffer_size_ = input_size*num_machines_;
+    buffer_ = new char[buffer_size_];
   }
   Allgather(input, all_size, block_start_, block_len_, buffer_);
-  for (int i = 1; i < world_size_; ++i) {
+  for (int i = 1; i < num_machines_; ++i) {
     reducer(buffer_ + block_start_[i], buffer_ + block_start_[0], input_size);
   }
   std::memcpy(output, buffer_, input_size);
 }
 
-void AllreduceEngine::Allgather(byte* input, int send_size, byte* output) {
+void AllreduceEngine::Allgather(char* input, int send_size, char* output) {
   //assign blocks
   block_start_[0] = 0;
   block_len_[0] = send_size;
-  for (int i = 1; i < world_size_; ++i) {
+  for (int i = 1; i < num_machines_; ++i) {
     block_start_[i] = block_start_[i - 1] + block_len_[i - 1];
     block_len_[i] = send_size;
   }
-  Allgather(input, send_size * world_size_, block_start_, block_len_, output);
+  Allgather(input, send_size * num_machines_, block_start_, block_len_, output);
 }
 
-void AllreduceEngine::Allgather(byte* input, int all_size, int* block_start, int* block_len, byte* output) {
+void AllreduceEngine::Allgather(char* input, int all_size, int* block_start, int* block_len, char* output) {
   int write_ptr = 0;
   std::memcpy(output, input, block_len[rank_]);
   write_ptr += block_len[rank_];
   int accumulated_block = 1;
   for (int i = 0; i < bruck_map_.k; ++i) {
     //send
-    int cur_block_size = (1 << i) < world_size_ - accumulated_block ? (1 << i) : world_size_ - accumulated_block;
+    int cur_block_size = (1 << i) < num_machines_ - accumulated_block ? (1 << i) : num_machines_ - accumulated_block;
     int target = bruck_map_.out_ranks[i];
     int send_len = 0;
     for (int j = 0; j < cur_block_size; ++j) {
-      send_len += block_len[(rank_ + j) % world_size_];
+      send_len += block_len[(rank_ + j) % num_machines_];
     }
     linkers_->Send(target, output, 0, send_len);
     //rec
     int incoming = bruck_map_.in_ranks[i];
     int need_recv_cnt = 0;
     for (int j = 0; j < cur_block_size; ++j) {
-      need_recv_cnt += block_len[(rank_ + accumulated_block + j) % world_size_];
+      need_recv_cnt += block_len[(rank_ + accumulated_block + j) % num_machines_];
     }
     linkers_->Receive(incoming, output, write_ptr, need_recv_cnt);
     write_ptr += need_recv_cnt;
     accumulated_block += cur_block_size;
   }
   //rotate right 
-  std::reverse<byte*>(output, output + all_size);
-  std::reverse<byte*>(output, output + block_start[rank_]);
-  std::reverse<byte*>(output + block_start[rank_], output + all_size);
+  std::reverse<char*>(output, output + all_size);
+  std::reverse<char*>(output, output + block_start[rank_]);
+  std::reverse<char*>(output + block_start[rank_], output + all_size);
 }
 
-void AllreduceEngine::ReduceScatter(byte* input, int input_size, int type_size, int* block_start, int* block_len, byte* output, ReduceFunction reducer) {
+void AllreduceEngine::ReduceScatter(char* input, int input_size, int type_size, int* block_start, int* block_len, char* output, ReduceFunction reducer) {
 
-  bool is_powerof_2 = (world_size_ & (world_size_ - 1)) == 0 ? true : false;
+  bool is_powerof_2 = (num_machines_ & (num_machines_ - 1)) == 0 ? true : false;
   if (!is_powerof_2) {
     if (recursive_halving_map_.type == RecursiveHalvingNodeType::SendNeighbor) {
       //send local data to neighbor first
