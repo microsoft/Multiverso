@@ -76,10 +76,10 @@ namespace multiverso {
                 return false;
 
             if (non_zero_count == 0){
-                // Blob does not support empty content, send the first one
+                // Blob does not support empty content, fill the blob with first value
                 Blob result(2 * sizeof(data_type));
-                result.As<index_type>(0) = 0;
-                result.As<data_type>(1) = in_blob.As<data_type>(0);
+                result.As<index_type>(0) = 0;                       // set index
+                result.As<data_type>(1) = in_blob.As<data_type>(0); // set value
                 out_blob = result;
             }
             else{
@@ -90,8 +90,8 @@ namespace multiverso {
                     auto abs_value = std::abs(in_blob.As<data_type>(i));
                     if (abs_value > clip_value)
                     {
-                        result.As<index_type>(result_index++) = i;
-                        result.As<data_type>(result_index++) = in_blob.As<data_type>(i);
+                        result.As<index_type>(result_index++) = i;                              // set index
+                        result.As<data_type>(result_index++) = in_blob.As<data_type>(i);        // set value
                     }
                 }
                 CHECK(result_index == non_zero_count * 2);
