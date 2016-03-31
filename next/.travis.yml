@@ -2,10 +2,9 @@ sudo: required
 
 #use only specify which branches to build
 #or use except to make the blacklist
-#branches:
-#  only: 
-#     - liming
-#     - dev
+branches:
+  only: 
+     - dev
 
 #specify recipients that will be notified about build results
 #default send to the committer and the author
