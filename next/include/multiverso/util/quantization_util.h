@@ -27,7 +27,9 @@ namespace multiverso {
 		SparseFilter(double clip):clip_value(clip){};
 
 		~SparseFilter(){};
-
+        // Returns compressed blobs given input blobs. Each input blob in vector will generate two blobs in result: 
+        //  the first blob contains info: compressed or not, original blob size in byte;
+        //  the second blob contains info: compressed blob if it's compressed or original blob.
         std::vector< multiverso::Blob> FilterIn(const std::vector< multiverso::Blob> &blobs) override {
             std::vector< multiverso::Blob> result;
 
@@ -42,9 +44,10 @@ namespace multiverso {
             }
 
             return result;
-
         }
 
+
+        // Returns de-compressed blobs from input blobs compressed by function FilterIn.
         std::vector< multiverso::Blob> FilterOut(const std::vector< multiverso::Blob> &blobs) override {
             std::vector< multiverso::Blob> result;
             CHECK(blobs.size() % 2 == 0);
@@ -62,8 +65,6 @@ namespace multiverso {
 
     protected:
         bool try_compress(const multiverso::Blob& in_blob, multiverso::Blob& out_blob) {
-            const auto& clip_value = this->clip_value;
-            //auto array = static_cast<float*>(in_blob.data());
             auto data_count = in_blob.size<data_type>();
             auto non_zero_count = 0;
             for (auto i = 0; i < data_count; ++i){
