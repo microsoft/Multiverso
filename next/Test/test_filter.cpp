@@ -2,12 +2,13 @@
 #include <multiverso/multiverso.h>
 #include <vector>
 #include <multiverso\util\quantization_util.h>
+#include <cctype>
 
 
 
 
 
-class test_filter : public multiverso::SparseFilter, public ::testing::Test    {
+class test_filter : public multiverso::SparseFilter<float, int32_t>, public ::testing::Test    {
 
 public:
     test_filter() : SparseFilter( 0.001){    }
