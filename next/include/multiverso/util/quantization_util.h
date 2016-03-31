@@ -64,6 +64,7 @@ namespace multiverso {
 
     protected:
         bool try_compress(const multiverso::Blob& in_blob, multiverso::Blob& out_blob) {
+            CHECK(sizeof(data_type) == sizeof(index_type));
             auto data_count = in_blob.size<data_type>();
             auto non_zero_count = 0;
             for (auto i = 0; i < data_count; ++i){
@@ -102,6 +103,7 @@ namespace multiverso {
         }
 
         Blob de_compress(const multiverso::Blob& in_blob, size_t size) {
+            CHECK(sizeof(data_type) == sizeof(index_type));
             CHECK(size % sizeof(data_type) == 0);
             auto original_data_count = size / sizeof(data_type);
             Blob result(size);
