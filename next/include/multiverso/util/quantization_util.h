@@ -2,7 +2,6 @@
 #define MULTIVERSO_QUANTIZATION_UTIL_H
 
 #include <multiverso/blob.h>
-
 #include <vector>
 
 namespace multiverso {
@@ -27,6 +26,7 @@ namespace multiverso {
 		SparseFilter(double clip):clip_value(clip){};
 
 		~SparseFilter(){};
+
         // Returns compressed blobs given input blobs. Each input blob in vector will generate two blobs in result: 
         //  the first blob contains info: compressed or not, original blob size in byte;
         //  the second blob contains info: compressed blob if it's compressed or original blob.
@@ -45,7 +45,6 @@ namespace multiverso {
 
             return result;
         }
-
 
         // Returns de-compressed blobs from input blobs compressed by function FilterIn.
         std::vector< multiverso::Blob> FilterOut(const std::vector< multiverso::Blob> &blobs) override {
