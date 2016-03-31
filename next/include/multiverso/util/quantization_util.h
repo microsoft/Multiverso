@@ -3,6 +3,7 @@
 
 #include <multiverso/blob.h>
 #include <vector>
+#include <cmath>
 
 namespace multiverso {
 	class QuantizationFilter

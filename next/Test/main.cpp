@@ -16,7 +16,7 @@
 #include <multiverso/table/kv_table.h>
 #include <multiverso/table/matrix_table.h>             
 
-#include "gtest\gtest.h"
+#include <gtest/gtest.h>
 
 using namespace multiverso;
 
