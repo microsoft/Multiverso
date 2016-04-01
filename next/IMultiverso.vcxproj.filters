@@ -97,7 +97,7 @@
     <ClInclude Include="include\multiverso\util\hdfs_stream.h">
       <Filter>io</Filter>
     </ClInclude>
-	<ClInclude Include="include\multiverso\util\async_buffer.h">
+    <ClInclude Include="include\multiverso\util\async_buffer.h">
       <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
@@ -119,6 +119,9 @@
     </Filter>
     <Filter Include="table">
       <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="updater">
+      <UniqueIdentifier>{5f38ba48-a652-4ec4-9540-8d44de3352bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
