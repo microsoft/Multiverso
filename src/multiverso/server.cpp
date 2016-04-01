@@ -295,7 +295,7 @@ namespace multiverso
         MsgArrow arrow;
         int src, dst;
         msg_pack->GetHeaderInfo(&msg_type, &arrow, &src, &dst);
-        clocks_[src] = 1 << 31;
+        clocks_[src] = 1 << 30;
         int upper_bound =
             *std::min_element(clocks_.begin(), clocks_.end()) + max_delay_;
         for (int worker = 0; worker < worker_proc_count_; ++worker)
