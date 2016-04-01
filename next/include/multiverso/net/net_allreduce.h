@@ -28,7 +28,7 @@ public:
     ZMQNetWrapper::Finalize();
   }
 
-  inline void Receive(int rank, byte* data, int start, int len) const {
+  inline void Receive(int rank, char* data, int start, int len) const {
     //note: rank is not used here
     int recv_size = 0;
     while (recv_size < len) {
@@ -38,7 +38,7 @@ public:
     }
   }
 
-  inline void Send(int rank, const byte* data, int start, int len) const {
+  inline void Send(int rank, const char* data, int start, int len) const {
     int send_size = 0;
     while (send_size < len) {
       int ret_code = zmq_send(senders_[rank], data + start + send_size, len - send_size, 0);
@@ -51,19 +51,19 @@ public:
     return NetThreadLevel::THREAD_SERIALIZED;
   }
 
-  void Allreduce(byte* input, int input_size, int type_size, byte* output, ReduceFunction reducer) {
+  void Allreduce(char* input, int input_size, int type_size, char* output, ReduceFunction reducer) {
     allreduce_engine_.Allreduce(input, input_size, type_size, output, reducer);
   }
 
-  void Allgather(byte* input, int send_size, int all_size, byte* output) {
-    allreduce_engine_.Allgather(input, send_size, all_size, output);
+  void Allgather(char* input, int send_size, char* output) {
+    allreduce_engine_.Allgather(input, send_size, output);
   }
 
-  void Allgather(byte* input, int all_size, int* block_start, int* block_len, byte* output) {
+  void Allgather(char* input, int all_size, int* block_start, int* block_len, char* output) {
     allreduce_engine_.Allgather(input, all_size, block_start, block_len, output);
   }
 
-  void ReduceScatter(byte* input, int input_size, int type_size, int* block_start, int* block_len, byte* output, ReduceFunction reducer) {
+  void ReduceScatter(char* input, int input_size, int type_size, int* block_start, int* block_len, char* output, ReduceFunction reducer) {
     allreduce_engine_.ReduceScatter(input, input_size, type_size, block_start, block_len, output, reducer);
   }
 

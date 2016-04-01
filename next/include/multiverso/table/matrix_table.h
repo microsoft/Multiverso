@@ -4,6 +4,7 @@
 #include "multiverso/multiverso.h"
 #include "multiverso/table_interface.h"
 #include "multiverso/util/log.h"
+#include "multiverso/util/quantization_util.h"
 
 #include <vector>
 

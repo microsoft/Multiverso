@@ -18,17 +18,17 @@ BruckMap::BruckMap(int n) {
   }
 }
 
-BruckMap BruckMap::Construct(int rank, int worldSize) {
-  int* dist = new int[worldSize];
+BruckMap BruckMap::Construct(int rank, int num_machines) {
+  int* dist = new int[num_machines];
   int k = 0;
-  for (k = 0; (1 << k) < worldSize; k++) {
+  for (k = 0; (1 << k) < num_machines; k++) {
     dist[k] = 1 << k;
   }
   BruckMap bruckMap(k);
   for (int j = 0; j < k; ++j) {
-    int ni = (rank + dist[j]) % worldSize;
+    int ni = (rank + dist[j]) % num_machines;
     bruckMap.in_ranks[j] = ni;
-    ni = (rank - dist[j] + worldSize) % worldSize;
+    ni = (rank - dist[j] + num_machines) % num_machines;
     bruckMap.out_ranks[j] = ni;
   }
   delete[] dist;
@@ -52,22 +52,22 @@ RecursiveHalvingMap::RecursiveHalvingMap(RecursiveHalvingNodeType _type, int n) 
     }
   }
 }
-RecursiveHalvingMap RecursiveHalvingMap::Construct(int rank, int world_size) {
+RecursiveHalvingMap RecursiveHalvingMap::Construct(int rank, int num_machines) {
   std::vector<RecursiveHalvingMap> rec_maps;
-  for (int i = 0; i < world_size; ++i) {
+  for (int i = 0; i < num_machines; ++i) {
     rec_maps.push_back(RecursiveHalvingMap());
   }
-  int* distance = new int[world_size];
-  RecursiveHalvingNodeType* node_type = new RecursiveHalvingNodeType[world_size];
+  int* distance = new int[num_machines];
+  RecursiveHalvingNodeType* node_type = new RecursiveHalvingNodeType[num_machines];
   int k = 0;
-  for (k = 0; (1 << k) < world_size; k++) {
+  for (k = 0; (1 << k) < num_machines; k++) {
     distance[k] = 1 << k;
   }
-  if ((1 << k) == world_size) {
+  if ((1 << k) == num_machines) {
     for (int i = 0; i < k; ++i) {
       distance[i] = 1 << (k - 1 - i);
     }
-    for (int i = 0; i < world_size; ++i) {
+    for (int i = 0; i < num_machines; ++i) {
       rec_maps[i] = RecursiveHalvingMap(RecursiveHalvingNodeType::Normal, k);
       for (int j = 0; j < k; ++j) {
         int dir = ((i / distance[j]) % 2 == 0) ? 1 : -1;
@@ -83,13 +83,13 @@ RecursiveHalvingMap RecursiveHalvingMap::Construct(int rank, int world_size) {
     k--;
     int lower_power_of_2 = 1 << k;
 
-    int rest = world_size - (1 << k);
-    for (int i = 0; i < world_size; ++i) {
+    int rest = num_machines - (1 << k);
+    for (int i = 0; i < num_machines; ++i) {
       node_type[i] = RecursiveHalvingNodeType::Normal;
     }
     for (int i = 0; i < rest; ++i) {
-      int r = world_size - i * 2 - 1;
-      int l = world_size - i * 2 - 2;
+      int r = num_machines - i * 2 - 1;
+      int l = num_machines - i * 2 - 2;
       node_type[l] = RecursiveHalvingNodeType::ReciveNeighbor;
       node_type[r] = RecursiveHalvingNodeType::SendNeighbor;
     }
@@ -101,11 +101,11 @@ RecursiveHalvingMap RecursiveHalvingMap::Construct(int rank, int world_size) {
     int* map_len = new int[lower_power_of_2];
     int* map_start = new int[lower_power_of_2];
     int* group_2_node = new int[lower_power_of_2];
-    int* node_to_group = new int[world_size];
+    int* node_to_group = new int[num_machines];
     for (int i = 0; i < lower_power_of_2; ++i) {
       map_len[i] = 0;
     }
-    for (int i = 0; i < world_size; ++i) {
+    for (int i = 0; i < num_machines; ++i) {
       if (node_type[i] == RecursiveHalvingNodeType::Normal || node_type[i] == RecursiveHalvingNodeType::ReciveNeighbor) {
         group_2_node[group_idx++] = i;
 
@@ -118,7 +118,7 @@ RecursiveHalvingMap RecursiveHalvingMap::Construct(int rank, int world_size) {
       map_start[i] = map_start[i - 1] + map_len[i - 1];
     }
 
-    for (int i = 0; i < world_size; ++i) {
+    for (int i = 0; i < num_machines; ++i) {
 
       if (node_type[i] == RecursiveHalvingNodeType::SendNeighbor) {
         rec_maps[i] = RecursiveHalvingMap(RecursiveHalvingNodeType::SendNeighbor, k);
@@ -143,7 +143,7 @@ RecursiveHalvingMap RecursiveHalvingMap::Construct(int rank, int world_size) {
       }
     }
   }
-  for (int i = 0; i < world_size; ++i) {
+  for (int i = 0; i < num_machines; ++i) {
     if (rec_maps[i].type != RecursiveHalvingNodeType::SendNeighbor) {
       for (int j = 0; j < k; ++j) {
         int target = rec_maps[i].ranks[j];

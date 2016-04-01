@@ -52,9 +52,6 @@
     <ClInclude Include="include\multiverso\util\waiter.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\util\double_buffer.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\util\log.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -82,6 +79,9 @@
     <ClInclude Include="include\multiverso\util\timer.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\dashboard.h">
+      <Filter>system</Filter>
+    </ClInclude>
     <ClInclude Include="include\multiverso\net\allreduce_engine.h">
       <Filter>net</Filter>
     </ClInclude>
@@ -97,8 +97,8 @@
     <ClInclude Include="include\multiverso\util\hdfs_stream.h">
       <Filter>io</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\dashboard.h">
-      <Filter>system</Filter>
+	<ClInclude Include="include\multiverso\util\async_buffer.h">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="src\util\hdfs_stream.cpp">
       <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\quantization_util.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
