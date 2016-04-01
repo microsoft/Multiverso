@@ -82,9 +82,6 @@
     <ClInclude Include="include\multiverso\util\timer.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\dashboard.h">
-      <Filter>system</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\net\allreduce_engine.h">
       <Filter>net</Filter>
     </ClInclude>
@@ -99,6 +96,9 @@
     </ClInclude>
     <ClInclude Include="include\multiverso\util\hdfs_stream.h">
       <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\dashboard.h">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

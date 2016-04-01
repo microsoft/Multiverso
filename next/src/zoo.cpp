@@ -54,8 +54,8 @@ void Zoo::Stop(bool finalize_net) {
   if(finalize_net) net_util_->Finalize();
 }
 
-int Zoo::rank() const { return net_util_->rank(); }
-int Zoo::size() const { return net_util_->size(); }
+int Zoo::rank() const { return NetInterface::Get()->rank(); }
+int Zoo::size() const { return NetInterface::Get()->size(); }
 
 void Zoo::SendTo(const std::string& name, MessagePtr& msg) {
   CHECK(zoo_.find(name) != zoo_.end());
