@@ -19,16 +19,12 @@ public:
 
     void SetUp() override{
         multiverso::MV_Init();
-
         worker_array = new multiverso::SmoothArrayWorker<float>(array_size);
         server_array = new multiverso::SmoothArrayServer<float>(array_size);
         p1 = new float[array_size]{};
         p2 = new float[array_size]{};
         
         multiverso::MV_Barrier();
-
-        //    shared_array->Add(delta.data(), 10, 0.5f);
-        //    shared_array->Get(data, 10);
     }
 
     void TearDown() override{
@@ -69,23 +65,26 @@ TEST_F(test_async_buffer, simple_test){
         [worker, size](float * buf) -> void {
         worker->Get(buf, size);
     });
-    auto ready_buffer_1 = async_buffer.get_ready_buffer();
-    ASSERT_EQ(p1, ready_buffer_1);
-    ASSERT_TRUE(elementwise_equal(ready_buffer_1, size, 0));
+
+    auto ready_buffer = async_buffer.get_ready_buffer();
+    ASSERT_EQ(p1, ready_buffer);
+    ASSERT_TRUE(elementwise_equal(ready_buffer, size, 0));
     std::this_thread::sleep_for(std::chrono::milliseconds(100));    // calculate updates
-    elementwise_set(ready_buffer_1, size, 1);
-    worker_array->Add(ready_buffer_1, size, 0);
+    elementwise_set(ready_buffer, size, 1);
+    worker_array->Add(ready_buffer, size, 0);
  
-    auto ready_buffer_2 = async_buffer.get_ready_buffer();
-    ASSERT_EQ(p2, ready_buffer_2);
-    ASSERT_TRUE(elementwise_equal(ready_buffer_2, size, 0));
+    ready_buffer = async_buffer.get_ready_buffer();
+    ASSERT_EQ(p2, ready_buffer);
+    ASSERT_TRUE(elementwise_equal(ready_buffer, size, 0));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));    // calculate updates
+    elementwise_set(ready_buffer, size, 1);
+    worker_array->Add(ready_buffer, size, 0);
 
-    ready_buffer_1 = async_buffer.get_ready_buffer();
-    ASSERT_EQ(p1, ready_buffer_1);
-    ASSERT_TRUE(elementwise_equal(ready_buffer_1, size, 1));
+    ready_buffer = async_buffer.get_ready_buffer();
+    ASSERT_EQ(p1, ready_buffer);
+    ASSERT_TRUE(elementwise_equal(ready_buffer, size, 1));
 
-    ready_buffer_2 = async_buffer.get_ready_buffer();
-    ASSERT_EQ(p2, ready_buffer_2);
-    ASSERT_TRUE(elementwise_equal(ready_buffer_1, size, 1));
-
+    ready_buffer = async_buffer.get_ready_buffer();
+    ASSERT_EQ(p2, ready_buffer);
+    ASSERT_TRUE(elementwise_equal(ready_buffer, size, 2));
 }
