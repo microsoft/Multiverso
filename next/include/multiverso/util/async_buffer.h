@@ -21,7 +21,7 @@ class ASyncBuffer{
     }
 
     // Returns the ready buffer.
-    // This function also automatically starts to prefetch data 
+    // This function also automatically starts to prefetch data
     // for the other buffer.
     BufferType& get_ready_buffer() {
         if (thread_ == nullptr) {
@@ -100,7 +100,7 @@ class ASyncBuffer{
     }
 };
 
-} // namespace multiverso
+}  // namespace multiverso
 
 
 #endif  // INCLUDE_MULTIVERSO_UTIL_ASYNC_BUFFER_H_
