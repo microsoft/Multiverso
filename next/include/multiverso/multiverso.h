@@ -2,7 +2,7 @@
 #define MULTIVERSO_INCLUDE_MULTIVERSO_H_
 
 #include "multiverso/table_interface.h"
-
+#include "multiverso/util/mv_flags.h"
 #include <string>
 
 
@@ -66,6 +66,37 @@ int  MV_NetBind(int rank, char* endpoint);
 // \return -1 FAIL
 int  MV_NetConnect(int* rank, char* endpoint[], int size);
 
+// define command line flags with bool value
+// use MV_FLAGS_##name to use this flag
+// \param name flag name
+// \default_value default value for this flag
+// \text description
+#define MV_DEFINE_bool(name, default_value, text) \
+  MV_DEFINE_VARIABLE(bool, name, default_value, text)
+
+// define command line flags with string value
+// use MV_FLAGS_##name to use this flag
+// \param name flag name
+// \default_value default value for this flag
+// \text description
+#define MV_DEFINE_string(name, default_value, text) \
+  MV_DEFINE_VARIABLE(std::string, #name, default_value, text)
+
+// define command line flags with int value
+// use MV_FLAGS_##name to use this flag
+// \param name flag name
+// \default_value default value for this flag
+// \text description
+#define MV_DEFINE_int(name, default_value, text) \
+  MV_DEFINE_VARIABLE(int, #name, default_value, text)
+
+// parse registered flags in command line, use -flag=value to change value
+// \param argc command line argument number
+// \param argc command line variables
+// \return unused argument number
+int MV_ParseCMDFlags(int argc, char*argv[]);
+
 } // namespace multiverso
 
 #endif // MULTIVERSO_INCLUDE_MULTIVERSO_H_
+

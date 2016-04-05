@@ -462,6 +462,9 @@ void TestComm(int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
+  
+  MV_ParseCMDFlags(argc, argv);
+
   if (argc == 2) { 
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);

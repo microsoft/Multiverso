@@ -100,6 +100,12 @@
     <ClInclude Include="include\multiverso\dashboard.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\updater.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\mv_flags.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -169,6 +175,9 @@
     </ClCompile>
     <ClCompile Include="src\dashboard.cpp">
       <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\mv_flags.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
