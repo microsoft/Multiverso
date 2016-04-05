@@ -85,9 +85,6 @@
     <ClInclude Include="include\multiverso\util\io.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\util\configure.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\util\hdfs_file_sys.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -103,7 +100,7 @@
     <ClInclude Include="include\multiverso\updater.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\util\mv_flags.h">
+    <ClInclude Include="include\multiverso\util\configure.h">
       <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
@@ -176,7 +173,7 @@
     <ClCompile Include="src\dashboard.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\mv_flags.cpp">
+    <ClCompile Include="src\util\configure.cpp">
       <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,7 +3,7 @@ include_directories(${THIRD_PARTY_INC})
 include_directories(${MPI_CXX_INCLUDE_PATH})
 
 ADD_DEFINITIONS(-DMULTIVERSO_USE_MPI)
-set(MULTIVERSO_SRC net.cpp actor.cpp communicator.cpp controller.cpp multiverso.cpp node.cpp server.cpp table.cpp util/log.cpp worker.cpp zoo.cpp util/io.cpp util/hdfs_file_sys.cpp util/local_file_sys.cpp dashboard.cpp timer.cpp)
+set(MULTIVERSO_SRC net.cpp actor.cpp communicator.cpp controller.cpp multiverso.cpp node.cpp server.cpp table.cpp util/log.cpp worker.cpp zoo.cpp util/io.cpp util/hdfs_file_sys.cpp util/local_file_sys.cpp dashboard.cpp timer.cpp util/configure.cpp)
 
 link_directories(${THIRD_PARTY_LIB})
 if(USE_HDFS)

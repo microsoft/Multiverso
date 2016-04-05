@@ -58,7 +58,4 @@ int MV_LoadTable(const std::string& table_file_path){
   return Zoo::Get()->LoadTable(table_file_path);
 }
 
-int MV_ParseCMDFlags(int argc, char*argv[]) {
-  return mvflags::ParseCMDFlags(&argc, argv);
-}
 }

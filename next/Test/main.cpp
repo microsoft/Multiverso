@@ -460,18 +460,8 @@ void TestComm(int argc, char* argv[]) {
 
 }
 
-MV_DEFINE_bool(use_a_bool, false, "for test")
-
 int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
-  
-  MV_ParseCMDFlags(argc, argv);
-  
-  MV_DECLARE_bool(use_a_bool);
-
-  if (MV_FLAGS_use_a_bool){
-
-  }
 
   if (argc == 2) { 
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
