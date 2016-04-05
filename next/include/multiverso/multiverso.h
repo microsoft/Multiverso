@@ -67,12 +67,16 @@ int  MV_NetBind(int rank, char* endpoint);
 int  MV_NetConnect(int* rank, char* endpoint[], int size);
 
 // define command line flags with bool value
-// use MV_FLAGS_##name to use this flag
+// use -flag=true or -flag=false to use it
 // \param name flag name
 // \default_value default value for this flag
 // \text description
 #define MV_DEFINE_bool(name, default_value, text) \
   MV_DEFINE_VARIABLE(bool, name, default_value, text)
+
+// use MV_FLAGS_##name to use this flag
+#define MV_DECLARE_bool(name) \
+  MV_DECLARE_VARIABLE(bool, name)
 
 // define command line flags with string value
 // use MV_FLAGS_##name to use this flag
@@ -82,6 +86,9 @@ int  MV_NetConnect(int* rank, char* endpoint[], int size);
 #define MV_DEFINE_string(name, default_value, text) \
   MV_DEFINE_VARIABLE(std::string, #name, default_value, text)
 
+#define MV_DECLARE_string(name) \
+  MV_DECLARE_VARIABLE(std::string, name)
+
 // define command line flags with int value
 // use MV_FLAGS_##name to use this flag
 // \param name flag name
@@ -89,6 +96,9 @@ int  MV_NetConnect(int* rank, char* endpoint[], int size);
 // \text description
 #define MV_DEFINE_int(name, default_value, text) \
   MV_DEFINE_VARIABLE(int, #name, default_value, text)
+
+#define MV_DECLARE_int(name) \
+  MV_DECLARE_VARIABLE(int, name)
 
 // parse registered flags in command line, use -flag=value to change value
 // \param argc command line argument number
