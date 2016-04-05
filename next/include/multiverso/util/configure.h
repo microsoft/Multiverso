@@ -56,7 +56,7 @@ public:
   }
 
   T& GetValue(const std::string& name){
-    return commands[key].value;
+    return commands[name].value;
   }
 
   //get flag register instance
@@ -92,7 +92,7 @@ public:
 
 // declare the variable as MV_FLAGS_##name
 #define DECLARE_CONFIGURE(type, name) \
-  type MV_CONFIG_##name = configures::g_configure_helper_##name.command->value;
+  const type& MV_CONFIG_##name = configures::g_configure_helper_##name.command->value;
 
 }//namespace configures
 
