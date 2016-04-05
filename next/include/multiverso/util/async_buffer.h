@@ -22,8 +22,8 @@ class ASyncBuffer{
 
     // Returns the ready buffer.
     // This function also automatically starts to prefetch data
-    // for the other buffer.
-    BufferType& get_ready_buffer() {
+    //  for the other buffer.
+    BufferType& Get() {
         if (thread_ == nullptr) {
             init();
         }
@@ -36,17 +36,21 @@ class ASyncBuffer{
 
     ~ASyncBuffer() {
         if (thread_ != nullptr) {
-            stop_prefetch();
+            Join();
         }
     }
 
     // Stops prefetch and releases related resource
-    void stop_prefetch() {
-        ready_waiter_.Wait();
-        current_task_ = STOP_THREAD;
-        new_task_waiter_.Notify();
-        thread_->join();
-        thread_ = nullptr;
+    void Join() {
+        if (thread_ != nullptr) {
+            ready_waiter_.Wait();
+            current_task_ = STOP_THREAD;
+            new_task_waiter_.Notify();
+            if (thread_->joinable()) {
+                thread_->join();
+            }
+            thread_ = nullptr;
+        }
     }
 
  protected:

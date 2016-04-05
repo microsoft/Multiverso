@@ -11,7 +11,6 @@ class test_async_buffer : public ::testing::Test {
     }
 
     void SetUp() override {
-        multiverso::MV_Init();
         worker_array = new multiverso::SmoothArrayWorker<float>(array_size);
         server_array = new multiverso::SmoothArrayServer<float>(array_size);
         p0 = new float[array_size]{};
@@ -22,11 +21,8 @@ class test_async_buffer : public ::testing::Test {
     void TearDown() override {
         delete[]p1;
         delete[]p0;
-        // TODO(junli): confirm: Shall we need to delete array before shutdown?
-        // delete server_array;
-        // delete worder_array;
-        multiverso::MV_Barrier();
-        multiverso::MV_ShutDown();
+        delete server_array;
+        delete worker_array;
     }
 
     static bool elementwise_equal(float * array, size_t size, float target) {
@@ -61,7 +57,7 @@ TEST_F(test_async_buffer, get_async_buffer_from_server) {
     });
 
     // get ready buffer and submit an update A
-    auto ready_buffer = async_buffer.get_ready_buffer();
+    auto ready_buffer = async_buffer.Get();
     ASSERT_EQ(p0, ready_buffer);
     ASSERT_TRUE(elementwise_equal(ready_buffer, size, 0));
     std::this_thread::sleep_for(std::chrono::milliseconds(100));    // calculate updates A
@@ -69,7 +65,7 @@ TEST_F(test_async_buffer, get_async_buffer_from_server) {
     worker_array->Add(ready_buffer, size, 0);                       // submit update A
 
     // get ready buffer and submit an update B, the buffer content should NOT include changes from update A
-    ready_buffer = async_buffer.get_ready_buffer();
+    ready_buffer = async_buffer.Get();
     ASSERT_EQ(p1, ready_buffer);
     ASSERT_TRUE(elementwise_equal(ready_buffer, size, 0));
     std::this_thread::sleep_for(std::chrono::milliseconds(100));    // calculate update B
@@ -77,23 +73,23 @@ TEST_F(test_async_buffer, get_async_buffer_from_server) {
     worker_array->Add(ready_buffer, size, 0);                       // submit update B
 
     // get ready buffer, the buffer content should include changes from update A
-    ready_buffer = async_buffer.get_ready_buffer();
+    ready_buffer = async_buffer.Get();
     ASSERT_EQ(p0, ready_buffer);
     ASSERT_TRUE(elementwise_equal(ready_buffer, size, 1));
 
     // get ready buffer, the buffer content should include changes from update A and update B
-    ready_buffer = async_buffer.get_ready_buffer();
+    ready_buffer = async_buffer.Get();
     ASSERT_EQ(p1, ready_buffer);
     ASSERT_TRUE(elementwise_equal(ready_buffer, size, 2));
 
     // stop prefetch and release related resource
-    async_buffer.stop_prefetch();
+    async_buffer.Join();
 
     // restart prefetch after stopping
-    ready_buffer = async_buffer.get_ready_buffer();
+    ready_buffer = async_buffer.Get();
     ASSERT_EQ(p0, ready_buffer);
     ASSERT_TRUE(elementwise_equal(ready_buffer, size, 2));
 
     // stop prefetch and release related resource
-    async_buffer.stop_prefetch();
+    async_buffer.Join();
 }
