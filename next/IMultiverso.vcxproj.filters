@@ -97,8 +97,14 @@
     <ClInclude Include="include\multiverso\util\hdfs_stream.h">
       <Filter>io</Filter>
     </ClInclude>
-	<ClInclude Include="include\multiverso\util\async_buffer.h">
+    <ClInclude Include="include\multiverso\util\async_buffer.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\table\smooth_matrix_table.h">
+      <Filter>table</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\table\historic_matrix_table.h">
+      <Filter>table</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

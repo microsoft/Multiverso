@@ -13,7 +13,7 @@ namespace multiverso {
 template <typename T>
 class MatrixWorkerTable : public WorkerTable {
 public:
-  MatrixWorkerTable(int num_row, int num_col) :
+	explicit MatrixWorkerTable(int num_row, int num_col) :
     WorkerTable(), num_row_(num_row), num_col_(num_col) {
     row_size_ = num_col * sizeof(T);
     get_reply_count_ = 0;
@@ -202,15 +202,15 @@ public:
     server_id_ = MV_ServerId();
     CHECK(server_id_ != -1);
 
-    int size = num_row / MV_NumServers();
-    row_offset_ = size * server_id_; // Zoo::Get()->rank();
+	num_row_ = num_row / MV_NumServers();
+	row_offset_ = num_row_ * server_id_; // Zoo::Get()->rank();
     if (server_id_ == MV_NumServers() - 1){
-      size = num_row - row_offset_;
+	  num_row_ = num_row - row_offset_;
     }
-    storage_.resize(size * num_col);
+	storage_.resize(num_row_ * num_col_);
 
     Log::Debug("[Init] Server =  %d, type = matrixTable, size =  [ %d x %d ], total =  [ %d x %d ].\n",
-      server_id_, size, num_col, num_row, num_col);
+		server_id_, num_row_, num_col_, num_row, num_col_);
   }
 
   void ProcessAdd(const std::vector<Blob>& data) override {
@@ -284,6 +284,7 @@ public:
 
 private:
   int server_id_;
+  int num_row_;
   int num_col_;
   int row_offset_;
   std::vector<T> storage_;
