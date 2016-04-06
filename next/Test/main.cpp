@@ -454,6 +454,7 @@ void TestComm(int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
+
   if (argc == 1){
       ::testing::InitGoogleTest(&argc, argv);
       return RUN_ALL_TESTS();

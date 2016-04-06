@@ -9,6 +9,7 @@
 #include "multiverso/server.h"
 #include "multiverso/controller.h"
 #include "multiverso/dashboard.h"
+#include "multiverso/util/configure.h"
 
 namespace multiverso {
 
@@ -19,6 +20,9 @@ Zoo::~Zoo() {}
 void Zoo::Start(int* argc, char** argv, int role) {
   Log::Debug("Zoo started\n");
   CHECK(role >= 0 && role <= 3);
+  
+  ParseCMDFlags(argc, argv);
+  
   // Init the network
   net_util_ = NetInterface::Get();
   net_util_->Init(argc, argv);

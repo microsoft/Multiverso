@@ -1,111 +1,99 @@
-#ifndef MULTIVERSO_CONFIGURE_H_
-#define MULTIVERSO_CONFIGURE_H_
-
-/*
- * brief Assumed to load the configuration
- */
-
-#include "multiverso/util/io.h"
+#ifndef MULTIVERSO_UTIL_CONFIGURE_H_
+#define MULTIVERSO_UTIL_CONFIGURE_H_
 
 #include <string>
-#include <vector>
-#include <map>
-#include <functional>
+#include <unordered_map>
 
-namespace multiverso {
+namespace multiverso{
 
-#ifndef MULTIVERSO_INCLUDE_MULTIVERSO_H_
-enum Role {
-  Null = 0,
-  Worker = 1,
-  Server = 2,
-  All = 3
+namespace configures{
+
+template<typename T>
+struct Command {
+  T value;
+  std::string description;
 };
-#endif
 
-class Configure {
+//used to register and keep flags
+template<typename T>
+class FlagRegister {
 public:
-  using Handler = std::function<void(const std::string&)>;
-
-  Configure(const std::string& configure_file) {
-
+  Command<T>* RegisterFlag(const std::string& name, T& default_value, const std::string& text){
+    commands[name] = { default_value, text };
+    return &commands[name];
   }
 
-  Configure(const char* configure_file): restart_(false) {
-    RegisterHandler("LogLevel", std::bind(
-      &Configure::ProcessLogLevel, this, std::placeholders::_1));
-    RegisterHandler("NumNode", std::bind(
-      &Configure::ProcessNodeNumber, this, std::placeholders::_1));
-    RegisterHandler("Role", std::bind(
-      &Configure::ProcessRole, this, std::placeholders::_1));
-    RegisterHandler("Restart", std::bind(
-      &Configure::ProcessRestart, this, std::placeholders::_1));
-
-    //a function as an interface for user to register their own configuration
-
-    TextReader text_reader(URI(configure_file), 1024);
-    std::string line, key, value;
-    int pos = -1;
-    while ((text_reader.GetLine(line)) > 0){
-      pos = line.find("=");
-      CHECK(pos != -1);
-      key = line.substr(0, pos);
-      value = line.substr(pos, line.length - pos);
-      if (handlers_.find(key) != handlers_.end()) {
-        handlers_[key](value);
-      }
-      else configure_[key] = value;
+  //set flag value if in the defined list
+  bool SetFlagIfFound(const std::string& key, const T& value){
+    if (commands.find(key) != commands.end()) {
+      commands[key].value = value;
+      return true;
     }
-
-    CHECK(roles_.size() > 0);
+    return false;
   }
 
-  void RegisterHandler(const std::string& key, const Handler & task) {
-    handlers_.insert({ key, task });
+  T& GetValue(const std::string& name){
+    return commands[name].value;
   }
 
-  std::string configure(const std::string& key) {return configure_[key];}
-  LogLevel log_level() const { return log_level_;  }
-  Role role(const int rank) const { return roles_[rank]; }
+  //get flag register instance
+  static FlagRegister* Get() {
+    static FlagRegister register_;
+    return &register_;
+  }
 private:
-  void ProcessRestart(const std::string &value) {
-    if (value == "TRUE") restart_ = true;
-    else if (value == "FALSE") restart_ = false;
-    else CHECK(false);
-  }
-
-  void ProcessLogLevel(const std::string &value) {
-    if (value == "Debug") log_level_ = LogLevel::Debug;
-    else if (value == "Info") log_level_ = LogLevel::Info;
-    else if (value == "Fatal") log_level_ = LogLevel::Fatal;
-    else if (value == "Error") log_level_ = LogLevel::Error;
-    else CHECK(false);
-  }
-
-  void ProcessRole(const std::string &value) {
-    int pos = value.find(' ');
-    CHECK(pos >= 0);
-    int rank = atoi(value.substr(0, pos).c_str());
-    CHECK(rank >= 0);
-    std::string role = value.substr(pos, value.length - pos);
-    if (role == "All")  return;
-    if (role == "Null") roles_[rank] = Role::Null;
-    else if (role == "Server") roles_[rank] = Role::Server;
-    else if (role == "Worker") roles_[rank] = Role::Worker;
-    else CHECK(false);
-  }
-
-  void ProcessNodeNumber(const std::string&value) {
-    int num = atoi(value.c_str());
-    roles_ = std::vector<Role>(num, Role::All);
-  }
-
-  bool restart_;
-  LogLevel log_level_;
-  std::vector<Role> roles_;
-  std::map<std::string, Handler> handlers_;
-  std::map<std::string, std::string> configure_;
+  std::unordered_map<std::string, Command<T>> commands;
+private:
+  FlagRegister(){}
+  FlagRegister(FlagRegister<T>&) = delete;
 };
 
-}
+template<typename T>
+class FlagRegisterHelper{
+public:
+  FlagRegisterHelper(const std::string name, T val, const std::string &text){
+    command = FlagRegister<T>::Get()->RegisterFlag(name, val, text);
+  }
+  Command<T> *command;
+};
+
+// register a flag, use MV_CONFIG_##name to use
+// \param type variable type
+// \param name variable name
+// \param default_vale
+// \text description
+#define DEFINE_CONFIGURE(type, name, default_value, text)                           \
+  namespace configures {                                                            \
+    FlagRegisterHelper<type> g_configure_helper_##name(#name, default_value, text); \
+  }                                                                                 \
+  const type& MV_CONFIG_##name = configures::g_configure_helper_##name.command->value;
+
+// declare the variable as MV_FLAGS_##name
+#define DECLARE_CONFIGURE(type, name) \
+  const type& MV_CONFIG_##name = configures::g_configure_helper_##name.command->value;
+
+}//namespace configures
+
+void ParseCMDFlags(int *argc, char* argv[]);
+
+#define MV_DEFINE_int(name, default_value, text) \
+  DEFINE_CONFIGURE(int, name, default_value, text)
+
+#define MV_DECLARE_int(name)  \
+  DECLARE_CONFIGURE(int, name)
+
+#define MV_DEFINE_string(name, default_value, text) \
+  DEFINE_CONFIGURE(std::string, name, default_value, text)
+
+#define MV_DECLARE_string(name)  \
+  DECLARE_CONFIGURE(std::string, name)
+
+#define MV_DEFINE_bool(name, default_value, text) \
+  DEFINE_CONFIGURE(bool, name, default_value, text)
+
+#define MV_DECLARE_bool(name)  \
+  DECLARE_CONFIGURE(bool, name)
+
+}//namespace multiverso
+
 #endif

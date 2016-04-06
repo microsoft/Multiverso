@@ -100,6 +100,18 @@
     <ClInclude Include="include\multiverso\util\async_buffer.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\util\configure.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\asgd_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\smooth_gradient_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -166,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="src\dashboard.cpp">
       <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\configure.cpp">
+      <Filter>util</Filter>
     </ClCompile>
     <ClCompile Include="include\multiverso\net\allreduce_engine.cpp">
       <Filter>net</Filter>

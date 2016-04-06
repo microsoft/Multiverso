@@ -19,15 +19,6 @@
 #include "multiverso/util/log.h"
 
 namespace multiverso {
-/*!
-* \brief the reference positon for seeking
-* the position point of Stream
-*/
-enum class SeekOrigin : int {
-  kBegin = 0,
-  kCurrent = 1,
-  kEnd = 2
-};
 
 // only support file and hdfs
 struct URI {
