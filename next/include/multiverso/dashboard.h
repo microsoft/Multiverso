@@ -57,17 +57,14 @@ private:
   Timer timer_;
 };
 
-// NOTE(feiga): user shouldn't call this, used in MONITOR_BEGIN as a local var
-//              note that static variable under different context may differs
-//              please use either only in global scope or only in local scope
 #define REGISTER_MONITOR(name)           \
   static Monitor g_##name##_monitor(#name);
 
 // Guard with MONITOR macro in the code to monitor it's excuation
 // Usage:
-// MONITOR_BEGIN(your_code)
+// MONITOR_BEGIN(your_code_short_description)
 // your code
-// MONITOR_END(your_code)
+// MONITOR_END(your_code_short_description)
 #define MONITOR_BEGIN(name)              \
   REGISTER_MONITOR(name)                 \
   g_##name##_monitor.Begin();

@@ -127,6 +127,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MULTIVERSO_USE_ZMQ;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OpenMPSupport>false</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,6 +152,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MULTIVERSO_USE_MPI;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -175,7 +177,9 @@
     <ClInclude Include="include\multiverso\message.h" />
     <ClInclude Include="include\multiverso\multiverso.h" />
     <ClInclude Include="include\multiverso\net.h" />
+    <ClInclude Include="include\multiverso\net\allreduce_engine.h" />
     <ClInclude Include="include\multiverso\net\mpi_net.h" />
+    <ClInclude Include="include\multiverso\net\net_allreduce.h" />
     <ClInclude Include="include\multiverso\net\zmq_net.h" />
     <ClInclude Include="include\multiverso\node.h" />
     <ClInclude Include="include\multiverso\server.h" />
@@ -185,13 +189,14 @@
     <ClInclude Include="include\multiverso\table\matrix_table.h" />
     <ClInclude Include="include\multiverso\table\smooth_array_table.h" />
     <ClInclude Include="include\multiverso\table_interface.h" />
-    <ClInclude Include="include\multiverso\updater.h" />
+    <ClInclude Include="include\multiverso\updater\asgd_updater.h" />
+    <ClInclude Include="include\multiverso\updater\smooth_gradient_updater.h" />
+    <ClInclude Include="include\multiverso\updater\updater.h" />
     <ClInclude Include="include\multiverso\util\configure.h" />
-    <ClInclude Include="include\multiverso\util\double_buffer.h" />
-    <ClInclude Include="include\multiverso\util\hdfs.h" />
-    <ClInclude Include="include\multiverso\util\hdfs_file_sys.h" />
+    <ClInclude Include="include\multiverso\util\async_buffer.h" />
+    <ClInclude Include="include\multiverso\util\hdfs_stream.h" />
     <ClInclude Include="include\multiverso\util\io.h" />
-    <ClInclude Include="include\multiverso\util\local_file_sys.h" />
+    <ClInclude Include="include\multiverso\util\local_stream.h" />
     <ClInclude Include="include\multiverso\util\log.h" />
     <ClInclude Include="include\multiverso\util\mt_queue.h" />
     <ClInclude Include="include\multiverso\util\net_util.h" />
@@ -200,9 +205,10 @@
     <ClInclude Include="include\multiverso\util\waiter.h" />
     <ClInclude Include="include\multiverso\worker.h" />
     <ClInclude Include="include\multiverso\zoo.h" />
-    <ClInclude Include="table_factory.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\multiverso\net\allreduce_engine.cpp" />
+    <ClCompile Include="include\multiverso\net\allreduce_topo.cpp" />
     <ClCompile Include="src\actor.cpp" />
     <ClCompile Include="src\communicator.cpp" />
     <ClCompile Include="src\controller.cpp" />
@@ -212,13 +218,14 @@
     <ClCompile Include="src\node.cpp" />
     <ClCompile Include="src\server.cpp" />
     <ClCompile Include="src\table.cpp" />
-    <ClCompile Include="src\util\hdfs_file_sys.cpp" />
+    <ClCompile Include="src\util\hdfs_stream.cpp" />
     <ClCompile Include="src\util\io.cpp" />
-    <ClCompile Include="src\util\local_file_sys.cpp" />
+    <ClCompile Include="src\util\local_stream.cpp" />
     <ClCompile Include="src\timer.cpp" />
     <ClCompile Include="src\util\log.cpp" />
     <ClCompile Include="src\util\configure.cpp" />
     <ClCompile Include="src\util\net_util.cpp" />
+    <ClCompile Include="src\util\quantization_util.cpp" />
     <ClCompile Include="src\worker.cpp" />
     <ClCompile Include="src\zoo.cpp" />
   </ItemGroup>

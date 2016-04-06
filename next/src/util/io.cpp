@@ -1,14 +1,12 @@
 #include "multiverso/util/io.h"
-#include "multiverso/util/hdfs_file_sys.h"
-#include "multiverso/util/local_file_sys.h"
+#include "multiverso/util/hdfs_stream.h"
+#include "multiverso/util/local_stream.h"
 
 
-namespace multiverso
-{
+namespace multiverso {
 
 Stream* StreamFactory::GetStream(const URI& uri,
-  FileOpenMode mode)
-{
+  FileOpenMode mode) {
   std::string addr = uri.scheme + "://" + uri.host;
   if (instances_.find(addr) == instances_.end()) {
     if (uri.scheme == std::string("file"))
@@ -24,8 +22,7 @@ Stream* StreamFactory::GetStream(const URI& uri,
 
 std::map<std::string, std::shared_ptr<StreamFactory> > StreamFactory::instances_;
 
-TextReader::TextReader(const URI& uri, size_t buf_size)
-{
+TextReader::TextReader(const URI& uri, size_t buf_size) {
 	stream_ = StreamFactory::GetStream(uri, FileOpenMode::Read);
 	buf_size_ = buf_size;
   pos_ = length_ = 0;
@@ -33,48 +30,31 @@ TextReader::TextReader(const URI& uri, size_t buf_size)
   assert(buf_ != nullptr);
 }
 
-size_t TextReader::GetLine(std::string &line)
-{
-	//Log::Debug("Begin TextReader::GetLine\n");
+size_t TextReader::GetLine(std::string &line) {
 	line.clear();
 	bool isEnd = false;
-	while (true)
-	{
-		//Log::Debug("pos_=%d, length_=%d\n", pos_, length_);
-		while(pos_ < length_)
-		{
+	while (true) {
+		while(pos_ < length_) {
 			char & c = buf_[pos_++];
-			if (c == '\n')
-			{
+			if (c == '\n') {
 				isEnd = true;
 				break;
-			}
-			else
-			{
+			} else {
 				line += c;
 			}
 		}
-
-		//Log::Debug("pos_=%d, length_=%d, isEnd=%d\n", pos_, length_, isEnd);
-		// has read '\n' or the end of Stream
-		if (isEnd || LoadBuffer() == 0)
-		{
-			break;
-		}
+		if (isEnd || LoadBuffer() == 0)  break; 
 	}
-
 	return line.size();
 }
 
-size_t TextReader::LoadBuffer()
-{
+size_t TextReader::LoadBuffer() {
 	assert (pos_ == length_);
 	pos_ = length_ = 0;
 	return length_ = stream_->Read(buf_, buf_size_ - 1);
 }
 
-TextReader::~TextReader()
-{
+TextReader::~TextReader() {
   delete stream_;
 	delete [] buf_;
 }

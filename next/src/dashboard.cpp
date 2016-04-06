@@ -25,7 +25,7 @@ std::string Dashboard::Watch(const std::string& name) {
 
 std::string Monitor::info_string() const {
   std::ostringstream oss;
-  oss << "Monitor (" << name_ << ")] " 
+  oss << "[" << name_ << "] " 
       << " count = " << count_
       << " elapse = " << elapse_ << "ms" 
       << " average = " << average() << "ms";

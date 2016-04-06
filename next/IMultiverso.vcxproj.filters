@@ -8,10 +8,10 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\array_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\kv_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\actor.h">
       <Filter>system</Filter>
@@ -52,9 +52,6 @@
     <ClInclude Include="include\multiverso\util\waiter.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\util\double_buffer.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\util\log.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -65,43 +62,55 @@
       <Filter>net</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\smooth_array_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\adam_array_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\util\quantization_util.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\matrix_table.h">
-      <Filter>include\table</Filter>
+      <Filter>table</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\util\hdfs.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\multiverso\util\local_file_sys.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\multiverso\util\io.h">
-      <Filter>util</Filter>
-    </ClInclude>
-    <ClInclude Include="include\multiverso\util\hdfs_file_sys.h">
+    <ClInclude Include="include\multiverso\util\configure.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\util\timer.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="table_factory.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\dashboard.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\updater.h">
-      <Filter>include</Filter>
+    <ClInclude Include="include\multiverso\net\allreduce_engine.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\net\net_allreduce.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\io.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\local_stream.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\hdfs_stream.h">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\util\async_buffer.h">
+      <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\util\configure.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\asgd_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\smooth_gradient_updater.h">
+      <Filter>updater</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -114,11 +123,17 @@
     <Filter Include="util">
       <UniqueIdentifier>{4e63d643-6e66-4f5c-832b-232b5a5ad239}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\table">
-      <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
-    </Filter>
     <Filter Include="net">
       <UniqueIdentifier>{c720657f-d601-4776-956c-b2f892a1402c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{42ca0285-0d86-4f90-9e14-9c668890c025}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="table">
+      <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="updater">
+      <UniqueIdentifier>{5f38ba48-a652-4ec4-9540-8d44de3352bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -158,15 +173,6 @@
     <ClCompile Include="src\net.cpp">
       <Filter>system</Filter>
     </ClCompile>
-    <ClCompile Include="src\util\io.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\local_file_sys.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util\hdfs_file_sys.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="src\timer.cpp">
       <Filter>util</Filter>
     </ClCompile>
@@ -174,6 +180,24 @@
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="src\util\configure.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="include\multiverso\net\allreduce_engine.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="include\multiverso\net\allreduce_topo.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\io.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\local_stream.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\hdfs_stream.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\quantization_util.cpp">
       <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>

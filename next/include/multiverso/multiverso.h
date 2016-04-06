@@ -1,19 +1,15 @@
 #ifndef MULTIVERSO_INCLUDE_MULTIVERSO_H_
 #define MULTIVERSO_INCLUDE_MULTIVERSO_H_
 
-#include "multiverso/table_interface.h"
-
 #include <string>
 
 namespace multiverso {
 
 void MV_Init(int* argc = nullptr, 
              char* argv[] = nullptr, 
-             int role = 3,
-             bool restart = false,
-             int store_each_k = 5);
+             int role = 3);
 
-void MV_Barrier(int iter = -1);
+void MV_Barrier();
 
 void MV_ShutDown(bool finalize_mpi = true);
 
@@ -29,21 +25,22 @@ int  MV_ServerId();
 int  MV_WorkerIdToRank(int worker_id);
 int  MV_ServerIdToRank(int server_id);
 
-//new implementation, but template function should be defined in the same file with declaration
-/*
- * param table_type the type string of table, such as "matrix","array"
- * param table_args the parameters of table
- * dump_file_path not used now, to be discussed
- */ 
-template<typename Key, typename Val=void>
-WorkerTable* MV_CreateTable(const std::string& table_type, const std::vector<void*>& table_args, 
-  const std::string& dump_file_path = "") {
-  return TableFactory::CreateTable<Key, Val>(table_type, table_args, dump_file_path);
-}
+////new implementation, but template function should be defined in the same file with declaration
+///*
+// * param table_type the type string of table, such as "matrix","array"
+// * param table_args the parameters of table
+// * dump_file_path not used now, to be discussed
+// */ 
+//template<typename Key, typename Val=void>
+//WorkerTable* MV_CreateTable(const std::string& table_type, const std::vector<void*>& table_args, 
+//  const std::string& dump_file_path = "") {
+//  return TableFactory::CreateTable<Key, Val>(table_type, table_args, dump_file_path);
+//}
 
-int MV_LoadTable(const std::string& dump_file_path);
+// int MV_LoadTable(const std::string& dump_file_path);
 
 // Show the dashboard information about the monitored excuation time
+// used for profile
 void MV_Dashboard();
 
 // --- Net API -------------------------------------------------------------- //

@@ -16,7 +16,9 @@ public:
   double elapse();
 
 private:
-  using TimePoint = std::chrono::system_clock::time_point;
+  using Clock = std::chrono::high_resolution_clock;
+  using TimePoint = Clock::time_point;
+ 
   TimePoint start_point_;
 };
 

@@ -6,9 +6,30 @@
 #include <map>
 
 #include "multiverso/util/log.h"
+#include "multiverso/table/array_table.h"
 
 namespace multiverso {
 
+class WorkerTable;
+
+class TableFactory {
+public:
+  virtual WorkerTable* CreateTable(const std::string& args) = 0;
+  static TableFactory* GetFactory(const std::string& type);
+};
+
+
+void MV_CreateTable(const std::string& type, const std::string& args, void** out) {
+  TableFactory* tf = TableFactory::GetFactory(type);
+  *out = static_cast<void*>(tf->CreateTable(args));
+}
+
+class ArrayTableFactory : public TableFactory {
+public:
+  WorkerTable* CreateTable(const std::string& args) override {
+    // new ArrayServer()
+  }
+}
 // TODO(feiga): Refine
 
 // TODO(feiga): provide better table creator method

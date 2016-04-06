@@ -1,33 +1,10 @@
-#ifndef MULTIVERSO_CMD_FLAGS_H_
-#define MULTIVERSO_CMD_FLAGS_H_
+#ifndef MULTIVERSO_UTIL_CONFIGURE_H_
+#define MULTIVERSO_UTIL_CONFIGURE_H_
 
 #include <string>
 #include <unordered_map>
-#include <functional>
 
 namespace multiverso{
-
-class Configure {
-public:
-  using Handler = std::function<void(const std::string&, const std::string&)>;
-
-  static void ConfigureFile(const std::string &config_file);
-  static int ParseCMDFlags(int*argc, char*argv[]);
-  static void RegisterHandler(const std::string& key, const Handler & task) {
-    configure_.handlers_.insert({ key, task });
-  }
-
-private:
-  Configure();
-  Configure(Configure&) = delete;
-  bool ProcessLine(const std::string& line, int start_pos = 0);
-
-  static void ProcessLogLevel(const std::string &key, const std::string &value);
-  static void ProcessRole(const std::string &key, const std::string &value);
-private:
-  static Configure configure_;
-  std::unordered_map<std::string, Handler> handlers_;
-};
 
 namespace configures{
 
@@ -80,21 +57,42 @@ public:
   Command<T> *command;
 };
 
-// register a flag
+// register a flag, use MV_CONFIG_##name to use
 // \param type variable type
 // \param name variable name
 // \param default_vale
 // \text description
-#define DEFINE_CONFIGURE(type, name, default_value, text)                        \
+#define DEFINE_CONFIGURE(type, name, default_value, text)                           \
   namespace configures {                                                            \
     FlagRegisterHelper<type> g_configure_helper_##name(#name, default_value, text); \
-  }
+  }                                                                                 \
+  const type& MV_CONFIG_##name = configures::g_configure_helper_##name.command->value;
 
 // declare the variable as MV_FLAGS_##name
 #define DECLARE_CONFIGURE(type, name) \
   const type& MV_CONFIG_##name = configures::g_configure_helper_##name.command->value;
 
 }//namespace configures
+
+void ParseCMDFlags(int *argc, char* argv[]);
+
+#define MV_DEFINE_int(name, default_value, text) \
+  DEFINE_CONFIGURE(int, name, default_value, text)
+
+#define MV_DECLARE_int(name)  \
+  DECLARE_CONFIGURE(int, name)
+
+#define MV_DEFINE_string(name, default_value, text) \
+  DEFINE_CONFIGURE(std::string, name, default_value, text)
+
+#define MV_DECLARE_string(name)  \
+  DECLARE_CONFIGURE(std::string, name)
+
+#define MV_DEFINE_bool(name, default_value, text) \
+  DEFINE_CONFIGURE(bool, name, default_value, text)
+
+#define MV_DECLARE_bool(name)  \
+  DECLARE_CONFIGURE(bool, name)
 
 }//namespace multiverso
 

@@ -4,7 +4,6 @@ sudo: required
 #or use except to make the blacklist
 branches:
   only: 
-     - liming
      - dev
 
 #specify recipients that will be notified about build results

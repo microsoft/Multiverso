@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 PROJECT(MULTIVERSO)
 
 OPTION(USE_HDFS "won't use hdfs on default, set ON to enable" OFF)
+OPTION(TEST "Build all tests." ON)
+
 find_package(MPI REQUIRED)
 if(UNIX)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
@@ -15,6 +17,7 @@ if(USE_HDFS)
 endif(USE_HDFS)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
+# [TODO] change the THIRD_PARTY to an option
 SET(THIRD_PARTY /usr/local)
 #SET(THIRD_PARTY ${PROJECT_SOURCE_DIR}/third_party)
 SET(THIRD_PARTY_INC ${THIRD_PARTY}/include)

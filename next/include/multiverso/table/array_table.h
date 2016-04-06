@@ -104,7 +104,10 @@ public:
     Blob keys = data[0], values = data[1];
     CHECK(keys.size<int>() == 1 && keys.As<int>() == -1); // Always request whole table
     CHECK(values.size() == size_ * sizeof(T));
-    for (int i = 0; i < size_; ++i) storage_[i] += values.As<T>(i);
+    T* pvalues = reinterpret_cast<T*>(values.data());
+
+    #pragma omp parallel for schedule(static) num_threads(4)
+    for (int i = 0; i < size_; ++i) storage_[i] += pvalues[i]; 
 #endif
   }
 

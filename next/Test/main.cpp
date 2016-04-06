@@ -14,9 +14,9 @@
 #include <multiverso/table/smooth_array_table.h>
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
-#include <multiverso/table/matrix_table.h>
-#include <MPIWrapper.h>
+#include <multiverso/table/matrix_table.h>             
 
+#include <gtest/gtest.h>
 
 using namespace multiverso;
 
@@ -79,7 +79,7 @@ void TestArray(int argc, char* argv[]) {
   Log::Info("Test Array \n");
 
   MV_Init(&argc, argv);
-  
+
   ArrayWorker<float>* shared_array = new ArrayWorker<float>(1000000);
   ArrayServer<float>* server_array = new ArrayServer<float>(1000000);
 
@@ -87,49 +87,30 @@ void TestArray(int argc, char* argv[]) {
   Log::Info("Create tables OK\n");
 
   int iter = 1000;
-  auto add_start = std::chrono::high_resolution_clock::now();
-  auto add_end = std::chrono::high_resolution_clock::now();
-  auto get_start = std::chrono::high_resolution_clock::now();
-  auto get_end = std::chrono::high_resolution_clock::now();
-  double add_total = 0;
-  double get_total = 0;
-  add_total += std::chrono::duration<double, std::milli>(add_start - add_end).count();
-  get_total += std::chrono::duration<double, std::milli>(get_start - get_end).count();
+
   if (argc == 3) iter = atoi(argv[2]);
 
   for (int i = 0; i < iter; ++i) {
-  // std::vector<float>& vec = shared_array->raw();
+    // std::vector<float>& vec = shared_array->raw();
 
-  // shared_array->Get();
+    // shared_array->Get();
     float* data = new float[1000000];
 
     std::vector<float> delta(1000000);
-    for (int i = 0; i < 1000000; ++i) 
+    for (int i = 0; i < 1000000; ++i)
       delta[i] = static_cast<float>(i);
 
-    add_start = std::chrono::high_resolution_clock::now();
     shared_array->Add(delta.data(), 1000000);
-    add_end = std::chrono::high_resolution_clock::now();
 
 
-	Log::Info("Rank %d Add OK, using %llf ms.\n", MV_Rank(), std::chrono::duration<double, std::milli>(add_start - add_end).count());
-    add_total += std::chrono::duration<double, std::milli>(add_start - add_end).count();
-
-    get_start = std::chrono::high_resolution_clock::now();
     shared_array->Get(data, 1000000);
-    get_end = std::chrono::high_resolution_clock::now();
 
-
-	Log::Info("Rank %d GET OK, using %llf ms.\n", MV_Rank(), std::chrono::duration<double, std::milli>(get_start - get_end).count());
-    for (int i = 0; i < 10; ++i) 
+    for (int i = 0; i < 10; ++i)
       std::cout << data[i] << " "; std::cout << std::endl;
-    get_total += std::chrono::duration<double, std::milli>(get_start - get_end).count();
     MV_Barrier();
 
     if (iter % 100 == 0) MV_Dashboard();
-
   }
-  Log::Info("Rank %d GET using %llf ms, ADD using %llf ms.\n", MV_Rank(), get_total, add_total);
   MV_ShutDown();
 }
 
@@ -173,7 +154,6 @@ void TestMomentum(int argc, char* argv[]) {
 #define ARRAY_SIZE 4683776
 void TestMultipleThread(int argc, char* argv[])
 {
-	Microsoft::MSR::CNTK::MPIWrapper *g_mpi = new Microsoft::MSR::CNTK::MPIWrapper();
 	Log::Info("Test Multiple threads \n");
 	std::mt19937_64 eng{ std::random_device{}() };  
 	std::uniform_int_distribution<> dist{ 5, 10000 };
@@ -331,9 +311,6 @@ void TestNoNet(int argc, char* argv[]) {
     }
     m_prefetchThread = new std::thread([&](){
 
-      //std::mt19937_64 eng{ std::random_device{}() };  
-      //std::uniform_int_distribution<> dist{ 50, 500 };
-      //std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
       shared_array->Add(delta.data(), ARRAY_SIZE);
       shared_array->Get(delta.data(), ARRAY_SIZE);
       Log::Info("Rank %d Get OK\n", MV_Rank());
@@ -356,66 +333,81 @@ void TestMatrix(int argc, char* argv[]){
 	int num_row = 11, num_col = 10;
 	int size = num_row * num_col;
 
-  MatrixWorkerTable<int>* worker_table = 
-    static_cast<MatrixWorkerTable<int>*>(MV_CreateTable<int>("matrix", { &num_row, &num_col }));  //new implementation
-    //static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable()); //older one
+  // MatrixWorkerTable<int>* worker_table = 
+    // static_cast<MatrixWorkerTable<int>*>(MV_CreateTable<int>("matrix", { &num_row, &num_col }));  //new implementation
+  //  static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable()); //older one
 
-  if (worker_table == nullptr){ //should have more if statement to avoid nullptr in using worker_table
-    Log::Debug("rank %d has no worker\n", MV_Rank());
-  }
+  //if (worker_table == nullptr){ //should have more if statement to avoid nullptr in using worker_table
+  //  Log::Debug("rank %d has no worker\n", MV_Rank());
+  // }
 
-	//MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-	//MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
-
+	MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+	MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+	std::thread* m_prefetchThread = nullptr;
 	MV_Barrier();
 
-	std::vector<int> v = { 0, 1, 5 ,10};
+	while (true)
+	{
+		if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
+		{
+			m_prefetchThread->join();
+			delete m_prefetchThread;
+			m_prefetchThread = nullptr;
+		}
+		std::vector<int> v = { 0, 1, 5, 10 };
 
-	// test data
-	std::vector<int> delta(size);
-	for (int i = 0; i < size; ++i)
-		delta[i] = i;
+		// test data
+		std::vector<int> delta(size);
+		for (int i = 0; i < size; ++i)
+			delta[i] = i;
 
-	int * data = new int[size];
+		int * data = new int[size];
+		m_prefetchThread = new std::thread([&](){
 
-	// worker_table->Add(v, delta.data()); //add row 0,1,5,10
-	worker_table->Add(delta.data(), size); //add all
+			worker_table->Add(delta.data(), size); //add all
 
-	worker_table->Get(data, size); //get all
-	MV_Barrier();
+			worker_table->Get(data, size); //get all
+			printf("----------------------------\n");
+			for (int i = 0; i < num_row; ++i){
+				printf("rank %d, row %d: ", MV_Rank(), i);
+				for (int j = 0; j < num_col; ++j)
+					printf("%d ", data[i * num_col + j]);
+				printf("\n");
+			};
+		});
 
-	printf("----------------------------\n");
-	for (int i = 0; i < num_row; ++i){
-		printf("rank %d, row %d: ", MV_Rank(), i);
-		for (int j = 0; j < num_col; ++j)
-			printf("%d ", data[i * num_col + j]);
-		printf("\n");
+		MV_Barrier();
+		if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
+		{
+			m_prefetchThread->join();
+			delete m_prefetchThread;
+			m_prefetchThread = nullptr;
+		}
+		//test data_vec
+		std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10 * num_col] };
+		std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
+		worker_table->Add(v, delta_rows, num_col);
+		worker_table->Get(v, data_rows, num_col);
+		MV_Barrier();
+
+		printf("----------------------------\n");
+		for (int i = 0; i < num_row; ++i){
+			printf("rank %d, row %d: ", MV_Rank(), i);
+			for (int j = 0; j < num_col; ++j)
+				printf("%d ", data[i * num_col + j]);
+			printf("\n");
+		}
+		MV_Barrier();
+
 	}
-	MV_Barrier();
-
-	//test data_vec
-	std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10*num_col] };
-	std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
-	worker_table->Add(v, delta_rows, num_col);
-	worker_table->Get(v, data_rows, num_col);
-	MV_Barrier();
-
-	printf("----------------------------\n");
-	for (int i = 0; i < num_row; ++i){
-		printf("rank %d, row %d: ", MV_Rank(), i);
-		for (int j = 0; j < num_col; ++j)
-			printf("%d ", data[i * num_col + j]);
-		printf("\n");
-	}
-	MV_Barrier();
-	
 	MV_ShutDown();
 }
 
+// NOTE(feiga): this doesn't work now since I roll back some implementation
 void TestCheckPoint(int argc, char* argv[], bool restore){
   Log::Info("Test CheckPoint\n");
 
-  MV_Init(&argc, argv, 3, restore);
+  MV_Init(&argc, argv, 3 /*, restore */);
 
   int num_row = 11, num_col = 10;
   int size = num_row * num_col;
@@ -429,7 +421,7 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
   if (worker_table == nullptr) {
     //no worker in this node
   }
-  int begin_iter = MV_LoadTable("serverTable_");
+  // int begin_iter = MV_LoadTable("serverTable_");
   MV_Barrier();//won't dump data without parameters
 
   std::vector<int> delta(size);
@@ -437,11 +429,11 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
     delta[i] = i;
   int * data = new int[size];
 
-  Log::Debug("rank %d start from iteration %d\n", MV_Rank(), begin_iter);
+  // Log::Debug("rank %d start from iteration %d\n", MV_Rank(), begin_iter);
 
-  for (int i = begin_iter; i < 50; ++i){
+  for (int i = 0 /*begin_iter*/; i < 50; ++i){
     worker_table->Add(delta.data(), size);
-    MV_Barrier(i); //dump table data with iteration i each k iterations
+    MV_Barrier(); //dump table data with iteration i each k iterations
   }
   worker_table->Get(data, size);
 
@@ -463,7 +455,11 @@ void TestComm(int argc, char* argv[]) {
 int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
 
-  if (argc == 2) { 
+  if (argc == 1){
+      ::testing::InitGoogleTest(&argc, argv);
+      return RUN_ALL_TESTS();
+  }
+  else if (argc == 2) {
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
@@ -475,14 +471,15 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "checkpoint") == 0)  TestCheckPoint(argc, argv, false);
     else if (strcmp(argv[1], "restore") == 0) TestCheckPoint(argc, argv, true);
     else CHECK(false);
-  } 
+  }
   // argc == 4 is for zeromq test, with two extra arguments: machinefile, port
   else if (argc == 4) {
     if (strcmp(argv[3], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[3], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[3], "net") == 0) TestNet(argc, argv);
     else if (strcmp(argv[3], "ip") == 0) TestIP();
-  } else {
+  }
+  else {
     TestArray(argc, argv);
   }
   return 0;
