@@ -54,7 +54,7 @@ public:
   FlagRegisterHelper(const std::string name, T val, const std::string &text){
     command = FlagRegister<T>::Get()->RegisterFlag(name, val, text);
   }
-  Command<T> *command;
+  Command<T>* command;
 };
 
 // register a flag, use MV_CONFIG_##name to use
@@ -62,15 +62,17 @@ public:
 // \param name variable name
 // \param default_vale
 // \text description
-#define DEFINE_CONFIGURE(type, name, default_value, text)                           \
-  namespace configures {                                                            \
-    FlagRegisterHelper<type> g_configure_helper_##name(#name, default_value, text); \
-  }                                                                                 \
-  const type& MV_CONFIG_##name = configures::g_configure_helper_##name.command->value;
+#define DEFINE_CONFIGURE(type, name, default_value, text)                   \
+  namespace configures {                                                    \
+    FlagRegisterHelper<type> internal_configure_helper_##name(              \
+      #name, default_value, text);                                          \
+  }                                                                         \
+  const type& MV_CONFIG_##name = default_value;
 
-// declare the variable as MV_FLAGS_##name
-#define DECLARE_CONFIGURE(type, name) \
-  const type& MV_CONFIG_##name = configures::g_configure_helper_##name.command->value;
+// declare the variable as MV_CONFIG_##name
+#define DECLARE_CONFIGURE(type, name)                                       \
+  const type& MV_CONFIG_##name = configures::FlagRegister<type>             \
+    ::Get()->GetValue(#name);
 
 }//namespace configures
 

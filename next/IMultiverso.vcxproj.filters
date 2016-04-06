@@ -112,6 +112,9 @@
     <ClInclude Include="include\multiverso\updater\smooth_gradient_updater.h">
       <Filter>updater</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\updater\adagrad_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -199,6 +202,12 @@
     </ClCompile>
     <ClCompile Include="src\util\quantization_util.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\updater\updater.cpp">
+      <Filter>updater</Filter>
+    </ClCompile>
+    <ClCompile Include="src\table\array_table.cpp">
+      <Filter>table</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
