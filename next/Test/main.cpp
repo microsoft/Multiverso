@@ -456,8 +456,11 @@ int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
 
   if (argc == 1){
+      multiverso::MV_Init();
       ::testing::InitGoogleTest(&argc, argv);
-      return RUN_ALL_TESTS();
+      auto res = RUN_ALL_TESTS();
+      multiverso::MV_ShutDown();
+      return res;
   }
   else if (argc == 2) {
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);

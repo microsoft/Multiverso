@@ -11,6 +11,9 @@
     <ClCompile Include="gtest\gtest-all.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="test_async_buffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
