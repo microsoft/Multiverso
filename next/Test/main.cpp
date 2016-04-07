@@ -100,7 +100,10 @@ void TestArray(int argc, char* argv[]) {
     for (int i = 0; i < 1000000; ++i)
       delta[i] = static_cast<float>(i);
 
-    shared_array->Add(delta.data(), 1000000);
+    UpdateOption option;
+    option.set_learning_rate(1 - 0.0001 * i);
+    option.set_momentum(0.99);
+    shared_array->Add(delta.data(), 1000000, &option);
 
 
     shared_array->Get(data, 1000000);

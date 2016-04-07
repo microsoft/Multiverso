@@ -42,26 +42,29 @@ public:
   }
 
   // Add all element
-  void Add(T* data, size_t size) {
+  void Add(T* data, size_t size, const UpdateOption* option = nullptr) {
     CHECK(size == size_);
     int all_key = -1;
 
     Blob key(&all_key, sizeof(int));
     Blob val(data, sizeof(T) * size);
-    WorkerTable::Add(key, val);
+    WorkerTable::Add(key, val, option);
     Log::Debug("worker %d adding parameters with size of %d.\n", MV_Rank(), size);
   }
 
   int Partition(const std::vector<Blob>& kv,
     std::unordered_map<int, std::vector<Blob> >* out) override {
-    CHECK(kv.size() == 1 || kv.size() == 2);
+    CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
     for (int i = 0; i < num_server_; ++i) (*out)[i].push_back(kv[0]);
-    if (kv.size() == 2) {
+    if (kv.size() >= 2) {
       CHECK(kv[1].size() == size_ * sizeof(T));
       for (int i = 0; i < num_server_; ++i) {
         Blob blob(kv[1].data() + server_offsets_[i] * sizeof(T), 
           (server_offsets_[i + 1] - server_offsets_[i]) * sizeof(T));
         (*out)[i].push_back(blob);
+        if (kv.size() == 3) {// update option blob
+          (*out)[i].push_back(kv[2]);
+        }
       }
     }
     return num_server_;
@@ -96,16 +99,19 @@ public:
       size_ += size % MV_NumServers();
     }
     storage_.resize(size_);
-    updater_ = Updater<T>::GetUpdater();
+    updater_ = Updater<T>::GetUpdater(size_);
 	  Log::Debug("server %d create arrayTable with %d elements of %d elements.\n", server_id_, size_, size);
   }
 
   void ProcessAdd(const std::vector<Blob>& data) override {
     Blob keys = data[0], values = data[1];
+    UpdateOption* option = nullptr;
+    if (data.size() == 3) 
+      option = new UpdateOption(data[2].data(), data[2].size());
     CHECK(keys.size<int>() == 1 && keys.As<int>() == -1); // Always request whole table
     CHECK(values.size() == size_ * sizeof(T));
     T* pvalues = reinterpret_cast<T*>(values.data());
-    updater_->Update(size_, storage_.data(), pvalues);
+    updater_->Update(size_, storage_.data(), pvalues, option);
   }
 
   void ProcessGet(const std::vector<Blob>& data,

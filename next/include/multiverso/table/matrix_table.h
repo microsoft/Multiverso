@@ -220,40 +220,50 @@ public:
       size = server_id_ < num_row ? 1 : 0;
       row_offset_ = server_id_;
     }
+    my_num_row_ = size;
     storage_.resize(size * num_col);
-
+    updater_ = Updater<T>::GetUpdater(size * num_col);
     Log::Debug("[Init] Server =  %d, type = matrixTable, size =  [ %d x %d ], total =  [ %d x %d ].\n",
       server_id_, size, num_col, num_row, num_col);
   }
 
   void ProcessAdd(const std::vector<Blob>& data) override {
-    CHECK(data.size() == 2);
+    CHECK(data.size() == 2 || data.size() == 3);
     size_t keys_size = data[0].size<int>();
     int *keys = reinterpret_cast<int*>(data[0].data());
     T *values = reinterpret_cast<T*>(data[1].data());
+    UpdateOption* option = nullptr;
+    if (data.size() == 3) {
+      option = new UpdateOption(data[2].data(), data[2].size());
+    }
     // add all values
     if (keys_size == 1 && keys[0] == -1){
       size_t ssize = storage_.size();
       CHECK(ssize == data[1].size<T>());
-      for (int i = 0; i < ssize; ++i){
-        storage_[i] += values[i];
-      }
+      // for (int i = 0; i < ssize; ++i){
+      //   storage_[i] += values[i];
+      // }
+      updater_->Update(ssize, storage_.data(), values, option);
       Log::Debug("[ProcessAdd] Server = %d, adding rows offset = %d, #rows = %d\n",
         server_id_, row_offset_, ssize / num_col_);
-      return;
     }
-    CHECK(data[1].size() == keys_size * sizeof(T)* num_col_);
+    else {
+      CHECK(data[1].size() == keys_size * sizeof(T)* num_col_);
 
-    int offset_v = 0;
-    CHECK(storage_.size() >= keys_size * num_col_);
-    for (int i = 0; i < keys_size; ++i) {
-      int offset_s = (keys[i] - row_offset_) * num_col_;
-      for (int j = 0; j < num_col_; ++j){
-        storage_[offset_s++] += values[offset_v++];
+      int offset_v = 0;
+      CHECK(storage_.size() >= keys_size * num_col_);
+      for (int i = 0; i < keys_size; ++i) {
+        int offset_s = (keys[i] - row_offset_) * num_col_;
+        updater_->Update(num_col_, storage_.data(), values + offset_v, option, offset_s);
+        offset_v += num_col_;
+        // for (int j = 0; j < num_col_; ++j){
+        //  storage_[offset_s++] += values[offset_v++];
+        //}
+        Log::Debug("[ProcessAdd] Server = %d, adding #row = %d\n",
+          server_id_, keys[i]);
       }
-      Log::Debug("[ProcessAdd] Server = %d, adding #row = %d\n",
-        server_id_, keys[i]);
     }
+    delete option;
   }
 
   void ProcessGet(const std::vector<Blob>& data,
@@ -298,8 +308,10 @@ public:
 
 private:
   int server_id_;
+  int my_num_row_;
   int num_col_;
   int row_offset_;
+  Updater<T>* updater_;
   std::vector<T> storage_;
 };
 

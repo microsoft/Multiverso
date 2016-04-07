@@ -3,13 +3,14 @@
 #include "multiverso/util/waiter.h"
 #include "multiverso/zoo.h"
 #include "multiverso/dashboard.h"
+#include "multiverso/updater/updater.h"
 
 // TODO(feiga): whether need these dependency here?
-#include "multiverso/table/matrix_table.h"
-#include "multiverso/table/array_table.h"
-#include "multiverso/table/kv_table.h"
-#include "multiverso/table/smooth_array_table.h"
-#include "multiverso/table/adam_array_table.h"
+//#include "multiverso/table/matrix_table.h"
+//#include "multiverso/table/array_table.h"
+//#include "multiverso/table/kv_table.h"
+//#include "multiverso/table/smooth_array_table.h"
+//#include "multiverso/table/adam_array_table.h"
 
 namespace multiverso {
 
@@ -27,10 +28,11 @@ void WorkerTable::Get(Blob keys) {
   MONITOR_END(WORKER_TABLE_SYNC_GET)
 }
 
-void WorkerTable::Add(Blob keys, Blob values) { 
+void WorkerTable::Add(Blob keys, Blob values, 
+                      const UpdateOption* option) {
   MONITOR_BEGIN(WORKER_TABLE_SYNC_ADD)
   // Wait(AddAsync(keys, values)); 
-  AddAsync(keys, values); 
+  AddAsync(keys, values, option); 
   MONITOR_END(WORKER_TABLE_SYNC_ADD)
 }
 
@@ -47,7 +49,8 @@ int WorkerTable::GetAsync(Blob keys) {
   return id;
 }
 
-int WorkerTable::AddAsync(Blob keys, Blob values) {
+int WorkerTable::AddAsync(Blob keys, Blob values, 
+                          const UpdateOption* option) {
   int id = msg_id_++;
   waitings_[id] = new Waiter();
   MessagePtr msg(new Message());
@@ -57,6 +60,11 @@ int WorkerTable::AddAsync(Blob keys, Blob values) {
   msg->set_table_id(table_id_);
   msg->Push(keys);
   msg->Push(values);
+  // Add update option if necessary
+  if (option != nullptr) {
+    Blob update_option(option->data(), option->size());
+    msg->Push(update_option);
+  }
   Zoo::Get()->SendTo(actor::kWorker, msg);
   return id;
 }
