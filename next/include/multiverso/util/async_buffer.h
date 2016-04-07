@@ -13,8 +13,8 @@ class ASyncBuffer{
     // Creates an async buffer
     // buffer1 and buffer2: buffers used to save data from server
     // fill_buffer_action: action to fill a given buffer.
-    ASyncBuffer(BufferType& buffer0, BufferType& buffer1,
-        std::function<void(BufferType&)> fill_buffer_action)
+    ASyncBuffer(BufferType* buffer0, BufferType* buffer1,
+        std::function<void(BufferType*)> fill_buffer_action)
         : buffer0_{ buffer0 }, buffer1_{ buffer1 },
         fill_buffer_func_{ fill_buffer_action } {
         init();
@@ -23,7 +23,7 @@ class ASyncBuffer{
     // Returns the ready buffer.
     // This function also automatically starts to prefetch data
     //  for the other buffer.
-    BufferType& Get() {
+    BufferType* Get() {
         if (thread_ == nullptr) {
             init();
         }
@@ -65,25 +65,28 @@ class ASyncBuffer{
         ready_waiter_.Reset(0);
         new_task_waiter_.Reset(1);
         current_task_ = FILL_BUFFER1;
-        thread_ = new std::thread(&ASyncBuffer<BufferType>::fill_buffer_routine, this);
+        thread_ =
+            new std::thread(&ASyncBuffer<BufferType>::fill_buffer_routine,
+            this);
         prefetch_next_async();
     }
 
     void prefetch_next_async() {
-        current_task_ = (current_task_ == FILL_BUFFER1) ? FILL_BUFFER0 : FILL_BUFFER1;
+        current_task_ = (current_task_ == FILL_BUFFER1) ?
+            FILL_BUFFER0 : FILL_BUFFER1;
         ready_waiter_.Reset(1);
         new_task_waiter_.Notify();
     }
 
-    BufferType& get_buffer_to_fill(TaskType task) {
+    BufferType* get_buffer_to_fill(TaskType task) {
         CHECK(task != STOP_THREAD);
         return task == FILL_BUFFER0 ? buffer0_ : buffer1_;
     }
 
  private:
-    BufferType& buffer0_;
-    BufferType& buffer1_;
-    std::function<void(BufferType&)> fill_buffer_func_;
+    BufferType* buffer0_;
+    BufferType* buffer1_;
+    std::function<void(BufferType*)> fill_buffer_func_;
     Waiter ready_waiter_;
     Waiter new_task_waiter_;
     TaskType current_task_;

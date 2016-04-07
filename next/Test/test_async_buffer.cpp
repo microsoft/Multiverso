@@ -51,7 +51,7 @@ TEST_F(test_async_buffer, get_async_buffer_from_server) {
     auto size = array_size;
 
     // creates async_buffer
-    multiverso::ASyncBuffer<float*> async_buffer(p0, p1,
+    multiverso::ASyncBuffer<float> async_buffer(p0, p1,
         [worker, size](float * buf) -> void {
         worker->Get(buf, size);
     });
@@ -60,24 +60,31 @@ TEST_F(test_async_buffer, get_async_buffer_from_server) {
     auto ready_buffer = async_buffer.Get();
     ASSERT_EQ(p0, ready_buffer);
     ASSERT_TRUE(elementwise_equal(ready_buffer, size, 0));
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));    // calculate updates A
+    // calculate updates A
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     elementwise_set(ready_buffer, size, 1);
-    worker_array->Add(ready_buffer, size, 0);                       // submit update A
+    // submit update A
+    worker_array->Add(ready_buffer, size, 0);
 
-    // get ready buffer and submit an update B, the buffer content should NOT include changes from update A
+    // get ready buffer and submit an update B,
+    //  the buffer content should NOT include changes from update A
     ready_buffer = async_buffer.Get();
     ASSERT_EQ(p1, ready_buffer);
     ASSERT_TRUE(elementwise_equal(ready_buffer, size, 0));
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));    // calculate update B
+    // calculate update B
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     elementwise_set(ready_buffer, size, 1);
-    worker_array->Add(ready_buffer, size, 0);                       // submit update B
+    // submit update B
+    worker_array->Add(ready_buffer, size, 0);
 
-    // get ready buffer, the buffer content should include changes from update A
+    // get ready buffer, the buffer content should
+    //  include changes from update A
     ready_buffer = async_buffer.Get();
     ASSERT_EQ(p0, ready_buffer);
     ASSERT_TRUE(elementwise_equal(ready_buffer, size, 1));
 
-    // get ready buffer, the buffer content should include changes from update A and update B
+    // get ready buffer, the buffer content should
+    //  include changes from update A and update B
     ready_buffer = async_buffer.Get();
     ASSERT_EQ(p1, ready_buffer);
     ASSERT_TRUE(elementwise_equal(ready_buffer, size, 2));
