@@ -12,10 +12,10 @@ class QuantizationFilter {
 
     virtual ~QuantizationFilter() {}
 
-    virtual void FilterIn(const std::vector< Blob> &blobs,
+    virtual void FilterIn(const std::vector<Blob>& blobs,
         std::vector<Blob>* outputs) = 0;
 
-    virtual void FilterOut(const std::vector<Blob> &blobs,
+    virtual void FilterOut(const std::vector<Blob>& blobs,
         std::vector<Blob>* outputs) = 0;
  private:
 };
@@ -32,8 +32,9 @@ class SparseFilter : public QuantizationFilter {
     //  the first blob contains info: compressed or not, original
     //  blob size in byte; the second blob contains info: compressed
     //  blob if it's compressed or original blob.
-    void FilterIn(const std::vector< Blob> &blobs,
-        std::vector< Blob>* outputs) override {
+    void FilterIn(const std::vector<Blob>& blobs,
+        std::vector<Blob>* outputs) override {
+        CHECK_NOTNULL(outputs);
         outputs->clear();
         for (auto iter = blobs.cbegin(); iter != blobs.cend(); iter++) {
             Blob compressed_blob;
@@ -50,8 +51,9 @@ class SparseFilter : public QuantizationFilter {
 
     // Returns de-compressed blobs from input
     //  blobs compressed by function FilterIn.
-    void FilterOut(const std::vector< Blob> &blobs,
-        std::vector< Blob>* outputs) override {
+    void FilterOut(const std::vector<Blob>& blobs,
+        std::vector<Blob>* outputs) override {
+        CHECK_NOTNULL(outputs);
         CHECK(blobs.size() % 2 == 0);
         outputs->clear();
         for (auto i = 0; i < blobs.size(); i += 2) {
@@ -66,6 +68,7 @@ class SparseFilter : public QuantizationFilter {
  protected:
     bool try_compress(const Blob& in_blob,
         Blob* out_blob) {
+        CHECK_NOTNULL(out_blob);
         CHECK(sizeof(data_type) == sizeof(index_type));
         auto data_count = in_blob.size<data_type>();
         auto non_zero_count = 0;

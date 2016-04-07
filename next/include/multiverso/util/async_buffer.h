@@ -17,6 +17,8 @@ class ASyncBuffer{
         std::function<void(BufferType*)> fill_buffer_action)
         : buffer0_{ buffer0 }, buffer1_{ buffer1 },
         fill_buffer_func_{ fill_buffer_action } {
+        CHECK_NOTNULL(buffer0_);
+        CHECK_NOTNULL(buffer1_);
         init();
     }
 
