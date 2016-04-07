@@ -1,7 +1,7 @@
-#include "gtest\gtest.h"
+#include <gtest/gtest.h>
 #include <multiverso/multiverso.h>
 #include <vector>
-#include <multiverso\util\quantization_util.h>
+#include <multiverso/util/quantization_util.h>
 #include <cctype>
 
 class test_filter : public multiverso::SparseFilter<float, int32_t>, public ::testing::Test    {

@@ -4,6 +4,8 @@
 #include "multiverso/multiverso.h"
 #include "multiverso/table_interface.h"
 #include "multiverso/util/log.h"
+#include "multiverso/updater/updater.h"
+#include "multiverso/util/configure.h"
 
 namespace multiverso {
 
@@ -81,7 +83,8 @@ private:
   std::vector<size_t> server_offsets_;
 };
 
-// TODO(feiga): rename. The name static is inherited from last version
+
+
 // The storage is a continuous large chunk of memory
 template <typename T>
 class ArrayServer : public ServerTable {
@@ -93,22 +96,16 @@ public:
       size_ += size % MV_NumServers();
     }
     storage_.resize(size_);
-	Log::Debug("server %d create arrayTable with %d elements of %d elements.\n", server_id_, size_, size);
+    updater_ = Updater<T>::GetUpdater();
+	  Log::Debug("server %d create arrayTable with %d elements of %d elements.\n", server_id_, size_, size);
   }
 
   void ProcessAdd(const std::vector<Blob>& data) override {
-#ifdef MULTIVERSO_USE_BLAS
-    // MKL update
-    Log::Fatal("Not implemented yet\n");
-#else
     Blob keys = data[0], values = data[1];
     CHECK(keys.size<int>() == 1 && keys.As<int>() == -1); // Always request whole table
     CHECK(values.size() == size_ * sizeof(T));
     T* pvalues = reinterpret_cast<T*>(values.data());
-
-    #pragma omp parallel for schedule(static) num_threads(4)
-    for (int i = 0; i < size_; ++i) storage_[i] += pvalues[i]; 
-#endif
+    updater_->Update(size_, storage_.data(), pvalues);
   }
 
   void ProcessGet(const std::vector<Blob>& data,
@@ -130,9 +127,10 @@ public:
 
 private:
   int server_id_;
-  // T* storage_;
   std::vector<T> storage_;
+  Updater<T>* updater_;
   size_t size_; // number of element with type T
+  
 };
 
 template<typename T>

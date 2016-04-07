@@ -18,7 +18,7 @@
 #include <multiverso/table/smooth_matrix_table.h>             
 #include <multiverso/table/historic_matrix_table.h>
 
-#include "gtest\gtest.h"
+#include <gtest/gtest.h>
 
 using namespace multiverso;
 
@@ -456,6 +456,7 @@ void TestComm(int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
+
   if (argc == 1){
       ::testing::InitGoogleTest(&argc, argv);
       return RUN_ALL_TESTS();

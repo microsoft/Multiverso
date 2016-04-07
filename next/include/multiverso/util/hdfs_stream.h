@@ -9,7 +9,7 @@
 */
 
 #include "multiverso/util/io.h"
-#include "multiverso/util/hdfs.h"
+#include "hdfs.h"
 
 #include <cstring>
 #include <cstdio>

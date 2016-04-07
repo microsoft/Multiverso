@@ -97,10 +97,25 @@
     <ClInclude Include="include\multiverso\util\hdfs_stream.h">
       <Filter>io</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\util\async_buffer.h">
+	<ClInclude Include="include\multiverso\util\async_buffer.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\table\smooth_matrix_table.h">
+    <ClInclude Include="include\multiverso\util\configure.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\asgd_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\smooth_gradient_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\adagrad_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+	<ClInclude Include="include\multiverso\table\smooth_matrix_table.h">
       <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\table\historic_matrix_table.h">
@@ -125,6 +140,9 @@
     </Filter>
     <Filter Include="table">
       <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="updater">
+      <UniqueIdentifier>{5f38ba48-a652-4ec4-9540-8d44de3352bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +188,9 @@
     <ClCompile Include="src\dashboard.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\configure.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
     <ClCompile Include="include\multiverso\net\allreduce_engine.cpp">
       <Filter>net</Filter>
     </ClCompile>
@@ -187,6 +208,12 @@
     </ClCompile>
     <ClCompile Include="src\util\quantization_util.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\updater\updater.cpp">
+      <Filter>updater</Filter>
+    </ClCompile>
+    <ClCompile Include="src\table\array_table.cpp">
+      <Filter>table</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 
 #include <multiverso/blob.h>
 #include <vector>
+#include <cmath>
 
 namespace multiverso {
 	class QuantizationFilter
@@ -12,6 +13,9 @@ namespace multiverso {
 
 		virtual ~QuantizationFilter(){}
 
+    // REVIEW(feiga): suggest modify the interface as
+    //                virtual void FilterIn(const std::vector<Blob>& input, std::vector<Blob>* output) = 0;
+    //                to avoid the vector copy when function return values.
 		virtual std::vector< multiverso::Blob> FilterIn(const std::vector< multiverso::Blob> &blobs) = 0;
 
 		virtual std::vector< multiverso::Blob> FilterOut(const std::vector< multiverso::Blob> &blobs) = 0;

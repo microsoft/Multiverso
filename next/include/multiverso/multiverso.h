@@ -1,10 +1,7 @@
 #ifndef MULTIVERSO_INCLUDE_MULTIVERSO_H_
 #define MULTIVERSO_INCLUDE_MULTIVERSO_H_
 
-#include "multiverso/table_interface.h"
-
 #include <string>
-
 
 namespace multiverso {
 
@@ -68,3 +65,4 @@ int  MV_NetConnect(int* rank, char* endpoint[], int size);
 } // namespace multiverso
 
 #endif // MULTIVERSO_INCLUDE_MULTIVERSO_H_
+
