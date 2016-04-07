@@ -11,10 +11,10 @@
 #include <multiverso/util/log.h>
 #include <multiverso/util/net_util.h>
 
-#include <multiverso/table/smooth_array_table.h>
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
 #include <multiverso/table/matrix_table.h>             
+#include <multiverso/updater/updater.h>
 
 #include <gtest/gtest.h>
 
@@ -88,7 +88,7 @@ void TestArray(int argc, char* argv[]) {
 
   int iter = 1000;
 
-  if (argc == 3) iter = atoi(argv[2]);
+  if (argc == 2) iter = atoi(argv[1]);
 
   for (int i = 0; i < iter; ++i) {
     // std::vector<float>& vec = shared_array->raw();
@@ -117,42 +117,42 @@ void TestArray(int argc, char* argv[]) {
   MV_ShutDown();
 }
 
-void TestMomentum(int argc, char* argv[]) {
-	Log::Info("Test smooth_gradient table \n");
-
-
-	Log::ResetLogLevel(LogLevel::Debug);
-	MV_Init();
-
-	SmoothArrayWorker<float>* shared_array = new SmoothArrayWorker<float>(10);
-	SmoothArrayServer<float>* server_array = new SmoothArrayServer<float>(10);
-
-	MV_Barrier();
-	Log::Info("Create tables OK\n");
-
-	while (true){
-		// std::vector<float>& vec = shared_array->raw();
-
-		// shared_array->Get();
-		float data[10];
-
-		std::vector<float> delta(10);
-		for (int i = 0; i < 10; ++i)
-			delta[i] = static_cast<float>(i+1);
-
-		shared_array->Add(delta.data(), 10, 0.5f);
-
-		Log::Info("Rank %d Add OK\n", MV_Rank());
-
-		shared_array->Get(data, 10);
-		Log::Info("Rank %d Get OK\n", MV_Rank());
-		for (int i = 0; i < 10; ++i)
-			std::cout << data[i] << " "; std::cout << std::endl;
-		MV_Barrier();
-
-	}
-	MV_ShutDown();
-}
+//void TestMomentum(int argc, char* argv[]) {
+//	Log::Info("Test smooth_gradient table \n");
+//
+//
+//	Log::ResetLogLevel(LogLevel::Debug);
+//	MV_Init();
+//
+//	SmoothArrayWorker<float>* shared_array = new SmoothArrayWorker<float>(10);
+//	SmoothArrayServer<float>* server_array = new SmoothArrayServer<float>(10);
+//
+//	MV_Barrier();
+//	Log::Info("Create tables OK\n");
+//
+//	while (true){
+//		// std::vector<float>& vec = shared_array->raw();
+//
+//		// shared_array->Get();
+//		float data[10];
+//
+//		std::vector<float> delta(10);
+//		for (int i = 0; i < 10; ++i)
+//			delta[i] = static_cast<float>(i+1);
+//
+//		shared_array->Add(delta.data(), 10, 0.5f);
+//
+//		Log::Info("Rank %d Add OK\n", MV_Rank());
+//
+//		shared_array->Get(data, 10);
+//		Log::Info("Rank %d Get OK\n", MV_Rank());
+//		for (int i = 0; i < 10; ++i)
+//			std::cout << data[i] << " "; std::cout << std::endl;
+//		MV_Barrier();
+//
+//	}
+//	MV_ShutDown();
+//}
 
 #define ARRAY_SIZE 4683776
 void TestMultipleThread(int argc, char* argv[])
@@ -465,28 +465,17 @@ int main(int argc, char* argv[]) {
       multiverso::MV_ShutDown();
       return res;
   }
-  else if (argc == 2) {
+  else {
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
     else if (strcmp(argv[1], "ip") == 0) TestIP();
-    else if (strcmp(argv[1], "momentum") == 0) TestMomentum(argc, argv);
     else if (strcmp(argv[1], "threads") == 0) TestMultipleThread(argc, argv);
     else if (strcmp(argv[1], "matrix") == 0) TestMatrix(argc, argv);
     else if (strcmp(argv[1], "nonet") == 0) TestNoNet(argc, argv);
     else if (strcmp(argv[1], "checkpoint") == 0)  TestCheckPoint(argc, argv, false);
     else if (strcmp(argv[1], "restore") == 0) TestCheckPoint(argc, argv, true);
     else CHECK(false);
-  }
-  // argc == 4 is for zeromq test, with two extra arguments: machinefile, port
-  else if (argc == 4) {
-    if (strcmp(argv[3], "kv") == 0) TestKV(argc, argv);
-    else if (strcmp(argv[3], "array") == 0) TestArray(argc, argv);
-    else if (strcmp(argv[3], "net") == 0) TestNet(argc, argv);
-    else if (strcmp(argv[3], "ip") == 0) TestIP();
-  }
-  else {
-    TestArray(argc, argv);
   }
   return 0;
 }

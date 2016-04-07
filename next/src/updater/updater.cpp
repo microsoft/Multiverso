@@ -36,12 +36,7 @@ Updater<T>* Updater<T>::GetUpdater(size_t size) {
   return new Updater<T>();
 }
 
-// Temporally without int type since it will cause some warning
-// TODO(feiga): add int
-#define MV_INSTANTIATE_CLASS_WITH_BASE_TYPE(classname) \
-  template class classname<int>;                     \
-  template class classname<float>;                     \
-  template class classname<double>;
+
 
 MV_INSTANTIATE_CLASS_WITH_BASE_TYPE(Updater);
 

@@ -61,12 +61,6 @@
     <ClInclude Include="include\multiverso\net\mpi_net.h">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\table\smooth_array_table.h">
-      <Filter>table</Filter>
-    </ClInclude>
-    <ClInclude Include="include\multiverso\table\adam_array_table.h">
-      <Filter>table</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\util\quantization_util.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -134,6 +128,9 @@
     </Filter>
     <Filter Include="table">
       <UniqueIdentifier>{eb628a56-01c9-4c87-a995-9504264c0e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="updater">
+      <UniqueIdentifier>{5f38ba48-a652-4ec4-9540-8d44de3352bb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

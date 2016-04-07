@@ -184,11 +184,9 @@
     <ClInclude Include="include\multiverso\net\zmq_net.h" />
     <ClInclude Include="include\multiverso\node.h" />
     <ClInclude Include="include\multiverso\server.h" />
-    <ClInclude Include="include\multiverso\table\adam_array_table.h" />
     <ClInclude Include="include\multiverso\table\array_table.h" />
     <ClInclude Include="include\multiverso\table\kv_table.h" />
     <ClInclude Include="include\multiverso\table\matrix_table.h" />
-    <ClInclude Include="include\multiverso\table\smooth_array_table.h" />
     <ClInclude Include="include\multiverso\table_interface.h" />
     <ClInclude Include="include\multiverso\updater\adagrad_updater.h" />
     <ClInclude Include="include\multiverso\updater\asgd_updater.h" />

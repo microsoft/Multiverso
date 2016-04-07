@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <multiverso/multiverso.h>
-#include <multiverso/table/smooth_array_table.h>
+#include <multiverso/table/array_table.h>
 #include <multiverso/util/async_buffer.h>
 
 const int array_size = 5;
@@ -11,8 +11,8 @@ class test_async_buffer : public ::testing::Test {
     }
 
     void SetUp() override {
-        worker_array = new multiverso::SmoothArrayWorker<float>(array_size);
-        server_array = new multiverso::SmoothArrayServer<float>(array_size);
+        worker_array = new multiverso::ArrayWorker<float>(array_size);
+        server_array = new multiverso::ArrayServer<float>(array_size);
         p0 = new float[array_size]{};
         p1 = new float[array_size]{};
         multiverso::MV_Barrier();
@@ -40,8 +40,8 @@ class test_async_buffer : public ::testing::Test {
     }
 
  protected:
-    multiverso::SmoothArrayWorker<float>* worker_array;
-    multiverso::SmoothArrayServer<float>* server_array;
+    multiverso::ArrayWorker<float>* worker_array;
+    multiverso::ArrayServer<float>* server_array;
     float* p0;
     float* p1;
 };

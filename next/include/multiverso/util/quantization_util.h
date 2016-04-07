@@ -134,7 +134,7 @@ class SparseFilter : public QuantizationFilter {
 };
 
 class OneBitsFilter : public QuantizationFilter{
-};
+}; 
 }  // namespace multiverso
 
 
