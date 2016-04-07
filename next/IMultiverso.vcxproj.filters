@@ -203,5 +203,8 @@
     <ClCompile Include="src\table\array_table.cpp">
       <Filter>table</Filter>
     </ClCompile>
+    <ClCompile Include="src\table\matrix_table.cpp">
+      <Filter>table</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
