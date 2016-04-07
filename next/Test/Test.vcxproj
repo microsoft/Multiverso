@@ -93,6 +93,7 @@
   <ItemGroup>
     <ClCompile Include="gtest\gtest-all.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="test_async_buffer.cpp" />
     <ClCompile Include="test_example.cpp" />
     <ClCompile Include="test_filter.cpp" />
   </ItemGroup>
