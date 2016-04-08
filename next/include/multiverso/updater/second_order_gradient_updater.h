@@ -3,10 +3,12 @@
 
 #include "updater.h"
 #include "smooth_gradient_updater.h"
-#include <multiverso/multiverso.h>
+
+#include <cmath>
 
 namespace multiverso {
 
+  // [TODO(qiwye)]:rename the class to Shuxin Zheng's algorithms
   template <typename T>
   class SecondOrderUpdater : public SmoothGradientUpdater<T> {
   public:
@@ -31,7 +33,19 @@ namespace multiverso {
         smooth_gradient_[index + offset] =
           option->momentum() * smooth_gradient_[index + offset]
           + (1 - option->momentum()) * delta[index];
-        data[index + offset] += smooth_gradient_[index + offset];
+
+        // gsqr = (1 - r) * g^2 + r * gsqr  
+        historic_g_sqr_[option->worker_id][index + offset] = 
+          (1 - option->rho()) * delta[index] * delta[index] 
+          / option->learning_rate() / option->learning_rate() +
+          option->rho() * historic_g_sqr_[option->worker_id][index + offset];
+
+        data[index + offset] += delta[index] - option->lambda() * 
+          std::sqrtf(historic_g_sqr_[option->worker_id][index + offset]) *
+          (data[index + offset] - shadow_copies_[option->worker_id][index + offset])
+
+        // caching each worker's latest version of parameter
+        shadow_copies_[option->worker_id][index + offset] = data[index + offset];
       }
     }
     ~SecondOrderUpdater() { 
@@ -46,7 +60,6 @@ namespace multiverso {
 
     // move these parameter to UpdateOption
     //float rho_;
-    //float learning_rate_;
     //float global_smooth_momentum_;
     size_t size_;
   };
