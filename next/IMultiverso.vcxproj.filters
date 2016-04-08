@@ -61,12 +61,6 @@
     <ClInclude Include="include\multiverso\net\mpi_net.h">
       <Filter>net</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\table\smooth_array_table.h">
-      <Filter>table</Filter>
-    </ClInclude>
-    <ClInclude Include="include\multiverso\table\adam_array_table.h">
-      <Filter>table</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\util\quantization_util.h">
       <Filter>util</Filter>
     </ClInclude>
@@ -213,6 +207,9 @@
       <Filter>updater</Filter>
     </ClCompile>
     <ClCompile Include="src\table\array_table.cpp">
+      <Filter>table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\table\matrix_table.cpp">
       <Filter>table</Filter>
     </ClCompile>
   </ItemGroup>

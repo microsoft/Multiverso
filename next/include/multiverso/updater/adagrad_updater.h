@@ -8,9 +8,9 @@ namespace multiverso {
 template <typename T>
 class AdagradUpdater : public Updater<T> {
 public:
-  AdagradUpdater() {}
+  explicit AdagradUpdater(size_t size) {}
   void Update(size_t num_element, T* data, T* delta, 
-              UpdateOption* option) override {
+              UpdateOption* option, size_t offset) override {
     // TODO(feiga)
   }
 protected:

@@ -6,6 +6,7 @@
 namespace multiverso{
 
 void ParseCMDFlags(int*argc, char*argv[]){
+  if (argc == nullptr || argv == nullptr) return;
   using namespace configures;
   int unused = 1;
   

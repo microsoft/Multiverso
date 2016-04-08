@@ -8,15 +8,16 @@ namespace multiverso {
 template <typename T>
 class SmoothGradientUpdater : public Updater<T> {
 public:
-  SmoothGradientUpdater(size_t size): size_(size) {
-    smooth_gradient_.resize(size_);
+  explicit SmoothGradientUpdater(size_t size) : size_(size) {
+    smooth_gradient_ = new T[size_];
   }
   void Update(size_t num_element, T*data, T*delta, 
-              UpdateOption* option) override {
+              UpdateOption* option, size_t offset) override {
     for (size_t index = 0; index < num_element; ++index) {
-      smooth_gradient_[index] = option->momentum() * smooth_gradient_[index] 
+      smooth_gradient_[index + offset] = 
+        option->momentum() * smooth_gradient_[index + offset] 
         + (1 - option->momentum()) * delta[index];
-      data[index] += smooth_gradient_[index];
+      data[index + offset] += smooth_gradient_[index + offset];
     }
   }
   ~SmoothGradientUpdater() { delete[] smooth_gradient_; }
