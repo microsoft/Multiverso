@@ -5,13 +5,6 @@
 #include "multiverso/dashboard.h"
 #include "multiverso/updater/updater.h"
 
-// TODO(feiga): whether need these dependency here?
-//#include "multiverso/table/matrix_table.h"
-//#include "multiverso/table/array_table.h"
-//#include "multiverso/table/kv_table.h"
-//#include "multiverso/table/smooth_array_table.h"
-//#include "multiverso/table/adam_array_table.h"
-
 namespace multiverso {
 
 WorkerTable::WorkerTable() {

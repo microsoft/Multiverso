@@ -91,7 +91,7 @@
     <ClInclude Include="include\multiverso\util\hdfs_stream.h">
       <Filter>io</Filter>
     </ClInclude>
-	<ClInclude Include="include\multiverso\util\async_buffer.h">
+    <ClInclude Include="include\multiverso\util\async_buffer.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\util\configure.h">
@@ -109,11 +109,8 @@
     <ClInclude Include="include\multiverso\updater\adagrad_updater.h">
       <Filter>updater</Filter>
     </ClInclude>
-	<ClInclude Include="include\multiverso\table\smooth_matrix_table.h">
-      <Filter>table</Filter>
-    </ClInclude>
-    <ClInclude Include="include\multiverso\table\historic_matrix_table.h">
-      <Filter>table</Filter>
+    <ClInclude Include="include\multiverso\updater\second_order_gradient_updater.h">
+      <Filter>updater</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

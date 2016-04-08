@@ -2,31 +2,32 @@
 #define MULTIVERSO_UPDATER_UPDATER_H_
 
 #include <cstring>
+#include <multiverso/multiverso.h>
 
 namespace multiverso {
 
 struct UpdateOption {
 public:
   // TODO(feiga): default value;
-  UpdateOption() { }
+  UpdateOption() { data_[0].i = MV_WorkerId(); }
 
   UpdateOption(const char* data, size_t size) {
     CopyFrom(data, size);
   }
 
-  float learning_rate() const { return data_[1].f; }
-  void set_learning_rate(float lr) { data_[1].f = lr; }
-  float momentum() const { return data_[0].f; }
-  void set_momentum(float momentum) { data_[0].f = momentum; }
+  float learning_rate() const { return data_[2].f; }
+  void set_learning_rate(float lr) { data_[2].f = lr; }
+  float momentum() const { return data_[1].f; }
+  void set_momentum(float momentum) { data_[1].f = momentum; }
+  int worker_id() const { return data_[0].i; }
 
   const char* data() const { return reinterpret_cast<const char*>(&data_[0]); }
   size_t size() const { return kSize * sizeof(InternalType); }
   void CopyFrom(const char* data, size_t size) { 
-    // CHECK(size = this->size());
     memcpy(data_, data, size);
   }
 private:
-  static const size_t kSize = 2;
+  static const size_t kSize = 3;
   // Option can be either int type or float, 
   // to make it easy to serialize and deserialize
   union InternalType{
@@ -35,8 +36,9 @@ private:
   };
 
   // May add other option for future potential update algorithm
-  // 0: learning rate
-  // 1: momentum
+  // 0: src worker id
+  // 1: learning rate
+  // 2: momentum
   // ...
   InternalType data_[kSize];
 };

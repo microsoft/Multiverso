@@ -20,11 +20,7 @@ MatrixWorkerTable<T>::MatrixWorkerTable(int num_row, int num_col) :
   server_offsets_.push_back(0);
   int length = num_row / num_server_;
   int offset = length;
-  //for (int i = 1; i < num_server_; ++i) {
-  //  server_offsets_.push_back(offset);
-  //  offset += length;
-  //}
-  //server_offsets_.push_back(num_row);
+
   while (length > 0 && offset < num_row) {
     server_offsets_.push_back(offset);
     offset += length;
@@ -214,8 +210,8 @@ MatrixServerTable<T>::MatrixServerTable(int num_row, int num_col) :
     row_offset_ = server_id_;
   }
   my_num_row_ = size;
-  storage_.resize(size * num_col);
-  updater_ = Updater<T>::GetUpdater(size * num_col);
+  storage_.resize(my_num_row_ * num_col);
+  updater_ = Updater<T>::GetUpdater(my_num_row_ * num_col);
   Log::Debug("[Init] Server =  %d, type = matrixTable, size =  [ %d x %d ], total =  [ %d x %d ].\n",
     server_id_, size, num_col, num_row, num_col);
 }
@@ -234,9 +230,6 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
   if (keys_size == 1 && keys[0] == -1){
     size_t ssize = storage_.size();
     CHECK(ssize == data[1].size<T>());
-    // for (int i = 0; i < ssize; ++i){
-    //   storage_[i] += values[i];
-    // }
     updater_->Update(ssize, storage_.data(), values, option);
     Log::Debug("[ProcessAdd] Server = %d, adding rows offset = %d, #rows = %d\n",
       server_id_, row_offset_, ssize / num_col_);
@@ -249,10 +242,6 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
     for (int i = 0; i < keys_size; ++i) {
       int offset_s = (keys[i] - row_offset_) * num_col_;
       updater_->Update(num_col_, storage_.data(), values + offset_v, option, offset_s);
-      offset_v += num_col_;
-      // for (int j = 0; j < num_col_; ++j){
-      //  storage_[offset_s++] += values[offset_v++];
-      //}
       Log::Debug("[ProcessAdd] Server = %d, adding #row = %d\n",
         server_id_, keys[i]);
     }

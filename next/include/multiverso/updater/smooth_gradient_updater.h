@@ -2,6 +2,7 @@
 #define MULTIVERSO_UPDATER_SMOOTH_GRADIENT_UPDATER_H_
 
 #include "updater.h"
+#include <vector>
 
 namespace multiverso {
 
@@ -9,7 +10,7 @@ template <typename T>
 class SmoothGradientUpdater : public Updater<T> {
 public:
   explicit SmoothGradientUpdater(size_t size) : size_(size) {
-    smooth_gradient_ = new T[size_];
+    smooth_gradient_.resize(size_);
   }
   void Update(size_t num_element, T*data, T*delta, 
               UpdateOption* option, size_t offset) override {
@@ -20,7 +21,7 @@ public:
       data[index + offset] += smooth_gradient_[index + offset];
     }
   }
-  ~SmoothGradientUpdater() { delete[] smooth_gradient_; }
+  ~SmoothGradientUpdater() { smooth_gradient_.clear(); }
 protected:
   std::vector<T> smooth_gradient_;
   size_t size_;
