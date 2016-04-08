@@ -41,7 +41,6 @@ void TestKV(int argc, char* argv[]) {
   KVWorkerTable<int, int>* dht = new KVWorkerTable<int, int>();
   // if the node is server, then create a server storage table
   KVServerTable<int, int>* server_dht = new KVServerTable<int, int>();
-  Log::Info("table name %s", server_dht->name().c_str());
 
   MV_Barrier();
 
