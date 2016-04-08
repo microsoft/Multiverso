@@ -112,6 +112,9 @@
     <ClInclude Include="include\multiverso\updater\second_order_gradient_updater.h">
       <Filter>updater</Filter>
     </ClInclude>
+    <ClInclude Include="include\multiverso\table\sparse_matrix_table.h">
+      <Filter>table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -207,6 +210,9 @@
       <Filter>table</Filter>
     </ClCompile>
     <ClCompile Include="src\table\matrix_table.cpp">
+      <Filter>table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\table\sparse_matrix_table.cpp">
       <Filter>table</Filter>
     </ClCompile>
   </ItemGroup>
