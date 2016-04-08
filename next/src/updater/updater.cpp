@@ -17,10 +17,10 @@ void Updater<T>::Update(size_t num_element, T* data, T* delta,
 }
 
 template <typename T>
-Updater<T>* Updater<T>::GetUpdater() {
+Updater<T>* Updater<T>::GetUpdater(size_t size = 0) {
   std::string type = MV_CONFIG_updater_type;
-  if (type == "adagrad") return new AdagradUpdater<T>();
-  if (type == "smooth_gradient") return new SmoothGradientUpdater<T>();
+  if (type == "adagrad") return new AdagradUpdater<T>(size);
+  if (type == "smooth_gradient") return new SmoothGradientUpdater<T>(size);
   // Default: simple updater
   return new Updater<T>();
 }

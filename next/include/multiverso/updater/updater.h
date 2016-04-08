@@ -49,7 +49,7 @@ public:
                       UpdateOption* option = nullptr);
 
   // Factory method to get the updater
-  static Updater<T>* GetUpdater();
+  static Updater<T>* GetUpdater(size_t size = 0);
 };
 
 }

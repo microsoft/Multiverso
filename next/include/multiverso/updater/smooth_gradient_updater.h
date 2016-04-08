@@ -8,9 +8,8 @@ namespace multiverso {
 template <typename T>
 class SmoothGradientUpdater : public Updater<T> {
 public:
-  SmoothGradientUpdater() {
-    size_ = 1; // TODO(feiga): config this
-    smooth_gradient_ = new T[size_];
+  SmoothGradientUpdater(size_t size): size_(size) {
+    smooth_gradient_.resize(size_);
   }
   void Update(size_t num_element, T*data, T*delta, 
               UpdateOption* option) override {
@@ -22,7 +21,7 @@ public:
   }
   ~SmoothGradientUpdater() { delete[] smooth_gradient_; }
 protected:
-  T* smooth_gradient_;
+  std::vector<T> smooth_gradient_;
   size_t size_;
 };
 

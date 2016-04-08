@@ -96,7 +96,7 @@ public:
       size_ += size % MV_NumServers();
     }
     storage_.resize(size_);
-    updater_ = Updater<T>::GetUpdater();
+    updater_ = Updater<T>::GetUpdater(size_);
 	  Log::Debug("server %d create arrayTable with %d elements of %d elements.\n", server_id_, size_, size);
   }
 
