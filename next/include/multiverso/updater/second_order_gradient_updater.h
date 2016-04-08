@@ -40,7 +40,7 @@ namespace multiverso {
           / option->learning_rate() / option->learning_rate() +
           option->rho() * historic_g_sqr_[option->worker_id][index + offset];
 
-        data[index + offset] += delta[index] - option->lambda() * 
+        data[index + offset] -= delta[index] + option->lambda() * 
           std::sqrtf(historic_g_sqr_[option->worker_id][index + offset]) *
           (data[index + offset] - shadow_copies_[option->worker_id][index + offset])
 
