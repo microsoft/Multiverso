@@ -7,7 +7,6 @@
 
 namespace multiverso {
 
-
 template <typename T>
 class ArrayWorker : public WorkerTable {
 public:
