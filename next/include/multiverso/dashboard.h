@@ -1,5 +1,5 @@
-#ifndef MULTIVERSO_INCLUDE_DASHBOARD_H_
-#define MULTIVERSO_INCLUDE_DASHBOARD_H_
+#ifndef MULTIVERSO_DASHBOARD_H_
+#define MULTIVERSO_DASHBOARD_H_
 
 #include <map>
 #include <mutex>
@@ -38,7 +38,7 @@ public:
     ++count_;
   }
 
-  double average() const { return elapse_ / count_; };
+  double average() const { return elapse_ / count_; }
 
   std::string name() const { return name_; }
   double elapse() const { return elapse_; }
@@ -49,7 +49,7 @@ public:
 private:
   // name of the Monitor
   std::string name_;
-  // total elapsed time 
+  // total elapsed time
   double elapse_;
   // count of monitor
   int count_;
@@ -73,6 +73,6 @@ private:
   g_##name##_monitor.End();
 
 
-}
+}  // namespace multiverso
 
-#endif // MULTIVERSO_INCLUDE_DASHBOARD_H_
+#endif  // MULTIVERSO_DASHBOARD_H_

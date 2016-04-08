@@ -1,21 +1,21 @@
 #include "multiverso/util/configure.h"
-#include "multiverso/util/log.h"
 
 #include <algorithm>
+#include <string>
+#include "multiverso/util/log.h"
 
-namespace multiverso{
+namespace multiverso {
 
-void ParseCMDFlags(int*argc, char*argv[]){
+void ParseCMDFlags(int* argc, char* argv[]) {
   if (argc == nullptr || argv == nullptr) return;
-  using namespace configures;
+
   int unused = 1;
-  
   size_t pos;
   int intval;
   bool boolval;
   std::string line, key, value;
 
-  for (int i = 1; i < *argc; ++i){
+  for (int i = 1; i < *argc; ++i) {
     line = argv[i];
     if (line.find("-") != 0) {
       continue;
@@ -27,16 +27,16 @@ void ParseCMDFlags(int*argc, char*argv[]){
     key = line.substr(1, pos - 1);
     value = line.substr(pos + 1);
 
-    if (FlagRegister<std::string>::Get()->SetFlagIfFound(key, value))
+    if (configure::FlagRegister<std::string>::Get()->SetFlagIfFound(key, value))
       continue;
 
     intval = atoi(value.c_str());
-    if (FlagRegister<int>::Get()->SetFlagIfFound(key, intval))
+    if (configure::FlagRegister<int>::Get()->SetFlagIfFound(key, intval))
       continue;
 
-    transform(value.begin(), value.end(), value.begin(), ::tolower); //transform to lower case
+    transform(value.begin(), value.end(), value.begin(), ::tolower);
     boolval = (value == "true");
-    if (FlagRegister<bool>::Get()->SetFlagIfFound(key, boolval))
+    if (configure::FlagRegister<bool>::Get()->SetFlagIfFound(key, boolval))
       continue;
 
     std::swap(argv[unused++], argv[i]);
@@ -45,4 +45,4 @@ void ParseCMDFlags(int*argc, char*argv[]){
   *argc = unused;
 }
 
-}
+}  // namespace multiverso

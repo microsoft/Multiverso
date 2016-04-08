@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <string>
+#include <vector>
 #include <unordered_map>
 
 #include "multiverso/actor.h"
@@ -13,14 +14,14 @@ namespace multiverso {
 
 class NetInterface;
 
-// The dashboard 
+// The dashboard
 // 1. Manage all components in the system, include all actors, and network env
 // 2. Maintain system information, provide method to access this information
 // 3. Control the system, to start and end
 class Zoo {
 public:
   ~Zoo();
-  static Zoo* Get() { static Zoo zoo; return &zoo; };
+  static Zoo* Get() { static Zoo zoo; return &zoo; }
 
   // Start all actors
   void Start(int* argc, char** argv, int role);
@@ -38,8 +39,8 @@ public:
   int worker_rank() const { return nodes_[rank()].worker_id; }
   int server_rank() const { return nodes_[rank()].server_id; }
 
-  int worker_id_to_rank(int worker_id) const { 
-    return worker_id_to_rank_[worker_id]; 
+  int worker_id_to_rank(int worker_id) const {
+    return worker_id_to_rank_[worker_id];
   }
 
   int server_id_to_rank(int server_id) const {
@@ -57,8 +58,7 @@ public:
     CHECK(zoo_[name] == nullptr);
     zoo_[name] = actor;
   }
-  
-  // int LoadTable(const std::string& table_file_path);
+
 private:
   // private constructor
   Zoo();
@@ -81,6 +81,6 @@ private:
   // int store_each_k_;
 };
 
-}
+}  // namespace multiverso
 
-#endif // MULTIVERSO_ZOO_H_
+#endif  // MULTIVERSO_ZOO_H_

@@ -4,9 +4,9 @@
 #include <string>
 #include <unordered_map>
 
-namespace multiverso{
+namespace multiverso {
 
-namespace configures{
+namespace configure {
 
 template<typename T>
 struct Command {
@@ -14,17 +14,18 @@ struct Command {
   std::string description;
 };
 
-//used to register and keep flags
+// used to register and keep flags
 template<typename T>
 class FlagRegister {
 public:
-  Command<T>* RegisterFlag(const std::string& name, T& default_value, const std::string& text){
+  Command<T>* RegisterFlag(const std::string& name,
+                           const T& default_value, const std::string& text) {
     commands[name] = { default_value, text };
     return &commands[name];
   }
 
-  //set flag value if in the defined list
-  bool SetFlagIfFound(const std::string& key, const T& value){
+  // set flag value if in the defined list
+  bool SetFlagIfFound(const std::string& key, const T& value) {
     if (commands.find(key) != commands.end()) {
       commands[key].value = value;
       return true;
@@ -32,26 +33,27 @@ public:
     return false;
   }
 
-  T& GetValue(const std::string& name){
+  T& GetValue(const std::string& name) {
     return commands[name].value;
   }
 
-  //get flag register instance
+  // get flag register instance
   static FlagRegister* Get() {
     static FlagRegister register_;
     return &register_;
   }
+
 private:
   std::unordered_map<std::string, Command<T>> commands;
-private:
-  FlagRegister(){}
+
+  FlagRegister() {}
   FlagRegister(FlagRegister<T>&) = delete;
 };
 
 template<typename T>
 class FlagRegisterHelper{
 public:
-  FlagRegisterHelper(const std::string name, T val, const std::string &text){
+  FlagRegisterHelper(const std::string name, T val, const std::string &text) {
     command = FlagRegister<T>::Get()->RegisterFlag(name, val, text);
   }
   Command<T>* command;
@@ -63,7 +65,7 @@ public:
 // \param default_vale
 // \text description
 #define DEFINE_CONFIGURE(type, name, default_value, text)                   \
-  namespace configures {                                                    \
+  namespace configure {                                                     \
     FlagRegisterHelper<type> internal_configure_helper_##name(              \
       #name, default_value, text);                                          \
   }                                                                         \
@@ -71,10 +73,10 @@ public:
 
 // declare the variable as MV_CONFIG_##name
 #define DECLARE_CONFIGURE(type, name)                                       \
-  const type& MV_CONFIG_##name = configures::FlagRegister<type>             \
+  const type& MV_CONFIG_##name = configure::FlagRegister<type>              \
     ::Get()->GetValue(#name);
 
-}//namespace configures
+}  // namespace configure
 
 void ParseCMDFlags(int *argc, char* argv[]);
 
@@ -96,6 +98,6 @@ void ParseCMDFlags(int *argc, char* argv[]);
 #define MV_DECLARE_bool(name)  \
   DECLARE_CONFIGURE(bool, name)
 
-}//namespace multiverso
+}  // namespace multiverso
 
-#endif
+#endif  // MULTIVERSO_UTIL_CONFIGURE_H_

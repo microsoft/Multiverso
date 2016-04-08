@@ -16,7 +16,7 @@ bool to_server(MsgType type) {
          (static_cast<int>(type)) < 32;
 }
 
-bool to_worker(MsgType type)  { 
+bool to_worker(MsgType type) {
   return (static_cast<int>(type)) < 0  &&
          (static_cast<int>(type)) > -32;
 }
@@ -24,7 +24,8 @@ bool to_worker(MsgType type)  {
 bool to_controler(MsgType type) {
   return (static_cast<int>(type)) > 32;
 }
-}
+
+}  // namespace message
 
 Communicator::Communicator() : Actor(actor::kCommunicator) {
   RegisterHandler(MsgType::Default, std::bind(
@@ -33,13 +34,12 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
 }
 
 Communicator::~Communicator() {
-  if (recv_thread_.get() && recv_thread_->joinable()) 
+  if (recv_thread_.get() && recv_thread_->joinable())
     recv_thread_->join();
 }
 
 void Communicator::Main() {
   is_working_ = true;
-  if (Zoo::Get()->rank() == 0) Log::Debug("Rank %d: Start to run actor %s\n", Zoo::Get()->rank(), name().c_str());
   // TODO(feiga): join the thread, make sure it exit properly
   switch (net_util_->thread_level_support()) {
   case NetThreadLevel::THREAD_MULTIPLE: {
@@ -69,7 +69,6 @@ void Communicator::Main() {
 
 void Communicator::ProcessMessage(MessagePtr& msg) {
   if (msg->dst() != net_util_->rank()) {
-    // Log::Debug("Send a msg from %d to %d, type = %d\n", msg->src(), msg->dst(), msg->type());
     net_util_->Send(msg);
     return;
   }
@@ -77,8 +76,8 @@ void Communicator::ProcessMessage(MessagePtr& msg) {
 }
 
 void Communicator::Communicate() {
-  while (net_util_->active()) { 
-    MessagePtr msg(new Message()); 
+  while (net_util_->active()) {
+    MessagePtr msg(new Message());
     size_t size = net_util_->Recv(&msg);
     if (size == -1) {
       Log::Debug("recv return -1\n");
@@ -86,8 +85,6 @@ void Communicator::Communicate() {
     }
     if (size > 0) {
       // a message received
-      Log::Debug("Recv a msg from %d to %d, size = %d, type = %d\n", 
-        msg->src(), msg->dst(), msg->size(), msg->type());
       CHECK(msg->dst() == Zoo::Get()->rank());
       LocalForward(msg);
     }
@@ -109,4 +106,4 @@ void Communicator::LocalForward(MessagePtr& msg) {
   }
 }
 
-}
+}  // namespace multiverso

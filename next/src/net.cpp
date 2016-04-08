@@ -14,13 +14,13 @@ NetInterface* NetInterface::Get() {
 #ifdef MULTIVERSO_USE_ZMQ
   static ZMQNetWrapper net_impl;
   return &net_impl;
-#else 
+#else
 // #ifdef MULTIVERSO_USE_MPI
   // Use MPI by default
   static MPINetWrapper net_impl;
-  return &net_impl; // net_util.get();
+  return &net_impl;
 // #endif
 #endif
 }
 
-}
+}  // namespace multiverso

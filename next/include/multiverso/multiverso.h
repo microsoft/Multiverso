@@ -5,8 +5,8 @@
 
 namespace multiverso {
 
-void MV_Init(int* argc = nullptr, 
-             char* argv[] = nullptr, 
+void MV_Init(int* argc = nullptr,
+             char* argv[] = nullptr,
              int role = 3);
 
 void MV_Barrier();
@@ -25,27 +25,13 @@ int  MV_ServerId();
 int  MV_WorkerIdToRank(int worker_id);
 int  MV_ServerIdToRank(int server_id);
 
-////new implementation, but template function should be defined in the same file with declaration
-///*
-// * param table_type the type string of table, such as "matrix","array"
-// * param table_args the parameters of table
-// * dump_file_path not used now, to be discussed
-// */ 
-//template<typename Key, typename Val=void>
-//WorkerTable* MV_CreateTable(const std::string& table_type, const std::vector<void*>& table_args, 
-//  const std::string& dump_file_path = "") {
-//  return TableFactory::CreateTable<Key, Val>(table_type, table_args, dump_file_path);
-//}
-
-// int MV_LoadTable(const std::string& dump_file_path);
-
 // Show the dashboard information about the monitored excuation time
 // used for profile
 void MV_Dashboard();
 
 // --- Net API -------------------------------------------------------------- //
 // NOTE(feiga): these API is only used for specific situation.
-// Init Multiverso Net with the provided endpoint. Multiverso Net will bind 
+// Init Multiverso Net with the provided endpoint. Multiverso Net will bind
 // the provided endpoint and use this endpoint to listen and recv message
 // \param rank the rank of this MV process
 // \param endpoint endpoint with format ip:port, e.g., localhost:9999
@@ -53,7 +39,7 @@ void MV_Dashboard();
 // \return -1 FAIL
 int  MV_NetBind(int rank, char* endpoint);
 
-// Connect Multiverso Net with other processes in the system. Multiverso Net 
+// Connect Multiverso Net with other processes in the system. Multiverso Net
 // will connect these endpoints and send msgs
 // \param ranks array of rank
 // \param endpoints endpoints for each rank
@@ -62,7 +48,7 @@ int  MV_NetBind(int rank, char* endpoint);
 // \return -1 FAIL
 int  MV_NetConnect(int* rank, char* endpoint[], int size);
 
-} // namespace multiverso
+}  // namespace multiverso
 
-#endif // MULTIVERSO_INCLUDE_MULTIVERSO_H_
+#endif  // MULTIVERSO_INCLUDE_MULTIVERSO_H_
 

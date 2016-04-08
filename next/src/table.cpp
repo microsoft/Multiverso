@@ -5,13 +5,6 @@
 #include "multiverso/dashboard.h"
 #include "multiverso/updater/updater.h"
 
-// TODO(feiga): whether need these dependency here?
-//#include "multiverso/table/matrix_table.h"
-//#include "multiverso/table/array_table.h"
-//#include "multiverso/table/kv_table.h"
-//#include "multiverso/table/smooth_array_table.h"
-//#include "multiverso/table/adam_array_table.h"
-
 namespace multiverso {
 
 WorkerTable::WorkerTable() {
@@ -22,17 +15,17 @@ ServerTable::ServerTable() {
   Zoo::Get()->RegisterTable(this);
 }
 
-void WorkerTable::Get(Blob keys) { 
+void WorkerTable::Get(Blob keys) {
   MONITOR_BEGIN(WORKER_TABLE_SYNC_GET)
-  Wait(GetAsync(keys)); 
+  Wait(GetAsync(keys));
   MONITOR_END(WORKER_TABLE_SYNC_GET)
 }
 
-void WorkerTable::Add(Blob keys, Blob values, 
+void WorkerTable::Add(Blob keys, Blob values,
                       const UpdateOption* option) {
   MONITOR_BEGIN(WORKER_TABLE_SYNC_ADD)
-  // Wait(AddAsync(keys, values)); 
-  AddAsync(keys, values, option); 
+  // Wait(AddAsync(keys, values));
+  AddAsync(keys, values, option);
   MONITOR_END(WORKER_TABLE_SYNC_ADD)
 }
 
@@ -49,7 +42,7 @@ int WorkerTable::GetAsync(Blob keys) {
   return id;
 }
 
-int WorkerTable::AddAsync(Blob keys, Blob values, 
+int WorkerTable::AddAsync(Blob keys, Blob values,
                           const UpdateOption* option) {
   int id = msg_id_++;
   waitings_[id] = new Waiter();
@@ -82,18 +75,19 @@ void WorkerTable::Reset(int msg_id, int num_wait) {
   waitings_[msg_id]->Reset(num_wait);
 }
 
-void WorkerTable::Notify(int id) { 
+void WorkerTable::Notify(int id) {
   CHECK_NOTNULL(waitings_[id]);
-  waitings_[id]->Notify(); 
+  waitings_[id]->Notify();
 }
 
-WorkerTable* TableHelper::CreateTable(){
-  if (Zoo::Get()->server_rank() >= 0){
+WorkerTable* TableHelper::CreateTable() {
+  if (Zoo::Get()->server_rank() >= 0) {
     CreateServerTable();
   }
-  if (Zoo::Get()->worker_rank() >= 0){
+  if (Zoo::Get()->worker_rank() >= 0) {
     return CreateWorkerTable();
   }
   return nullptr;
 }
-}
+
+}  // namespace multiverso

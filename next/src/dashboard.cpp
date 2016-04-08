@@ -1,9 +1,13 @@
 #include "multiverso/dashboard.h"
+
+#include <map>
+#include <sstream>
+#include <string>
+
 #include "multiverso/util/log.h"
 
-#include <sstream>
-
 namespace multiverso {
+
 std::map<std::string, Monitor*> Dashboard::record_;
 std::mutex Dashboard::m_;
 
@@ -21,13 +25,13 @@ std::string Dashboard::Watch(const std::string& name) {
   Monitor* monitor = record_[name];
   CHECK_NOTNULL(monitor);
   return monitor->info_string();
-} 
+}
 
 std::string Monitor::info_string() const {
   std::ostringstream oss;
-  oss << "[" << name_ << "] " 
+  oss << "[" << name_ << "] "
       << " count = " << count_
-      << " elapse = " << elapse_ << "ms" 
+      << " elapse = " << elapse_ << "ms"
       << " average = " << average() << "ms";
   return oss.str();
 }
@@ -39,4 +43,4 @@ void Dashboard::Display() {
   Log::Info("--------------------------------------------------------------\n");
 }
 
-}
+}  // namespace multiverso
