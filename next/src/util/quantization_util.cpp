@@ -1,8 +1,8 @@
+#include "multiverso/util/quantization_util.h"
 
-#include <multiverso/util/quantization_util.h>
 #include <algorithm>
-#include <multiverso\multiverso.h>
+#include "multiverso/multiverso.h"
 
-namespace multiverso{
+namespace multiverso {
 
-}
+}  // namespace multiverso

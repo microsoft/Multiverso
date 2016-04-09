@@ -32,7 +32,7 @@ void ArrayWorker<T>::Get(T* data, size_t size) {
 }
 
 template <typename T>
-void ArrayWorker<T>::Add(T* data, size_t size, const UpdateOption* option = nullptr) {
+void ArrayWorker<T>::Add(T* data, size_t size, const UpdateOption* option) {
   CHECK(size == size_);
   int all_key = -1;
 

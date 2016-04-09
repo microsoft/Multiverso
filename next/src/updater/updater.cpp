@@ -10,8 +10,7 @@ MV_DEFINE_string(updater_type, "default", "multiverso server updater type");
 
 template <typename T>
 void Updater<T>::Update(size_t num_element, T* data, T* delta,
-                        UpdateOption* option = nullptr, 
-                        size_t offset = 0) {
+                        UpdateOption* option, size_t offset) {
   // parallelism with openmp
   // TODO(feiga): change the magic number 4 with some configurable env variable
   #pragma omp parallel for schedule(static) num_threads(4)

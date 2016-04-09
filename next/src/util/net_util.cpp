@@ -67,7 +67,6 @@ void GetLocalIPAddress(std::unordered_set<std::string>* result) {
 
 void GetLocalIPAddress(std::unordered_set<std::string>* result) {
 CHECK(false);
-int i = 0;
 return;
 // todo
 }

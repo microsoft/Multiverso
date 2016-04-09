@@ -82,7 +82,7 @@ public:
   void Fatal(const char *format, ...);
 
 private:
-  void Write(LogLevel level, const char *format, const va_list &val);
+  void Write(LogLevel level, const char* format, va_list* val);
   void CloseLogFile();
   // Returns current system time as a string.
   std::string GetSystemTime();
@@ -127,7 +127,7 @@ public:
   static void ResetKillFatal(bool is_kill_fatal);
 
   /*! \brief The C formatted methods of writing the messages. */
-  static void Write(LogLevel level, const char *format, ...);
+  static void Write(LogLevel level, const char* format, ...);
   static void Debug(const char *format, ...);
   static void Info(const char *format, ...);
   static void Error(const char *format, ...);
