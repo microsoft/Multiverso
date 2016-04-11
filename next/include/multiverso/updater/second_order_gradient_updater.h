@@ -33,7 +33,7 @@ namespace multiverso {
           option->rho() * historic_g_sqr_[option->worker_id()][index + offset];
 
         data[index + offset] -= delta[index] + option->lambda() * 
-          std::sqrtf(historic_g_sqr_[option->worker_id()][index + offset]) *
+          std::sqrt(historic_g_sqr_[option->worker_id()][index + offset]) *
           (data[index + offset] - shadow_copies_[option->worker_id()][index + offset]);
 
         // caching each worker's latest version of parameter

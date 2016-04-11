@@ -27,7 +27,7 @@ public:
         option->learning_rate();
 
       data[index + offset] -= option->rho() /
-        std::sqrtf(historic_g_sqr_[option->worker_id()][index + offset] + e) *
+        std::sqrt(historic_g_sqr_[option->worker_id()][index + offset] + e) *
         delta[index] / option->learning_rate();
     }
   }
