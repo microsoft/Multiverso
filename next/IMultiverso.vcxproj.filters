@@ -97,9 +97,6 @@
     <ClInclude Include="include\multiverso\util\configure.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\updater\asgd_updater.h">
-      <Filter>updater</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\updater\updater.h">
       <Filter>updater</Filter>
     </ClInclude>
@@ -107,6 +104,15 @@
       <Filter>updater</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\updater\adagrad_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\second_order_gradient_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\table\sparse_matrix_table.h">
+      <Filter>table</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\sgd_updater.h">
       <Filter>updater</Filter>
     </ClInclude>
   </ItemGroup>
@@ -204,6 +210,9 @@
       <Filter>table</Filter>
     </ClCompile>
     <ClCompile Include="src\table\matrix_table.cpp">
+      <Filter>table</Filter>
+    </ClCompile>
+    <ClCompile Include="src\table\sparse_matrix_table.cpp">
       <Filter>table</Filter>
     </ClCompile>
   </ItemGroup>
