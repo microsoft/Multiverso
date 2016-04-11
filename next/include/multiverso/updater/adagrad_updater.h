@@ -4,6 +4,7 @@
 #include "multiverso/updater/updater.h"I
 
 #include <vector>
+#include <cmath>
 
 namespace multiverso {
 
