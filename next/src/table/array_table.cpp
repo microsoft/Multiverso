@@ -32,7 +32,7 @@ void ArrayWorker<T>::Get(T* data, size_t size) {
 }
 
 template <typename T>
-void ArrayWorker<T>::Add(T* data, size_t size, const UpdateOption* option = nullptr) {
+void ArrayWorker<T>::Add(T* data, size_t size, const UpdateOption* option) {
   CHECK(size == size_);
   int all_key = -1;
 
@@ -94,6 +94,7 @@ void ArrayServer<T>::ProcessAdd(const std::vector<Blob>& data) {
   CHECK(values.size() == size_ * sizeof(T));
   T* pvalues = reinterpret_cast<T*>(values.data());
   updater_->Update(size_, storage_.data(), pvalues, option);
+  delete option;
 }
 
 template <typename T>

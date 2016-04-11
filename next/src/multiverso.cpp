@@ -54,8 +54,4 @@ int  MV_NetConnect(int* ranks, char* endpoints[], int size) {
   return NetInterface::Get()->Connect(ranks, endpoints, size);
 }
 
-//int MV_LoadTable(const std::string& table_file_path){
-//  return Zoo::Get()->LoadTable(table_file_path);
-//}
-
-}
+}  // namespace multiverso

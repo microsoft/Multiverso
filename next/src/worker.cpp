@@ -1,5 +1,7 @@
 #include "multiverso/worker.h"
 
+#include <vector>
+
 #include "multiverso/dashboard.h"
 #include "multiverso/util/mt_queue.h"
 #include "multiverso/zoo.h"
@@ -7,8 +9,10 @@
 namespace multiverso {
 
 Worker::Worker() : Actor(actor::kWorker) {
-  RegisterHandler(MsgType::Request_Get, std::bind(&Worker::ProcessGet, this, std::placeholders::_1));
-  RegisterHandler(MsgType::Request_Add, std::bind(&Worker::ProcessAdd, this, std::placeholders::_1));
+  RegisterHandler(MsgType::Request_Get, std::bind(
+    &Worker::ProcessGet, this, std::placeholders::_1));
+  RegisterHandler(MsgType::Request_Add, std::bind(
+    &Worker::ProcessAdd, this, std::placeholders::_1));
   RegisterHandler(MsgType::Reply_Get, std::bind(
     &Worker::ProcessReplyGet, this, std::placeholders::_1));
   RegisterHandler(MsgType::Reply_Add, std::bind(
@@ -30,7 +34,7 @@ void Worker::ProcessGet(MessagePtr& msg) {
   int num = cache_[table_id]->Partition(msg->data(), &partitioned_key);
   cache_[table_id]->Reset(msg_id, num);
   for (auto& it : partitioned_key) {
-    MessagePtr msg(new Message()); //  = std::make_unique<Message>();
+    MessagePtr msg(new Message());
     msg->set_src(Zoo::Get()->rank());
     msg->set_dst(it.first);
     msg->set_type(MsgType::Request_Get);
@@ -42,7 +46,7 @@ void Worker::ProcessGet(MessagePtr& msg) {
   MONITOR_END(WORKER_PROCESS_GET)
 }
 
-void Worker::ProcessAdd(MessagePtr& msg) {  
+void Worker::ProcessAdd(MessagePtr& msg) {
   MONITOR_BEGIN(WORKER_PROCESS_ADD)
   int table_id = msg->table_id();
   int msg_id = msg->msg_id();
@@ -52,7 +56,7 @@ void Worker::ProcessAdd(MessagePtr& msg) {
   int num = cache_[table_id]->Partition(msg->data(), &partitioned_kv);
   cache_[table_id]->Reset(msg_id, num);
   for (auto& it : partitioned_kv) {
-    MessagePtr msg(new Message()); 
+    MessagePtr msg(new Message());
     msg->set_src(Zoo::Get()->rank());
     msg->set_dst(it.first);
     msg->set_type(MsgType::Request_Add);
@@ -76,4 +80,4 @@ void Worker::ProcessReplyAdd(MessagePtr& msg) {
   cache_[msg->table_id()]->Notify(msg->msg_id());
 }
 
-}
+}  // namespace multiverso

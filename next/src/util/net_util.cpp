@@ -1,11 +1,12 @@
 #include "multiverso/util/net_util.h"
 
+#include <string>
 #include "multiverso/util/log.h"
 
 #ifdef _MSC_VER
 #include "winsock2.h"
 #include "iphlpapi.h"
-#pragma comment(lib,"IPHLPAPI.lib")  
+#pragma comment(lib, "IPHLPAPI.lib")
 #endif
 
 namespace multiverso {
@@ -17,7 +18,7 @@ namespace net {
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
 
 void GetLocalIPAddress(std::unordered_set<std::string>* result) {
-  // See MSDN 
+  // See MSDN
   // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365917(v=vs.85)
 
   PIP_ADAPTER_INFO pAdapterInfo;
@@ -28,7 +29,7 @@ void GetLocalIPAddress(std::unordered_set<std::string>* result) {
   pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(sizeof(IP_ADAPTER_INFO));
   if (pAdapterInfo == NULL) {
     Log::Fatal("Error allocating memory needed to call GetAdaptersinfo\n");
-    return ;
+    return;
   }
   // Make an initial call to GetAdaptersInfo to get
   // the necessary size into the ulOutBufLen variable
@@ -37,7 +38,7 @@ void GetLocalIPAddress(std::unordered_set<std::string>* result) {
     pAdapterInfo = (IP_ADAPTER_INFO *)MALLOC(ulOutBufLen);
     if (pAdapterInfo == NULL) {
       Log::Fatal("Error allocating memory needed to call GetAdaptersinfo\n");
-      return ;
+      return;
     }
   }
 
@@ -51,12 +52,11 @@ void GetLocalIPAddress(std::unordered_set<std::string>* result) {
         while (pIpAddressList) {
           result->insert(pIpAddressList->IpAddress.String);
           pIpAddressList = pIpAddressList->Next;
-        } 
+        }
       }
       pAdapter = pAdapter->Next;
     }
-  }
-  else {
+  } else {
     Log::Fatal("GetAdaptersInfo failed with error: %d\n", dwRetVal);
   }
   if (pAdapterInfo)
@@ -67,12 +67,11 @@ void GetLocalIPAddress(std::unordered_set<std::string>* result) {
 
 void GetLocalIPAddress(std::unordered_set<std::string>* result) {
 CHECK(false);
-int i = 0;
 return;
 // todo
 }
 
-#endif // _MSC_VER
+#endif  // _MSC_VER
 
-} 
-}
+}  // namespace net
+}  // namespace multiverso

@@ -18,10 +18,10 @@ public:
 private:
   using Clock = std::chrono::high_resolution_clock;
   using TimePoint = Clock::time_point;
- 
+
   TimePoint start_point_;
 };
 
-}
+}  // namespace multiverso
 
-#endif //MULTIVERSO_TIMER_H_
+#endif  // MULTIVERSO_TIMER_H_

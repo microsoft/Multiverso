@@ -17,4 +17,4 @@ double Timer::elapse() {
   return time_ms.count();
 }
 
-}
+}  // namespace multiverso

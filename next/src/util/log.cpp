@@ -1,11 +1,11 @@
-#include <ctime>
-#include <cstdarg>
-
 #include "multiverso/util/log.h"
 
-namespace multiverso
-{
-//-- Begin of Logger rountine --------------------------------------------/
+#include <time.h>
+#include <stdarg.h>
+
+#include <string>
+
+namespace multiverso {
 // Creates a Logger intance writing messages into STDOUT.
 Logger::Logger(LogLevel level) {
   level_ = level;
@@ -26,8 +26,7 @@ Logger::~Logger() {
 
 int Logger::ResetLogFile(std::string filename) {
   CloseLogFile();
-  if (filename.size() > 0) // try to open the log file if it is specified
-  {
+  if (filename.size() > 0) {  // try to open the log file if it is specified
 #ifdef _MSC_VER
     fopen_s(&file_, filename.c_str(), "w");
 #else
@@ -76,16 +75,15 @@ void Logger::Fatal(const char *format, ...) {
   va_end(val);
 }
 
-inline void Logger::Write(LogLevel level, const char *format, va_list &val) {
-  if (level >= level_) // omit the message with low level
-  {
+inline void Logger::Write(LogLevel level, const char *format, va_list* val) {
+  if (level >= level_) {  // omit the message with low level
     std::string level_str = GetLevelStr(level);
     std::string time_str = GetSystemTime();
     va_list val_copy;
-    va_copy(val_copy, val);
+    va_copy(val_copy, *val);
     // write to STDOUT
     printf("[%s] [%s] ", level_str.c_str(), time_str.c_str());
-    vprintf(format, val);
+    vprintf(format, *val);
     fflush(stdout);
     // write to log file
     if (file_ != nullptr) {
@@ -151,36 +149,36 @@ void Log::ResetKillFatal(bool is_kill_fatal) {
 void Log::Write(LogLevel level, const char *format, ...) {
   va_list val;
   va_start(val, format);
-  logger_.Write(level, format, val);
+  logger_.Write(level, format, &val);
   va_end(val);
 }
 
 void Log::Debug(const char *format, ...) {
   va_list val;
   va_start(val, format);
-  logger_.Write(LogLevel::Debug, format, val);
+  logger_.Write(LogLevel::Debug, format, &val);
   va_end(val);
 }
 
 void Log::Info(const char *format, ...) {
   va_list val;
   va_start(val, format);
-  logger_.Write(LogLevel::Info, format, val);
+  logger_.Write(LogLevel::Info, format, &val);
   va_end(val);
 }
 
 void Log::Error(const char *format, ...) {
   va_list val;
   va_start(val, format);
-  logger_.Write(LogLevel::Error, format, val);
+  logger_.Write(LogLevel::Error, format, &val);
   va_end(val);
 }
 
 void Log::Fatal(const char *format, ...) {
   va_list val;
   va_start(val, format);
-  logger_.Write(LogLevel::Fatal, format, val);
+  logger_.Write(LogLevel::Fatal, format, &val);
   va_end(val);
 }
 
-}
+}  // namespace multiverso

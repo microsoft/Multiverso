@@ -1,5 +1,7 @@
 #include "multiverso/controller.h"
 
+#include <vector>
+
 #include "multiverso/message.h"
 #include "multiverso/node.h"
 #include "multiverso/zoo.h"
@@ -13,14 +15,14 @@ public:
   void Control(MessagePtr& msg) {
     tasks_.push_back(std::move(msg));
     if (tasks_.size() == Zoo::Get()->size()) {
-	  Log::Debug("All nodes barrieded. System contains %d nodes.\n", Zoo::Get()->size());
-      MessagePtr my_reply; // my reply should be the last one
+      Log::Debug("All nodes barrieded. System contains %d nodes.\n",
+                Zoo::Get()->size());
+      MessagePtr my_reply;  // my reply should be the last one
       for (auto& msg : tasks_) {
         MessagePtr reply(msg->CreateReplyMessage());
         if (reply->dst() != Zoo::Get()->rank()) {
           parent_->SendTo(actor::kCommunicator, reply);
-        }
-        else {
+        } else {
           my_reply = std::move(reply);
         }
       }
@@ -28,14 +30,15 @@ public:
       tasks_.clear();
     }
   }
+
 private:
   std::vector<MessagePtr> tasks_;
-  Controller* parent_; // not owned
+  Controller* parent_;  // not owned
 };
 
 class Controller::RegisterController {
 public:
-  explicit RegisterController(Controller* parent) : 
+  explicit RegisterController(Controller* parent) :
     num_registered_(0), num_server_(0), num_worker_(0),
     parent_(parent) {
     all_nodes_.resize(Zoo::Get()->size());
@@ -50,15 +53,15 @@ public:
       all_nodes_[src].worker_id = num_worker_++;
     if (node::is_server(all_nodes_[src].role))
       all_nodes_[src].server_id = num_server_++;
-    if (++num_registered_ == Zoo::Get()->size()) { // all nodes is registered
+    if (++num_registered_ == Zoo::Get()->size()) {  // all nodes is registered
       Log::Info("All nodes registered. System contains %d nodes. num_worker = "
         "%d, num_server = %d\n", Zoo::Get()->size(), num_worker_, num_server_);
       Blob info_blob(all_nodes_.data(), all_nodes_.size() * sizeof(Node));
       Blob count_blob(2 * sizeof(int));
       count_blob.As<int>(0) = num_worker_;
       count_blob.As<int>(1) = num_server_;
-      for (int i = Zoo::Get()->size() - 1; i >= 0; --i) { // let rank 0 be last
-        MessagePtr reply(new Message());//  = std::make_unique<Message>();
+      for (int i = Zoo::Get()->size() - 1; i >= 0; --i) {  // let rank 0 be last
+        MessagePtr reply(new Message());
         reply->set_src(Zoo::Get()->rank());
         reply->set_dst(i);
         reply->set_type(MsgType::Control_Reply_Register);
@@ -69,12 +72,13 @@ public:
       }
     }
   }
+
 private:
   int num_registered_;
   int num_server_;
   int num_worker_;
   std::vector<Node> all_nodes_;
-  Controller* parent_; // not owned
+  Controller* parent_;  // not owned
 };
 
 Controller::Controller() : Actor(actor::kController) {
@@ -99,4 +103,4 @@ void Controller::ProcessRegister(MessagePtr& msg) {
   register_controller_->Control(msg);
 }
 
-}
+}  // namespace multiverso

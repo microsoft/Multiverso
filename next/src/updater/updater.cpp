@@ -12,8 +12,7 @@ MV_DEFINE_int(omp_threads, 4 , "#theads used by openMP for updater");
 
 template <typename T>
 void Updater<T>::Update(size_t num_element, T* data, T* delta,
-                        UpdateOption* option = nullptr, 
-                        size_t offset = 0) {
+                        UpdateOption* option, size_t offset) {
 // parallelism with openMP
 #pragma omp parallel for schedule(static) num_threads(MV_CONFIG_omp_threads)
   for (int i = 0; i < num_element; ++i) {
