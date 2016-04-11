@@ -30,7 +30,7 @@ Updater<int>* Updater<int>::GetUpdater(size_t size) {
 template <typename T>
 Updater<T>* Updater<T>::GetUpdater(size_t size = 0) {
   std::string type = MV_CONFIG_updater_type;
-  if (type == "adagrad") return new AdagradUpdater<T>(size);
+  if (type == "adagrad") return new AdaGradUpdater<T>(size);
   if (type == "smooth_gradient") return new SmoothGradientUpdater<T>(size);
   if (type == "second_order") return new SecondOrderUpdater<T>(size);
   // Default: simple updater

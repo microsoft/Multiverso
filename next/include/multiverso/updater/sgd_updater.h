@@ -1,11 +1,11 @@
-#ifndef MULTIVERSO_UPDATER_ASGD_UPDATER_H_
-#define MULTIVERSO_UPDATER_ASGD_UPDATER_H_
+#ifndef MULTIVERSO_UPDATER_SGD_UPDATER_H_
+#define MULTIVERSO_UPDATER_SGD_UPDATER_H_
 
 #include "updater.h"
 
 namespace multiverso {
 template <typename T>
-class ASGDUpdater : public IUpdater<T> {
+class SGDUpdater : public Updater<T> {
 public:
   void Update(size_t num_element, T*data, T*delta,
     UpdateOption* option, size_t offset) override {
@@ -13,7 +13,7 @@ public:
       data[index + offset] -= delta[index];
     }
   }
-  ~ASGDUpdater(){}
+  ~SGDUpdater(){}
 };
 }
 

@@ -1,20 +1,22 @@
 #ifndef MULTIVERSO_UPDATER_ADAGRAD_UPDATER_H_
 #define MULTIVERSO_UPDATER_ADAGRAD_UPDATER_H_
 
-#include "multiverso/updater/updater.h"
+#include "multiverso/updater/updater.h"I
+
+#include <vector>
 
 namespace multiverso {
 
 template <typename T>
-class AdagradUpdater : public Updater<T> {
+class AdaGradUpdater : public Updater<T> {
 public:
-  explicit AdagradUpdater(size_t size) {}
+  explicit AdaGradUpdater(size_t size) {}
   void Update(size_t num_element, T* data, T* delta, 
               UpdateOption* option, size_t offset) override {
-    // TODO(feiga)
+
   }
 protected:
-  // TODO(feiga): to implemented
+    std::vector< std::vector<T>> historic_g_sqr_;
 };
 
 }
