@@ -1,7 +1,7 @@
 #ifndef MULTIVERSO_UPDATER_ADAGRAD_UPDATER_H_
 #define MULTIVERSO_UPDATER_ADAGRAD_UPDATER_H_
 
-#include "multiverso/updater/updater.h"I
+#include "multiverso/updater/updater.h"
 
 #include <vector>
 #include <cmath>
