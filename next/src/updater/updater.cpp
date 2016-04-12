@@ -26,7 +26,6 @@ void Updater<T>::Update(size_t num_element, T* data, T* delta,
 // For simple int table, just using simple updater
 template<>
 Updater<int>* Updater<int>::GetUpdater(size_t size) {
-  printf("%d\n", size);
   return new Updater<int>();
 }
 
