@@ -1,4 +1,4 @@
-#ifndef MULTIVERSO_NET_MPI_NET_H_ 
+#ifndef MULTIVERSO_NET_MPI_NET_H_
 #define MULTIVERSO_NET_MPI_NET_H_
 
 #ifdef MULTIVERSO_USE_MPI
@@ -27,7 +27,9 @@ namespace multiverso {
 
 class MPINetWrapper : public NetInterface {
 public:
-  MPINetWrapper() : more_(std::numeric_limits<char>::max()) {}
+  MPINetWrapper() : /* more_(std::numeric_limits<char>::max()) */ 
+   kover_(std::numeric_limits<size_t>::max()) {
+  }
 
   class MPIMsgHandle {
   public:
@@ -88,12 +90,12 @@ public:
 
   void Finalize() override { inited_ = 0; MPI_Finalize(); }
 
-  int Bind(int rank, char* endpoint) override { 
+  int Bind(int, char*) override { 
     Log::Fatal("Shouldn't call this in MPI Net\n"); 
 	return -1;
   }
 
-  int Connect(int* ranks, char* endpoints[], int size) override { 
+  int Connect(int*, char* [], int) override { 
     Log::Fatal("Shouldn't call this in MPI Net\n"); 
 	return -1;
   }
@@ -215,7 +217,7 @@ public:
       memcpy(p, data.data(), s);
       p += s;
     }
-    size_t over = -1;
+    size_t over = kover_; // std::numeric_limits<size_t>::max(); -1;
     memcpy(p, &over, sizeof(size_t));
     MONITOR_END(MPI_NET_SEND_SERIALIZE);
 
@@ -240,7 +242,7 @@ public:
     p += Message::kHeaderSize;
     memcpy(&s, p, sizeof(size_t));
     p += sizeof(size_t);
-    while (s != -1) {
+    while (s != kover_) {
       Blob data(s);
       memcpy(data.data(), p, data.size());
       msg->Push(data);
@@ -259,61 +261,66 @@ public:
   }
 
 private:
-  size_t SendAsync(const MessagePtr& msg, 
-                   MPIMsgHandle* msg_handle) {
-    CHECK_NOTNULL(msg_handle);
-    size_t size = Message::kHeaderSize;
-    MPI_Request handle;
-    CHECK_NOTNULL(msg->header());
-    MV_MPI_CALL(MPI_Isend(msg->header(), Message::kHeaderSize, MPI_BYTE,
-      msg->dst(), 0, MPI_COMM_WORLD, &handle));
-    msg_handle->add_handle(handle);
-    // Send multiple msg 
-    for (auto& blob : msg->data()) {
-      CHECK_NOTNULL(blob.data());
-      MV_MPI_CALL(MPI_Isend(blob.data(), static_cast<int>(blob.size()), 
-        MPI_BYTE, msg->dst(),
-        0, MPI_COMM_WORLD, &handle));
-      size += blob.size();
-      msg_handle->add_handle(handle);
-    }
-    // Send an extra over tag indicating the finish of this Message
-    MV_MPI_CALL(MPI_Isend(&more_, sizeof(char), MPI_BYTE, msg->dst(),
-      0, MPI_COMM_WORLD, &handle));
-    // Log::Debug("MPI-Net: rank %d send msg size = %d\n", rank(), size+4);
-    msg_handle->add_handle(handle);
-    return size + sizeof(char);
-  }
+  //size_t SendAsync(const MessagePtr& msg, 
+  //                 MPIMsgHandle* msg_handle) {
+  //  CHECK_NOTNULL(msg_handle);
+  //  size_t size = Message::kHeaderSize;
+  //  MPI_Request handle;
+  //  CHECK_NOTNULL(msg->header());
+  //  MV_MPI_CALL(MPI_Isend(msg->header(), Message::kHeaderSize, MPI_BYTE,
+  //    msg->dst(), 0, MPI_COMM_WORLD, &handle));
+  //  msg_handle->add_handle(handle);
+  //  // Send multiple msg 
+  //  for (auto& blob : msg->data()) {
+  //    CHECK_NOTNULL(blob.data());
+  //    MV_MPI_CALL(MPI_Isend(blob.data(), static_cast<int>(blob.size()),
+  //      MPI_BYTE, msg->dst(),
+  //      0, MPI_COMM_WORLD, &handle));
+  //    size += blob.size();
+  //    msg_handle->add_handle(handle);
+  //  }
+  //  // Send an extra over tag indicating the finish of this Message
+  //  MV_MPI_CALL(MPI_Isend(&more_, sizeof(char), MPI_BYTE, msg->dst(),
+  //    0, MPI_COMM_WORLD, &handle));
+  //  // Log::Debug("MPI-Net: rank %d send msg size = %d\n", rank(), size+4);
+  //  msg_handle->add_handle(handle);
+  //  return size + sizeof(char);
+  //}
 
-  size_t RecvMsgFrom(int source, MessagePtr* msg_ptr) {
-    if (!msg_ptr->get()) msg_ptr->reset(new Message());
-    MessagePtr& msg = *msg_ptr;
-    msg->data().clear();
-    MPI_Status status;
-    CHECK_NOTNULL(msg->header());
-    MV_MPI_CALL(MPI_Recv(msg->header(), Message::kHeaderSize,
-      MPI_BYTE, source, 0, MPI_COMM_WORLD, &status));
-    size_t size = Message::kHeaderSize;
-    while (true) {
-      int count;
-      MV_MPI_CALL(MPI_Probe(source, 0, MPI_COMM_WORLD, &status));
-      MV_MPI_CALL(MPI_Get_count(&status, MPI_BYTE, &count));
-      Blob blob(count);
-      // We only receive from msg->src() until we recv the overtag msg
-      MV_MPI_CALL(MPI_Recv(blob.data(), count, MPI_BYTE, source,
-        0, MPI_COMM_WORLD, &status));
-      size += count;
-      if (count == sizeof(char)) {
-        if (blob.As<char>() == more_) break;
-        CHECK(false);
-      }
-      msg->Push(blob);
-    }
-    return size;
-  }
+  //size_t RecvMsgFrom(int source, MessagePtr* msg_ptr) {
+  //  if (!msg_ptr->get()) msg_ptr->reset(new Message());
+  //  MessagePtr& msg = *msg_ptr;
+  //  msg->data().clear();
+  //  MPI_Status status;
+  //  CHECK_NOTNULL(msg->header());
+  //  MV_MPI_CALL(MPI_Recv(msg->header(), Message::kHeaderSize,
+  //    MPI_BYTE, source, 0, MPI_COMM_WORLD, &status));
+  //  size_t size = Message::kHeaderSize;
+  //  bool has_more = true;
+  //  while (has_more) {
+  //    int count;
+  //    MV_MPI_CALL(MPI_Probe(source, 0, MPI_COMM_WORLD, &status));
+  //    MV_MPI_CALL(MPI_Get_count(&status, MPI_BYTE, &count));
+  //    Blob blob(count);
+  //    // We only receive from msg->src() until we recv the overtag msg
+  //    MV_MPI_CALL(MPI_Recv(blob.data(), count, MPI_BYTE, source,
+  //      0, MPI_COMM_WORLD, &status));
+  //    size += count;
+  //    if (count == sizeof(char)) {
+  //      if (blob.As<char>() == more_) {
+  //        has_more = false; 
+  //        break;
+  //      }
+  //      Log::Fatal("Unexpected msg format\n");
+  //    }
+  //    msg->Push(blob);
+  //  }
+  //  return size;
+  //}
 
 private:
-  const char more_;
+  // const char more_;
+  const size_t kover_;
   std::mutex mutex_;
   int thread_provided_;
   int inited_;

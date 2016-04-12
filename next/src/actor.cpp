@@ -42,7 +42,7 @@ void Actor::Main() {
     } else if (handlers_.find(MsgType::Default) != handlers_.end()) {
       handlers_[MsgType::Default](msg);
     } else {
-      CHECK(false);  // Fatal error
+      Log::Fatal("Unexpected msg type\n");
     }
   }
 }

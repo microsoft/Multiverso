@@ -33,7 +33,7 @@ TextReader::TextReader(const URI& uri, size_t buf_size) {
 size_t TextReader::GetLine(std::string &line) {
 	line.clear();
 	bool isEnd = false;
-	while (true) {
+	while (!isEnd) {
 		while(pos_ < length_) {
 			char & c = buf_[pos_++];
 			if (c == '\n') {

@@ -3,6 +3,7 @@
 #include "multiverso/updater/adagrad_updater.h"
 #include "multiverso/updater/smooth_gradient_updater.h"
 #include "multiverso/util/configure.h"
+#include "multiverso/util/log.h"
 
 namespace multiverso {
 
@@ -10,7 +11,7 @@ MV_DEFINE_string(updater_type, "default", "multiverso server updater type");
 
 template <typename T>
 void Updater<T>::Update(size_t num_element, T* data, T* delta,
-                        UpdateOption* option, size_t offset) {
+                        UpdateOption*, size_t offset) {
   // parallelism with openmp
   // TODO(feiga): change the magic number 4 with some configurable env variable
   #pragma omp parallel for schedule(static) num_threads(4)
@@ -23,6 +24,7 @@ void Updater<T>::Update(size_t num_element, T* data, T* delta,
 // For simple int table, just using simple updater
 template<>
 Updater<int>* Updater<int>::GetUpdater(size_t size) {
+  printf("%d\n", size);
   return new Updater<int>();
 }
 
@@ -34,8 +36,6 @@ Updater<T>* Updater<T>::GetUpdater(size_t size) {
   // Default: simple updater
   return new Updater<T>();
 }
-
-
 
 MV_INSTANTIATE_CLASS_WITH_BASE_TYPE(Updater);
 
