@@ -42,6 +42,9 @@ class ASyncBuffer{
         }
     }
 
+    ASyncBuffer(const ASyncBuffer<BufferType>& other) = delete;
+    ASyncBuffer& operator = (const ASyncBuffer<BufferType>& other) = delete;
+
     // Stops prefetch and releases related resource
     void Join() {
         if (thread_ != nullptr) {
