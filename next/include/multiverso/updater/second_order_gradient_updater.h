@@ -13,6 +13,7 @@ namespace multiverso {
   public:
     explicit SecondOrderUpdater(size_t size) : 
       size_(size) {
+      Log::Debug("[SecondOrderUpdater] Init with size = %d. \n", size_);
       shadow_copies_.resize(MV_NumWorkers());
       for (auto s : shadow_copies_){
         s.resize(size);

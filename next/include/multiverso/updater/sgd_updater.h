@@ -11,6 +11,7 @@ template <typename T>
 class SGDUpdater : public Updater<T> {
 public:
   explicit SGDUpdater(size_t size){
+    Log::Debug("[SGDUpdater] Init. \n");
   }
   void Update(size_t num_element, T*data, T*delta,
     UpdateOption* option, size_t offset) override {

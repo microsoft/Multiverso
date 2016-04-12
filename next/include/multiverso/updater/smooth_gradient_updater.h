@@ -10,6 +10,7 @@ template <typename T>
 class SmoothGradientUpdater : public Updater<T> {
 public:
   explicit SmoothGradientUpdater(size_t size) : size_(size) {
+    Log::Debug("[SmoothGradientUpdater] Init with size = %d. \n", size_);
     smooth_gradient_.resize(size_);
   }
   void Update(size_t num_element, T*data, T*delta, 
