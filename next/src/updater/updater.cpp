@@ -1,7 +1,7 @@
 #include "multiverso/updater/updater.h"
 
 #include "multiverso/updater/adagrad_updater.h"
-#include "multiverso/updater/smooth_gradient_updater.h"
+#include "multiverso/updater/momentum_updater.h"
 #include "multiverso/updater/second_order_gradient_updater.h"
 #include "multiverso/updater/sgd_updater.h"
 #include "multiverso/util/configure.h"
@@ -32,11 +32,10 @@ Updater<int>* Updater<int>::GetUpdater(size_t) {
 template <typename T>
 Updater<T>* Updater<T>::GetUpdater(size_t size) {
   std::string type = MV_CONFIG_updater_type;
-  printf(type.c_str());
   if (type == "sgd") return new SGDUpdater<T>(size);
   if (type == "adagrad") return new AdaGradUpdater<T>(size);
-  if (type == "smooth_gradient") return new SmoothGradientUpdater<T>(size);
-  if (type == "second_order") return new SecondOrderUpdater<T>(size);
+  if (type == "momentum_sgd") return new MomentumUpdater<T>(size);
+  if (type == "second_order_sgd") return new SecondOrderUpdater<T>(size);
   // Default: simple updater
   return new Updater<T>();
 }

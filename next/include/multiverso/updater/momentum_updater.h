@@ -1,5 +1,5 @@
-#ifndef MULTIVERSO_UPDATER_SMOOTH_GRADIENT_UPDATER_H_
-#define MULTIVERSO_UPDATER_SMOOTH_GRADIENT_UPDATER_H_
+#ifndef MULTIVERSO_UPDATER_MOMENTUM_UPDATER_H_
+#define MULTIVERSO_UPDATER_MOMENTUM_UPDATER_H_
 
 #include "updater.h"
 #include <vector>
@@ -7,9 +7,9 @@
 namespace multiverso {
 
 template <typename T>
-class SmoothGradientUpdater : public Updater<T> {
+class MomentumUpdater : public Updater<T> {
 public:
-  explicit SmoothGradientUpdater(size_t size) : size_(size) {
+  explicit MomentumUpdater(size_t size) : size_(size) {
     Log::Debug("[SmoothGradientUpdater] Init with size = %d. \n", size_);
     smooth_gradient_.resize(size_);
   }
@@ -22,7 +22,7 @@ public:
       data[index + offset] -= smooth_gradient_[index + offset];
     }
   }
-  ~SmoothGradientUpdater() { smooth_gradient_.clear(); }
+  ~MomentumUpdater() { smooth_gradient_.clear(); }
 protected:
   std::vector<T> smooth_gradient_;
   size_t size_;
@@ -30,4 +30,4 @@ protected:
 
 }
 
-#endif // MULTIVERSO_UPDATER_SMOOTH_GRADIENT_UPDATER_H_
+#endif // MULTIVERSO_UPDATER_MOMENTUM_UPDATER_H_

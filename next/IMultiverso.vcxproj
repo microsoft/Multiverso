@@ -192,7 +192,7 @@
     <ClInclude Include="include\multiverso\updater\adagrad_updater.h" />
     <ClInclude Include="include\multiverso\updater\sgd_updater.h" />
     <ClInclude Include="include\multiverso\updater\second_order_gradient_updater.h" />
-    <ClInclude Include="include\multiverso\updater\smooth_gradient_updater.h" />
+    <ClInclude Include="include\multiverso\updater\momentum_updater.h" />
     <ClInclude Include="include\multiverso\updater\updater.h" />
     <ClInclude Include="include\multiverso\util\configure.h" />
     <ClInclude Include="include\multiverso\util\async_buffer.h" />

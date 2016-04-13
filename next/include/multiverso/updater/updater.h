@@ -2,14 +2,21 @@
 #define MULTIVERSO_UPDATER_UPDATER_H_
 
 #include <cstring>
+#include <sstream>
 #include <multiverso/multiverso.h>
 
 namespace multiverso {
 
 struct UpdateOption {
 public:
-  // TODO(feiga): default value;
-  UpdateOption() { data_[0].i = MV_WorkerId(); }
+  // TODO(qiwye): make these default value more flexiable
+  UpdateOption(){
+    data_[0].i = MV_WorkerId(); 
+    data_[1].f = 0.0f;
+    data_[2].f = 0.01f;
+    data_[3].f = 0.1f;
+    data_[4].f = 0.1f;
+  }
 
   UpdateOption(const char* data, size_t size) {
     CopyFrom(data, size);
@@ -27,6 +34,15 @@ public:
   void set_rho(float rho) { data_[3].f = rho; }
   float lambda() const { return data_[4].f; }
   void set_lambda(float lambda) { data_[4].f = lambda; }
+
+
+  std::string toString(){
+    std::stringstream  ss;
+    ss << "UpdateOption " << worker_id() << " " << momentum() << " "
+      << learning_rate() << " " << rho() << " " << lambda() << std::endl;
+
+    return ss.str();
+  }
 
 
   const char* data() const { return reinterpret_cast<const char*>(&data_[0]); }

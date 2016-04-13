@@ -138,7 +138,7 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
     int rank = MV_ServerIdToRank(it.first);
     std::vector<Blob>& vec = (*out)[rank];
     vec.push_back(Blob(it.second * sizeof(int)));
-    if (kv.size() == 2) vec.push_back(Blob(it.second * row_size_));
+    if (kv.size() >= 2) vec.push_back(Blob(it.second * row_size_));
   }
   count.clear();
 
@@ -147,7 +147,7 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
     int dst = dest[i];
     int rank = MV_ServerIdToRank(dst);
     (*out)[rank][0].As<int>(count[dst]) = keys[i];
-    if (kv.size() == 2){ // copy add values
+    if (kv.size() >= 2){ // copy add values
       memcpy(&((*out)[rank][1].As<T>(count[dst] * num_col_)),
         kv[1].data() + offset, row_size_);
       offset += row_size_;
@@ -244,7 +244,9 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
       server_id_, row_offset_, ssize / num_col_);
   }
   else {
-    CHECK(data[1].size() == keys_size * sizeof(T)* num_col_);
+    Log::Debug("[Debug] Server = %d, keys_size = %d, data[1].size = %d, num_col = %d\n",
+      server_id_, keys_size, data[1].size() , num_col_);
+    CHECK(data[1].size() == keys_size * num_col_);
 
     int offset_v = 0;
     CHECK(storage_.size() >= keys_size * num_col_);

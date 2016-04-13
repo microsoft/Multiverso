@@ -102,6 +102,7 @@ void TestArray(int argc, char* argv[]) {
     UpdateOption option;
     option.set_learning_rate(1 - 0.0001 * i);
     option.set_momentum(0.99);
+    option.set_rho(0.01f);
     shared_array->Add(delta.data(), 1000000, &option);
 
 
@@ -343,8 +344,8 @@ void TestMatrix(int argc, char* argv[]){
   //  Log::Debug("rank %d has no worker\n", MV_Rank());
   // }
 
-	MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-	MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+	MatrixWorkerTable<float>* worker_table = new MatrixWorkerTable<float>(num_row, num_col);
+	MatrixServerTable<float>* server_table = new MatrixServerTable<float>(num_row, num_col);
 	std::thread* m_prefetchThread = nullptr;
 	MV_Barrier();
 
@@ -359,21 +360,22 @@ void TestMatrix(int argc, char* argv[]){
 		std::vector<int> v = { 0, 1, 5, 10 };
 
 		// test data
-		std::vector<int> delta(size);
+		std::vector<float> delta(size);
 		for (int i = 0; i < size; ++i)
 			delta[i] = i;
 
-		int * data = new int[size];
+		float * data = new float[size];
 		m_prefetchThread = new std::thread([&](){
 
-			worker_table->Add(delta.data(), size); //add all
+      UpdateOption option;
+			worker_table->Add(delta.data(), size, &option); //add all
 
 			worker_table->Get(data, size); //get all
 			printf("----------------------------\n");
 			for (int i = 0; i < num_row; ++i){
 				printf("rank %d, row %d: ", MV_Rank(), i);
 				for (int j = 0; j < num_col; ++j)
-					printf("%d ", data[i * num_col + j]);
+					printf("%.2f ", data[i * num_col + j]);
 				printf("\n");
 			};
 		});
@@ -386,9 +388,10 @@ void TestMatrix(int argc, char* argv[]){
 			m_prefetchThread = nullptr;
 		}
 		//test data_vec
-		std::vector<int*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10 * num_col] };
-		std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
-		worker_table->Add(v, delta_rows, num_col);
+		std::vector<float*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10 * num_col] };
+		std::vector<float*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
+    UpdateOption option;
+		worker_table->Add(v, delta_rows, num_col, &option);
 		worker_table->Get(v, data_rows, num_col);
 		MV_Barrier();
 
@@ -396,7 +399,7 @@ void TestMatrix(int argc, char* argv[]){
 		for (int i = 0; i < num_row; ++i){
 			printf("rank %d, row %d: ", MV_Rank(), i);
 			for (int j = 0; j < num_col; ++j)
-				printf("%d ", data[i * num_col + j]);
+				printf("%.2f ", data[i * num_col + j]);
 			printf("\n");
 		}
 		MV_Barrier();

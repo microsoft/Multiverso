@@ -100,9 +100,6 @@
     <ClInclude Include="include\multiverso\updater\updater.h">
       <Filter>updater</Filter>
     </ClInclude>
-    <ClInclude Include="include\multiverso\updater\smooth_gradient_updater.h">
-      <Filter>updater</Filter>
-    </ClInclude>
     <ClInclude Include="include\multiverso\updater\adagrad_updater.h">
       <Filter>updater</Filter>
     </ClInclude>
@@ -113,6 +110,9 @@
       <Filter>table</Filter>
     </ClInclude>
     <ClInclude Include="include\multiverso\updater\sgd_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
+    <ClInclude Include="include\multiverso\updater\momentum_updater.h">
       <Filter>updater</Filter>
     </ClInclude>
   </ItemGroup>
