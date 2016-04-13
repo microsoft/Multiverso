@@ -24,17 +24,15 @@ void Updater<T>::Update(size_t num_element, T* data, T* delta,
 
 // Gradient-based updater in only for numerical table
 // For simple int table, just using simple updater
-#pragma warning(push)
-#pragma warning(disable : 4100)
 template<>
 Updater<int>* Updater<int>::GetUpdater(size_t) {
   return new Updater<int>();
 }
-#pragma warning(pop)
 
 template <typename T>
 Updater<T>* Updater<T>::GetUpdater(size_t size) {
   std::string type = MV_CONFIG_updater_type;
+  printf(type.c_str());
   if (type == "sgd") return new SGDUpdater<T>(size);
   if (type == "adagrad") return new AdaGradUpdater<T>(size);
   if (type == "smooth_gradient") return new SmoothGradientUpdater<T>(size);
