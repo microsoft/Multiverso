@@ -69,7 +69,8 @@ public:
     FlagRegisterHelper<type> internal_configure_helper_##name(              \
       #name, default_value, text);                                          \
   }                                                                         \
-  const type& MV_CONFIG_##name = default_value;
+  const type& MV_CONFIG_##name = configure::FlagRegister<type>              \
+    ::Get()->GetValue(#name);
 
 // declare the variable as MV_CONFIG_##name
 #define DECLARE_CONFIGURE(type, name)                                       \
