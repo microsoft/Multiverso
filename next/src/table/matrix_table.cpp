@@ -20,8 +20,8 @@ MatrixWorkerTable<T>::MatrixWorkerTable(int num_row, int num_col) :
   server_offsets_.push_back(0);
   int length = num_row / num_server_;
   int offset = length;
-
-  while (length > 0 && offset < num_row) {
+  int i = 0;
+  while (length > 0 && offset < num_row && ++i < num_server_) {
     server_offsets_.push_back(offset);
     offset += length;
   }
@@ -95,7 +95,7 @@ void MatrixWorkerTable<T>::Add(const std::vector<int>& row_ids,
 template <typename T>
 int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
   std::unordered_map<int, std::vector<Blob>>* out) {
-  CHECK(kv.size() == 1 || kv.size() == 2);
+  CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
   CHECK_NOTNULL(out);
 
   size_t keys_size = kv[0].size<int>();
@@ -105,12 +105,15 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       int rank = MV_ServerIdToRank(i);
       (*out)[rank].push_back(kv[0]);
     }
-    if (kv.size() == 2){	//process add values
+    if (kv.size() >= 2){	//process add values
       for (int i = 0; i < server_offsets_.size() - 1; ++i){
         int rank = MV_ServerIdToRank(i);
         Blob blob(kv[1].data() + server_offsets_[i] * row_size_,
           (server_offsets_[i + 1] - server_offsets_[i]) * row_size_);
         (*out)[rank].push_back(blob);
+        if (kv.size() == 3) {// update option blob
+          (*out)[rank].push_back(kv[2]);
+        }
       }
     }
     else {
@@ -150,6 +153,12 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       offset += row_size_;
     }
     ++count[dst];
+  }
+  for (int i = 0; i < server_offsets_.size() - 1; ++i){
+    int rank = MV_ServerIdToRank(i);
+    if (kv.size() == 3) {// update option blob
+      (*out)[rank].push_back(kv[2]);
+    }
   }
 
   if (kv.size() == 1){

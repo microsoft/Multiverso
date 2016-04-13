@@ -3,6 +3,7 @@
 #include "multiverso/updater/adagrad_updater.h"
 #include "multiverso/updater/smooth_gradient_updater.h"
 #include "multiverso/updater/second_order_gradient_updater.h"
+#include "multiverso/updater/sgd_updater.h"
 #include "multiverso/util/configure.h"
 #include "multiverso/util/log.h"
 
@@ -24,14 +25,15 @@ void Updater<T>::Update(size_t num_element, T* data, T* delta,
 // Gradient-based updater in only for numerical table
 // For simple int table, just using simple updater
 template<>
-Updater<int>* Updater<int>::GetUpdater(size_t size) {
-  printf("%d\n", size);
+Updater<int>* Updater<int>::GetUpdater(size_t) {
   return new Updater<int>();
 }
 
 template <typename T>
 Updater<T>* Updater<T>::GetUpdater(size_t size) {
   std::string type = MV_CONFIG_updater_type;
+  printf(type.c_str());
+  if (type == "sgd") return new SGDUpdater<T>(size);
   if (type == "adagrad") return new AdaGradUpdater<T>(size);
   if (type == "smooth_gradient") return new SmoothGradientUpdater<T>(size);
   if (type == "second_order") return new SecondOrderUpdater<T>(size);

@@ -1,5 +1,5 @@
-#ifndef INCLUDE_MULTIVERSO_UTIL_QUANTIZATION_UTIL_H_
-#define INCLUDE_MULTIVERSO_UTIL_QUANTIZATION_UTIL_H_
+#ifndef MULTIVERSO_UTIL_QUANTIZATION_UTIL_H_
+#define MULTIVERSO_UTIL_QUANTIZATION_UTIL_H_
 
 #include <multiverso/blob.h>
 #include <vector>
@@ -137,4 +137,4 @@ class OneBitsFilter : public QuantizationFilter{
 };
 }  // namespace multiverso
 
-#endif  // INCLUDE_MULTIVERSO_UTIL_QUANTIZATION_UTIL_H_
+#endif  // MULTIVERSO_UTIL_QUANTIZATION_UTIL_H_

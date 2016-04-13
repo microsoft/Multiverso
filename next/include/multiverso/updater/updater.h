@@ -20,6 +20,7 @@ public:
   float momentum() const { return data_[1].f; }
   void set_momentum(float momentum) { data_[1].f = momentum; }
   int worker_id() const { return data_[0].i; }
+  void set_worker_id(int worker_id) { data_[0].i = worker_id; }
 
   //rho and lambda are two coefficient used by other algorithms
   float rho() const { return data_[3].f; }

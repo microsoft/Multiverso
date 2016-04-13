@@ -80,6 +80,10 @@ public:
 }  // namespace configure
 
 void ParseCMDFlags(int *argc, char* argv[]);
+template <typename T>
+void SetCMDFlag(const std::string& name, const T& value) {
+  CHECK(configure::FlagRegister<T>::Get()->SetFlagIfFound(name, value));
+}
 
 #define MV_DEFINE_int(name, default_value, text) \
   DEFINE_CONFIGURE(int, name, default_value, text)

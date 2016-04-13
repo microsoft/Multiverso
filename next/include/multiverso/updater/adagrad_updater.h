@@ -12,11 +12,12 @@ template <typename T>
 class AdaGradUpdater : public Updater<T> {
 public:
   explicit AdaGradUpdater(size_t size):
-    e(1e-6f) {  
+    e(1e-6f), size_(size) {  
     historic_g_sqr_.resize(MV_NumWorkers());
     for (auto s : historic_g_sqr_){
-      s.resize(size);
+      s.resize(size_);
     }
+    Log::Debug("[AdaGradUpdater] Init with size = %d, e = %f. \n", size_, e);
   }
   void Update(size_t num_element, T* data, T* delta, 
               UpdateOption* option, size_t offset) override {
@@ -34,6 +35,7 @@ public:
 protected:
     std::vector< std::vector<T>> historic_g_sqr_;
     float e;
+    size_t size_;
 };
 
 }
