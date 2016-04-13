@@ -27,7 +27,7 @@ void Updater<T>::Update(size_t num_element, T* data, T* delta,
 #pragma warning(push)
 #pragma warning(disable : 4100)
 template<>
-Updater<int>* Updater<int>::GetUpdater(size_t size) {
+Updater<int>* Updater<int>::GetUpdater(size_t) {
   return new Updater<int>();
 }
 #pragma warning(pop)
