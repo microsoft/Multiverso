@@ -244,9 +244,7 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
       server_id_, row_offset_, ssize / num_col_);
   }
   else {
-    Log::Debug("[Debug] Server = %d, keys_size = %d, data[1].size = %d, num_col = %d\n",
-      server_id_, keys_size, data[1].size() , num_col_);
-    CHECK(data[1].size() == keys_size * num_col_);
+    CHECK(data[1].size() == keys_size * sizeof(T) * num_col_);
 
     int offset_v = 0;
     CHECK(storage_.size() >= keys_size * num_col_);
