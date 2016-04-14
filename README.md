@@ -11,15 +11,6 @@ Build
 
 **Linux** (Tested on Ubuntu 12.04)
 
-0. Run ```cd third_party``` 
-1. Run ```./install.sh``` to install the dependence.
-2. Run ```make all -j4``` to build the multiverso.
-
-**Cmake**
-
-0. Run ``` cd third_party ``` 
-1. Run ``` ./install.sh ``` to install the dependence.
-1. Run ``` cd .. ```
 1. Run ``` mkdir build ```
 2. Run ``` cd build ```
 3. Run ``` cmake .. ```
