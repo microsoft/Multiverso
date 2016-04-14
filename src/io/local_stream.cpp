@@ -1,4 +1,4 @@
-#include "multiverso/util/local_stream.h"
+#include "multiverso/io/local_stream.h"
 #include <errno.h>
 extern "C" {
 #include <sys/stat.h>

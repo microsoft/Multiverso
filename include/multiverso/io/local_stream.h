@@ -6,7 +6,7 @@
 * \brief the implement of local io interface.
 */
 
-#include "multiverso/util/io.h"
+#include "multiverso/io/io.h"
 
 namespace multiverso
 {

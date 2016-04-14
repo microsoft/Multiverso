@@ -1,7 +1,7 @@
 #ifdef MULTIVERSO_USE_ZMQ
 #include <vector>
 
-#include "allreduce_engine.h"
+#include "multiverso/net/allreduce_engine.h"
 
 namespace multiverso {
 

@@ -1,6 +1,6 @@
-#include "multiverso/util/io.h"
-#include "multiverso/util/hdfs_stream.h"
-#include "multiverso/util/local_stream.h"
+#include "multiverso/io/io.h"
+#include "multiverso/io/hdfs_stream.h"
+#include "multiverso/io/local_stream.h"
 
 
 namespace multiverso {

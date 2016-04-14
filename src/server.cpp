@@ -5,7 +5,7 @@
 #include "multiverso/actor.h"
 #include "multiverso/dashboard.h"
 #include "multiverso/table_interface.h"
-#include "multiverso/util/io.h"
+#include "multiverso/io/io.h"
 #include "multiverso/zoo.h"
 
 

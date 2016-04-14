@@ -19,13 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F2DD7153-E4FB-4CA8-9B9E-CB6AB025CCBA}</ProjectGuid>
+    <ProjectGuid>{16F14058-B116-49D9-8BA0-209F3AFFE849}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>IMultiverso</RootNamespace>
+    <RootNamespace>Multiverso</RootNamespace>
     <SccProjectName>SAK</SccProjectName>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
     <SccProvider>SAK</SccProvider>
+    <ProjectName>Multiverso</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'" Label="Configuration">
@@ -71,20 +72,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release_zmq|x64'">
-    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
+    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(SolutionDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
-    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\multiverso-next\lib;</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
+    <IncludePath>$(MSMPI_INC);$(SolutionDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
-    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
+    <IncludePath>$(MSMPI_INC);$(SolutionDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_zmq|x64'">
-    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(MSMPI_INC);$(ProjectDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
+    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(SolutionDir)\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <ClCompile>
@@ -170,70 +171,70 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="include\multiverso\actor.h" />
-    <ClInclude Include="include\multiverso\blob.h" />
-    <ClInclude Include="include\multiverso\communicator.h" />
-    <ClInclude Include="include\multiverso\controller.h" />
-    <ClInclude Include="include\multiverso\dashboard.h" />
-    <ClInclude Include="include\multiverso\message.h" />
-    <ClInclude Include="include\multiverso\multiverso.h" />
-    <ClInclude Include="include\multiverso\net.h" />
-    <ClInclude Include="include\multiverso\net\allreduce_engine.h" />
-    <ClInclude Include="include\multiverso\net\mpi_net.h" />
-    <ClInclude Include="include\multiverso\net\net_allreduce.h" />
-    <ClInclude Include="include\multiverso\net\zmq_net.h" />
-    <ClInclude Include="include\multiverso\node.h" />
-    <ClInclude Include="include\multiverso\server.h" />
-    <ClInclude Include="include\multiverso\table\array_table.h" />
-    <ClInclude Include="include\multiverso\table\kv_table.h" />
-    <ClInclude Include="include\multiverso\table\matrix_table.h" />
-    <ClInclude Include="include\multiverso\table\sparse_matrix_table.h" />
-    <ClInclude Include="include\multiverso\table_interface.h" />
-    <ClInclude Include="include\multiverso\updater\adagrad_updater.h" />
-    <ClInclude Include="include\multiverso\updater\sgd_updater.h" />
-    <ClInclude Include="include\multiverso\updater\second_order_gradient_updater.h" />
-    <ClInclude Include="include\multiverso\updater\momentum_updater.h" />
-    <ClInclude Include="include\multiverso\updater\updater.h" />
-    <ClInclude Include="include\multiverso\util\configure.h" />
-    <ClInclude Include="include\multiverso\util\async_buffer.h" />
-    <ClInclude Include="include\multiverso\util\hdfs_stream.h" />
-    <ClInclude Include="include\multiverso\util\io.h" />
-    <ClInclude Include="include\multiverso\util\local_stream.h" />
-    <ClInclude Include="include\multiverso\util\log.h" />
-    <ClInclude Include="include\multiverso\util\mt_queue.h" />
-    <ClInclude Include="include\multiverso\util\net_util.h" />
-    <ClInclude Include="include\multiverso\util\quantization_util.h" />
-    <ClInclude Include="include\multiverso\util\timer.h" />
-    <ClInclude Include="include\multiverso\util\waiter.h" />
-    <ClInclude Include="include\multiverso\worker.h" />
-    <ClInclude Include="include\multiverso\zoo.h" />
+    <ClInclude Include="..\include\multiverso\actor.h" />
+    <ClInclude Include="..\include\multiverso\blob.h" />
+    <ClInclude Include="..\include\multiverso\communicator.h" />
+    <ClInclude Include="..\include\multiverso\controller.h" />
+    <ClInclude Include="..\include\multiverso\dashboard.h" />
+    <ClInclude Include="..\include\multiverso\io\hdfs_stream.h" />
+    <ClInclude Include="..\include\multiverso\io\io.h" />
+    <ClInclude Include="..\include\multiverso\io\local_stream.h" />
+    <ClInclude Include="..\include\multiverso\message.h" />
+    <ClInclude Include="..\include\multiverso\multiverso.h" />
+    <ClInclude Include="..\include\multiverso\net.h" />
+    <ClInclude Include="..\include\multiverso\net\allreduce_engine.h" />
+    <ClInclude Include="..\include\multiverso\net\mpi_net.h" />
+    <ClInclude Include="..\include\multiverso\net\net_allreduce.h" />
+    <ClInclude Include="..\include\multiverso\net\zmq_net.h" />
+    <ClInclude Include="..\include\multiverso\node.h" />
+    <ClInclude Include="..\include\multiverso\server.h" />
+    <ClInclude Include="..\include\multiverso\table\array_table.h" />
+    <ClInclude Include="..\include\multiverso\table\kv_table.h" />
+    <ClInclude Include="..\include\multiverso\table\matrix_table.h" />
+    <ClInclude Include="..\include\multiverso\table\sparse_matrix_table.h" />
+    <ClInclude Include="..\include\multiverso\table_interface.h" />
+    <ClInclude Include="..\include\multiverso\updater\adagrad_updater.h" />
+    <ClInclude Include="..\include\multiverso\updater\sgd_updater.h" />
+    <ClInclude Include="..\include\multiverso\updater\second_order_gradient_updater.h" />
+    <ClInclude Include="..\include\multiverso\updater\momentum_updater.h" />
+    <ClInclude Include="..\include\multiverso\updater\updater.h" />
+    <ClInclude Include="..\include\multiverso\util\configure.h" />
+    <ClInclude Include="..\include\multiverso\util\async_buffer.h" />
+    <ClInclude Include="..\include\multiverso\util\log.h" />
+    <ClInclude Include="..\include\multiverso\util\mt_queue.h" />
+    <ClInclude Include="..\include\multiverso\util\net_util.h" />
+    <ClInclude Include="..\include\multiverso\util\quantization_util.h" />
+    <ClInclude Include="..\include\multiverso\util\timer.h" />
+    <ClInclude Include="..\include\multiverso\util\waiter.h" />
+    <ClInclude Include="..\include\multiverso\worker.h" />
+    <ClInclude Include="..\include\multiverso\zoo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\multiverso\net\allreduce_engine.cpp" />
-    <ClCompile Include="include\multiverso\net\allreduce_topo.cpp" />
-    <ClCompile Include="src\actor.cpp" />
-    <ClCompile Include="src\communicator.cpp" />
-    <ClCompile Include="src\controller.cpp" />
-    <ClCompile Include="src\dashboard.cpp" />
-    <ClCompile Include="src\multiverso.cpp" />
-    <ClCompile Include="src\net.cpp" />
-    <ClCompile Include="src\node.cpp" />
-    <ClCompile Include="src\server.cpp" />
-    <ClCompile Include="src\table.cpp" />
-    <ClCompile Include="src\table\array_table.cpp" />
-    <ClCompile Include="src\table\matrix_table.cpp" />
-    <ClCompile Include="src\table\sparse_matrix_table.cpp" />
-    <ClCompile Include="src\updater\updater.cpp" />
-    <ClCompile Include="src\util\hdfs_stream.cpp" />
-    <ClCompile Include="src\util\io.cpp" />
-    <ClCompile Include="src\util\local_stream.cpp" />
-    <ClCompile Include="src\timer.cpp" />
-    <ClCompile Include="src\util\log.cpp" />
-    <ClCompile Include="src\util\configure.cpp" />
-    <ClCompile Include="src\util\net_util.cpp" />
-    <ClCompile Include="src\util\quantization_util.cpp" />
-    <ClCompile Include="src\worker.cpp" />
-    <ClCompile Include="src\zoo.cpp" />
+    <ClCompile Include="actor.cpp" />
+    <ClCompile Include="communicator.cpp" />
+    <ClCompile Include="controller.cpp" />
+    <ClCompile Include="dashboard.cpp" />
+    <ClCompile Include="io\hdfs_stream.cpp" />
+    <ClCompile Include="io\io.cpp" />
+    <ClCompile Include="io\local_stream.cpp" />
+    <ClCompile Include="multiverso.cpp" />
+    <ClCompile Include="net.cpp" />
+    <ClCompile Include="net\allreduce_engine.cpp" />
+    <ClCompile Include="net\allreduce_topo.cpp" />
+    <ClCompile Include="node.cpp" />
+    <ClCompile Include="server.cpp" />
+    <ClCompile Include="table.cpp" />
+    <ClCompile Include="table\array_table.cpp" />
+    <ClCompile Include="table\matrix_table.cpp" />
+    <ClCompile Include="table\sparse_matrix_table.cpp" />
+    <ClCompile Include="updater\updater.cpp" />
+    <ClCompile Include="timer.cpp" />
+    <ClCompile Include="util\log.cpp" />
+    <ClCompile Include="util\configure.cpp" />
+    <ClCompile Include="util\net_util.cpp" />
+    <ClCompile Include="util\quantization_util.cpp" />
+    <ClCompile Include="worker.cpp" />
+    <ClCompile Include="zoo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

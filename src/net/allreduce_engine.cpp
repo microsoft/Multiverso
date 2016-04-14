@@ -3,8 +3,8 @@
 #include <string.h>
 #include <algorithm>
 
-#include "allreduce_engine.h"
-#include "net_allreduce.h"
+#include "multiverso/net/allreduce_engine.h"
+#include "multiverso/net/net_allreduce.h"
 
 namespace multiverso {
 

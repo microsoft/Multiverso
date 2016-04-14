@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "multiverso/blob.h"
-#include "multiverso/util/io.h"
+#include "multiverso/io/io.h"
 
 namespace multiverso {
 
