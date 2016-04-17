@@ -94,9 +94,6 @@
     <ClInclude Include="..\include\multiverso\updater\adagrad_updater.h">
       <Filter>updater</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\multiverso\updater\second_order_gradient_updater.h">
-      <Filter>updater</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\multiverso\table\sparse_matrix_table.h">
       <Filter>table</Filter>
     </ClInclude>
@@ -214,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="io\local_stream.cpp">
       <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="net\mpi_net.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

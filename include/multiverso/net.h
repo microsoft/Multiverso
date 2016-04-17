@@ -32,6 +32,8 @@ public:
   virtual int size() const = 0;
   virtual int rank() const = 0;
 
+  // virtual void Allreduce(void* data, size_t count, int type, int type_size);
+
   // \return 1. > 0 sended size
   //         2. = 0 not sended
   //         3. < 0 net error
@@ -44,6 +46,12 @@ public:
 
   virtual int thread_level_support() = 0;
 };
+
+namespace net {
+// inplace allreduce
+template <typename Typename>
+void Allreduce(Typename* data, size_t elem_count);
+}
 
 }  // namespace multiverso
 

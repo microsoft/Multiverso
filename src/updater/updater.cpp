@@ -2,7 +2,6 @@
 
 #include "multiverso/updater/adagrad_updater.h"
 #include "multiverso/updater/momentum_updater.h"
-#include "multiverso/updater/second_order_gradient_updater.h"
 #include "multiverso/updater/sgd_updater.h"
 #include "multiverso/util/configure.h"
 #include "multiverso/util/log.h"
@@ -35,7 +34,6 @@ Updater<T>* Updater<T>::GetUpdater(size_t size) {
   if (type == "sgd") return new SGDUpdater<T>(size);
   if (type == "adagrad") return new AdaGradUpdater<T>(size);
   if (type == "momentum_sgd") return new MomentumUpdater<T>(size);
-  if (type == "second_order_sgd") return new SecondOrderUpdater<T>(size);
   // Default: simple updater
   return new Updater<T>();
 }

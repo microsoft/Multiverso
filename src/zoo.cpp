@@ -20,39 +20,59 @@ Zoo::Zoo() {}
 
 Zoo::~Zoo() {}
 
-void Zoo::Start(int* argc, char** argv, int role) {
+MV_DEFINE_string(ps_role, "default", "none / worker / server / default");
+MV_DEFINE_bool(ma, "false", "model average, will not start server if true");
+
+namespace {
+int ParsePSRole(const std::string& ps_role) {
+  if (ps_role == "none")    return Role::NONE;
+  if (ps_role == "worker")  return Role::WORKER; 
+  if (ps_role == "server")  return Role::SERVER;
+  if (ps_role == "default") return Role::ALL;
+  return -1;
+}
+}  // namespace
+
+void Zoo::Start(int* argc, char** argv) {
   Log::Debug("Zoo started\n");
-  CHECK(role >= 0 && role <= 3);
   ParseCMDFlags(argc, argv);
 
   // Init the network
   net_util_ = NetInterface::Get();
   net_util_->Init(argc, argv);
-  nodes_.resize(size());
-  nodes_[rank()].rank = rank();
-  nodes_[rank()].role = role;
-  mailbox_.reset(new MtQueue<MessagePtr>);
 
-  // NOTE(feiga): the start order is non-trivial, communicator should be last.
-  if (rank() == 0) { Actor* controler = new Controller(); controler->Start(); }
-  if (node::is_server(role)) { Actor* server = new Server(); server->Start(); }
-  if (node::is_worker(role)) { Actor* worker = new Worker(); worker->Start(); }
-  Actor* communicator = new Communicator();
-  communicator->Start();
+  if (!MV_CONFIG_ma) {
+    int role = ParsePSRole(MV_CONFIG_ps_role);
+    CHECK(role != -1);
 
-  // activate the system
-  RegisterNode();
-  Log::Info("Rank %d: Zoo start sucessfully\n", rank());
+    nodes_.resize(size());
+    nodes_[rank()].rank = rank();
+    nodes_[rank()].role = role;
+    mailbox_.reset(new MtQueue<MessagePtr>);
+
+    // NOTE(feiga): the start order is non-trivial, communicator should be last.
+    if (rank() == 0) { Actor* controler = new Controller(); controler->Start(); }
+    if (node::is_server(role)) { Actor* server = new Server(); server->Start(); }
+    if (node::is_worker(role)) { Actor* worker = new Worker(); worker->Start(); }
+    Actor* communicator = new Communicator();
+    communicator->Start();
+
+    // activate the system
+    RegisterNode();
+    Log::Info("Rank %d: Zoo start sucessfully\n", rank());
+  }
 }
 
 void Zoo::Stop(bool finalize_net) {
   // Stop the system
-  Barrier();
+  if (!MV_CONFIG_ma) {
+    Barrier();
 
-  Dashboard::Display();
+    Dashboard::Display();
 
-  // Stop all actors
-  for (auto actor : zoo_) { actor.second->Stop(); }
+    // Stop all actors
+    for (auto actor : zoo_) { actor.second->Stop(); }
+  }
   // Stop the network
   if (finalize_net) net_util_->Finalize();
 }

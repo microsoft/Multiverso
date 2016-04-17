@@ -70,6 +70,7 @@ public:
     MV_MPI_CALL(MPI_Initialized(&inited_));
     if (!inited_) {
       MV_MPI_CALL(MPI_Init_thread(argc, &argv, MPI_THREAD_SERIALIZED, &thread_provided_));
+      MV_MPI_CALL(MPI_Initialized(&inited_));
     }
     MV_MPI_CALL(MPI_Query_thread(&thread_provided_));
     if (thread_provided_ < MPI_THREAD_SERIALIZED) {
@@ -104,6 +105,9 @@ public:
   int rank() const override { return rank_; }
   int size() const override { return size_; }
   std::string name() const override { return "MPI"; }
+
+  template <typename ElemType>
+  static void Allreduce(ElemType* data, size_t elem_count, int op = MPI_SUM);
 
   //size_t Send(MessagePtr& msg) override {
   //  while (!msg_handles_.empty()) {

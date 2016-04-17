@@ -195,7 +195,6 @@
     <ClInclude Include="..\include\multiverso\table_interface.h" />
     <ClInclude Include="..\include\multiverso\updater\adagrad_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\sgd_updater.h" />
-    <ClInclude Include="..\include\multiverso\updater\second_order_gradient_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\momentum_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\updater.h" />
     <ClInclude Include="..\include\multiverso\util\configure.h" />
@@ -221,6 +220,7 @@
     <ClCompile Include="net.cpp" />
     <ClCompile Include="net\allreduce_engine.cpp" />
     <ClCompile Include="net\allreduce_topo.cpp" />
+    <ClCompile Include="net\mpi_net.cpp" />
     <ClCompile Include="node.cpp" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="table.cpp" />

@@ -24,7 +24,7 @@ public:
   static Zoo* Get() { static Zoo zoo; return &zoo; }
 
   // Start all actors
-  void Start(int* argc, char** argv, int role);
+  void Start(int* argc, char** argv);
   // Stop all actors
   void Stop(bool finalize_net);
 
