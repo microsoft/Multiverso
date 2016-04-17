@@ -455,7 +455,7 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
 }
 
 void TestAllreduce(int argc, char* argv[]) {
-  multiverso::SetCMDFlag("ps_role", std::string("none"));
+  multiverso::SetCMDFlag("ma", true);
   MV_Init(&argc, argv);
   int a = 1;
   MV_Aggregate(&a, 1);
