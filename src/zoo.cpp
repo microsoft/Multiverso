@@ -21,7 +21,7 @@ Zoo::Zoo() {}
 Zoo::~Zoo() {}
 
 MV_DEFINE_string(ps_role, "default", "none / worker / server / default");
-MV_DEFINE_bool(ma, "false", "model average, will not start server if true");
+MV_DEFINE_bool(ma, false, "model average, will not start server if true");
 
 namespace {
 int ParsePSRole(const std::string& ps_role) {
