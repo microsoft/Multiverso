@@ -15,7 +15,7 @@ void Dashboard::AddMonitor(const std::string& name, Monitor* monitor) {
   std::lock_guard<std::mutex> l(m_);
   CHECK(record_[name] == nullptr);
   record_[name] = monitor;
-  Log::Info("Add monitor %s\n", name.c_str());
+  // Log::Info("Add monitor %s\n", name.c_str());
 }
 
 std::string Dashboard::Watch(const std::string& name) {

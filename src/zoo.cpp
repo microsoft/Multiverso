@@ -21,7 +21,7 @@ Zoo::Zoo() {}
 Zoo::~Zoo() {}
 
 MV_DEFINE_string(ps_role, "default", "none / worker / server / default");
-MV_DEFINE_bool(ma, "false", "model average, will not start server if true");
+MV_DEFINE_bool(ma, false, "model average, will not start server if true");
 
 namespace {
 int ParsePSRole(const std::string& ps_role) {
@@ -41,38 +41,12 @@ void Zoo::Start(int* argc, char** argv) {
   net_util_ = NetInterface::Get();
   net_util_->Init(argc, argv);
 
-  if (!MV_CONFIG_ma) {
-    int role = ParsePSRole(MV_CONFIG_ps_role);
-    CHECK(role != -1);
-
-    nodes_.resize(size());
-    nodes_[rank()].rank = rank();
-    nodes_[rank()].role = role;
-    mailbox_.reset(new MtQueue<MessagePtr>);
-
-    // NOTE(feiga): the start order is non-trivial, communicator should be last.
-    if (rank() == 0) { Actor* controler = new Controller(); controler->Start(); }
-    if (node::is_server(role)) { Actor* server = new Server(); server->Start(); }
-    if (node::is_worker(role)) { Actor* worker = new Worker(); worker->Start(); }
-    Actor* communicator = new Communicator();
-    communicator->Start();
-
-    // activate the system
-    RegisterNode();
-    Log::Info("Rank %d: Zoo start sucessfully\n", rank());
-  }
+  if (!MV_CONFIG_ma) { StartPS(); }
 }
 
 void Zoo::Stop(bool finalize_net) {
   // Stop the system
-  if (!MV_CONFIG_ma) {
-    Barrier();
-
-    Dashboard::Display();
-
-    // Stop all actors
-    for (auto actor : zoo_) { actor.second->Stop(); }
-  }
+  if (!MV_CONFIG_ma) { StopPS(); }
   // Stop the network
   if (finalize_net) net_util_->Finalize();
 }
@@ -88,6 +62,43 @@ void Zoo::Receive(MessagePtr& msg) {
   mailbox_->Push(msg);
 }
 
+void Zoo::StartPS() {
+  int role = ParsePSRole(MV_CONFIG_ps_role);
+  CHECK(role != -1);
+
+  nodes_.resize(size());
+  nodes_[rank()].rank = rank();
+  nodes_[rank()].role = role;
+  mailbox_.reset(new MtQueue<MessagePtr>);
+
+  // NOTE(feiga): the start order is non-trivial, communicator should be last.
+  if (rank() == 0) { Actor* controler = new Controller(); controler->Start(); }
+  Actor* communicator = new Communicator();
+  communicator->Start();
+  // activate the system
+  RegisterNode();
+
+  if (node::is_server(role)) {
+    Actor* server = Server::GetServer();
+    server->Start();
+  }
+  if (node::is_worker(role)) {
+    Actor* worker = new Worker();
+    worker->Start();
+  }
+  Barrier();
+  Log::Info("Rank %d: Zoo start sucessfully\n", rank());
+}
+
+void Zoo::StopPS() {
+  Barrier();
+
+  Dashboard::Display();
+
+  // Stop all actors
+  for (auto actor : zoo_) { actor.second->Stop(); }
+}
+
 void Zoo::RegisterNode() {
   MessagePtr msg(new Message());
   msg->set_src(rank());
@@ -99,14 +110,11 @@ void Zoo::RegisterNode() {
   // waif for reply
   mailbox_->Pop(msg);
   CHECK(msg->type() == MsgType::Control_Reply_Register);
-  Log::Debug("rank %d msg size %d\n", rank(), msg->data().size());
   CHECK(msg->data().size() == 2);
   Blob info_blob = msg->data()[0];
   Blob count_blob = msg->data()[1];
-  Log::Debug("rank %d 1 %d\n", Zoo::Get()->rank(), count_blob.size<int>());
   num_workers_ = count_blob.As<int>(0);
   num_servers_ = count_blob.As<int>(1);
-  Log::Debug("rank %d 2\n", Zoo::Get()->rank());
   worker_id_to_rank_.resize(num_workers_);
   server_id_to_rank_.resize(num_servers_);
   CHECK(info_blob.size() == size() * sizeof(Node));

@@ -15,8 +15,6 @@ public:
   void Control(MessagePtr& msg) {
     tasks_.push_back(std::move(msg));
     if (tasks_.size() == Zoo::Get()->size()) {
-      Log::Debug("All nodes barrieded. System contains %d nodes.\n",
-                Zoo::Get()->size());
       MessagePtr my_reply;  // my reply should be the last one
       for (auto& msg : tasks_) {
         MessagePtr reply(msg->CreateReplyMessage());
@@ -67,7 +65,6 @@ public:
         reply->set_type(MsgType::Control_Reply_Register);
         reply->Push(info_blob);
         reply->Push(count_blob);
-        Log::Debug("rank %d with msg size %d\n", i, reply->data().size());
         parent_->SendTo(actor::kCommunicator, reply);
       }
     }

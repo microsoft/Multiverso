@@ -14,10 +14,11 @@ class Synchronizer;
 class Server : public Actor {
 public:
   Server();
+  static Server* GetServer();
   int RegisterTable(ServerTable* table);
-private:
-  void ProcessGet(MessagePtr& msg);
-  void ProcessAdd(MessagePtr& msg);
+protected:
+  virtual void ProcessGet(MessagePtr& msg);
+  virtual void ProcessAdd(MessagePtr& msg);
   // contains the parameter data structure and related handle method
   // Synchronizer* sync_;
   std::vector<ServerTable*> store_;

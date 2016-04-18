@@ -95,6 +95,10 @@ void TestArray(int argc, char* argv[]) {
 
     // shared_array->Get();
     float* data = new float[1000000];
+    shared_array->Get(data, 1000000);
+
+    for (int i = 0; i < 10; ++i)
+      std::cout << data[i] << " "; std::cout << std::endl;
 
     std::vector<float> delta(1000000);
     for (int i = 0; i < 1000000; ++i)
@@ -105,13 +109,7 @@ void TestArray(int argc, char* argv[]) {
     option.set_momentum(0.99);
     option.set_rho(0.01f);
     shared_array->Add(delta.data(), 1000000, &option);
-
-
-    shared_array->Get(data, 1000000);
-
-    for (int i = 0; i < 10; ++i)
-      std::cout << data[i] << " "; std::cout << std::endl;
-    MV_Barrier();
+    shared_array->Add(delta.data(), 1000000, &option);
 
   }
   MV_ShutDown();

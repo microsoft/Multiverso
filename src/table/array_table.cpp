@@ -27,6 +27,7 @@ void ArrayWorker<T>::Get(T* data, size_t size) {
   data_ = data;
   int all_key = -1;
   Blob whole_table(&all_key, sizeof(int));
+  Log::Debug("worker %d begin get. \n", MV_Rank());
   WorkerTable::Get(whole_table);
   Log::Debug("worker %d getting all parameters.\n", MV_Rank());
 }
