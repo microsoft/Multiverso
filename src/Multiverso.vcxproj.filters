@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="..\include\multiverso\multiverso.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\multiverso\table_interface.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\multiverso\table\array_table.h">
       <Filter>table</Filter>
     </ClInclude>
@@ -112,11 +106,14 @@
     <ClInclude Include="..\include\multiverso\io\local_stream.h">
       <Filter>io</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\multiverso\multiverso.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\multiverso\table_interface.h">
+      <Filter>system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{befa27d3-15da-409a-a02e-fc1d9e676f80}</UniqueIdentifier>
-    </Filter>
     <Filter Include="system">
       <UniqueIdentifier>{f1d6488a-2e66-4610-8676-304c070d7b49}</UniqueIdentifier>
     </Filter>
