@@ -11,13 +11,16 @@
 #include <multiverso/util/log.h>
 #include <multiverso/util/net_util.h>
 #include <multiverso/util/configure.h>
+#include <multiverso/util/timer.h>
 
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
 #include <multiverso/table/matrix_table.h>             
+#include <multiverso/table/sparse_matrix_table.h>
 #include <multiverso/updater/updater.h>
 
 #include <gtest/gtest.h>
+#include <memory>
 
 using namespace multiverso;
 
@@ -115,42 +118,6 @@ void TestArray(int argc, char* argv[]) {
   MV_ShutDown();
 }
 
-//void TestMomentum(int argc, char* argv[]) {
-//	Log::Info("Test smooth_gradient table \n");
-//
-//
-//	Log::ResetLogLevel(LogLevel::Debug);
-//	MV_Init();
-//
-//	SmoothArrayWorker<float>* shared_array = new SmoothArrayWorker<float>(10);
-//	SmoothArrayServer<float>* server_array = new SmoothArrayServer<float>(10);
-//
-//	MV_Barrier();
-//	Log::Info("Create tables OK\n");
-//
-//	while (true){
-//		// std::vector<float>& vec = shared_array->raw();
-//
-//		// shared_array->Get();
-//		float data[10];
-//
-//		std::vector<float> delta(10);
-//		for (int i = 0; i < 10; ++i)
-//			delta[i] = static_cast<float>(i+1);
-//
-//		shared_array->Add(delta.data(), 10, 0.5f);
-//
-//		Log::Info("Rank %d Add OK\n", MV_Rank());
-//
-//		shared_array->Get(data, 10);
-//		Log::Info("Rank %d Get OK\n", MV_Rank());
-//		for (int i = 0; i < 10; ++i)
-//			std::cout << data[i] << " "; std::cout << std::endl;
-//		MV_Barrier();
-//
-//	}
-//	MV_ShutDown();
-//}
 
 #define ARRAY_SIZE 4683776
 void TestMultipleThread(int argc, char* argv[])
@@ -186,9 +153,6 @@ void TestMultipleThread(int argc, char* argv[])
     }
     m_prefetchThread = new std::thread([&](){
 
-      //std::mt19937_64 eng{ std::random_device{}() };  
-      //std::uniform_int_distribution<> dist{ 50, 500 };
-      //std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
       shared_array->Add(delta.data(), ARRAY_SIZE);
       shared_array->Get(delta.data(), ARRAY_SIZE);
       Log::Info("Rank %d Get OK\n", MV_Rank());
@@ -196,7 +160,6 @@ void TestMultipleThread(int argc, char* argv[])
         std::cout << delta[i] << " "; std::cout << std::endl;
     });
 
-    //shared_array->Get(data, 10);
     MV_Barrier();
 
   }
@@ -253,7 +216,6 @@ void TestNet(int argc, char* argv[]) {
       // Log::Info("recv return 0\n");
     }
     Log::Info("rank %d recv\n", net->rank());
-    // CHECK(strcmp(msg->data()[0].data(), hi) == 0);
     std::vector<Blob>& recv_data = msg->data();
     CHECK(recv_data.size() == 3);
     for (int i = 0; i < msg->size(); ++i) {
@@ -407,7 +369,6 @@ void TestMatrix(int argc, char* argv[]){
   MV_ShutDown();
 }
 
-// NOTE(feiga): this doesn't work now since I roll back some implementation
 void TestCheckPoint(int argc, char* argv[], bool restore){
   Log::Info("Test CheckPoint\n");
 
@@ -461,6 +422,172 @@ void TestAllreduce(int argc, char* argv[]) {
   MV_ShutDown();
 }
 
+void TestSparseMatrixTable(int argc, char* argv[]) {
+  Log::ResetLogLevel(LogLevel::Error);
+  Log::Info("Test Sparse Matrix\n");
+  Timer timmer;
+
+  MV_Init(&argc, argv);
+
+  int num_row = 100000, num_col = 50;
+  int size = num_row * num_col;
+  int worker_id = MV_Rank();
+
+  // test data
+  int* data = new int[size];
+  int* delta = new int[size];
+  int* keys = new int[num_row];
+  for (auto i = 0; i < size; ++i) {
+    delta[i] = 1;
+  }
+
+  UpdateOption option;
+  option.set_worker_id(worker_id);
+
+  std::cout << "==> test get twice, the second get should be shorter than the first\
+                one." << std::endl;
+  {
+    auto worker_table = std::shared_ptr<SparseMatrixWorkerTable<int>>(
+      new SparseMatrixWorkerTable<int>(num_row, num_col));
+    auto server_table = std::shared_ptr<SparseMatrixServerTable<int>>(
+      new SparseMatrixServerTable<int>(num_row, num_col, false));
+    MV_Barrier();
+
+
+    timmer.Restart();
+    worker_table->Get(data, size, worker_id);
+    std::cout << " " << timmer.elapse() << "s:\t" << "get all rows 1st time" << std::endl;
+
+    // do not need to get any rows, since all rows are up-to-date
+    timmer.Restart();
+    worker_table->Get(data, size, worker_id);
+    std::cout << " " << timmer.elapse() << "s:\t" << "get all rows 2nd time" << std::endl;
+
+    for (auto i = 0; i < size; ++i) {
+      ASSERT_EQ(0, data[i]) << "Should be inited as 0";
+    }
+  }
+
+  std::cout << "==> test add to all rows" << std::endl;
+  {
+    auto worker_table = std::shared_ptr<SparseMatrixWorkerTable<int>>(
+      new SparseMatrixWorkerTable<int>(num_row, num_col));
+    auto server_table = std::shared_ptr<SparseMatrixServerTable<int>>(
+      new SparseMatrixServerTable<int>(num_row, num_col, false));
+    timmer.Restart();
+    worker_table->Add(delta, size, &option);
+    worker_table->Get(data, size, -1);
+    std::cout << " " << timmer.elapse() << "s:\t" << "add 1 to all values, and get all rows after adding" << std::endl;
+    for (auto i = 0; i < size; ++i) {
+      ASSERT_EQ(1, data[i]) << "Should be 1 after adding";
+    }
+  }
+
+  MV_Barrier();
+  MV_ShutDown();
+}
+
+
+void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
+  Log::ResetLogLevel(LogLevel::Error);
+  Log::Info("Test Sparse Matrix\n");
+  Timer timmer;
+
+  MV_Init(&argc, argv);
+
+  int num_row = 100000, num_col = 50;
+  int size = num_row * num_col;
+  int worker_id = MV_Rank();
+
+  // test data
+  int* data = new int[size];
+  int* delta = new int[size];
+  int* keys = new int[num_row];
+  for (auto i = 0; i < size; ++i) {
+    delta[i] = 1;
+  }
+
+  UpdateOption option;
+  option.set_worker_id(worker_id);
+
+  if (sparse) {
+    for (auto p = 0; p < 10; ++p)
+    {
+      std::cout << "==> test add " << p + 1 << " /10 rows to *sparse* matrix server" << std::endl;
+      auto worker_table = std::shared_ptr<SparseMatrixWorkerTable<int>>(
+        new SparseMatrixWorkerTable<int>(num_row, num_col));
+      auto server_table = std::shared_ptr<SparseMatrixServerTable<int>>(
+        new SparseMatrixServerTable<int>(num_row, num_col, false));
+      std::vector<int> row_ids;
+      std::vector<int*> data_vec;
+      // update (p+1)/10 rows with 1
+      for (auto i = 0; i < num_row; ++i) {
+        if (i % 10 <= p) {
+          row_ids.push_back(i);
+          data_vec.push_back(delta + i * num_col);
+        }
+      }
+
+      worker_table->Add(row_ids, data_vec, num_col, &option);
+      worker_table->Get(data, size, -1);
+      for (auto i = 0; i < num_row; ++i) {
+        auto row_start = data + i * num_col;
+        for (auto col = 0; col < num_col; ++col) {
+          if (i % 10 <= p) {
+            ASSERT_EQ(1, *(row_start + col)) << "Should be 1 after adding";
+          }
+          else {
+            ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
+          }
+        }
+      }
+      timmer.Restart();
+      worker_table->Get(data, size, worker_id);
+      std::cout << " " << timmer.elapse() << "s:\t" << "get all rows after adding to rows" << std::endl;
+    }
+  }
+  else {
+    for (auto p = 0; p < 10; ++p)
+    {
+      std::cout << "==> test add " << p + 1 << " /10 rows to matrix server" << std::endl;
+      auto worker_table = std::shared_ptr<MatrixWorkerTable<int>>(
+        new MatrixWorkerTable<int>(num_row, num_col));
+      auto server_table = std::shared_ptr<MatrixServerTable<int>>(
+        new MatrixServerTable<int>(num_row, num_col));
+      std::vector<int> row_ids;
+      std::vector<int*> data_vec;
+      // update (p+1)/10 rows with 1
+      for (auto i = 0; i < num_row; ++i) {
+        if (i % 10 <= p) {
+          row_ids.push_back(i);
+          data_vec.push_back(delta + i * num_col);
+        }
+      }
+
+      worker_table->Add(row_ids, data_vec, num_col, &option);
+      worker_table->Get(data, size);
+      for (auto i = 0; i < num_row; ++i) {
+        auto row_start = data + i * num_col;
+        for (auto col = 0; col < num_col; ++col) {
+          if (i % 10 <= p) {
+            ASSERT_EQ(1, *(row_start + col)) << "Should be 1 after adding";
+          }
+          else {
+            ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
+          }
+        }
+      }
+      timmer.reset();
+      worker_table->Get(data, size);
+      timmer.log("get all rows after adding to rows");
+
+    }
+  }
+  Log::ResetLogLevel(LogLevel::Info);     MV_Dashboard();    Log::ResetLogLevel(LogLevel::Error);
+  MV_Barrier();
+  MV_ShutDown();
+}
+
 
 int main(int argc, char* argv[]) {
   Log::ResetLogLevel(LogLevel::Debug);
@@ -483,6 +610,7 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "checkpoint") == 0)  TestCheckPoint(argc, argv, false);
     else if (strcmp(argv[1], "restore") == 0) TestCheckPoint(argc, argv, true);
     else if (strcmp(argv[1], "allreduce") == 0) TestAllreduce(argc, argv);
+    else if (strcmp(argv[1], "sparsematrix") == 0) TestSparseMatrixTable(argc, argv);
     else CHECK(false);
   }
   return 0;

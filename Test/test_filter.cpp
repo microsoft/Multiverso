@@ -114,7 +114,7 @@ TEST_F(test_filter, correctly_compress_and_decompress) {
         multiverso::Blob(array1, sizeof(float) * size),
         multiverso::Blob(array2, sizeof(float) * size)
     }, &compressed_blobs);
-    ASSERT_EQ(compressed_blobs.size(), 6);
+    ASSERT_EQ(compressed_blobs.size(), 4);
     std::vector<multiverso::Blob>  de_compressed_blobs;
     FilterOut(compressed_blobs, &de_compressed_blobs);
     ASSERT_EQ(de_compressed_blobs.size(), 3);

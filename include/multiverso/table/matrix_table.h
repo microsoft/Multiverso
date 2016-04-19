@@ -38,7 +38,7 @@ public:
 
   void ProcessReplyGet(std::vector<Blob>& reply_data) override;
 
-private:
+protected:
   std::unordered_map<int, T*> row_index_;  // index of data with row id in data_vec_
   int get_reply_count_;                    // number of unprocessed get reply
   int num_row_;
@@ -64,7 +64,7 @@ public:
   void Store(Stream* s) override;
   void Load(Stream* s) override;
 
-private:
+protected:
   int server_id_;
   int my_num_row_;
   int num_col_;
