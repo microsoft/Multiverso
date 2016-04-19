@@ -12,6 +12,7 @@
 #include <multiverso/util/net_util.h>
 #include <multiverso/util/configure.h>
 #include <multiverso/util/timer.h>
+#include <multiverso/dashboard.h>
 
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
@@ -444,8 +445,7 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
   UpdateOption option;
   option.set_worker_id(worker_id);
 
-  std::cout << "==> test get twice, the second get should be shorter than the first\
-                one." << std::endl;
+  std::cout << "==> test get twice, the second get should be shorter than the first one." << std::endl;
   {
     auto worker_table = std::shared_ptr<SparseMatrixWorkerTable<int>>(
       new SparseMatrixWorkerTable<int>(num_row, num_col));
@@ -454,12 +454,12 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
     MV_Barrier();
 
 
-    timmer.Restart();
+    timmer.Start();
     worker_table->Get(data, size, worker_id);
     std::cout << " " << timmer.elapse() << "s:\t" << "get all rows 1st time" << std::endl;
 
     // do not need to get any rows, since all rows are up-to-date
-    timmer.Restart();
+    timmer.Start();
     worker_table->Get(data, size, worker_id);
     std::cout << " " << timmer.elapse() << "s:\t" << "get all rows 2nd time" << std::endl;
 
@@ -474,7 +474,7 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
       new SparseMatrixWorkerTable<int>(num_row, num_col));
     auto server_table = std::shared_ptr<SparseMatrixServerTable<int>>(
       new SparseMatrixServerTable<int>(num_row, num_col, false));
-    timmer.Restart();
+    timmer.Start();
     worker_table->Add(delta, size, &option);
     worker_table->Get(data, size, -1);
     std::cout << " " << timmer.elapse() << "s:\t" << "add 1 to all values, and get all rows after adding" << std::endl;
@@ -541,7 +541,7 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
           }
         }
       }
-      timmer.Restart();
+      timmer.Start();
       worker_table->Get(data, size, worker_id);
       std::cout << " " << timmer.elapse() << "s:\t" << "get all rows after adding to rows" << std::endl;
     }
@@ -577,13 +577,15 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
           }
         }
       }
-      timmer.reset();
+      timmer.Start();
       worker_table->Get(data, size);
-      timmer.log("get all rows after adding to rows");
-
+      std::cout << " " << timmer.elapse() << "s:\t" << "get all rows after adding to rows" << std::endl;
     }
   }
-  Log::ResetLogLevel(LogLevel::Info);     MV_Dashboard();    Log::ResetLogLevel(LogLevel::Error);
+  Log::ResetLogLevel(LogLevel::Info);    
+  Dashboard::Display();
+  Log::ResetLogLevel(LogLevel::Error);
+
   MV_Barrier();
   MV_ShutDown();
 }
@@ -611,6 +613,8 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "restore") == 0) TestCheckPoint(argc, argv, true);
     else if (strcmp(argv[1], "allreduce") == 0) TestAllreduce(argc, argv);
     else if (strcmp(argv[1], "sparsematrix") == 0) TestSparseMatrixTable(argc, argv);
+    else if (strcmp(argv[1], "testsparse0") == 0) TestMatrixPerformance(argc, argv, true);
+    else if (strcmp(argv[1], "testsparse1") == 0) TestMatrixPerformance(argc, argv, false);
     else CHECK(false);
   }
   return 0;

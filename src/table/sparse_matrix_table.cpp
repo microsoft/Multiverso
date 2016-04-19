@@ -10,7 +10,7 @@
 
 namespace multiverso {
 
-const bool split_rows = true;
+bool split_rows = true;
 
 // get whole table, data is user-allocated memory
 template <typename T>
@@ -93,7 +93,7 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       }
       count.clear();
 
-      int offset = 0;
+      //int offset = 0;
       for (int i = 0; i < keys_size; ++i) {
         int dst = dest[i];
         int rank = MV_ServerIdToRank(dst);
@@ -261,8 +261,10 @@ void SparseMatrixServerTable<T>::ProcessGet(
   // get worker_id from at the last position
   auto workder_id = data[0].As<int>(keys_size);
   std::vector<int> outdate_rows;
-
+#pragma warning( push )
+#pragma warning( disable : 4267)
   update_state_on_get(workder_id, keys, keys_size, &outdate_rows);
+#pragma warning( pop ) 
   Blob outdate_rows_blob(sizeof(int) * outdate_rows.size());
   for (auto i = 0; i < outdate_rows.size(); ++i) {
     outdate_rows_blob.As<int>(i) = outdate_rows[i];
