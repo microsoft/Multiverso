@@ -13,6 +13,7 @@ template <typename T>
 class MatrixWorkerTable : public WorkerTable {
 public:
   MatrixWorkerTable(int num_row, int num_col);
+  ~MatrixWorkerTable();
 
   // get whole table, data is user-allocated memory
   void Get(T* data, size_t size);

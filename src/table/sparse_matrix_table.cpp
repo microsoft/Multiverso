@@ -10,8 +10,6 @@
 
 namespace multiverso {
 
-bool split_rows = true;
-
 // get whole table, data is user-allocated memory
 template <typename T>
 void SparseMatrixWorkerTable<T>::Get(T* data, size_t size,
@@ -27,7 +25,6 @@ void SparseMatrixWorkerTable<T>::Get(int row_id, T* data, size_t size,
   int worker_id) {
   if (row_id >= 0) CHECK(size == num_col_);
   for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
-  row_index_[row_id] = data;  // data_ = data;
   if (row_id == -1) {
     row_index_[num_row_] = data;
   } else {
@@ -138,14 +135,12 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
 template <typename T>
 void SparseMatrixWorkerTable<T>::ProcessReplyGet(
   std::vector<Blob>& reply_data) {
-  if (split_rows) {
-    // replace row_index when original key == -1
-    if (row_index_[num_row_] != nullptr) {
-      size_t keys_size = reply_data[0].size<int>();
-      int *keys = reinterpret_cast<int*>(reply_data[0].data());
-      for (auto i = 0; i < keys_size; ++i) {
-        row_index_[keys[i]] = row_index_[num_row_] + keys[i] * num_col_;
-      }
+  // replace row_index when original key == -1
+  if (row_index_[num_row_] != nullptr) {
+    size_t keys_size = reply_data[0].size<int>();
+    int *keys = reinterpret_cast<int*>(reply_data[0].data());
+    for (auto i = 0; i < keys_size; ++i) {
+      row_index_[keys[i]] = row_index_[num_row_] + keys[i] * num_col_;
     }
   }
 
@@ -192,12 +187,8 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, int* keys,
   int key_size, std::vector<int>* out_rows) {
 
   if (worker_id == -1) {
-    if (split_rows) {
-      for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
-        out_rows->push_back(get_global_row_id(local_row_id));
-      }
-    } else {
-      out_rows->push_back(-1);
+    for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
+      out_rows->push_back(get_global_row_id(local_row_id));
     }
   }
 
@@ -207,21 +198,12 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, int* keys,
   }
 
   if (key_size == 1 && keys[0] == -1) {
-        if (split_rows) {
-          for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
-            if (!up_to_date_[local_row_id][worker_id]) {
-              out_rows->push_back(get_global_row_id(local_row_id));
-              up_to_date_[local_row_id][worker_id] = true;
-            }
-          }
-        } else {
-          out_rows->push_back(-1);
-          for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
-            if (!up_to_date_[local_row_id][worker_id]) {
-              up_to_date_[local_row_id][worker_id] = true;
-            }
-          }
-        }
+    for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
+      if (!up_to_date_[local_row_id][worker_id]) {
+        out_rows->push_back(get_global_row_id(local_row_id));
+        up_to_date_[local_row_id][worker_id] = true;
+      }
+    }
   } else {
     for (auto i = 0; i < key_size; ++i)  {
       auto global_row_id = keys[i];

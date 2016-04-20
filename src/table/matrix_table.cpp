@@ -33,6 +33,11 @@ MatrixWorkerTable<T>::MatrixWorkerTable(int num_row, int num_col) :
 }
 
 template <typename T>
+MatrixWorkerTable<T>::~MatrixWorkerTable() {
+  delete[]row_index_;
+}
+
+template <typename T>
 void MatrixWorkerTable<T>::Get(T* data, size_t size){
   CHECK(size == num_col_ * num_row_);
   int whole_table = -1;
