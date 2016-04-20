@@ -3,6 +3,7 @@
 #include <random>
 #include <chrono>
 #include <ctime>
+#include <algorithm>
 
 #include <mpi.h>
 
@@ -488,59 +489,78 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
 }
 
 
-void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
-  Log::ResetLogLevel(LogLevel::Debug);
+void TestMatrixPerformance(int argc, char* argv[], bool sparse = true) {
+  Log::ResetLogLevel(LogLevel::Error);
   Log::Info("Test Sparse Matrix\n");
-  Timer timmer;
 
   MV_Init(&argc, argv);
+  multiverso::SetCMDFlag("sync", true);
 
-  int num_row = 100000, num_col = 50;
+  int num_row = 1000000, num_col = 50;
   int size = num_row * num_col;
+  std::vector<int> primes;
+  primes.push_back(2);
+  for (int i = 3; i < 100; i++) // asuming 100
+  {
+    bool prime = true;
+    for (int j = 0; j<primes.size() && primes[j] * primes[j] <= i; j++)
+    {
+      if (i % primes[j] == 0)
+      {
+        prime = false;
+        break;
+      }
+    }
+    if (prime)
+    {
+      primes.push_back(i);
+      if (primes.size() >= MV_NumWorkers())
+        break;
+    }
+  }
   int worker_id = MV_Rank();
+  int prime_worker_id = primes[worker_id];
 
   // test data
-  int* data = new int[size];
-  int* delta = new int[size];
+  float* data = new float[size];
+  float* delta = new float[size];
   int* keys = new int[num_row];
   for (auto i = 0; i < size; ++i) {
     delta[i] = 1;
   }
 
+  
   UpdateOption option;
   option.set_worker_id(worker_id);
 
+  std::mt19937_64 eng{ std::random_device{}() };
+  std::vector<int> unique_index;
+  for (int i = 0; i < num_row; i++){
+    unique_index.push_back(i);
+  }
+
+
+  Timer timmer;
   if (sparse) {
     for (auto p = 0; p < 10; ++p)
     {
+      std::shuffle(unique_index.begin(), unique_index.end(), eng);
       std::cout << "==> test add " << p + 1 << " /10 rows to *sparse* matrix server" << std::endl;
-      auto worker_table = std::shared_ptr<SparseMatrixWorkerTable<int>>(
-        new SparseMatrixWorkerTable<int>(num_row, num_col));
-      auto server_table = std::shared_ptr<SparseMatrixServerTable<int>>(
-        new SparseMatrixServerTable<int>(num_row, num_col, false));
+      auto worker_table = std::shared_ptr<SparseMatrixWorkerTable<float>>(
+        new SparseMatrixWorkerTable<float>(num_row, num_col));
+      auto server_table = std::shared_ptr<SparseMatrixServerTable<float>>(
+        new SparseMatrixServerTable<float>(num_row, num_col, false));
       std::vector<int> row_ids;
-      std::vector<int*> data_vec;
-      // update (p+1)/10 rows with 1
-      for (auto i = 0; i < num_row; ++i) {
-        if (i % 10 <= p) {
-          row_ids.push_back(i);
-          data_vec.push_back(delta + i * num_col);
-        }
+      std::vector<float*> data_vec;
+      for (auto i = 0; i < (p+1) * num_row / 10; i++)
+      {
+        row_ids.push_back(unique_index[i]);
+        data_vec.push_back(delta + unique_index[i] * num_col);
       }
-
+      std::cout << "row_ids : size " << row_ids.size() << std::endl;
       worker_table->Add(row_ids, data_vec, num_col, &option);
-      worker_table->Get(data, size, -1);
-      for (auto i = 0; i < num_row; ++i) {
-        auto row_start = data + i * num_col;
-        for (auto col = 0; col < num_col; ++col) {
-          if (i % 10 <= p) {
-            ASSERT_EQ(1, *(row_start + col)) << "Should be 1 after adding";
-          }
-          else {
-            ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
-          }
-        }
-      }
+      //worker_table->Get(data, size, -1);
+      MV_Barrier();
       timmer.Start();
       worker_table->Get(data, size, worker_id);
       std::cout << " " << timmer.elapse() << "s:\t" << "get all rows after adding to rows" << std::endl;
@@ -549,34 +569,24 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
   else {
     for (auto p = 0; p < 10; ++p)
     {
+      std::shuffle(unique_index.begin(), unique_index.end(), eng);
       std::cout << "==> test add " << p + 1 << " /10 rows to matrix server" << std::endl;
-      auto worker_table = std::shared_ptr<MatrixWorkerTable<int>>(
-        new MatrixWorkerTable<int>(num_row, num_col));
-      auto server_table = std::shared_ptr<MatrixServerTable<int>>(
-        new MatrixServerTable<int>(num_row, num_col));
+      auto worker_table = std::shared_ptr<MatrixWorkerTable<float>>(
+        new MatrixWorkerTable<float>(num_row, num_col));
+      auto server_table = std::shared_ptr<MatrixServerTable<float>>(
+        new MatrixServerTable<float>(num_row, num_col));
       std::vector<int> row_ids;
-      std::vector<int*> data_vec;
+      std::vector<float*> data_vec;
       // update (p+1)/10 rows with 1
-      for (auto i = 0; i < num_row; ++i) {
-        if (i % 10 <= p) {
-          row_ids.push_back(i);
-          data_vec.push_back(delta + i * num_col);
-        }
+      for (auto i = 0; i < (p + 1) * num_row / 10; i++)
+      {
+        row_ids.push_back(unique_index[i]);
+        data_vec.push_back(delta + unique_index[i] * num_col);
       }
-
+      std::cout << "row_ids : size " << row_ids.size() << std::endl;
       worker_table->Add(row_ids, data_vec, num_col, &option);
-      worker_table->Get(data, size);
-      for (auto i = 0; i < num_row; ++i) {
-        auto row_start = data + i * num_col;
-        for (auto col = 0; col < num_col; ++col) {
-          if (i % 10 <= p) {
-            ASSERT_EQ(1, *(row_start + col)) << "Should be 1 after adding";
-          }
-          else {
-            ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
-          }
-        }
-      }
+      //worker_table->Get(data, size);
+      MV_Barrier();
       timmer.Start();
       worker_table->Get(data, size);
       std::cout << " " << timmer.elapse() << "s:\t" << "get all rows after adding to rows" << std::endl;
@@ -613,8 +623,8 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "restore") == 0) TestCheckPoint(argc, argv, true);
     else if (strcmp(argv[1], "allreduce") == 0) TestAllreduce(argc, argv);
     else if (strcmp(argv[1], "sparsematrix") == 0) TestSparseMatrixTable(argc, argv);
-    else if (strcmp(argv[1], "testsparse0") == 0) TestMatrixPerformance(argc, argv, true);
-    else if (strcmp(argv[1], "testsparse1") == 0) TestMatrixPerformance(argc, argv, false);
+    else if (strcmp(argv[1], "perf-sparse") == 0) TestMatrixPerformance(argc, argv);
+    else if (strcmp(argv[1], "perf-dense") == 0) TestMatrixPerformance(argc, argv,false);
     else CHECK(false);
   }
   return 0;
