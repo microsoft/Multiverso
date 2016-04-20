@@ -525,8 +525,10 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse = true) {
   float* data = new float[size];
   float* delta = new float[size];
   int* keys = new int[num_row];
-  for (auto i = 0; i < size; ++i) {
-    delta[i] = 1;
+  for (auto row = 0; row < num_row; ++row) {
+    for (auto col = 0; col < num_col; ++col) {
+      delta[row * num_col + col] = row + 2;
+  }
   }
 
   
@@ -559,11 +561,23 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse = true) {
       }
       std::cout << "row_ids : size " << row_ids.size() << std::endl;
       worker_table->Add(row_ids, data_vec, num_col, &option);
-      //worker_table->Get(data, size, -1);
-      MV_Barrier();
+      worker_table->Get(data, size, -1);
+      for (auto i = 0; i < num_row; ++i) {
+        auto row_start = data + i * num_col;
+        for (auto col = 0; col < num_col; ++col) {
+          if (i % 10 <= p) {
+            auto expected = i + 2;
+            auto actual = *(row_start + col);
+            ASSERT_EQ(expected, actual) << "Should be updated after adding";
+          }
+          else {
+            ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
+          }
+        }
+      }
       timmer.Start();
       worker_table->Get(data, size, worker_id);
-      std::cout << " " << timmer.elapse() << "s:\t" << "get all rows after adding to rows" << std::endl;
+      std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
     }
   }
   else {
@@ -585,11 +599,23 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse = true) {
       }
       std::cout << "row_ids : size " << row_ids.size() << std::endl;
       worker_table->Add(row_ids, data_vec, num_col, &option);
-      //worker_table->Get(data, size);
-      MV_Barrier();
+      worker_table->Get(data, size);
+      for (auto i = 0; i < num_row; ++i) {
+        auto row_start = data + i * num_col;
+        for (auto col = 0; col < num_col; ++col) {
+          if (i % 10 <= p) {
+            auto expected = i + 2;
+            auto actual = *(row_start + col);
+            ASSERT_EQ(expected, actual) << "Should be updated after adding";
+          }
+          else {
+            ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
+          }
+        }
+      }
       timmer.Start();
       worker_table->Get(data, size);
-      std::cout << " " << timmer.elapse() << "s:\t" << "get all rows after adding to rows" << std::endl;
+      std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
     }
   }
   Log::ResetLogLevel(LogLevel::Info);    
