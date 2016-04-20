@@ -123,11 +123,11 @@ void AllreduceEngine::ReduceScatter(char* input, int input_size, int type_size, 
 
   bool is_powerof_2 = (num_machines_ & (num_machines_ - 1)) == 0 ? true : false;
   if (!is_powerof_2) {
-    if (recursive_halving_map_.type == RecursiveHalvingNodeType::SendNeighbor) {
+    if (recursive_halving_map_.type == RecursiveHalvingNodeType::Other) {
       //send local data to neighbor first
       linkers_->Send(recursive_halving_map_.neighbor, input, 0, input_size);
     }
-    else if (recursive_halving_map_.type == RecursiveHalvingNodeType::ReciveNeighbor) {
+    else if (recursive_halving_map_.type == RecursiveHalvingNodeType::GroupLeader) {
       //recieve neighbor data first
       int need_recv_cnt = input_size;
       linkers_->Receive(recursive_halving_map_.neighbor, output, 0, need_recv_cnt);
@@ -135,7 +135,7 @@ void AllreduceEngine::ReduceScatter(char* input, int input_size, int type_size, 
     }
   }
   //start recursive halfing
-  if (recursive_halving_map_.type != RecursiveHalvingNodeType::SendNeighbor) {
+  if (recursive_halving_map_.type != RecursiveHalvingNodeType::Other) {
 
     for (int i = 0; i < recursive_halving_map_.k; ++i) {
       int target = recursive_halving_map_.ranks[i];
@@ -160,11 +160,11 @@ void AllreduceEngine::ReduceScatter(char* input, int input_size, int type_size, 
   int my_reduce_block_idx = rank_;
 
   if (!is_powerof_2) {
-    if (recursive_halving_map_.type == RecursiveHalvingNodeType::ReciveNeighbor) {
+    if (recursive_halving_map_.type == RecursiveHalvingNodeType::GroupLeader) {
       //send result to neighbor
       linkers_->Send(recursive_halving_map_.neighbor, input, block_start[recursive_halving_map_.neighbor], block_len[recursive_halving_map_.neighbor]);
     }
-    else if (recursive_halving_map_.type == RecursiveHalvingNodeType::SendNeighbor) {
+    else if (recursive_halving_map_.type == RecursiveHalvingNodeType::Other) {
       //receive result from neighbor
       int need_recv_cnt = block_len[my_reduce_block_idx];
       linkers_->Receive(recursive_halving_map_.neighbor, output, 0, need_recv_cnt);
