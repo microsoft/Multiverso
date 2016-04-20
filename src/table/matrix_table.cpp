@@ -262,6 +262,7 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
     for (int i = 0; i < keys_size; ++i) {
       int offset_s = (keys[i] - row_offset_) * num_col_;
       updater_->Update(num_col_, storage_.data(), values + offset_v, option, offset_s);
+      offset_v += num_col_;
       Log::Debug("[ProcessAdd] Server = %d, adding #row = %d\n",
         server_id_, keys[i]);
     }

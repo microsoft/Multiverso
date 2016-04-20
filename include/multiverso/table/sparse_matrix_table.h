@@ -49,6 +49,7 @@ template <typename T>
 class SparseMatrixServerTable : public MatrixServerTable<T> {
  public:
      SparseMatrixServerTable(int num_row, int num_col, bool using_pipeline);
+     ~SparseMatrixServerTable();
     void ProcessAdd(const std::vector<Blob>& data) override;
     void ProcessGet(const std::vector<Blob>& data,
         std::vector<Blob>* result) override;
@@ -63,7 +64,9 @@ class SparseMatrixServerTable : public MatrixServerTable<T> {
        return global_row_id - row_offset_;
      }
  private:
-    std::vector<std::vector<bool>> up_to_date_;
+   bool** up_to_date_;
+   int server_count_;
+   // std::vector<std::vector<bool>> up_to_date_;
 };
 
 }   // namespace multiverso

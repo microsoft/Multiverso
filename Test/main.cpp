@@ -503,8 +503,10 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
   int* data = new int[size];
   int* delta = new int[size];
   int* keys = new int[num_row];
-  for (auto i = 0; i < size; ++i) {
-    delta[i] = 1;
+  for (auto row = 0; row < num_row; ++row) {
+    for (auto col = 0; col < num_col; ++col) {
+      delta[row * num_col + col] = row + 2;
+    }
   }
 
   UpdateOption option;
@@ -534,7 +536,9 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
         auto row_start = data + i * num_col;
         for (auto col = 0; col < num_col; ++col) {
           if (i % 10 <= p) {
-            ASSERT_EQ(1, *(row_start + col)) << "Should be 1 after adding";
+            auto expected = i + 2;
+            auto actual = *(row_start + col);
+            ASSERT_EQ(expected, actual) << "Should be updated after adding";
           }
           else {
             ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
@@ -570,7 +574,9 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
         auto row_start = data + i * num_col;
         for (auto col = 0; col < num_col; ++col) {
           if (i % 10 <= p) {
-            ASSERT_EQ(1, *(row_start + col)) << "Should be 1 after adding";
+            auto expected = i + 2;
+            auto actual = *(row_start + col);
+            ASSERT_EQ(expected, actual) << "Should be updated after adding";
           }
           else {
             ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
