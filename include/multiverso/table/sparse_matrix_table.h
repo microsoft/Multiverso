@@ -41,8 +41,6 @@ class SparseMatrixWorkerTable : public MatrixWorkerTable<T> {
 
     void Get(const std::vector<int>& row_ids,
         const std::vector<T*>& data_vec, size_t size) = delete;
-
-    T* base_buf;
 };
 
 template <typename T>

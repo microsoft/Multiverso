@@ -39,7 +39,7 @@ public:
   void ProcessReplyGet(std::vector<Blob>& reply_data) override;
 
 protected:
-  std::unordered_map<int, T*> row_index_;  // index of data with row id in data_vec_
+  (T*)* row_index_;
   int get_reply_count_;                    // number of unprocessed get reply
   int num_row_;
   int num_col_;

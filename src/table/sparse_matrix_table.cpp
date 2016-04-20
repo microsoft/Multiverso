@@ -16,7 +16,6 @@ bool split_rows = true;
 template <typename T>
 void SparseMatrixWorkerTable<T>::Get(T* data, size_t size,
   int worker_id) {
-  base_buf == data;
   CHECK(size == num_col_ * num_row_);
   int whole_table = -1;
   Get(whole_table, data, size, worker_id);
@@ -27,11 +26,12 @@ template <typename T>
 void SparseMatrixWorkerTable<T>::Get(int row_id, T* data, size_t size,
   int worker_id) {
   if (row_id >= 0) CHECK(size == num_col_);
+  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
   row_index_[row_id] = data;  // data_ = data;
   if (row_id == -1) {
-    base_buf = data;
+    row_index_[num_row_] = data;
   } else {
-    base_buf = nullptr;
+    row_index_[row_id] = data; // data_ = data;
   }
   Blob keys(&row_id, sizeof(int) * 2);
   // TODO[qiwye]: to make worker_id an Option.
@@ -43,11 +43,7 @@ void SparseMatrixWorkerTable<T>::Get(int row_id, T* data, size_t size,
 template <typename T>
 void SparseMatrixWorkerTable<T>::Get(const std::vector<int>& row_ids,
   const std::vector<T*>& data_vec, size_t size, int worker_id) {
-  if (row_ids.size() == 1 && row_ids[0] == -1) {
-    base_buf = data_vec[0];
-  } else {
-    base_buf = nullptr;
-  }
+  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
   CHECK(size == num_col_);
   CHECK(row_ids.size() == data_vec.size());
   for (int i = 0; i < row_ids.size(); ++i) {
@@ -144,12 +140,11 @@ void SparseMatrixWorkerTable<T>::ProcessReplyGet(
   std::vector<Blob>& reply_data) {
   if (split_rows) {
     // replace row_index when original key == -1
-    if (base_buf != nullptr) {
+    if (row_index_[num_row_] != nullptr) {
       size_t keys_size = reply_data[0].size<int>();
       int *keys = reinterpret_cast<int*>(reply_data[0].data());
-      row_index_.clear();
       for (auto i = 0; i < keys_size; ++i) {
-        row_index_[keys[i]] = base_buf + keys[i] * num_col_;
+        row_index_[keys[i]] = row_index_[num_row_] + keys[i] * num_col_;
       }
     }
   }
