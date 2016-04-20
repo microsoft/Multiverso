@@ -489,7 +489,7 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
 
 
 void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
-  Log::ResetLogLevel(LogLevel::Debug);
+  Log::ResetLogLevel(LogLevel::Error);
   Log::Info("Test Sparse Matrix\n");
   Timer timmer;
 
@@ -543,7 +543,7 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
       }
       timmer.Start();
       worker_table->Get(data, size, worker_id);
-      std::cout << " " << timmer.elapse() << "s:\t" << "get all rows after adding to rows" << std::endl;
+      std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
     }
   }
   else {
@@ -579,7 +579,7 @@ void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
       }
       timmer.Start();
       worker_table->Get(data, size);
-      std::cout << " " << timmer.elapse() << "s:\t" << "get all rows after adding to rows" << std::endl;
+      std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
     }
   }
   Log::ResetLogLevel(LogLevel::Info);    
