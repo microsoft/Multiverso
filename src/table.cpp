@@ -1,13 +1,17 @@
 #include "multiverso/table_interface.h"
+
+#include <mutex>
+
+#include "multiverso/dashboard.h"
+#include "multiverso/updater/updater.h"
 #include "multiverso/util/log.h"
 #include "multiverso/util/waiter.h"
 #include "multiverso/zoo.h"
-#include "multiverso/dashboard.h"
-#include "multiverso/updater/updater.h"
 
 namespace multiverso {
 
 WorkerTable::WorkerTable() {
+  msg_id_ = 0;
   table_id_ = Zoo::Get()->RegisterTable(this);
 }
 
@@ -30,8 +34,10 @@ void WorkerTable::Add(Blob keys, Blob values,
 }
 
 int WorkerTable::GetAsync(Blob keys) {
+  m_.lock();
   int id = msg_id_++;
-  waitings_[id] = new Waiter();
+  waitings_.push_back(new Waiter());
+  m_.unlock();
   MessagePtr msg(new Message());
   msg->set_src(Zoo::Get()->rank());
   msg->set_type(MsgType::Request_Get);
@@ -44,8 +50,10 @@ int WorkerTable::GetAsync(Blob keys) {
 
 int WorkerTable::AddAsync(Blob keys, Blob values,
                           const UpdateOption* option) {
+  m_.lock();
   int id = msg_id_++;
-  waitings_[id] = new Waiter();
+  waitings_.push_back(new Waiter());
+  m_.unlock();
   MessagePtr msg(new Message());
   msg->set_src(Zoo::Get()->rank());
   msg->set_type(MsgType::Request_Add);
@@ -63,21 +71,32 @@ int WorkerTable::AddAsync(Blob keys, Blob values,
 }
 
 void WorkerTable::Wait(int id) {
-  CHECK(waitings_.find(id) != waitings_.end());
+  // CHECK(waitings_.find(id) != waitings_.end());
+  m_.lock();
   CHECK(waitings_[id] != nullptr);
-  waitings_[id]->Wait();
+  Waiter* w = waitings_[id];
+  m_.unlock();
+
+  w->Wait();
+
+  m_.lock();
   delete waitings_[id];
   waitings_[id] = nullptr;
+  m_.unlock();
 }
 
 void WorkerTable::Reset(int msg_id, int num_wait) {
+  m_.lock();
   CHECK_NOTNULL(waitings_[msg_id]);
   waitings_[msg_id]->Reset(num_wait);
+  m_.unlock();
 }
 
 void WorkerTable::Notify(int id) {
+  m_.lock();
   CHECK_NOTNULL(waitings_[id]);
   waitings_[id]->Notify();
+  m_.unlock();
 }
 
 WorkerTable* TableHelper::CreateTable() {
