@@ -489,7 +489,7 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
 
 
 void TestMatrixPerformance(int argc, char* argv[], bool sparse) {
-  Log::ResetLogLevel(LogLevel::Error);
+  Log::ResetLogLevel(LogLevel::Debug);
   Log::Info("Test Sparse Matrix\n");
   Timer timmer;
 
