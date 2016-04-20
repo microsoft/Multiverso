@@ -42,10 +42,10 @@ TEST_F(test_filter, test_should_compress_all_zero) {
         near_zero_value, near_zero_value, near_zero_value};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_EQ(compressed, true);
     auto de_compressed_blob =
-        de_compress(compressed_blob, size * sizeof(float));
+        DeCompress(compressed_blob, size * sizeof(float));
     ASSERT_TRUE(is_same_content_with_clipping(array, de_compressed_blob, size));
 }
 
@@ -55,10 +55,10 @@ TEST_F(test_filter, test_should_compress_most_zero_a) {
         near_zero_value, none_zero_value};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == true);
     auto de_compressed_blob =
-        de_compress(compressed_blob, size * sizeof(float));
+        DeCompress(compressed_blob, size * sizeof(float));
     ASSERT_TRUE(is_same_content_with_clipping(array, de_compressed_blob, size));
 }
 
@@ -67,10 +67,10 @@ TEST_F(test_filter, test_should_compress_most_zero_b) {
     auto array = new float[size]{1, 2, 0, 0, 0, 0, 0, 3};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == true);
     auto de_compressed_blob =
-        de_compress(compressed_blob, size * sizeof(float));
+        DeCompress(compressed_blob, size * sizeof(float));
     ASSERT_TRUE(is_same_content(array, de_compressed_blob, size));
 }
 
@@ -79,7 +79,7 @@ TEST_F(test_filter, test_should_not_compress_half_zero) {
     auto array = new float[size]{1, 0, 2, 0, 3, 0, 0, 4};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == false);
 }
 
@@ -88,7 +88,7 @@ TEST_F(test_filter, test_should_not_compress_most_none_zero) {
     auto array = new float[size]{1, 2, 3, 4, 0, 0, 0, 5};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == false);
 }
 
@@ -99,7 +99,7 @@ TEST_F(test_filter, test_should_not_compress_all_none_zero) {
         none_zero_value, none_zero_value, none_zero_value};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == false);
 }
 

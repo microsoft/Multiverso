@@ -28,6 +28,7 @@ void SparseMatrixWorkerTable<T>::Get(int row_id, T* data, size_t size,
   if (row_id >= 0) CHECK(size == num_col_);
   row_index_[row_id] = data;  // data_ = data;
   Blob keys(&row_id, sizeof(int) * 2);
+  // TODO[qiwye]: to make worker_id an Option.
   keys.As<int>(1) = worker_id;
   WorkerTable::Get(keys);
   Log::Debug("[Get] worker = %d, #row = %d\n", MV_Rank(), row_id);
@@ -41,7 +42,7 @@ void SparseMatrixWorkerTable<T>::Get(const std::vector<int>& row_ids,
   for (int i = 0; i < row_ids.size(); ++i) {
     row_index_[row_ids[i]] = data_vec[i];
   }
-  Blob keys(row_ids.data(), sizeof(int)* (row_ids.size() + 1));
+  Blob keys(row_ids.data(), sizeof(int) * (row_ids.size() + 1));
   keys.As<int>(row_ids.size()) = worker_id;
   WorkerTable::Get(keys);
   Log::Debug("[Get] worker = %d, #rows_set = %d\n", MV_Rank(),
@@ -82,6 +83,7 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       }
 
       // space for workder_id
+      // TODO[qiwye]: to make worker_id an Option.
       for (auto &kv : count) {
         ++kv.second;
       }
@@ -102,6 +104,7 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       }
 
       // append workder_id
+      // TODO[qiwye]: to make worker_id an new Blob.
       for (auto& kv : *out) {
         kv.second[0].As<int>(kv.second[0].size<int>() - 1) = keys[keys_size];
       }
@@ -158,7 +161,7 @@ SparseMatrixServerTable<T>::SparseMatrixServerTable(int num_row, int num_col,
 }
 
 template <typename T>
-void SparseMatrixServerTable<T>::update_state_on_add(int worker_id,
+void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
   Blob keys_blob) {
   size_t keys_size = keys_blob.size<int>();
   int *keys = reinterpret_cast<int*>(keys_blob.data());
@@ -180,7 +183,7 @@ void SparseMatrixServerTable<T>::update_state_on_add(int worker_id,
 }
 
 template <typename T>
-void SparseMatrixServerTable<T>::update_state_on_get(int worker_id, int* keys,
+void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, int* keys,
   int key_size, std::vector<int>* out_rows) {
 
   if (worker_id == -1) {
@@ -241,7 +244,7 @@ void SparseMatrixServerTable<T>::ProcessAdd(
   // must contain option that has worker id
   CHECK(data.size() == 3);
   UpdateOption option(data[2].data(), data[2].size());
-  update_state_on_add(option.worker_id(), data[0]);
+  UpdateAddState(option.worker_id(), data[0]);
   MatrixServerTable<T>::ProcessAdd(data);
 }
 
@@ -263,7 +266,7 @@ void SparseMatrixServerTable<T>::ProcessGet(
   std::vector<int> outdate_rows;
 #pragma warning( push )
 #pragma warning( disable : 4267)
-  update_state_on_get(workder_id, keys, keys_size, &outdate_rows);
+  UpdateGetState(workder_id, keys, keys_size, &outdate_rows);
 #pragma warning( pop ) 
   Blob outdate_rows_blob(sizeof(int) * outdate_rows.size());
   for (auto i = 0; i < outdate_rows.size(); ++i) {

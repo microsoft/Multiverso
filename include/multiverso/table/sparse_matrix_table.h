@@ -53,8 +53,8 @@ class SparseMatrixServerTable : public MatrixServerTable<T> {
     void ProcessGet(const std::vector<Blob>& data,
         std::vector<Blob>* result) override;
  private:
-     void update_state_on_add(int worker_id, Blob keys);
-     void update_state_on_get(int worker_id, int* keys, int key_size,
+     void UpdateAddState(int worker_id, Blob keys);
+     void UpdateGetState(int worker_id, int* keys, int key_size,
        std::vector<int>* out_rows);
      int get_global_row_id(int local_row_id) {
        return row_offset_ + local_row_id;
