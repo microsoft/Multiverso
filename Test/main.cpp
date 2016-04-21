@@ -3,8 +3,6 @@
 #include <random>
 #include <chrono>
 #include <ctime>
-#include <algorithm>
-#include <numeric>
 
 #include <mpi.h>
 
@@ -212,8 +210,7 @@ void TestNet(int argc, char* argv[]) {
         Log::Info("recv from srv %d: %s\n", msg->src(), recv_data[i].data());
       };
     }
-  }
-  else {// other rank
+  } else {// other rank
     MessagePtr msg(new Message());// = std::make_unique<Message>();
     while (net->Recv(&msg) == 0) {
       // Log::Info("recv return 0\n");
@@ -494,44 +491,23 @@ template<typename WT, typename ST>
 void TestmatrixPerformance(int argc, char* argv[],
   std::function<std::shared_ptr<WT>(int num_row, int num_col)>CreateWorkerTable,
   std::function<std::shared_ptr<ST>(int num_row, int num_col)>CreateServerTable,
-  std::function<void(const std::shared_ptr<WT>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, int worker_id)> Add,
-  std::function<void(const std::shared_ptr<WT>& worker_table, float* data, size_t size, int worker_id)> Get) {
+  std::function<void(const std::shared_ptr<WT>& worker_table, const std::vector<int>& row_ids, const std::vector<int*>& data_vec, size_t size, const UpdateOption* option, int worker_id)> Add,
+  std::function<void(const std::shared_ptr<WT>& worker_table, int* data, size_t size, int worker_id)> Get) {
 
-  Log::ResetLogLevel(LogLevel::Info);
+  Log::ResetLogLevel(LogLevel::Error);
   Log::Info("Test Matrix\n");
   Timer timmer;
 
   MV_Init(&argc, argv);
-  multiverso::SetCMDFlag("sync", true);
 
-  int num_row = 1000000, num_col = 50;
+  int num_row = 100000, num_col = 50;
   int size = num_row * num_col;
-  std::vector<int> primes;
-  primes.push_back(2);
-  for (int i = 3; i < 100; i++) // asuming 100
-  {
-    bool prime = true;
-    for (int j = 0; j < primes.size() && primes[j] * primes[j] <= i; j++)
-    {
-      if (i % primes[j] == 0)
-      {
-        prime = false;
-        break;
-      }
-    }
-    if (prime)
-    {
-      primes.push_back(i);
-      if (primes.size() >= MV_NumWorkers())
-        break;
-    }
-  }
   int worker_id = MV_Rank();
-  int prime_worker_id = primes[worker_id];
+  int worker_num = MV_Size();
 
   // test data
-  float* data = new float[size];
-  float* delta = new float[size];
+  int* data = new int[size];
+  int* delta = new int[size];
   int* keys = new int[num_row];
   for (auto row = 0; row < num_row; ++row) {
     for (auto col = 0; col < num_col; ++col) {
@@ -539,57 +515,45 @@ void TestmatrixPerformance(int argc, char* argv[],
     }
   }
 
-
   UpdateOption option;
   option.set_worker_id(worker_id);
 
-  std::mt19937_64 eng{ std::random_device{}() };
-  std::vector<int> unique_index;
-  std::vector<int> row_ids;
-  std::vector<float*> data_vec;
-  double total_time = 0;
-  for (int i = 0; i < num_row; i++){
-    unique_index.push_back(i);
-  }
-  auto worker_table = CreateWorkerTable(num_row, num_col);
-  auto server_table = CreateServerTable(num_row, num_col);
-  for (auto p = 0; p < 100; ++p)
+  for (auto p = 0; p < 10; ++p)
   {
-    std::shuffle(unique_index.begin(), unique_index.end(), eng);
-    row_ids.clear();
-    data_vec.clear();
-
-
-    for (auto i = 0; i < (9 + 1) * num_row / 10; i++)
-    {
-      row_ids.push_back(unique_index[i]);
-      data_vec.push_back(delta + unique_index[i] * num_col);
+    auto worker_table = CreateWorkerTable(num_row, num_col);
+    auto server_table = CreateServerTable(num_row, num_col);
+    MV_Barrier();
+    std::cout << "==> test add " << p + 1 << " /10 rows to matrix server" << std::endl;
+   
+    std::vector<int> row_ids;
+    std::vector<int*> data_vec;
+    for (auto i = 0; i < num_row; ++i) {
+      if (i % 10 <= p) {
+        row_ids.push_back(i);
+        data_vec.push_back(delta + i * num_col);
+      }
     }
-    
-    std::cout << "==> test add " << row_ids.size() << " / " << num_row << " rows to matrix server" << std::endl;
 
     Add(worker_table, row_ids, data_vec, num_col, &option, worker_id);
-    //Get(worker_table, data, size, -1);
-    MV_Barrier();
-    //for (auto i = 0; i < (p + 1) * num_row / 10; i++){
-    //  auto row_start = data + unique_index[i] * num_col;
-    //  for (auto col = 0; col < num_col; ++col) {
-    //    if (true) {
-    //      auto expected = unique_index[i] * num_col + col;
-    //      auto actual = *(row_start + col);
-    //       ASSERT_EQ(expected, actual) << "Should be updated after adding";
-    //    }
-    //    else {
-    //       ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
-    //    }
-    //  }
-    //}
+    Get(worker_table, data, size, -1);
+    for (auto i = 0; i < num_row; ++i) {
+      auto row_start = data + i * num_col;
+      for (auto col = 0; col < num_col; ++col) {
+        if (i % 10 <= p) {
+          auto expected = i * num_col + col;
+          auto actual = *(row_start + col);
+           // ASSERT_EQ(expected, actual) << "Should be updated after adding";
+        } else {
+            // ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
+        }
+      }
+    }
     timmer.Start();
     Get(worker_table, data, size, worker_id);
-    total_time += 1.0 * timmer.elapse() / 1000;
-    std::cout << "rank :" << MV_Rank() <<" " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
+    std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
+    MV_Barrier();
   }
-  std::cout << " rank :" << MV_Rank() << " timer statics: mean " << (double) total_time / 100 << std::endl;
+
   MV_Barrier();
   Log::ResetLogLevel(LogLevel::Info);
   Dashboard::Display();
@@ -598,42 +562,42 @@ void TestmatrixPerformance(int argc, char* argv[],
 }
 
 void TestSparsePerf(int argc, char* argv[]) {
-  TestmatrixPerformance<SparseMatrixWorkerTable<float>, SparseMatrixServerTable<float>>(argc,
+  TestmatrixPerformance<SparseMatrixWorkerTable<int>, SparseMatrixServerTable<int>>(argc,
     argv,
     [](int num_row, int num_col) {
-    return std::shared_ptr<SparseMatrixWorkerTable<float>>(
-      new SparseMatrixWorkerTable<float>(num_row, num_col));
-    }, 
-      [](int num_row, int num_col) {
-      return std::shared_ptr<SparseMatrixServerTable<float>>(
-        new SparseMatrixServerTable<float>(num_row, num_col, false));
-    }, 
-      [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
-      worker_table->Add(row_ids, data_vec, size, option);
-    },
+    return std::shared_ptr<SparseMatrixWorkerTable<int>>(
+      new SparseMatrixWorkerTable<int>(num_row, num_col));
+  },
+    [](int num_row, int num_col) {
+    return std::shared_ptr<SparseMatrixServerTable<int>>(
+      new SparseMatrixServerTable<int>(num_row, num_col, false));
+  },
+    [](const std::shared_ptr<SparseMatrixWorkerTable<int>>& worker_table, const std::vector<int>& row_ids, const std::vector<int*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
+    worker_table->Add(row_ids, data_vec, size, option);
+  },
 
-      [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
-      worker_table->Get(data, size, worker_id);
-    });
+    [](const std::shared_ptr<SparseMatrixWorkerTable<int>>& worker_table, int* data, size_t size, int worker_id) {
+    worker_table->Get(data, size, worker_id);
+  });
 }
 
 
 void TestDensePerf(int argc, char* argv[]) {
-  TestmatrixPerformance<MatrixWorkerTable<float>, MatrixServerTable<float>>(argc,
+  TestmatrixPerformance<MatrixWorkerTable<int>, MatrixServerTable<int>>(argc,
     argv,
     [](int num_row, int num_col) {
-    return std::shared_ptr<MatrixWorkerTable<float>>(
-      new MatrixWorkerTable<float>(num_row, num_col));
+    return std::shared_ptr<MatrixWorkerTable<int>>(
+      new MatrixWorkerTable<int>(num_row, num_col));
   },
     [](int num_row, int num_col) {
-    return std::shared_ptr<MatrixServerTable<float>>(
-      new MatrixServerTable<float>(num_row, num_col));
+    return std::shared_ptr<MatrixServerTable<int>>(
+      new MatrixServerTable<int>(num_row, num_col));
   },
-    [](const std::shared_ptr<MatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
+    [](const std::shared_ptr<MatrixWorkerTable<int>>& worker_table, const std::vector<int>& row_ids, const std::vector<int*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
     worker_table->Add(row_ids, data_vec, size, option);
   },
 
-    [](const std::shared_ptr<MatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
+    [](const std::shared_ptr<MatrixWorkerTable<int>>& worker_table, int* data, size_t size, int worker_id) {
     worker_table->Get(data, size);
   });
 }
@@ -647,8 +611,7 @@ int main(int argc, char* argv[]) {
     auto res = RUN_ALL_TESTS();
     multiverso::MV_ShutDown();
     return res;
-  }
-  else {
+  } else {
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
