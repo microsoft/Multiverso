@@ -547,20 +547,20 @@ void TestmatrixPerformance(int argc, char* argv[],
   std::vector<int> unique_index;
   std::vector<int> row_ids;
   std::vector<float*> data_vec;
-  std::vector<double> get_time;
+  double total_time = 0;
   for (int i = 0; i < num_row; i++){
     unique_index.push_back(i);
   }
   auto worker_table = CreateWorkerTable(num_row, num_col);
   auto server_table = CreateServerTable(num_row, num_col);
-  for (auto p = 0; p < 10; ++p)
+  for (auto p = 0; p < 100; ++p)
   {
     std::shuffle(unique_index.begin(), unique_index.end(), eng);
     row_ids.clear();
     data_vec.clear();
 
 
-    for (auto i = 0; i < (p + 1) * num_row / 10; i++)
+    for (auto i = 0; i < (9 + 1) * num_row / 10; i++)
     {
       row_ids.push_back(unique_index[i]);
       data_vec.push_back(delta + unique_index[i] * num_col);
@@ -586,13 +586,10 @@ void TestmatrixPerformance(int argc, char* argv[],
     //}
     timmer.Start();
     Get(worker_table, data, size, worker_id);
-    get_time.push_back(1.0 * timmer.elapse() / 1000);
+    total_time += 1.0 * timmer.elapse() / 1000;
     std::cout << "rank :" << MV_Rank() <<" " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
   }
-
-  double mean = std::accumulate(get_time.begin(), get_time.end(), 0) ;
-
-  std::cout << " rank :" << MV_Rank() << " timer statics: mean " << mean << std::endl;
+  std::cout << " rank :" << MV_Rank() << " timer statics: mean " << (double) total_time / 100 << std::endl;
   MV_Barrier();
   Log::ResetLogLevel(LogLevel::Info);
   Dashboard::Display();
