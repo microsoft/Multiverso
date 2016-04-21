@@ -501,7 +501,7 @@ void TestmatrixPerformance(int argc, char* argv[],
   Timer timmer;
 
   MV_Init(&argc, argv);
-  //multiverso::SetCMDFlag("sync", true);
+  multiverso::SetCMDFlag("sync", true);
 
   int num_row = 1000000, num_col = 50;
   int size = num_row * num_col;
@@ -544,17 +544,22 @@ void TestmatrixPerformance(int argc, char* argv[],
 
   std::mt19937_64 eng{ std::random_device{}() };
   std::vector<int> unique_index;
+  std::vector<int> row_ids;
+  std::vector<float*> data_vec;
+  std::vector<float> get_time;
   for (int i = 0; i < num_row; i++){
     unique_index.push_back(i);
   }
+  auto worker_table = CreateWorkerTable(num_row, num_col);
+  auto server_table = CreateServerTable(num_row, num_col);
   for (auto p = 0; p < 10; ++p)
   {
     std::shuffle(unique_index.begin(), unique_index.end(), eng);
+    row_ids.clear();
+    data_vec.clear();
     std::cout << "==> test add " << p + 1 << " /10 rows to matrix server" << std::endl;
-    auto worker_table = CreateWorkerTable(num_row, num_col);
-    auto server_table = CreateServerTable(num_row, num_col);
-    std::vector<int> row_ids;
-    std::vector<float*> data_vec;
+
+
     for (auto i = 0; i < (p + 1) * num_row / 10; i++)
     {
       row_ids.push_back(unique_index[i]);
@@ -562,7 +567,7 @@ void TestmatrixPerformance(int argc, char* argv[],
     }
 
     Add(worker_table, row_ids, data_vec, num_col, &option, worker_id);
-    Get(worker_table, data, size, -1);
+    //Get(worker_table, data, size, -1);
     for (auto i = 0; i < num_row; ++i) {
       auto row_start = data + i * num_col;
       for (auto col = 0; col < num_col; ++col) {
@@ -578,6 +583,7 @@ void TestmatrixPerformance(int argc, char* argv[],
     }
     timmer.Start();
     Get(worker_table, data, size, worker_id);
+    get_time.push_back(1.0 * timmer.elapse() / 1000);
     std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
   }
 

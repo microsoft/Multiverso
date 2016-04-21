@@ -34,6 +34,7 @@ MatrixWorkerTable<T>::MatrixWorkerTable(int num_row, int num_col) :
 
 template <typename T>
 MatrixWorkerTable<T>::~MatrixWorkerTable() {
+  server_offsets_.clear();
   delete[]row_index_;
 }
 

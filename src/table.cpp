@@ -24,8 +24,8 @@ void WorkerTable::Get(Blob keys) {
 void WorkerTable::Add(Blob keys, Blob values,
                       const UpdateOption* option) {
   MONITOR_BEGIN(WORKER_TABLE_SYNC_ADD)
-  // Wait(AddAsync(keys, values));
-  AddAsync(keys, values, option);
+  Wait(AddAsync(keys, values, option));
+  //AddAsync(keys, values, option);
   MONITOR_END(WORKER_TABLE_SYNC_ADD)
 }
 

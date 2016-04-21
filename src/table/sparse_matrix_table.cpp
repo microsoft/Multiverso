@@ -168,7 +168,7 @@ SparseMatrixServerTable<T>::SparseMatrixServerTable(int num_row, int num_col,
     up_to_date_[i] = new bool[my_num_row_];
     memset(up_to_date_[i], 0, sizeof(bool) * my_num_row_);
   }
-  Log::Info("SparseMatrixServerTable server_count_ %d", server_count_);
+  Log::Debug("SparseMatrixServerTable server_count_ %d", server_count_);
 }
 
 template <typename T>
