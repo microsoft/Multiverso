@@ -500,7 +500,7 @@ void TestmatrixPerformance(int argc, char* argv[],
 
   MV_Init(&argc, argv);
 
-  int num_row = 100000, num_col = 50;
+  int num_row = 1000000, num_col = 50;
   int size = num_row * num_col;
   int worker_id = MV_Rank();
   int worker_num = MV_Size();
@@ -521,7 +521,7 @@ void TestmatrixPerformance(int argc, char* argv[],
   for (auto p = 0; p < 10; ++p)
   {
     if (worker_id == 0) {
-      std::cout << "\n\nTesting: Get All Rows => Add "
+      std::cout << "\nTesting: Get All Rows => Add "
         << p + 1 << " /10 Rows to Server => Get All Rows" << std::endl;
     }
 
@@ -532,6 +532,7 @@ void TestmatrixPerformance(int argc, char* argv[],
     timmer.Start();
     Get(worker_table, data, size, worker_id);
     std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows first time, worker id: " << worker_id << std::endl;
+    MV_Barrier();
 
     std::vector<int> row_ids;
     std::vector<int*> data_vec;
