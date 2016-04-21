@@ -88,8 +88,6 @@ void TestArray(int argc, char* argv[]) {
 
   int iter = 1000;
 
-  if (argc == 2) iter = atoi(argv[1]);
-
   for (int i = 0; i < iter; ++i) {
     // std::vector<float>& vec = shared_array->raw();
 

@@ -1,6 +1,7 @@
 #ifndef MULTIVERSO_TABLE_INTERFACE_H_
 #define MULTIVERSO_TABLE_INTERFACE_H_
 
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -40,7 +41,8 @@ public:
 private:
   std::string table_name_;
   int table_id_;
-  std::unordered_map<int, Waiter*> waitings_;
+  std::mutex m_;
+  std::vector<Waiter*> waitings_;
   int msg_id_;
 };
 

@@ -43,8 +43,8 @@ public:
 */
 enum RecursiveHalvingNodeType {
   Normal, //normal node, 1 group only have 1 machine 
-  ReciveNeighbor, //leader of group when number of machines in this group is 2.
-  SendNeighbor// non-leader machines in group
+  GroupLeader, //leader of group when number of machines in this group is 2.
+  Other// non-leader machines in group
 };
 
 /*! \brief Network structure for recursive halving algorithm */
