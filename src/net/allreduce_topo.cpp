@@ -1,4 +1,3 @@
-#ifdef MULTIVERSO_USE_ZMQ
 #include <vector>
 
 #include "multiverso/net/allreduce_engine.h"
@@ -169,5 +168,3 @@ RecursiveHalvingMap RecursiveHalvingMap::Construct(int rank, int num_machines) {
 }
 
 }
-
-#endif
