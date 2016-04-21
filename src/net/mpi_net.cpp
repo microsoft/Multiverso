@@ -1,3 +1,5 @@
+#ifdef MULTIVERSO_USE_MPI
+
 #include "multiverso/net/mpi_net.h"
 
 namespace multiverso {
@@ -21,3 +23,5 @@ template void MPINetWrapper::Allreduce<float>(float*, size_t, int);
 template void MPINetWrapper::Allreduce<double>(double*, size_t, int);
 
 }  // namespace multiverso
+
+#endif

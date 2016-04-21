@@ -168,6 +168,31 @@ public:
     return size;
   }
 
+
+  void SendTo(int rank, const char* buf, int len) override {
+    int send_size = 0;
+    while (send_size < len) {
+      int cur_size = zmq_send(senders_[rank], buf + send_size, len - send_size, 0);
+      if (cur_size < 0) { Log::Error("socket send error %d", cur_size); }
+      send_size += cur_size;
+    }
+  }
+
+  bool WaitLastSend() override {
+    // not need to wait in ZMQ
+    return true;
+  }
+
+  void RecvFrom(int, char* buf, int len) override {
+    // note: rank is not used here
+    int recv_size = 0;
+    while (recv_size < len) {
+      int cur_size = zmq_recv(receiver_, buf + recv_size, len - recv_size, 0);
+      if (cur_size < 0) { Log::Error("socket receive error %d", cur_size); }
+      recv_size += cur_size;
+    }
+  }
+
   int thread_level_support() override { 
     return NetThreadLevel::THREAD_MULTIPLE; 
   }
