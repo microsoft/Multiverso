@@ -520,37 +520,57 @@ void TestmatrixPerformance(int argc, char* argv[],
 
   for (auto p = 0; p < 10; ++p)
   {
+    if (worker_id == 0) {
+      std::cout << "\n\nTesting: Get All Rows => Add "
+        << p + 1 << " /10 Rows to Server => Get All Rows" << std::endl;
+    }
+
     auto worker_table = CreateWorkerTable(num_row, num_col);
     auto server_table = CreateServerTable(num_row, num_col);
     MV_Barrier();
-    std::cout << "==> test add " << p + 1 << " /10 rows to matrix server" << std::endl;
-   
+    
+    timmer.Start();
+    Get(worker_table, data, size, worker_id);
+    std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows first time, worker id: " << worker_id << std::endl;
+
     std::vector<int> row_ids;
     std::vector<int*> data_vec;
     for (auto i = 0; i < num_row; ++i) {
-      if (i % 10 <= p) {
+      if (i % 10 <= p && i % worker_num == worker_id) {
         row_ids.push_back(i);
         data_vec.push_back(delta + i * num_col);
       }
     }
 
-    Add(worker_table, row_ids, data_vec, num_col, &option, worker_id);
+    if (worker_id == 0) {
+      std::cout << "adding " << p + 1 << " /10 rows to matrix server" << std::endl;
+    }
+
+    if (row_ids.size() > 0) {
+      Add(worker_table, row_ids, data_vec, num_col, &option, worker_id);
+    }
     Get(worker_table, data, size, -1);
+    MV_Barrier();
+
+    timmer.Start();
+    Get(worker_table, data, size, worker_id);
+    std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows, worker id: " << worker_id << std::endl;
+
     for (auto i = 0; i < num_row; ++i) {
       auto row_start = data + i * num_col;
       for (auto col = 0; col < num_col; ++col) {
+        auto expected = i * num_col + col;
+        auto actual = *(row_start + col);
         if (i % 10 <= p) {
-          auto expected = i * num_col + col;
-          auto actual = *(row_start + col);
-           // ASSERT_EQ(expected, actual) << "Should be updated after adding";
+            ASSERT_EQ(expected, actual) << "Should be updated after adding, worker_id:" 
+              << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
         } else {
-            // ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
+            ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values, worker_id:" 
+              << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
         }
       }
     }
-    timmer.Start();
-    Get(worker_table, data, size, worker_id);
-    std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
+  
     MV_Barrier();
   }
 
