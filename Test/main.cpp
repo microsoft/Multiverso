@@ -4,6 +4,7 @@
 #include <chrono>
 #include <ctime>
 #include <algorithm>
+#include <numeric>
 
 #include <mpi.h>
 
@@ -546,7 +547,7 @@ void TestmatrixPerformance(int argc, char* argv[],
   std::vector<int> unique_index;
   std::vector<int> row_ids;
   std::vector<float*> data_vec;
-  std::vector<float> get_time;
+  std::vector<double> get_time;
   for (int i = 0; i < num_row; i++){
     unique_index.push_back(i);
   }
@@ -557,7 +558,6 @@ void TestmatrixPerformance(int argc, char* argv[],
     std::shuffle(unique_index.begin(), unique_index.end(), eng);
     row_ids.clear();
     data_vec.clear();
-    std::cout << "==> test add " << p + 1 << " /10 rows to matrix server" << std::endl;
 
 
     for (auto i = 0; i < (p + 1) * num_row / 10; i++)
@@ -565,28 +565,34 @@ void TestmatrixPerformance(int argc, char* argv[],
       row_ids.push_back(unique_index[i]);
       data_vec.push_back(delta + unique_index[i] * num_col);
     }
+    
+    std::cout << "==> test add " << row_ids.size() << " / " << num_row << " rows to matrix server" << std::endl;
 
     Add(worker_table, row_ids, data_vec, num_col, &option, worker_id);
     //Get(worker_table, data, size, -1);
-    for (auto i = 0; i < num_row; ++i) {
-      auto row_start = data + i * num_col;
-      for (auto col = 0; col < num_col; ++col) {
-        if (i % 10 <= p) {
-          auto expected = i * num_col + col;
-          auto actual = *(row_start + col);
-          // ASSERT_EQ(expected, actual) << "Should be updated after adding";
-        }
-        else {
-          // ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
-        }
-      }
-    }
+    MV_Barrier();
+    //for (auto i = 0; i < (p + 1) * num_row / 10; i++){
+    //  auto row_start = data + unique_index[i] * num_col;
+    //  for (auto col = 0; col < num_col; ++col) {
+    //    if (true) {
+    //      auto expected = unique_index[i] * num_col + col;
+    //      auto actual = *(row_start + col);
+    //       ASSERT_EQ(expected, actual) << "Should be updated after adding";
+    //    }
+    //    else {
+    //       ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values";
+    //    }
+    //  }
+    //}
     timmer.Start();
     Get(worker_table, data, size, worker_id);
     get_time.push_back(1.0 * timmer.elapse() / 1000);
-    std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
+    std::cout << "rank :" << MV_Rank() <<" " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
   }
 
+  double mean = std::accumulate(get_time.begin(), get_time.end(), 0) ;
+
+  std::cout << " rank :" << MV_Rank() << " timer statics: mean " << mean << std::endl;
   MV_Barrier();
   Log::ResetLogLevel(LogLevel::Info);
   Dashboard::Display();

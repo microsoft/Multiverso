@@ -138,6 +138,8 @@ void SparseMatrixWorkerTable<T>::ProcessReplyGet(
   // replace row_index when original key == -1
   if (row_index_[num_row_] != nullptr) {
     size_t keys_size = reply_data[0].size<int>();
+    Log::Info("[SparseMatrixWorkerTable:ProcessReplyGet] worker = %d, #keys_size = %d\n", MV_Rank(),
+      keys_size);
     int *keys = reinterpret_cast<int*>(reply_data[0].data());
     for (auto i = 0; i < keys_size; ++i) {
       row_index_[keys[i]] = row_index_[num_row_] + keys[i] * num_col_;
@@ -158,7 +160,7 @@ SparseMatrixServerTable<T>::~SparseMatrixServerTable() {
 template <typename T>
 SparseMatrixServerTable<T>::SparseMatrixServerTable(int num_row, int num_col,
   bool using_pipeline) : MatrixServerTable<T>(num_row, num_col) {
-   server_count_ = multiverso::MV_Size();
+   server_count_ = multiverso::MV_NumWorkers();
   if (using_pipeline) {
     server_count_ *= 2;
   }
@@ -168,7 +170,7 @@ SparseMatrixServerTable<T>::SparseMatrixServerTable(int num_row, int num_col,
     up_to_date_[i] = new bool[my_num_row_];
     memset(up_to_date_[i], 0, sizeof(bool) * my_num_row_);
   }
-  Log::Debug("SparseMatrixServerTable server_count_ %d", server_count_);
+  Log::Debug("[SparseMatrixServerTable] server_count_=%d", server_count_);
 }
 
 template <typename T>
@@ -179,13 +181,18 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
   // add all values
   if (keys_size == 1 && keys[0] == -1) {
     for (auto id = 0; id < server_count_; ++id) {
-        for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id) {
-          up_to_date_[id][local_row_id] = (id == worker_id);
+      //if (id == worker_id) continue;
+      for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id) {
+        // if other worker doen't update the row, we can marked it as the updated.
+        up_to_date_[id][local_row_id] = (id == worker_id);
       }
     }
-  } else {
+  }
+  else {
     for (auto id = 0; id < server_count_; ++id) {
+      //if (id == worker_id) continue;
       for (int i = 0; i < keys_size; ++i) {
+        // if other worker doen't update the row, we can marked it as the updated.
         auto local_row_id = get_local_row_id(keys[i]);
         up_to_date_[id][local_row_id] = (id == worker_id);
       }
@@ -211,7 +218,8 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, int* keys,
         up_to_date_[worker_id][local_row_id] = true;
       }
     }
-  } else {
+  }
+  else {
     for (auto i = 0; i < key_size; ++i)  {
       auto global_row_id = keys[i];
       auto local_row_id = get_local_row_id(global_row_id);
