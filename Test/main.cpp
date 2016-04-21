@@ -493,15 +493,15 @@ template<typename WT, typename ST>
 void TestmatrixPerformance(int argc, char* argv[],
   std::function<std::shared_ptr<WT>(int num_row, int num_col)>CreateWorkerTable,
   std::function<std::shared_ptr<ST>(int num_row, int num_col)>CreateServerTable,
-  std::function<void(const std::shared_ptr<WT>& worker_table, const std::vector<int>& row_ids, const std::vector<int*>& data_vec, size_t size, const UpdateOption* option, int worker_id)> Add,
-  std::function<void(const std::shared_ptr<WT>& worker_table, int* data, size_t size, int worker_id)> Get) {
+  std::function<void(const std::shared_ptr<WT>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, int worker_id)> Add,
+  std::function<void(const std::shared_ptr<WT>& worker_table, float* data, size_t size, int worker_id)> Get) {
 
   Log::ResetLogLevel(LogLevel::Info);
   Log::Info("Test Matrix\n");
   Timer timmer;
 
   MV_Init(&argc, argv);
-  multiverso::SetCMDFlag("sync", true);
+  //multiverso::SetCMDFlag("sync", true);
 
   int num_row = 1000000, num_col = 50;
   int size = num_row * num_col;
@@ -589,42 +589,42 @@ void TestmatrixPerformance(int argc, char* argv[],
 }
 
 void TestSparsePerf(int argc, char* argv[]) {
-  TestmatrixPerformance<SparseMatrixWorkerTable<int>, SparseMatrixServerTable<int>>(argc,
+  TestmatrixPerformance<SparseMatrixWorkerTable<float>, SparseMatrixServerTable<float>>(argc,
     argv,
     [](int num_row, int num_col) {
-    return std::shared_ptr<SparseMatrixWorkerTable<int>>(
-      new SparseMatrixWorkerTable<int>(num_row, num_col));
+    return std::shared_ptr<SparseMatrixWorkerTable<float>>(
+      new SparseMatrixWorkerTable<float>(num_row, num_col));
     }, 
       [](int num_row, int num_col) {
-      return std::shared_ptr<SparseMatrixServerTable<int>>(
-        new SparseMatrixServerTable<int>(num_row, num_col, false));
+      return std::shared_ptr<SparseMatrixServerTable<float>>(
+        new SparseMatrixServerTable<float>(num_row, num_col, false));
     }, 
-      [](const std::shared_ptr<SparseMatrixWorkerTable<int>>& worker_table, const std::vector<int>& row_ids, const std::vector<int*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
+      [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
       worker_table->Add(row_ids, data_vec, size, option);
     },
 
-      [](const std::shared_ptr<SparseMatrixWorkerTable<int>>& worker_table, int* data, size_t size, int worker_id) {
+      [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
       worker_table->Get(data, size, worker_id);
     });
 }
 
 
 void TestDensePerf(int argc, char* argv[]) {
-  TestmatrixPerformance<MatrixWorkerTable<int>, MatrixServerTable<int>>(argc,
+  TestmatrixPerformance<MatrixWorkerTable<float>, MatrixServerTable<float>>(argc,
     argv,
     [](int num_row, int num_col) {
-    return std::shared_ptr<MatrixWorkerTable<int>>(
-      new MatrixWorkerTable<int>(num_row, num_col));
+    return std::shared_ptr<MatrixWorkerTable<float>>(
+      new MatrixWorkerTable<float>(num_row, num_col));
   },
     [](int num_row, int num_col) {
-    return std::shared_ptr<MatrixServerTable<int>>(
-      new MatrixServerTable<int>(num_row, num_col));
+    return std::shared_ptr<MatrixServerTable<float>>(
+      new MatrixServerTable<float>(num_row, num_col));
   },
-    [](const std::shared_ptr<MatrixWorkerTable<int>>& worker_table, const std::vector<int>& row_ids, const std::vector<int*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
+    [](const std::shared_ptr<MatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
     worker_table->Add(row_ids, data_vec, size, option);
   },
 
-    [](const std::shared_ptr<MatrixWorkerTable<int>>& worker_table, int* data, size_t size, int worker_id) {
+    [](const std::shared_ptr<MatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
     worker_table->Get(data, size);
   });
 }
