@@ -524,19 +524,19 @@ void TestmatrixPerformance(int argc, char* argv[],
 
   UpdateOption option;
   option.set_worker_id(worker_id);
-  std::mt19937_64 eng{ std::random_device{}() };
-  std::vector<int> unique_index;
-  for (int i = 0; i < num_row; i++){
-    unique_index.push_back(i);
-  }
+  //std::mt19937_64 eng{ std::random_device{}() };
+  //std::vector<int> unique_index;
+  //for (int i = 0; i < num_row; i++){
+  //  unique_index.push_back(i);
+  //}
   
   for (auto percent = 0; percent < 10; ++percent)
-    for (auto turn = 0; turn < 50; ++turn)
+    for (auto turn = 0; turn < 10; ++turn)
     {
-      std::shuffle(unique_index.begin(), unique_index.end(), eng);
+      //std::shuffle(unique_index.begin(), unique_index.end(), eng);
       if (worker_id == 0) {
         std::cout << "\nTesting: Get All Rows => Add "
-          << percent + 1 << " /10 Rows to Server => Get All Rows" << std::endl;
+          << percent + 1 << "0% Rows to Server => Get All Rows" << std::endl;
       }
 
 
