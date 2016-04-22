@@ -2,7 +2,6 @@
 #include <algorithm>
 
 #include "multiverso/net/allreduce_engine.h"
-#include "multiverso/net/net_allreduce.h"
 
 namespace multiverso {
 
@@ -11,7 +10,7 @@ AllreduceEngine::AllreduceEngine()
 
 }
 
-void AllreduceEngine::Init(NetInterface* linkers) {
+void AllreduceEngine::Init(const NetInterface* linkers) {
   linkers_ = linkers;
   rank_ = linkers_->rank();
   num_machines_ = linkers_->size();
@@ -93,21 +92,20 @@ void AllreduceEngine::Allgather(char* input, int all_size, int* block_start, int
   write_ptr += block_len[rank_];
   int accumulated_block = 1;
   for (int i = 0; i < bruck_map_.k; ++i) {
-    //send
     int cur_block_size = (1 << i) < num_machines_ - accumulated_block ? (1 << i) : num_machines_ - accumulated_block;
     int target = bruck_map_.out_ranks[i];
     int send_len = 0;
     for (int j = 0; j < cur_block_size; ++j) {
       send_len += block_len[(rank_ + j) % num_machines_];
     }
-    linkers_->SendTo(target, output, send_len);
-    //rec
+
     int incoming = bruck_map_.in_ranks[i];
     int need_recv_cnt = 0;
     for (int j = 0; j < cur_block_size; ++j) {
       need_recv_cnt += block_len[(rank_ + accumulated_block + j) % num_machines_];
     }
-    linkers_->RecvFrom(incoming, output + write_ptr, need_recv_cnt);
+
+    linkers_->SendRecv(target, output, send_len, incoming, output + write_ptr, need_recv_cnt);
     write_ptr += need_recv_cnt;
     accumulated_block += cur_block_size;
   }
@@ -139,18 +137,17 @@ void AllreduceEngine::ReduceScatter(char* input, int input_size, int type_size, 
       int target = recursive_halving_map_.ranks[i];
       int send_block_start = recursive_halving_map_.send_block_start[i];
       int recv_block_start = recursive_halving_map_.recv_block_start[i];
-      //send
       int send_size = 0;
       for (int j = 0; j < recursive_halving_map_.send_block_len[i]; ++j) {
         send_size += block_len[send_block_start + j];
       }
-      linkers_->SendTo(target, input + block_start[send_block_start], send_size);
-      //receive
+
       int need_recv_cnt = 0;
       for (int j = 0; j < recursive_halving_map_.recv_block_len[i]; ++j) {
         need_recv_cnt += block_len[recv_block_start + j];
       }
-      linkers_->RecvFrom(target, output, need_recv_cnt);
+
+      linkers_->SendRecv(target, input + block_start[send_block_start], send_size, target, output, need_recv_cnt);
       //reduce
       reducer(output, input + block_start[recv_block_start], need_recv_cnt);
     }

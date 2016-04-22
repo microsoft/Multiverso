@@ -6,6 +6,7 @@
 #include "multiverso/net.h"
 
 #include <limits>
+#include <thread>
 
 #include "multiverso/message.h"
 #include "multiverso/util/log.h"
@@ -169,7 +170,7 @@ public:
   }
 
 
-  void SendTo(int rank, const char* buf, int len) override {
+  void SendTo(int rank, const char* buf, int len) const override {
     int send_size = 0;
     while (send_size < len) {
       int cur_size = zmq_send(senders_[rank], buf + send_size, len - send_size, 0);
@@ -178,12 +179,7 @@ public:
     }
   }
 
-  bool WaitLastSend() override {
-    // not need to wait in ZMQ
-    return true;
-  }
-
-  void RecvFrom(int, char* buf, int len) override {
+  void RecvFrom(int, char* buf, int len) const override {
     // note: rank is not used here
     int recv_size = 0;
     while (recv_size < len) {
@@ -191,6 +187,20 @@ public:
       if (cur_size < 0) { Log::Error("socket receive error %d", cur_size); }
       recv_size += cur_size;
     }
+  }
+
+  void SendRecv(int send_rank, const char* send_buf, int send_len,
+    int recv_rank, char* recv_buf, int recv_len) const override {
+    // send first
+    std::thread send_worker(
+      [this, send_rank, send_buf, send_len] {
+      SendTo(SendTo, send_buf, send_len);
+    }
+    );
+    // then recv
+    RecvFrom(recv_rank, recv_buf, recv_len);
+    // wait for send complete
+    send_worker.join();
   }
 
   int thread_level_support() override { 

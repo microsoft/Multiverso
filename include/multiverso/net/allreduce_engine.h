@@ -86,7 +86,7 @@ public:
   * \brief Initial
   * \param linkers, the low-level communication methods
   */
-  void Init(NetInterface* linkers);
+  void Init(const NetInterface* linkers);
 
   ~AllreduceEngine();
   /*! \brief Get rank of this machine */
@@ -152,7 +152,7 @@ private:
   /*! \brief Rank of local machine */
   int rank_;
   /*! \brief The network interface, provide send/recv functions  */
-  NetInterface* linkers_;
+  const NetInterface* linkers_;
   /*! \brief Bruck map for all gather algorithm*/
   BruckMap bruck_map_;
   /*! \brief Recursive halving map for reduce scatter */
