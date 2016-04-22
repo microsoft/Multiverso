@@ -184,7 +184,7 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
       if (id == worker_id) continue;
       for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id) {
         // if other worker doen't update the row, we can marked it as the updated.
-        up_to_date_[id][local_row_id] = (id == worker_id);
+        up_to_date_[id][local_row_id] = false;
       }
     }
   }
@@ -194,7 +194,7 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
       for (int i = 0; i < keys_size; ++i) {
         // if other worker doen't update the row, we can marked it as the updated.
         auto local_row_id = get_local_row_id(keys[i]);
-        up_to_date_[id][local_row_id] = (id == worker_id);
+        up_to_date_[id][local_row_id] = false;
       }
     }
   }
