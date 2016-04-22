@@ -503,8 +503,13 @@ void TestmatrixPerformance(int argc, char* argv[],
 
   MV_Init(&argc, argv);
   multiverso::SetCMDFlag("sync", true);
-
+  int per = 0;
   int num_row = 1000000, num_col = 50;
+  if (argc == 1){ 
+    per = atoi(argv[2]);
+    num_row = atoi(argv[3]);
+  }
+
   int size = num_row * num_col;
   std::vector<int> primes;
   primes.push_back(2);
@@ -539,7 +544,6 @@ void TestmatrixPerformance(int argc, char* argv[],
     }
   }
 
-
   UpdateOption option;
   option.set_worker_id(worker_id);
 
@@ -553,14 +557,14 @@ void TestmatrixPerformance(int argc, char* argv[],
   }
   auto worker_table = CreateWorkerTable(num_row, num_col);
   auto server_table = CreateServerTable(num_row, num_col);
-  for (auto p = 0; p < 100; ++p)
+  for (auto p = 0; p < 10; ++p)
   {
     std::shuffle(unique_index.begin(), unique_index.end(), eng);
     row_ids.clear();
     data_vec.clear();
 
 
-    for (auto i = 0; i < (9 + 1) * num_row / 10; i++)
+    for (auto i = 0; i < (per + 1) * num_row / 10; i++)
     {
       row_ids.push_back(unique_index[i]);
       data_vec.push_back(delta + unique_index[i] * num_col);
@@ -589,12 +593,12 @@ void TestmatrixPerformance(int argc, char* argv[],
     total_time += 1.0 * timmer.elapse() / 1000;
     std::cout << "rank :" << MV_Rank() <<" " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows" << std::endl;
   }
-  std::cout << " rank :" << MV_Rank() << " timer statics: mean " << (double) total_time / 100 << std::endl;
   MV_Barrier();
   Log::ResetLogLevel(LogLevel::Info);
   Dashboard::Display();
   Log::ResetLogLevel(LogLevel::Error);
   MV_ShutDown();
+  std::cout << " rank :" << MV_Rank() << " timer statics: mean " << (double) total_time / 10 << std::endl;
 }
 
 void TestSparsePerf(int argc, char* argv[]) {

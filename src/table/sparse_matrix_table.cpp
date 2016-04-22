@@ -138,7 +138,7 @@ void SparseMatrixWorkerTable<T>::ProcessReplyGet(
   // replace row_index when original key == -1
   if (row_index_[num_row_] != nullptr) {
     size_t keys_size = reply_data[0].size<int>();
-    Log::Info("[SparseMatrixWorkerTable:ProcessReplyGet] worker = %d, #keys_size = %d\n", MV_Rank(),
+    Log::Debug("[SparseMatrixWorkerTable:ProcessReplyGet] worker = %d, #keys_size = %d\n", MV_Rank(),
       keys_size);
     int *keys = reinterpret_cast<int*>(reply_data[0].data());
     for (auto i = 0; i < keys_size; ++i) {
