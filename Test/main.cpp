@@ -526,82 +526,81 @@ void TestmatrixPerformance(int argc, char* argv[],
   option.set_worker_id(worker_id);
   std::mt19937_64 eng{ std::random_device{}() };
   std::vector<int> unique_index;
-  double total_time = 0;
   for (int i = 0; i < num_row; i++){
     unique_index.push_back(i);
   }
   
-  for (auto p = 0; p < 10; ++p)
-  {
-    std::shuffle(unique_index.begin(), unique_index.end(), eng);
-    if (worker_id == 0) {
-      std::cout << "\nTesting: Get All Rows => Add "
-        << p + 1 << " /10 Rows to Server => Get All Rows" << std::endl;
-    }
-
-
-    auto worker_table = CreateWorkerTable(num_row, num_col);
-    auto server_table = CreateServerTable(num_row, num_col);
-    MV_Barrier();
-
-    timmer.Start();
-    Get(worker_table, data, size, worker_id);
-    std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows first time, worker id: " << worker_id << std::endl;
-    MV_Barrier();
-
-    std::vector<int> row_ids;
-    std::vector<float*> data_vec;
-    for (auto i = 0; i < num_row; ++i) {
-      if (i % 10 <= p && i % worker_num == worker_id) {
-        row_ids.push_back(i);
-        data_vec.push_back(delta + i * num_col);
+  for (auto percent = 0; percent < 10; ++percent)
+    for (auto turn = 0; turn < 50; ++turn)
+    {
+      std::shuffle(unique_index.begin(), unique_index.end(), eng);
+      if (worker_id == 0) {
+        std::cout << "\nTesting: Get All Rows => Add "
+          << percent + 1 << " /10 Rows to Server => Get All Rows" << std::endl;
       }
-    }
-    //for (auto i = 0; i < (p + 1) * num_row / 10; i++)
-    //{
-    //  row_ids.push_back(unique_index[i]);
-    //  data_vec.push_back(delta + unique_index[i] * num_col);
-    //}
 
-    if (worker_id == 0) {
-      std::cout << "adding " << p + 1 << " /10 rows to matrix server" << std::endl;
-    }
 
-    if (row_ids.size() > 0) {
-      Add(worker_table, row_ids, data_vec, num_col, &option, worker_id);
-    }
-    Get(worker_table, data, size, -1);
-    MV_Barrier();
+      auto worker_table = CreateWorkerTable(num_row, num_col);
+      auto server_table = CreateServerTable(num_row, num_col);
+      MV_Barrier();
 
-    timmer.Start();
-    Get(worker_table, data, size, worker_id);
-    std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows, worker id: " << worker_id << std::endl;
+      timmer.Start();
+      Get(worker_table, data, size, worker_id);
+      std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows first time, worker id: " << worker_id << std::endl;
+      MV_Barrier();
 
-    for (auto i = 0; i < num_row; ++i) {
-      auto row_start = data + i * num_col;
-      for (auto col = 0; col < num_col; ++col) {
-        auto expected = i * num_col + col;
-        auto actual = *(row_start + col);
-        if (i % 10 <= p) {
-          ASSERT_EQ(expected, actual) << "Should be updated after adding, worker_id:"
-            << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
-        }
-        else {
-          ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values, worker_id:"
-            << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
+      std::vector<int> row_ids;
+      std::vector<float*> data_vec;
+      for (auto i = 0; i < num_row; ++i) {
+        if (i % 10 <= percent && i % worker_num == worker_id) {
+          row_ids.push_back(i);
+          data_vec.push_back(delta + i * num_col);
         }
       }
-    }
+      //for (auto i = 0; i < (percent + 1) * num_row / 10; i++)
+      //{
+      //  row_ids.push_back(unique_index[i]);
+      //  data_vec.push_back(delta + unique_index[i] * num_col);
+      //}
 
-    MV_Barrier();
-  }
+      if (worker_id == 0) {
+        std::cout << "adding " << percent + 1 << " /10 rows to matrix server" << std::endl;
+      }
+
+      if (row_ids.size() > 0) {
+        Add(worker_table, row_ids, data_vec, num_col, &option, worker_id);
+      }
+      Get(worker_table, data, size, -1);
+      MV_Barrier();
+
+      timmer.Start();
+      Get(worker_table, data, size, worker_id);
+      std::cout << " " << 1.0 * timmer.elapse() / 1000 << "s:\t" << "get all rows after adding to rows, worker id: " << worker_id << std::endl;
+
+      for (auto i = 0; i < num_row; ++i) {
+        auto row_start = data + i * num_col;
+        for (auto col = 0; col < num_col; ++col) {
+          auto expected = i * num_col + col;
+          auto actual = *(row_start + col);
+          if (i % 10 <= percent) {
+            ASSERT_EQ(expected, actual) << "Should be updated after adding, worker_id:"
+              << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
+          }
+          else {
+            ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values, worker_id:"
+              << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
+          }
+        }
+      }
+
+      MV_Barrier();
+    }
 
   MV_Barrier();
   Log::ResetLogLevel(LogLevel::Info);
   Dashboard::Display();
   Log::ResetLogLevel(LogLevel::Error);
   MV_ShutDown();
-  std::cout << " rank :" << MV_Rank() << " timer statics: mean " << (double)total_time / 10 << std::endl;
 }
 
 void TestSparsePerf(int argc, char* argv[]) {
@@ -610,18 +609,18 @@ void TestSparsePerf(int argc, char* argv[]) {
     [](int num_row, int num_col) {
     return std::shared_ptr<SparseMatrixWorkerTable<float>>(
       new SparseMatrixWorkerTable<float>(num_row, num_col));
-    }, 
-      [](int num_row, int num_col) {
-      return std::shared_ptr<SparseMatrixServerTable<float>>(
-        new SparseMatrixServerTable<float>(num_row, num_col, false));
-    }, 
-      [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
-      worker_table->Add(row_ids, data_vec, size, option);
-    },
+  },
+    [](int num_row, int num_col) {
+    return std::shared_ptr<SparseMatrixServerTable<float>>(
+      new SparseMatrixServerTable<float>(num_row, num_col, false));
+  },
+    [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
+    worker_table->Add(row_ids, data_vec, size, option);
+  },
 
-      [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
-      worker_table->Get(data, size, worker_id);
-    });
+    [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
+    worker_table->Get(data, size, worker_id);
+  });
 }
 
 
