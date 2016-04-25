@@ -583,11 +583,11 @@ void TestmatrixPerformance(int argc, char* argv[],
           auto expected = i * num_col + col;
           auto actual = *(row_start + col);
           if (i % 10 <= percent) {
-            ASSERT_EQ(expected, actual) << "Should be updated after adding, worker_id:"
+            ASSERT_FLOAT_EQ(expected, actual) << "Should be updated after adding, worker_id:"
               << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
           }
           else {
-            ASSERT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values, worker_id:"
+            ASSERT_FLOAT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values, worker_id:"
               << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
           }
         }
