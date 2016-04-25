@@ -38,6 +38,7 @@ void SparseMatrixWorkerTable<T>::Get(int row_id, T* data, size_t size,
 
   WorkerTable::Get(keys, option);
   Log::Debug("[Get] worker = %d, #row = %d\n", MV_Rank(), row_id);
+  delete option;
 }
 
 template <typename T>
@@ -59,6 +60,7 @@ void SparseMatrixWorkerTable<T>::Get(const std::vector<int>& row_ids,
   WorkerTable::Get(keys, option);
   Log::Debug("[Get] worker = %d, #rows_set = %d\n", MV_Rank(),
     row_ids.size());
+  delete option;
 }
 
 template <typename T>
