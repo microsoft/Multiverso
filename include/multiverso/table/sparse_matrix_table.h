@@ -55,7 +55,7 @@ class SparseMatrixServerTable : public MatrixServerTable<T> {
         std::vector<Blob>* result) override;
  private:
      void UpdateAddState(int worker_id, Blob keys);
-     void UpdateGetState(int worker_id, int* keys, int key_size,
+     void UpdateGetState(int worker_id, int* keys, size_t key_size,
        std::vector<int>* out_rows);
      int get_global_row_id(int local_row_id) {
        return row_offset_ + local_row_id;
@@ -65,7 +65,7 @@ class SparseMatrixServerTable : public MatrixServerTable<T> {
      }
  private:
    bool** up_to_date_;
-   int server_count_;
+   int workers_nums_;
    // std::vector<std::vector<bool>> up_to_date_;
 };
 

@@ -100,12 +100,6 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
         ++count[dst];
       }
 
-      //// space for workder_id
-      //// TODO[qiwye]: to make worker_id an Option.
-      //for (auto &kv : count) {
-      //  ++kv.second;
-      //}
-
       for (auto& it : count) {  // Allocate memory
         int rank = MV_ServerIdToRank(it.first);
         std::vector<Blob>& vec = (*out)[rank];
@@ -157,7 +151,7 @@ void SparseMatrixWorkerTable<T>::ProcessReplyGet(
     size_t keys_size = reply_data[0].size<int>();
     Log::Debug("[SparseMatrixWorkerTable:ProcessReplyGet] worker = %d, #keys_size = %d\n", MV_Rank(),
       keys_size);
-    int *keys = reinterpret_cast<int*>(reply_data[0].data());
+    int* keys = reinterpret_cast<int*>(reply_data[0].data());
     for (auto i = 0; i < keys_size; ++i) {
       row_index_[keys[i]] = row_index_[num_row_] + keys[i] * num_col_;
     }
@@ -168,7 +162,7 @@ void SparseMatrixWorkerTable<T>::ProcessReplyGet(
 
 template <typename T>
 SparseMatrixServerTable<T>::~SparseMatrixServerTable() {
-  for (auto i = 0; i < server_count_; ++i) {
+  for (auto i = 0; i < workers_nums_; ++i) {
     delete[]up_to_date_[i];
   }
   delete[]up_to_date_;
@@ -177,27 +171,27 @@ SparseMatrixServerTable<T>::~SparseMatrixServerTable() {
 template <typename T>
 SparseMatrixServerTable<T>::SparseMatrixServerTable(int num_row, int num_col,
   bool using_pipeline) : MatrixServerTable<T>(num_row, num_col) {
-   server_count_ = multiverso::MV_NumWorkers();
+   workers_nums_ = multiverso::MV_NumWorkers();
   if (using_pipeline) {
-    server_count_ *= 2;
+    workers_nums_ *= 2;
   }
         
-  up_to_date_ = new bool*[server_count_];
-  for (auto i = 0; i < server_count_; ++i) {
+  up_to_date_ = new bool*[workers_nums_];
+  for (auto i = 0; i < workers_nums_; ++i) {
     up_to_date_[i] = new bool[my_num_row_];
     memset(up_to_date_[i], 0, sizeof(bool) * my_num_row_);
   }
-  Log::Debug("[SparseMatrixServerTable] server_count_= %d .\n", server_count_);
+  Log::Debug("[SparseMatrixServerTable] workers_nums_= %d .\n", workers_nums_);
 }
 
 template <typename T>
 void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
   Blob keys_blob) {
   size_t keys_size = keys_blob.size<int>();
-  int *keys = reinterpret_cast<int*>(keys_blob.data());
+  int* keys = reinterpret_cast<int*>(keys_blob.data());
   // add all values
   if (keys_size == 1 && keys[0] == -1) {
-    for (auto id = 0; id < server_count_; ++id) {
+    for (auto id = 0; id < workers_nums_; ++id) {
       if (id == worker_id) continue;
       for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id) {
         // if other worker doen't update the row, we can marked it as the updated.
@@ -206,7 +200,7 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
     }
   }
   else {
-    for (auto id = 0; id < server_count_; ++id) {
+    for (auto id = 0; id < workers_nums_; ++id) {
       if (id == worker_id) continue;
       for (int i = 0; i < keys_size; ++i) {
         // if other worker doen't update the row, we can marked it as the updated.
@@ -219,7 +213,7 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
 
 template <typename T>
 void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, int* keys,
-  int key_size, std::vector<int>* out_rows) {
+  size_t key_size, std::vector<int>* out_rows) {
 
   if (worker_id == -1) {
     for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
@@ -263,11 +257,11 @@ void SparseMatrixServerTable<T>::ProcessAdd(
   // the UpdateOption option is needed for the sparse update
   CHECK(data.size() == 3);
   UpdateOption* option = nullptr;
-  if (data.size() == 3) {
-    option = new UpdateOption(data[2].data(), data[2].size());
-  }
+  option = new UpdateOption(data[2].data(), data[2].size());
   UpdateAddState(option->worker_id(), data[0]);
+
   MatrixServerTable<T>::ProcessAdd(data);
+  delete option;
 }
 
 template <typename T>
@@ -283,23 +277,24 @@ void SparseMatrixServerTable<T>::ProcessGet(
   CHECK_NOTNULL(result);
 
   size_t keys_size = data[0].size<int>();
-  int *keys = reinterpret_cast<int*>(data[0].data());
+  //TODO[qiwye]  make the keys to support int64_t
+  int* keys = reinterpret_cast<int*>(data[0].data());
   GeneralOption* option = nullptr;
   if (data.size() == 2) {
     option = new GeneralOption(data[1].data(), data[1].size());
   }
-  std::vector<int> outdate_rows;
-#pragma warning( push )
-#pragma warning( disable : 4267)
-  UpdateGetState(option->worker_id(), keys, keys_size, &outdate_rows);
-#pragma warning( pop ) 
-  Blob outdate_rows_blob(sizeof(int) * outdate_rows.size());
-  for (auto i = 0; i < outdate_rows.size(); ++i) {
-    outdate_rows_blob.As<int>(i) = outdate_rows[i];
+  std::vector<int> outdated_rows;
+
+  UpdateGetState(option->worker_id(), keys, keys_size, &outdated_rows);
+
+  Blob outdated_rows_blob(sizeof(int) * outdated_rows.size());
+  for (auto i = 0; i < outdated_rows.size(); ++i) {
+    outdated_rows_blob.As<int>(i) = outdated_rows[i];
   }
 
-  std::vector<Blob> blos{ outdate_rows_blob };
-  MatrixServerTable<T>::ProcessGet(blos, result);
+  std::vector<Blob> blobs{ outdated_rows_blob };
+  MatrixServerTable<T>::ProcessGet(blobs, result);
+  delete option;
 }
 
 MV_INSTANTIATE_CLASS_WITH_BASE_TYPE(SparseMatrixWorkerTable);
