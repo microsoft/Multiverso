@@ -2,6 +2,7 @@
 #define MULTIVERSO_UPDATER_ADAGRAD_UPDATER_H_
 
 #include "multiverso/updater/updater.h"
+#include "multiverso/util/log.h"
 
 #include <vector>
 #include <cmath>

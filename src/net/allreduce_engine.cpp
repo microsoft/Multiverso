@@ -1,10 +1,7 @@
-#ifdef MULTIVERSO_USE_ZMQ
-
 #include <string.h>
 #include <algorithm>
 
 #include "multiverso/net/allreduce_engine.h"
-#include "multiverso/net/net_allreduce.h"
 
 namespace multiverso {
 
@@ -13,12 +10,12 @@ AllreduceEngine::AllreduceEngine()
 
 }
 
-void AllreduceEngine::Init(const AllreduceNetWrapper* linkers) {
+void AllreduceEngine::Init(const NetInterface* linkers) {
   linkers_ = linkers;
   rank_ = linkers_->rank();
   num_machines_ = linkers_->size();
-  bruck_map_ = linkers_->GetBruckMap();
-  recursive_halving_map_ = linkers_->GetRecursiveHalfingMap();
+  bruck_map_ = BruckMap::Construct(rank_, num_machines_);
+  recursive_halving_map_ = RecursiveHalvingMap::Construct(rank_, num_machines_);
   block_start_ = new int[num_machines_];
   block_len_ = new int[num_machines_];
   buffer_size_ = 1024 * 1024;
@@ -56,7 +53,8 @@ void AllreduceEngine::Allreduce(char* input, int input_size, int type_size, char
   Allgather(output, input_size, block_start_, block_len_, output);
 }
 
-void AllreduceEngine::AllreduceByAllGather(char* input, int input_size, int type_size, char* output, ReduceFunction reducer) {
+// REVIEW(feiga): the third argument type_size never used
+void AllreduceEngine::AllreduceByAllGather(char* input, int input_size, int, char* output, ReduceFunction reducer) {
   //assign blocks
   int all_size = input_size * num_machines_;
   block_start_[0] = 0;
@@ -95,21 +93,20 @@ void AllreduceEngine::Allgather(char* input, int all_size, int* block_start, int
   write_ptr += block_len[rank_];
   int accumulated_block = 1;
   for (int i = 0; i < bruck_map_.k; ++i) {
-    //send
     int cur_block_size = (1 << i) < num_machines_ - accumulated_block ? (1 << i) : num_machines_ - accumulated_block;
     int target = bruck_map_.out_ranks[i];
     int send_len = 0;
     for (int j = 0; j < cur_block_size; ++j) {
       send_len += block_len[(rank_ + j) % num_machines_];
     }
-    linkers_->Send(target, output, 0, send_len);
-    //rec
+
     int incoming = bruck_map_.in_ranks[i];
     int need_recv_cnt = 0;
     for (int j = 0; j < cur_block_size; ++j) {
       need_recv_cnt += block_len[(rank_ + accumulated_block + j) % num_machines_];
     }
-    linkers_->Receive(incoming, output, write_ptr, need_recv_cnt);
+
+    linkers_->SendRecv(target, output, send_len, incoming, output + write_ptr, need_recv_cnt);
     write_ptr += need_recv_cnt;
     accumulated_block += cur_block_size;
   }
@@ -119,40 +116,40 @@ void AllreduceEngine::Allgather(char* input, int all_size, int* block_start, int
   std::reverse<char*>(output + block_start[rank_], output + all_size);
 }
 
-void AllreduceEngine::ReduceScatter(char* input, int input_size, int type_size, int* block_start, int* block_len, char* output, ReduceFunction reducer) {
+// REVIEW(feiga): the third argument type_size never used
+void AllreduceEngine::ReduceScatter(char* input, int input_size, int, int* block_start, int* block_len, char* output, ReduceFunction reducer) {
 
   bool is_powerof_2 = (num_machines_ & (num_machines_ - 1)) == 0 ? true : false;
   if (!is_powerof_2) {
-    if (recursive_halving_map_.type == RecursiveHalvingNodeType::SendNeighbor) {
+    if (recursive_halving_map_.type == RecursiveHalvingNodeType::Other) {
       //send local data to neighbor first
-      linkers_->Send(recursive_halving_map_.neighbor, input, 0, input_size);
+      linkers_->SendTo(recursive_halving_map_.neighbor, input, input_size);
     }
-    else if (recursive_halving_map_.type == RecursiveHalvingNodeType::ReciveNeighbor) {
+    else if (recursive_halving_map_.type == RecursiveHalvingNodeType::GroupLeader) {
       //recieve neighbor data first
       int need_recv_cnt = input_size;
-      linkers_->Receive(recursive_halving_map_.neighbor, output, 0, need_recv_cnt);
+      linkers_->RecvFrom(recursive_halving_map_.neighbor, output, need_recv_cnt);
       reducer(output, input, input_size);
     }
   }
   //start recursive halfing
-  if (recursive_halving_map_.type != RecursiveHalvingNodeType::SendNeighbor) {
+  if (recursive_halving_map_.type != RecursiveHalvingNodeType::Other) {
 
     for (int i = 0; i < recursive_halving_map_.k; ++i) {
       int target = recursive_halving_map_.ranks[i];
       int send_block_start = recursive_halving_map_.send_block_start[i];
       int recv_block_start = recursive_halving_map_.recv_block_start[i];
-      //send
       int send_size = 0;
       for (int j = 0; j < recursive_halving_map_.send_block_len[i]; ++j) {
         send_size += block_len[send_block_start + j];
       }
-      linkers_->Send(target, input, block_start[send_block_start], send_size);
-      //receive
+
       int need_recv_cnt = 0;
       for (int j = 0; j < recursive_halving_map_.recv_block_len[i]; ++j) {
         need_recv_cnt += block_len[recv_block_start + j];
       }
-      linkers_->Receive(target, output, 0, need_recv_cnt);
+
+      linkers_->SendRecv(target, input + block_start[send_block_start], send_size, target, output, need_recv_cnt);
       //reduce
       reducer(output, input + block_start[recv_block_start], need_recv_cnt);
     }
@@ -160,14 +157,14 @@ void AllreduceEngine::ReduceScatter(char* input, int input_size, int type_size, 
   int my_reduce_block_idx = rank_;
 
   if (!is_powerof_2) {
-    if (recursive_halving_map_.type == RecursiveHalvingNodeType::ReciveNeighbor) {
+    if (recursive_halving_map_.type == RecursiveHalvingNodeType::GroupLeader) {
       //send result to neighbor
-      linkers_->Send(recursive_halving_map_.neighbor, input, block_start[recursive_halving_map_.neighbor], block_len[recursive_halving_map_.neighbor]);
+      linkers_->SendTo(recursive_halving_map_.neighbor, input + block_start[recursive_halving_map_.neighbor], block_len[recursive_halving_map_.neighbor]);
     }
-    else if (recursive_halving_map_.type == RecursiveHalvingNodeType::SendNeighbor) {
+    else if (recursive_halving_map_.type == RecursiveHalvingNodeType::Other) {
       //receive result from neighbor
       int need_recv_cnt = block_len[my_reduce_block_idx];
-      linkers_->Receive(recursive_halving_map_.neighbor, output, 0, need_recv_cnt);
+      linkers_->RecvFrom(recursive_halving_map_.neighbor, output, need_recv_cnt);
       return;
     }
   }
@@ -175,5 +172,3 @@ void AllreduceEngine::ReduceScatter(char* input, int input_size, int type_size, 
 }
 
 }
-
-#endif
