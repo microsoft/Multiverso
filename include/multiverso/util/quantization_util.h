@@ -52,10 +52,7 @@ namespace multiverso {
           Blob compressed_blob;
           auto compressed = TryCompress(blob, &compressed_blob);
           // size info (compressed ? size : -1)
-#pragma warning( push )
-#pragma warning( disable : 4267)
-          size_blob.As<index_type>(i - 1) = compressed ? blob.size() : -1;
-#pragma warning( pop ) 
+          size_blob.As<index_type>(i - 1) = compressed ? (index_type) blob.size() : -1;
           outputs->push_back(compressed ? std::move(compressed_blob) : blob);
         }
       }
@@ -98,10 +95,6 @@ namespace multiverso {
     bool TryCompress(const Blob& in_blob,
       Blob* out_blob) {
       CHECK_NOTNULL(out_blob);
-#pragma warning( push )
-#pragma warning( disable : 4127)
-      CHECK(sizeof(data_type) == sizeof(index_type));
-#pragma warning( pop ) 
       auto data_count = in_blob.size<data_type>();
       auto non_zero_count = 0;
       for (auto i = 0; i < data_count; ++i) {
@@ -145,10 +138,6 @@ namespace multiverso {
     }
 
     Blob DeCompress(const Blob& in_blob, size_t size) {
-#pragma warning( push )
-#pragma warning( disable : 4127)
-      CHECK(sizeof(data_type) == sizeof(index_type));
-#pragma warning( pop ) 
       CHECK(size % sizeof(data_type) == 0);
       auto original_data_count = size / sizeof(data_type);
       Blob result(size);
