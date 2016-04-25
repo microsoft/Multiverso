@@ -184,7 +184,6 @@
     <ClInclude Include="..\include\multiverso\net.h" />
     <ClInclude Include="..\include\multiverso\net\allreduce_engine.h" />
     <ClInclude Include="..\include\multiverso\net\mpi_net.h" />
-    <ClInclude Include="..\include\multiverso\net\net_allreduce.h" />
     <ClInclude Include="..\include\multiverso\net\zmq_net.h" />
     <ClInclude Include="..\include\multiverso\node.h" />
     <ClInclude Include="..\include\multiverso\server.h" />
