@@ -25,6 +25,13 @@ namespace multiverso {
 
 #define MV_MPI_CALL(mpi_return) CHECK((mpi_return) == MPI_SUCCESS)
 
+namespace {
+  static MPI_Datatype GetDataType(char*)   { return MPI_CHAR; }
+  static MPI_Datatype GetDataType(int*)    { return MPI_INT; }
+  static MPI_Datatype GetDataType(float*)  { return MPI_FLOAT; }
+  static MPI_Datatype GetDataType(double*) { return MPI_DOUBLE; }
+}
+
 class MPINetWrapper : public NetInterface {
 public:
   MPINetWrapper() : /* more_(std::numeric_limits<char>::max()) */ 
@@ -107,7 +114,10 @@ public:
   std::string name() const override { return "MPI"; }
 
   template <typename ElemType>
-  static void Allreduce(ElemType* data, size_t elem_count, int op = MPI_SUM);
+  static void Allreduce(ElemType* data, size_t elem_count) {
+    MPI_Allreduce(MPI_IN_PLACE, data, (int)elem_count,
+      GetDataType(data), MPI_SUM, MPI_COMM_WORLD);
+  }
 
   //size_t Send(MessagePtr& msg) override {
   //  while (!msg_handles_.empty()) {

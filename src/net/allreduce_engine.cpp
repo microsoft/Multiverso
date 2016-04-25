@@ -53,7 +53,8 @@ void AllreduceEngine::Allreduce(char* input, int input_size, int type_size, char
   Allgather(output, input_size, block_start_, block_len_, output);
 }
 
-void AllreduceEngine::AllreduceByAllGather(char* input, int input_size, int type_size, char* output, ReduceFunction reducer) {
+// REVIEW(feiga): the third argument type_size never used
+void AllreduceEngine::AllreduceByAllGather(char* input, int input_size, int, char* output, ReduceFunction reducer) {
   //assign blocks
   int all_size = input_size * num_machines_;
   block_start_[0] = 0;
@@ -115,7 +116,8 @@ void AllreduceEngine::Allgather(char* input, int all_size, int* block_start, int
   std::reverse<char*>(output + block_start[rank_], output + all_size);
 }
 
-void AllreduceEngine::ReduceScatter(char* input, int input_size, int type_size, int* block_start, int* block_len, char* output, ReduceFunction reducer) {
+// REVIEW(feiga): the third argument type_size never used
+void AllreduceEngine::ReduceScatter(char* input, int input_size, int, int* block_start, int* block_len, char* output, ReduceFunction reducer) {
 
   bool is_powerof_2 = (num_machines_ & (num_machines_ - 1)) == 0 ? true : false;
   if (!is_powerof_2) {
