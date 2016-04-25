@@ -69,6 +69,47 @@ private:
   InternalType data_[kSize];
 };
 
+struct GeneralOption {
+public:
+  // TODO(qiwye): to make these Option configuable 
+  GeneralOption(){
+    data_[0].i = MV_WorkerId();
+  }
+
+  GeneralOption(const char* data, size_t size) {
+    CopyFrom(data, size);
+  }
+
+  int worker_id() const { return data_[0].i; }
+  void set_worker_id(int worker_id) { data_[0].i = worker_id; }
+
+  std::string toString(){
+    std::stringstream  ss;
+    ss << "UpdateOption " << worker_id() << std::endl;
+    return ss.str();
+  }
+
+
+  const char* data() const { return reinterpret_cast<const char*>(&data_[0]); }
+  size_t size() const { return kSize * sizeof(InternalType); }
+  void CopyFrom(const char* data, size_t size) {
+    memcpy(data_, data, size);
+  }
+private:
+  static const size_t kSize = 1;
+  // Option can be either int type or float, 
+  // to make it easy to serialize and deserialize
+  union InternalType{
+    int i;
+    float f;
+  };
+
+  // 0: src worker id
+  // ...
+  InternalType data_[kSize];
+};
+
+
 template <typename T>
 class Updater {
 public:

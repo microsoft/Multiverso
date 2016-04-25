@@ -22,15 +22,15 @@ class SparseMatrixWorkerTable : public MatrixWorkerTable<T> {
 
     // get whole table, data is user-allocated memory
     void Get(T* data, size_t size,
-        int worker_id);
+      const GeneralOption* option = nullptr);
 
     // data is user-allocated memory
     void Get(int row_id, T* data, size_t size,
-        int worker_id);
+      const GeneralOption* option = nullptr);
 
     void Get(const std::vector<int>& row_ids,
         const std::vector<T*>& data_vec, size_t size,
-        int worker_id);
+        const GeneralOption* option = nullptr);
 
  private:
     // get whole table, data is user-allocated memory

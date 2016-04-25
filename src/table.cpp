@@ -15,9 +15,10 @@ ServerTable::ServerTable() {
   Zoo::Get()->RegisterTable(this);
 }
 
-void WorkerTable::Get(Blob keys) {
+void WorkerTable::Get(Blob keys, 
+                      const GeneralOption* option) {
   MONITOR_BEGIN(WORKER_TABLE_SYNC_GET)
-  Wait(GetAsync(keys));
+  Wait(GetAsync(keys, option));
   MONITOR_END(WORKER_TABLE_SYNC_GET)
 }
 
@@ -29,7 +30,8 @@ void WorkerTable::Add(Blob keys, Blob values,
   MONITOR_END(WORKER_TABLE_SYNC_ADD)
 }
 
-int WorkerTable::GetAsync(Blob keys) {
+int WorkerTable::GetAsync(Blob keys,
+                          const GeneralOption* option) {
   int id = msg_id_++;
   waitings_[id] = new Waiter();
   MessagePtr msg(new Message());
@@ -38,6 +40,11 @@ int WorkerTable::GetAsync(Blob keys) {
   msg->set_msg_id(id);
   msg->set_table_id(table_id_);
   msg->Push(keys);
+  // Add general option if necessary
+  if (option != nullptr) {
+    Blob general_option(option->data(), option->size());
+    msg->Push(general_option);
+  }
   Zoo::Get()->SendTo(actor::kWorker, msg);
   return id;
 }

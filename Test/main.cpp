@@ -443,8 +443,15 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
     delta[i] = 1;
   }
 
-  UpdateOption option;
-  option.set_worker_id(worker_id);
+  UpdateOption add_option;
+  add_option.set_worker_id(worker_id);
+
+  GeneralOption get_option;
+  get_option.set_worker_id(worker_id);
+
+  GeneralOption debug_option;
+  debug_option.set_worker_id(-1);
+  
 
   std::cout << "==> test get twice, the second get should be shorter than the first one." << std::endl;
   {
@@ -456,12 +463,12 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
 
 
     timmer.Start();
-    worker_table->Get(data, size, worker_id);
+    worker_table->Get(data, size, &get_option);
     std::cout << " " << timmer.elapse() << "s:\t" << "get all rows 1st time" << std::endl;
 
     // do not need to get any rows, since all rows are up-to-date
     timmer.Start();
-    worker_table->Get(data, size, worker_id);
+    worker_table->Get(data, size, &get_option);
     std::cout << " " << timmer.elapse() << "s:\t" << "get all rows 2nd time" << std::endl;
 
     for (auto i = 0; i < size; ++i) {
@@ -476,8 +483,8 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
     auto server_table = std::shared_ptr<SparseMatrixServerTable<int>>(
       new SparseMatrixServerTable<int>(num_row, num_col, false));
     timmer.Start();
-    worker_table->Add(delta, size, &option);
-    worker_table->Get(data, size, -1);
+    worker_table->Add(delta, size, &add_option);
+    worker_table->Get(data, size, &debug_option);
     std::cout << " " << timmer.elapse() << "s:\t" << "add 1 to all values, and get all rows after adding" << std::endl;
     for (auto i = 0; i < size; ++i) {
       ASSERT_EQ(1, data[i]) << "Should be 1 after adding";
@@ -619,7 +626,9 @@ void TestSparsePerf(int argc, char* argv[]) {
   },
 
     [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
-    worker_table->Get(data, size, worker_id);
+    GeneralOption get_option;
+    get_option.set_worker_id(worker_id);
+    worker_table->Get(data, size, &get_option);
   });
 }
 
