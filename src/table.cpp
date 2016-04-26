@@ -19,21 +19,23 @@ ServerTable::ServerTable() {
   Zoo::Get()->RegisterTable(this);
 }
 
-void WorkerTable::Get(Blob keys) {
+void WorkerTable::Get(Blob keys, 
+                      const GetOption* option) {
   MONITOR_BEGIN(WORKER_TABLE_SYNC_GET)
-  Wait(GetAsync(keys));
+  Wait(GetAsync(keys, option));
   MONITOR_END(WORKER_TABLE_SYNC_GET)
 }
 
 void WorkerTable::Add(Blob keys, Blob values,
-                      const UpdateOption* option) {
+                      const AddOption* option) {
   MONITOR_BEGIN(WORKER_TABLE_SYNC_ADD)
-  // Wait(AddAsync(keys, values));
+  //Wait(AddAsync(keys, values, option));
   AddAsync(keys, values, option);
   MONITOR_END(WORKER_TABLE_SYNC_ADD)
 }
 
-int WorkerTable::GetAsync(Blob keys) {
+int WorkerTable::GetAsync(Blob keys,
+                          const GetOption* option) {
   m_.lock();
   int id = msg_id_++;
   waitings_.push_back(new Waiter());
@@ -44,12 +46,17 @@ int WorkerTable::GetAsync(Blob keys) {
   msg->set_msg_id(id);
   msg->set_table_id(table_id_);
   msg->Push(keys);
+  // Add general option if necessary
+  if (option != nullptr) {
+    Blob general_option(option->data(), option->size());
+    msg->Push(general_option);
+  }
   Zoo::Get()->SendTo(actor::kWorker, msg);
   return id;
 }
 
 int WorkerTable::AddAsync(Blob keys, Blob values,
-                          const UpdateOption* option) {
+                          const AddOption* option) {
   m_.lock();
   int id = msg_id_++;
   waitings_.push_back(new Waiter());

@@ -42,10 +42,10 @@ TEST_F(test_filter, test_should_compress_all_zero) {
         near_zero_value, near_zero_value, near_zero_value};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_EQ(compressed, true);
     auto de_compressed_blob =
-        de_compress(compressed_blob, size * sizeof(float));
+        DeCompress(compressed_blob, size * sizeof(float));
     ASSERT_TRUE(is_same_content_with_clipping(array, de_compressed_blob, size));
 }
 
@@ -55,10 +55,10 @@ TEST_F(test_filter, test_should_compress_most_zero_a) {
         near_zero_value, none_zero_value};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == true);
     auto de_compressed_blob =
-        de_compress(compressed_blob, size * sizeof(float));
+        DeCompress(compressed_blob, size * sizeof(float));
     ASSERT_TRUE(is_same_content_with_clipping(array, de_compressed_blob, size));
 }
 
@@ -67,10 +67,10 @@ TEST_F(test_filter, test_should_compress_most_zero_b) {
     auto array = new float[size]{1, 2, 0, 0, 0, 0, 0, 3};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == true);
     auto de_compressed_blob =
-        de_compress(compressed_blob, size * sizeof(float));
+        DeCompress(compressed_blob, size * sizeof(float));
     ASSERT_TRUE(is_same_content(array, de_compressed_blob, size));
 }
 
@@ -79,7 +79,7 @@ TEST_F(test_filter, test_should_not_compress_half_zero) {
     auto array = new float[size]{1, 0, 2, 0, 3, 0, 0, 4};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == false);
 }
 
@@ -88,7 +88,7 @@ TEST_F(test_filter, test_should_not_compress_most_none_zero) {
     auto array = new float[size]{1, 2, 3, 4, 0, 0, 0, 5};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == false);
 }
 
@@ -99,27 +99,29 @@ TEST_F(test_filter, test_should_not_compress_all_none_zero) {
         none_zero_value, none_zero_value, none_zero_value};
     multiverso::Blob input_blob(array, sizeof(float) * size);
     multiverso::Blob compressed_blob;
-    auto compressed = try_compress(input_blob, &compressed_blob);
+    auto compressed = TryCompress(input_blob, &compressed_blob);
     ASSERT_TRUE(compressed == false);
 }
 
 TEST_F(test_filter, correctly_compress_and_decompress) {
     auto size = 8;
+    int row_index = -1;
     auto array0 = new float[size]{1, 1, 1, 0, 0, 0, 0, 0};
     auto array1 = new float[size]{1, 2, 3, 4, 0, 0, 0, 0};
     auto array2 = new float[size]{1, 2, 3, 4, 5, 0, 0, 0};
     std::vector<multiverso::Blob> compressed_blobs;
     FilterIn(std::vector< multiverso::Blob> {
+        multiverso::Blob(&row_index, sizeof(int)),
         multiverso::Blob(array0, sizeof(float) * size),
         multiverso::Blob(array1, sizeof(float) * size),
         multiverso::Blob(array2, sizeof(float) * size)
     }, &compressed_blobs);
-    ASSERT_EQ(compressed_blobs.size(), 6);
+    ASSERT_EQ(compressed_blobs.size(), 5);
     std::vector<multiverso::Blob>  de_compressed_blobs;
     FilterOut(compressed_blobs, &de_compressed_blobs);
-    ASSERT_EQ(de_compressed_blobs.size(), 3);
-    ASSERT_TRUE(is_same_content(array0, de_compressed_blobs[0], size));
-    ASSERT_TRUE(is_same_content(array1, de_compressed_blobs[1], size));
-    ASSERT_TRUE(is_same_content(array2, de_compressed_blobs[2], size));
+    ASSERT_EQ(de_compressed_blobs.size(), 4);
+    ASSERT_TRUE(is_same_content(array0, de_compressed_blobs[1], size));
+    ASSERT_TRUE(is_same_content(array1, de_compressed_blobs[2], size));
+    ASSERT_TRUE(is_same_content(array2, de_compressed_blobs[3], size));
 }
 

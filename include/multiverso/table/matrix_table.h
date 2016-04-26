@@ -13,6 +13,7 @@ template <typename T>
 class MatrixWorkerTable : public WorkerTable {
 public:
   MatrixWorkerTable(int num_row, int num_col);
+  ~MatrixWorkerTable();
 
   // get whole table, data is user-allocated memory
   void Get(T* data, size_t size);
@@ -24,22 +25,22 @@ public:
            const std::vector<T*>& data_vec, size_t size);
 
   // Add whole table
-  void Add(T* data, size_t size, const UpdateOption* option = nullptr);
+  void Add(T* data, size_t size, const AddOption* option = nullptr);
 
   void Add(int row_id, T* data, size_t size, 
-           const UpdateOption* option = nullptr);
+           const AddOption* option = nullptr);
 
   void Add(const std::vector<int>& row_ids,
            const std::vector<T*>& data_vec, size_t size, 
-           const UpdateOption* option = nullptr);
+           const AddOption* option = nullptr);
 
   int Partition(const std::vector<Blob>& kv,
     std::unordered_map<int, std::vector<Blob>>* out) override;
 
   void ProcessReplyGet(std::vector<Blob>& reply_data) override;
 
-private:
-  std::unordered_map<int, T*> row_index_;  // index of data with row id in data_vec_
+protected:
+  (T*)* row_index_;
   int get_reply_count_;                    // number of unprocessed get reply
   int num_row_;
   int num_col_;
@@ -64,7 +65,7 @@ public:
   void Store(Stream* s) override;
   void Load(Stream* s) override;
 
-private:
+protected:
   int server_id_;
   int my_num_row_;
   int num_col_;

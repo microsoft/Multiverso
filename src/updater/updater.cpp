@@ -13,12 +13,19 @@ MV_DEFINE_int(omp_threads, 4 , "#theads used by openMP for updater");
 
 template <typename T>
 void Updater<T>::Update(size_t num_element, T* data, T* delta,
-                        UpdateOption*, size_t offset) {
+                        AddOption*, size_t offset) {
   // parallelism with openMP
   #pragma omp parallel for schedule(static) num_threads(MV_CONFIG_omp_threads)
   for (int i = 0; i < num_element; ++i) {
     data[i + offset] += delta[i];
   }
+}
+
+template <typename T>
+void Updater<T>::Access(size_t num_element, T* data, T* blob_data,
+  size_t offset , AddOption*) {
+  // copy data from data to blob
+  memcpy(blob_data, data + offset, num_element * sizeof(T));
 }
 
 // Gradient-based updater in only for numerical table

@@ -29,6 +29,13 @@ MatrixWorkerTable<T>::MatrixWorkerTable(int num_row, int num_col) :
 
   Log::Debug("[Init] worker =  %d, type = matrixTable, size =  [ %d x %d ].\n",
     MV_Rank(), num_row, num_col);
+  row_index_ = new T*[num_row_ + 1];
+}
+
+template <typename T>
+MatrixWorkerTable<T>::~MatrixWorkerTable() {
+  server_offsets_.clear();
+  delete[]row_index_;
 }
 
 template <typename T>
@@ -41,7 +48,12 @@ void MatrixWorkerTable<T>::Get(T* data, size_t size){
 template <typename T>
 void MatrixWorkerTable<T>::Get(int row_id, T* data, size_t size) {
   if (row_id >= 0) CHECK(size == num_col_);
-  row_index_[row_id] = data; // data_ = data;
+  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
+  if (row_id == -1) {
+    row_index_[num_row_] = data;
+  } else {
+    row_index_[row_id] = data; // data_ = data;
+  }
   WorkerTable::Get(Blob(&row_id, sizeof(int)));
   Log::Debug("[Get] worker = %d, #row = %d\n", MV_Rank(), row_id);
 }
@@ -52,6 +64,7 @@ void MatrixWorkerTable<T>::Get(const std::vector<int>& row_ids,
   size_t size) {
   CHECK(size == num_col_);
   CHECK(row_ids.size() == data_vec.size());
+  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
   for (int i = 0; i < row_ids.size(); ++i){
     row_index_[row_ids[i]] = data_vec[i];
   }
@@ -60,7 +73,7 @@ void MatrixWorkerTable<T>::Get(const std::vector<int>& row_ids,
 }
 
 template <typename T>
-void MatrixWorkerTable<T>::Add(T* data, size_t size, const UpdateOption* option) {
+void MatrixWorkerTable<T>::Add(T* data, size_t size, const AddOption* option) {
   CHECK(size == num_col_ * num_row_);
   int whole_table = -1;
   Add(whole_table, data, size, option);
@@ -68,7 +81,7 @@ void MatrixWorkerTable<T>::Add(T* data, size_t size, const UpdateOption* option)
 
 template <typename T>
 void MatrixWorkerTable<T>::Add(int row_id, T* data, size_t size, 
-                               const UpdateOption* option) {
+                               const AddOption* option) {
   if (row_id >= 0) CHECK(size == num_col_);
   Blob ids_blob(&row_id, sizeof(int));
   Blob data_blob(data, size * sizeof(T));
@@ -80,7 +93,7 @@ template <typename T>
 void MatrixWorkerTable<T>::Add(const std::vector<int>& row_ids,
                                const std::vector<T*>& data_vec,
                                size_t size,
-                               const UpdateOption* option) {
+                               const AddOption* option) {
   CHECK(size == num_col_);
   Blob ids_blob(&row_ids[0], sizeof(int)* row_ids.size());
   Blob data_blob(row_ids.size() * row_size_);
@@ -179,9 +192,9 @@ void MatrixWorkerTable<T>::ProcessReplyGet(std::vector<Blob>& reply_data) {
   //get all rows, only happen in T*
   if (keys_size == 1 && keys[0] == -1) {
     int server_id = reply_data[2].As<int>();
-    CHECK_NOTNULL(row_index_[-1]);
+    CHECK_NOTNULL(row_index_[num_row_]);
     CHECK(server_id < server_offsets_.size() - 1);
-    memcpy(row_index_[-1] + server_offsets_[server_id] * num_col_,
+    memcpy(row_index_[num_row_] + server_offsets_[server_id] * num_col_,
       data, reply_data[1].size());
   }
   else {
@@ -193,8 +206,7 @@ void MatrixWorkerTable<T>::ProcessReplyGet(std::vector<Blob>& reply_data) {
       offset += num_col_;
     }
   }
-  //in case of wrong operation to user data
-  if (--get_reply_count_ == 0) { row_index_.clear(); }
+  if (--get_reply_count_ == 0) {  }
 }
 
 
@@ -231,9 +243,9 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
   size_t keys_size = data[0].size<int>();
   int *keys = reinterpret_cast<int*>(data[0].data());
   T *values = reinterpret_cast<T*>(data[1].data());
-  UpdateOption* option = nullptr;
+  AddOption* option = nullptr;
   if (data.size() == 3) {
-    option = new UpdateOption(data[2].data(), data[2].size());
+    option = new AddOption(data[2].data(), data[2].size());
   }
   // add all values
   if (keys_size == 1 && keys[0] == -1){
@@ -251,6 +263,7 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
     for (int i = 0; i < keys_size; ++i) {
       int offset_s = (keys[i] - row_offset_) * num_col_;
       updater_->Update(num_col_, storage_.data(), values + offset_v, option, offset_s);
+      offset_v += num_col_;
       Log::Debug("[ProcessAdd] Server = %d, adding #row = %d\n",
         server_id_, keys[i]);
     }
@@ -271,7 +284,10 @@ void MatrixServerTable<T>::ProcessGet(const std::vector<Blob>& data,
 
   //get all rows
   if (keys_size == 1 && keys[0] == -1){
-    result->push_back(Blob(storage_.data(), sizeof(T)* storage_.size()));
+    Blob value(sizeof(T) * storage_.size());
+    T* pvalues = reinterpret_cast<T*>(value.data());
+    updater_->Access(storage_.size(), storage_.data(), pvalues);
+    result->push_back(value);
     result->push_back(Blob(&server_id_, sizeof(int)));
     Log::Debug("[ProcessGet] Server = %d, getting rows offset = %d, #rows = %d\n",
       server_id_, row_offset_, storage_.size() / num_col_);
@@ -284,7 +300,7 @@ void MatrixServerTable<T>::ProcessGet(const std::vector<Blob>& data,
   int offset_v = 0;
   for (int i = 0; i < keys_size; ++i) {
     int offset_s = (keys[i] - row_offset_) * num_col_;
-    memcpy(vals + offset_v, &storage_[offset_s], row_size);
+    updater_->Access(num_col_, storage_.data(), vals + offset_v, offset_s);
     offset_v += num_col_;
     Log::Debug("[ProcessAdd] Server = %d, getting #row = %d\n",
       server_id_, keys[i]);
