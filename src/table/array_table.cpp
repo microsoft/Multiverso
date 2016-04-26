@@ -105,9 +105,11 @@ void ArrayServer<T>::ProcessGet(const std::vector<Blob>& data,
   CHECK(key_size == 1 && data[0].As<int>() == -1); 
   // Always request the whole table
   Blob key(sizeof(int)); key.As<int>() = server_id_;
-  Blob value(storage_.data(), sizeof(T) * size_);
+  Blob values(sizeof(T) * size_);
+  T* pvalues = reinterpret_cast<T*>(values.data());
+  updater_->Access(size_, storage_.data(), pvalues);
   result->push_back(key);
-  result->push_back(value);
+  result->push_back(values);
 }
 
 template <typename T>

@@ -123,6 +123,10 @@ public:
   virtual void Update(size_t num_element, T* data, T* delta, 
                       UpdateOption* option = nullptr, size_t offset = 0);
 
+  // The updater will access the data to out_data in following way 
+  //   Get data[offset : offset + num_element) to blob_data[0 : num_element)
+  virtual void Access(size_t num_element, T* data, T* blob_data,
+                      size_t offset = 0, UpdateOption* option = nullptr);
   // Factory method to get the updater
   static Updater<T>* GetUpdater(size_t size = 0);
 };

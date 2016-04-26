@@ -32,13 +32,15 @@ void SparseMatrixWorkerTable<T>::Get(int row_id, T* data, size_t size,
   }
   Blob keys(&row_id, sizeof(int) * 1);
 
+  bool is_option_mine = false;
   if (option == nullptr){
+    is_option_mine = true;
     option = new GeneralOption();
   }
 
   WorkerTable::Get(keys, option);
   Log::Debug("[Get] worker = %d, #row = %d\n", MV_Rank(), row_id);
-  delete option;
+  if (is_option_mine) delete option;
 }
 
 template <typename T>
@@ -53,14 +55,16 @@ void SparseMatrixWorkerTable<T>::Get(const std::vector<int>& row_ids,
   }
   Blob keys(row_ids.data(), sizeof(int) * row_ids.size());
 
+  bool is_option_mine = false;
   if (option == nullptr){
+    is_option_mine = true;
     option = new GeneralOption();
   }
 
   WorkerTable::Get(keys, option);
   Log::Debug("[Get] worker = %d, #rows_set = %d\n", MV_Rank(),
     row_ids.size());
-  delete option;
+  if (is_option_mine) delete option;
 }
 
 template <typename T>
@@ -206,7 +210,7 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
       if (id == worker_id) continue;
       for (int i = 0; i < keys_size; ++i) {
         // if other worker doen't update the row, we can marked it as the updated.
-        auto local_row_id = get_local_row_id(keys[i]);
+        auto local_row_id = GetPhysicalRow(keys[i]);
         up_to_date_[id][local_row_id] = false;
       }
     }
@@ -219,7 +223,7 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, int* keys,
 
   if (worker_id == -1) {
     for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
-      out_rows->push_back(get_global_row_id(local_row_id));
+      out_rows->push_back(GetLogicalRow(local_row_id));
     }
     return;
   }
@@ -227,7 +231,7 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, int* keys,
   if (key_size == 1 && keys[0] == -1) {
     for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
       if (!up_to_date_[worker_id][local_row_id]) {
-        out_rows->push_back(get_global_row_id(local_row_id));
+        out_rows->push_back(GetLogicalRow(local_row_id));
         up_to_date_[worker_id][local_row_id] = true;
       }
     }
@@ -235,7 +239,7 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, int* keys,
   else {
     for (auto i = 0; i < key_size; ++i)  {
       auto global_row_id = keys[i];
-      auto local_row_id = get_local_row_id(global_row_id);
+      auto local_row_id = GetPhysicalRow(global_row_id);
       if (!up_to_date_[worker_id][local_row_id]) {
         up_to_date_[worker_id][local_row_id] = true;
         out_rows->push_back(global_row_id);
@@ -245,7 +249,7 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, int* keys,
 
   // if all rows are up-to-date, then send the first row
   if (out_rows->size() == 0) {
-    out_rows->push_back(get_global_row_id(0));
+    out_rows->push_back(GetLogicalRow(0));
   }
 }
 

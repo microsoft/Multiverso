@@ -22,6 +22,7 @@ public:
 
   void Update(size_t num_element, T* data, T* delta, 
               UpdateOption* option, size_t offset) override {
+
     auto g_sqr_data_ = historic_g_sqr_.at(option->worker_id());
     for (size_t index = 0; index < num_element; ++index) {
       g_sqr_data_[index + offset] -=

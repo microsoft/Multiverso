@@ -21,6 +21,13 @@ void Updater<T>::Update(size_t num_element, T* data, T* delta,
   }
 }
 
+template <typename T>
+void Updater<T>::Access(size_t num_element, T* data, T* blob_data,
+  size_t offset , UpdateOption*) {
+  // copy data from data to blob
+  memcpy(blob_data, data + offset, num_element * sizeof(T));
+}
+
 // Gradient-based updater in only for numerical table
 // For simple int table, just using simple updater
 template<>
