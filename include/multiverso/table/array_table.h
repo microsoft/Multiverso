@@ -18,7 +18,7 @@ public:
   void Get(T* data, size_t size);
 
   // Add all element
-  void Add(T* data, size_t size, const UpdateOption* option = nullptr);
+  void Add(T* data, size_t size, const AddOption* option = nullptr);
 
   int Partition(const std::vector<Blob>& kv,
                 std::unordered_map<int, std::vector<Blob> >* out) override;

@@ -20,14 +20,14 @@ ServerTable::ServerTable() {
 }
 
 void WorkerTable::Get(Blob keys, 
-                      const GeneralOption* option) {
+                      const GetOption* option) {
   MONITOR_BEGIN(WORKER_TABLE_SYNC_GET)
   Wait(GetAsync(keys, option));
   MONITOR_END(WORKER_TABLE_SYNC_GET)
 }
 
 void WorkerTable::Add(Blob keys, Blob values,
-                      const UpdateOption* option) {
+                      const AddOption* option) {
   MONITOR_BEGIN(WORKER_TABLE_SYNC_ADD)
   //Wait(AddAsync(keys, values, option));
   AddAsync(keys, values, option);
@@ -35,7 +35,7 @@ void WorkerTable::Add(Blob keys, Blob values,
 }
 
 int WorkerTable::GetAsync(Blob keys,
-                          const GeneralOption* option) {
+                          const GetOption* option) {
   m_.lock();
   int id = msg_id_++;
   waitings_.push_back(new Waiter());
@@ -56,7 +56,7 @@ int WorkerTable::GetAsync(Blob keys,
 }
 
 int WorkerTable::AddAsync(Blob keys, Blob values,
-                          const UpdateOption* option) {
+                          const AddOption* option) {
   m_.lock();
   int id = msg_id_++;
   waitings_.push_back(new Waiter());

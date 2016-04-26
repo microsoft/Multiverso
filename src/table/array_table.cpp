@@ -33,7 +33,7 @@ void ArrayWorker<T>::Get(T* data, size_t size) {
 }
 
 template <typename T>
-void ArrayWorker<T>::Add(T* data, size_t size, const UpdateOption* option) {
+void ArrayWorker<T>::Add(T* data, size_t size, const AddOption* option) {
   CHECK(size == size_);
   int all_key = -1;
 
@@ -87,9 +87,9 @@ ArrayServer<T>::ArrayServer(size_t size) : ServerTable() {
 template <typename T>
 void ArrayServer<T>::ProcessAdd(const std::vector<Blob>& data) {
   Blob keys = data[0], values = data[1];
-  UpdateOption* option = nullptr;
+  AddOption* option = nullptr;
   if (data.size() == 3)
-    option = new UpdateOption(data[2].data(), data[2].size());
+    option = new AddOption(data[2].data(), data[2].size());
   // Always request whole table
   CHECK(keys.size<int>() == 1 && keys.As<int>() == -1); 
   CHECK(values.size() == size_ * sizeof(T));

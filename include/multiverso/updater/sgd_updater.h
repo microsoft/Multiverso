@@ -13,14 +13,14 @@ public:
   }
  
   void Update(size_t num_element, T* data, T* delta,
-              UpdateOption*, size_t offset) override {
+              AddOption*, size_t offset) override {
     for (size_t index = 0; index < num_element; ++index) {
       data[index + offset] -= delta[index];
     }
   }
 
   void Access(size_t num_element, T* data, T* blob_data,
-              size_t offset, UpdateOption*) override{
+              size_t offset, AddOption*) override{
     memcpy(blob_data, data + offset, sizeof(T) * num_element);
   }
 

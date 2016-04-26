@@ -25,14 +25,14 @@ public:
            const std::vector<T*>& data_vec, size_t size);
 
   // Add whole table
-  void Add(T* data, size_t size, const UpdateOption* option = nullptr);
+  void Add(T* data, size_t size, const AddOption* option = nullptr);
 
   void Add(int row_id, T* data, size_t size, 
-           const UpdateOption* option = nullptr);
+           const AddOption* option = nullptr);
 
   void Add(const std::vector<int>& row_ids,
            const std::vector<T*>& data_vec, size_t size, 
-           const UpdateOption* option = nullptr);
+           const AddOption* option = nullptr);
 
   int Partition(const std::vector<Blob>& kv,
     std::unordered_map<int, std::vector<Blob>>* out) override;

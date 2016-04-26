@@ -108,7 +108,7 @@ void TestArray(int argc, char* argv[]) {
     for (int i = 0; i < 1000000; ++i)
       delta[i] = static_cast<float>(i);
 
-    UpdateOption option;
+    AddOption option;
     option.set_learning_rate(1 - 0.0001 * i);
     option.set_momentum(0.99);
     option.set_rho(0.01f);
@@ -328,7 +328,7 @@ void TestMatrix(int argc, char* argv[]){
     float * data = new float[size];
     m_prefetchThread = new std::thread([&](){
 
-      UpdateOption option;
+      AddOption option;
       worker_table->Add(delta.data(), size, &option); //add all
 
       worker_table->Get(data, size); //get all
@@ -351,7 +351,7 @@ void TestMatrix(int argc, char* argv[]){
     //test data_vec
     std::vector<float*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10 * num_col] };
     std::vector<float*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
-    UpdateOption option;
+    AddOption option;
     worker_table->Add(v, delta_rows, num_col, &option);
     worker_table->Get(v, data_rows, num_col);
     MV_Barrier();
@@ -441,13 +441,13 @@ void TestSparseMatrixTable(int argc, char* argv[]) {
     delta[i] = 1;
   }
 
-  UpdateOption add_option;
+  AddOption add_option;
   add_option.set_worker_id(worker_id);
 
-  GeneralOption get_option;
+  GetOption get_option;
   get_option.set_worker_id(worker_id);
 
-  GeneralOption debug_option;
+  GetOption debug_option;
   debug_option.set_worker_id(-1);
   
 
@@ -498,7 +498,7 @@ template<typename WT, typename ST>
 void TestmatrixPerformance(int argc, char* argv[],
   std::function<std::shared_ptr<WT>(int num_row, int num_col)>CreateWorkerTable,
   std::function<std::shared_ptr<ST>(int num_row, int num_col)>CreateServerTable,
-  std::function<void(const std::shared_ptr<WT>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, int worker_id)> Add,
+  std::function<void(const std::shared_ptr<WT>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const AddOption* option, int worker_id)> Add,
   std::function<void(const std::shared_ptr<WT>& worker_table, float* data, size_t size, int worker_id)> Get) {
 
   Log::ResetLogLevel(LogLevel::Info);
@@ -527,7 +527,7 @@ void TestmatrixPerformance(int argc, char* argv[],
     }
   }
 
-  UpdateOption option;
+  AddOption option;
   option.set_worker_id(worker_id);
   //std::mt19937_64 eng{ std::random_device{}() };
   //std::vector<int> unique_index;
@@ -619,12 +619,12 @@ void TestSparsePerf(int argc, char* argv[]) {
     return std::shared_ptr<SparseMatrixServerTable<float>>(
       new SparseMatrixServerTable<float>(num_row, num_col, false));
   },
-    [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
+    [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const AddOption* option, const int worker_id) {
     worker_table->Add(row_ids, data_vec, size, option);
   },
 
     [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
-    GeneralOption get_option;
+    GetOption get_option;
     get_option.set_worker_id(worker_id);
     worker_table->Get(data, size, &get_option);
   });
@@ -642,7 +642,7 @@ void TestDensePerf(int argc, char* argv[]) {
     return std::shared_ptr<MatrixServerTable<float>>(
       new MatrixServerTable<float>(num_row, num_col));
   },
-    [](const std::shared_ptr<MatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const UpdateOption* option, const int worker_id) {
+    [](const std::shared_ptr<MatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const AddOption* option, const int worker_id) {
     worker_table->Add(row_ids, data_vec, size, option);
   },
 

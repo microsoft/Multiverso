@@ -7,10 +7,10 @@
 
 namespace multiverso {
 
-struct UpdateOption {
+struct AddOption {
 public:
   // TODO(qiwye): make these default value more flexiable
-  UpdateOption(){
+  AddOption(){
     data_[0].i = MV_WorkerId(); 
     data_[1].f = 0.0f;
     data_[2].f = 0.01f;
@@ -18,7 +18,7 @@ public:
     data_[4].f = 0.1f;
   }
 
-  UpdateOption(const char* data, size_t size) {
+  AddOption(const char* data, size_t size) {
     CopyFrom(data, size);
   }
 
@@ -38,7 +38,7 @@ public:
 
   std::string toString(){
     std::stringstream  ss;
-    ss << "UpdateOption " << worker_id() << " " << momentum() << " "
+    ss << "AddOption " << worker_id() << " " << momentum() << " "
       << learning_rate() << " " << rho() << " " << lambda() << std::endl;
 
     return ss.str();
@@ -69,14 +69,14 @@ private:
   InternalType data_[kSize];
 };
 
-struct GeneralOption {
+struct GetOption {
 public:
   // TODO(qiwye): to make these Option configuable 
-  GeneralOption(){
+  GetOption(){
     data_[0].i = MV_WorkerId();
   }
 
-  GeneralOption(const char* data, size_t size) {
+  GetOption(const char* data, size_t size) {
     CopyFrom(data, size);
   }
 
@@ -85,7 +85,7 @@ public:
 
   std::string toString(){
     std::stringstream  ss;
-    ss << "UpdateOption " << worker_id() << std::endl;
+    ss << "AddOption " << worker_id() << std::endl;
     return ss.str();
   }
 
@@ -121,12 +121,12 @@ public:
   //    Update data[index + offset] with delta[index], option, and the updater member
   // This is mainly for model sparse update consideration
   virtual void Update(size_t num_element, T* data, T* delta, 
-                      UpdateOption* option = nullptr, size_t offset = 0);
+                      AddOption* option = nullptr, size_t offset = 0);
 
   // The updater will access the data to out_data in following way 
   //   Get data[offset : offset + num_element) to blob_data[0 : num_element)
   virtual void Access(size_t num_element, T* data, T* blob_data,
-                      size_t offset = 0, UpdateOption* option = nullptr);
+                      size_t offset = 0, AddOption* option = nullptr);
   // Factory method to get the updater
   static Updater<T>* GetUpdater(size_t size = 0);
 };

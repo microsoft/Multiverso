@@ -73,7 +73,7 @@ void MatrixWorkerTable<T>::Get(const std::vector<int>& row_ids,
 }
 
 template <typename T>
-void MatrixWorkerTable<T>::Add(T* data, size_t size, const UpdateOption* option) {
+void MatrixWorkerTable<T>::Add(T* data, size_t size, const AddOption* option) {
   CHECK(size == num_col_ * num_row_);
   int whole_table = -1;
   Add(whole_table, data, size, option);
@@ -81,7 +81,7 @@ void MatrixWorkerTable<T>::Add(T* data, size_t size, const UpdateOption* option)
 
 template <typename T>
 void MatrixWorkerTable<T>::Add(int row_id, T* data, size_t size, 
-                               const UpdateOption* option) {
+                               const AddOption* option) {
   if (row_id >= 0) CHECK(size == num_col_);
   Blob ids_blob(&row_id, sizeof(int));
   Blob data_blob(data, size * sizeof(T));
@@ -93,7 +93,7 @@ template <typename T>
 void MatrixWorkerTable<T>::Add(const std::vector<int>& row_ids,
                                const std::vector<T*>& data_vec,
                                size_t size,
-                               const UpdateOption* option) {
+                               const AddOption* option) {
   CHECK(size == num_col_);
   Blob ids_blob(&row_ids[0], sizeof(int)* row_ids.size());
   Blob data_blob(row_ids.size() * row_size_);
@@ -243,9 +243,9 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
   size_t keys_size = data[0].size<int>();
   int *keys = reinterpret_cast<int*>(data[0].data());
   T *values = reinterpret_cast<T*>(data[1].data());
-  UpdateOption* option = nullptr;
+  AddOption* option = nullptr;
   if (data.size() == 3) {
-    option = new UpdateOption(data[2].data(), data[2].size());
+    option = new AddOption(data[2].data(), data[2].size());
   }
   // add all values
   if (keys_size == 1 && keys[0] == -1){

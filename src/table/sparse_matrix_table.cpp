@@ -13,7 +13,7 @@ namespace multiverso {
 // get whole table, data is user-allocated memory
 template <typename T>
 void SparseMatrixWorkerTable<T>::Get(T* data, size_t size,
-  const GeneralOption* option) {
+  const GetOption* option) {
   CHECK(size == num_col_ * num_row_);
   int whole_table = -1;
   Get(whole_table, data, size, option);
@@ -22,7 +22,7 @@ void SparseMatrixWorkerTable<T>::Get(T* data, size_t size,
 // data is user-allocated memory
 template <typename T>
 void SparseMatrixWorkerTable<T>::Get(int row_id, T* data, size_t size,
-  const GeneralOption* option) {
+  const GetOption* option) {
   if (row_id >= 0) CHECK(size == num_col_);
   for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
   if (row_id == -1) {
@@ -35,7 +35,7 @@ void SparseMatrixWorkerTable<T>::Get(int row_id, T* data, size_t size,
   bool is_option_mine = false;
   if (option == nullptr){
     is_option_mine = true;
-    option = new GeneralOption();
+    option = new GetOption();
   }
 
   WorkerTable::Get(keys, option);
@@ -46,7 +46,7 @@ void SparseMatrixWorkerTable<T>::Get(int row_id, T* data, size_t size,
 template <typename T>
 void SparseMatrixWorkerTable<T>::Get(const std::vector<int>& row_ids,
   const std::vector<T*>& data_vec, size_t size, 
-  const GeneralOption* option) {
+  const GetOption* option) {
   for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
   CHECK(size == num_col_);
   CHECK(row_ids.size() == data_vec.size());
@@ -58,7 +58,7 @@ void SparseMatrixWorkerTable<T>::Get(const std::vector<int>& row_ids,
   bool is_option_mine = false;
   if (option == nullptr){
     is_option_mine = true;
-    option = new GeneralOption();
+    option = new GetOption();
   }
 
   WorkerTable::Get(keys, option);
@@ -260,10 +260,10 @@ void SparseMatrixServerTable<T>::ProcessAdd(
   SparseFilter<T, int32_t> filter(0, true);
   filter.FilterOut(compressed_data, &data);
 
-  // the UpdateOption option is needed for the sparse update
+  // the AddOption option is needed for the sparse update
   CHECK(data.size() == 3);
-  UpdateOption* option = nullptr;
-  option = new UpdateOption(data[2].data(), data[2].size());
+  AddOption* option = nullptr;
+  option = new AddOption(data[2].data(), data[2].size());
   UpdateAddState(option->worker_id(), data[0]);
 
   MatrixServerTable<T>::ProcessAdd(data);
@@ -285,9 +285,9 @@ void SparseMatrixServerTable<T>::ProcessGet(
   size_t keys_size = data[0].size<int>();
   //TODO[qiwye]  make the keys to support int64_t
   int* keys = reinterpret_cast<int*>(data[0].data());
-  GeneralOption* option = nullptr;
+  GetOption* option = nullptr;
   if (data.size() == 2) {
-    option = new GeneralOption(data[1].data(), data[1].size());
+    option = new GetOption(data[1].data(), data[1].size());
   }
   std::vector<int> outdated_rows;
 

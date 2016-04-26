@@ -12,8 +12,8 @@
 namespace multiverso {
 
 class Waiter;
-struct UpdateOption;
-struct GeneralOption;
+struct AddOption;
+struct GetOption;
 
 // User implementent this
 class WorkerTable {
@@ -21,11 +21,11 @@ public:
   WorkerTable();
   virtual ~WorkerTable() = default;
 
-  void Get(Blob keys, const GeneralOption* option = nullptr);
-  void Add(Blob keys, Blob values, const UpdateOption* option = nullptr);
+  void Get(Blob keys, const GetOption* option = nullptr);
+  void Add(Blob keys, Blob values, const AddOption* option = nullptr);
 
-  int GetAsync(Blob keys, const GeneralOption* option = nullptr);
-  int AddAsync(Blob keys, Blob values, const UpdateOption* option = nullptr);
+  int GetAsync(Blob keys, const GetOption* option = nullptr);
+  int AddAsync(Blob keys, Blob values, const AddOption* option = nullptr);
 
   void Wait(int id);
 

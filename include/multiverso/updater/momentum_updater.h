@@ -15,7 +15,7 @@ public:
   }
 
   void Update(size_t num_element, T* data, T* delta, 
-              UpdateOption* option, size_t offset) override {
+              AddOption* option, size_t offset) override {
     for (size_t index = 0; index < num_element; ++index) {
       smooth_gradient_[index + offset] = 
         option->momentum() * smooth_gradient_[index + offset] 
