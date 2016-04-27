@@ -244,6 +244,8 @@ MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :
 
 template <typename T>
 void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
+  if (data.size() == 0) return;
+
   CHECK(data.size() == 2 || data.size() == 3);
   size_t keys_size = data[0].size<integer_t>();
   integer_t* keys = reinterpret_cast<integer_t*>(data[0].data());
@@ -279,6 +281,8 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
 template <typename T>
 void MatrixServerTable<T>::ProcessGet(const std::vector<Blob>& data,
   std::vector<Blob>* result) {
+  if (data.size() == 0) return;
+
   CHECK(data.size() == 1);
   CHECK_NOTNULL(result);
 

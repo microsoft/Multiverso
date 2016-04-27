@@ -261,6 +261,7 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, integer_t* keys,
 template <typename T>
 void SparseMatrixServerTable<T>::ProcessAdd(
   const std::vector<Blob>& compressed_data) {
+  if (compressed_data.size() == 0) return;
   std::vector<Blob> data;
   SparseFilter<T, int32_t> filter(0, true);
   filter.FilterOut(compressed_data, &data);
@@ -279,11 +280,12 @@ template <typename T>
 void SparseMatrixServerTable<T>::ProcessGet(
   const std::vector<Blob>& compressed_data,
   std::vector<Blob>* result) {
+  if (compressed_data.size() == 0) return;
   std::vector<Blob> data;
   SparseFilter<T, int32_t> filter(0, true);
   filter.FilterOut(compressed_data, &data);
 
-  // the general option is needed for the sparse update
+  // the GetOption is needed for the sparse update
   CHECK(data.size() == 2);
   CHECK_NOTNULL(result);
 
