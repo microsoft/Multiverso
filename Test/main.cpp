@@ -119,55 +119,6 @@ void TestArray(int argc, char* argv[]) {
   MV_ShutDown();
 }
 
-
-#define ARRAY_SIZE 4683776
-void TestMultipleThread(int argc, char* argv[])
-{
-  Log::Info("Test Multiple threads \n");
-  std::mt19937_64 eng{ std::random_device{}() };
-  std::uniform_int_distribution<> dist{ 5, 10000 };
-  std::this_thread::sleep_for(std::chrono::milliseconds{ dist(eng) });
-  //Log::ResetLogLevel(LogLevel::Debug);
-  MV_Init(&argc, argv);
-
-  ArrayWorker<float>* shared_array = new ArrayWorker<float>(ARRAY_SIZE);
-  ArrayServer<float>* server_array = new ArrayServer<float>(ARRAY_SIZE);
-  std::thread* m_prefetchThread = nullptr;
-  MV_Barrier();
-  Log::Info("Create tables OK\n");
-
-  std::vector<float> delta(ARRAY_SIZE);
-  while (true){
-    if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
-    {
-      m_prefetchThread->join();
-      delete m_prefetchThread;
-      m_prefetchThread = nullptr;
-    }
-
-    std::fill(delta.begin(), delta.end(), 0);
-    for (int i = 0; i < ARRAY_SIZE; ++i)
-    {
-      std::mt19937_64 eng{ std::random_device{}() };
-      std::uniform_real_distribution<float> dist{ -1, 1 };
-      delta[i] = dist(eng);
-    }
-    m_prefetchThread = new std::thread([&](){
-
-      shared_array->Add(delta.data(), ARRAY_SIZE);
-      shared_array->Get(delta.data(), ARRAY_SIZE);
-      Log::Info("Rank %d Get OK\n", MV_Rank());
-      for (int i = 0; i < 10; ++i)
-        std::cout << delta[i] << " "; std::cout << std::endl;
-    });
-
-    MV_Barrier();
-
-  }
-  MV_ShutDown();
-}
-
-
 void TestNet(int argc, char* argv[]) {
   NetInterface* net = NetInterface::Get();
   net->Init(&argc, argv);
@@ -244,66 +195,22 @@ void TestIP() {
   for (auto ip : ip_list) Log::Info("%s\n", ip.c_str());
 }
 
-void TestNoNet(int argc, char* argv[]) {
-  int provided;
-  MPI_Init_thread(&argc, &argv, MPI_THREAD_SERIALIZED, &provided);
-
-  MPI_Barrier(MPI_COMM_WORLD);
-  MV_Init(&argc, argv);
-
-  ArrayWorker<float>* shared_array = new ArrayWorker<float>(ARRAY_SIZE);
-  ArrayServer<float>* server_array = new ArrayServer<float>(ARRAY_SIZE);
-  std::thread* m_prefetchThread = nullptr;
-  MV_Barrier();
-  Log::Info("Create tables OK\n");
-
-  std::vector<float> delta(ARRAY_SIZE);
-  while (true){
-    if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
-    {
-      m_prefetchThread->join();
-      delete m_prefetchThread;
-      m_prefetchThread = nullptr;
-    }
-
-    std::fill(delta.begin(), delta.end(), 0);
-    for (int i = 0; i < ARRAY_SIZE; ++i)
-    {
-      std::mt19937_64 eng{ std::random_device{}() };
-      std::uniform_real_distribution<float> dist{ -1, 1 };
-      delta[i] = dist(eng);
-    }
-    m_prefetchThread = new std::thread([&](){
-
-      shared_array->Add(delta.data(), ARRAY_SIZE);
-      shared_array->Get(delta.data(), ARRAY_SIZE);
-      Log::Info("Rank %d Get OK\n", MV_Rank());
-      for (int i = 0; i < 10; ++i)
-        std::cout << delta[i] << " "; std::cout << std::endl;
-    });
-
-    //shared_array->Get(data, 10);
-    MV_Barrier();
-
-  }
-  MV_ShutDown();
-}
-
 void TestMatrix(int argc, char* argv[]){
   Log::Info("Test Matrix\n");
 
   MV_Init(&argc, argv);
 
-  int num_row = 21, num_col = 10;
+  int num_row = 11, num_col = 10;
   int size = num_row * num_col;
-
+  multiverso::SetCMDFlag("sync", true);
   MatrixWorkerTable<float>* worker_table = new MatrixWorkerTable<float>(num_row, num_col);
   MatrixServerTable<float>* server_table = new MatrixServerTable<float>(num_row, num_col);
   std::thread* m_prefetchThread = nullptr;
   MV_Barrier();
-
+  int count = 0;
   while (true)
   {
+    count++;
     if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
     {
       m_prefetchThread->join();
@@ -323,17 +230,10 @@ void TestMatrix(int argc, char* argv[]){
       AddOption option;
       worker_table->Add(delta.data(), size, &option); //add all
 
+      MV_Barrier();
       worker_table->Get(data, size); //get all
-      printf("----------------------------\n");
-      for (int i = 0; i < num_row; ++i){
-        printf("rank %d, row %d: ", MV_Rank(), i);
-        for (int j = 0; j < num_col; ++j)
-          printf("%.2f ", data[i * num_col + j]);
-        printf("\n");
-      };
     });
 
-    MV_Barrier();
     if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
     {
       m_prefetchThread->join();
@@ -350,10 +250,15 @@ void TestMatrix(int argc, char* argv[]){
 
     printf("----------------------------\n");
     for (int i = 0; i < num_row; ++i){
-      printf("rank %d, row %d: ", MV_Rank(), i);
-      for (int j = 0; j < num_col; ++j)
-        printf("%.2f ", data[i * num_col + j]);
-      printf("\n");
+      for (int j = 0; j < num_col; ++j){
+        float expected = (i * num_col + j) * count * MV_NumWorkers();
+        if (i == 0 || i == 1 || i == 5 || i == 10) {
+          expected += (i * num_col + j) * count * MV_NumWorkers();;
+        }
+        float actual = data[i* num_col + j];
+        ASSERT_FLOAT_EQ(expected, actual) << "Should be equal after adding, row: " 
+        << i << ", col:" << j << ", expected: " << expected << ", actual: " << actual;
+      }
     }
     MV_Barrier();
 
@@ -430,7 +335,7 @@ void TestmatrixPerformance(int argc, char* argv[],
   multiverso::SetCMDFlag("sync", true);
   int per = 0;
   int num_row = 1000000, num_col = 50;
-  if (argc == 1){ 
+  if (argc == 1){
     num_row = atoi(argv[2]);
   }
 
@@ -586,9 +491,7 @@ int main(int argc, char* argv[]) {
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
     else if (strcmp(argv[1], "net") == 0) TestNet(argc, argv);
     else if (strcmp(argv[1], "ip") == 0) TestIP();
-    else if (strcmp(argv[1], "threads") == 0) TestMultipleThread(argc, argv);
     else if (strcmp(argv[1], "matrix") == 0) TestMatrix(argc, argv);
-    else if (strcmp(argv[1], "nonet") == 0) TestNoNet(argc, argv);
     else if (strcmp(argv[1], "checkpoint") == 0)  TestCheckPoint(argc, argv, false);
     else if (strcmp(argv[1], "restore") == 0) TestCheckPoint(argc, argv, true);
     else if (strcmp(argv[1], "allreduce") == 0) TestAllreduce(argc, argv);

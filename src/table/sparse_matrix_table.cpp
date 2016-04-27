@@ -78,12 +78,12 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
     size_t keys_size = kv[0].size<integer_t>();
     integer_t* keys = reinterpret_cast<integer_t*>(kv[0].data());
     if (keys[0] == -1) {
-      for (auto i = 0; i < server_offsets_.size() - 1; ++i) {
+      for (auto i = 0; i < num_server_; ++i) {
         int rank = MV_ServerIdToRank(i);
         (*out)[rank].push_back(kv[0]);
       }
 
-      for (auto i = 0; i < server_offsets_.size() - 1; ++i){
+      for (auto i = 0; i < num_server_; ++i){
         int rank = MV_ServerIdToRank(i);
         if (kv.size() == 2) {// general option blob
           (*out)[rank].push_back(kv[1]);
@@ -95,25 +95,28 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       res = static_cast<int>(out->size());
     } else {
       // count row number in each server
-      std::unordered_map<int, integer_t> count;
+      //std::unordered_map<int, integer_t> count;
+      std::vector<integer_t> count;
       std::vector<int> dest;
-      int actual_num_server = static_cast<int>(server_offsets_.size() - 1);
-      integer_t num_row_each = num_row_ / actual_num_server;  //  num_server_;
+      count.resize(num_server_, 0);
+      integer_t num_row_each = num_row_ / num_server_;  //  num_server_;
       for (auto i = 0; i < keys_size; ++i) {
         int dst = keys[i] / num_row_each;
-        dst = (dst == actual_num_server ? dst - 1 : dst);
+        dst = (dst >= num_server_ ? num_server_ - 1 : dst);
         dest.push_back(dst);
         ++count[dst];
       }
 
-      for (auto& it : count) {  // Allocate memory
-        int rank = MV_ServerIdToRank(it.first);
-        std::vector<Blob>& vec = (*out)[rank];
-        vec.push_back(Blob(it.second * sizeof(integer_t)));
+      for (auto i = 0; i < num_server_; i++) { // allocate memory for blobs
+        int rank = MV_ServerIdToRank(i);
+        if (count[i] != 0) {
+          std::vector<Blob>& vec = (*out)[rank];
+          vec.push_back(Blob(count[i] * sizeof(integer_t)));
+        }
       }
       count.clear();
+      count.resize(num_server_, 0);
 
-      //int offset = 0;
       for (auto i = 0; i < keys_size; ++i) {
         int dst = dest[i];
         int rank = MV_ServerIdToRank(dst);
@@ -122,10 +125,12 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       }
 
 
-      for (auto i = 0; i < server_offsets_.size() - 1; ++i){
+      for (auto i = 0; i < num_server_; ++i){
         int rank = MV_ServerIdToRank(i);
-        if (kv.size() == 2) {// general option blob
-          (*out)[rank].push_back(kv[1]);
+        if (count[i] != 0) {
+          if (kv.size() == 2) {// add option blob
+            (*out)[rank].push_back(kv[1]);
+          }
         }
       }
 
