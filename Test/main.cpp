@@ -294,16 +294,8 @@ void TestMatrix(int argc, char* argv[]){
 
   MV_Init(&argc, argv);
 
-  int num_row = 11, num_col = 10;
+  int num_row = 21, num_col = 10;
   int size = num_row * num_col;
-
-  // MatrixWorkerTable<int>* worker_table = 
-  // static_cast<MatrixWorkerTable<int>*>(MV_CreateTable<int>("matrix", { &num_row, &num_col }));  //new implementation
-  //  static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable()); //older one
-
-  //if (worker_table == nullptr){ //should have more if statement to avoid nullptr in using worker_table
-  //  Log::Debug("rank %d has no worker\n", MV_Rank());
-  // }
 
   MatrixWorkerTable<float>* worker_table = new MatrixWorkerTable<float>(num_row, num_col);
   MatrixServerTable<float>* server_table = new MatrixServerTable<float>(num_row, num_col);
@@ -419,77 +411,6 @@ void TestAllreduce(int argc, char* argv[]) {
   int a = 1;
   MV_Aggregate(&a, 1);
   std::cout << "a = " << a << std::endl;
-  MV_ShutDown();
-}
-
-void TestSparseMatrixTable(int argc, char* argv[]) {
-  Log::ResetLogLevel(LogLevel::Error);
-  Log::Info("Test Sparse Matrix\n");
-  Timer timmer;
-
-  MV_Init(&argc, argv);
-
-  int num_row = 100000, num_col = 50;
-  int size = num_row * num_col;
-  int worker_id = MV_Rank();
-
-  // test data
-  int* data = new int[size];
-  int* delta = new int[size];
-  int* keys = new int[num_row];
-  for (auto i = 0; i < size; ++i) {
-    delta[i] = 1;
-  }
-
-  AddOption add_option;
-  add_option.set_worker_id(worker_id);
-
-  GetOption get_option;
-  get_option.set_worker_id(worker_id);
-
-  GetOption debug_option;
-  debug_option.set_worker_id(-1);
-  
-
-  std::cout << "==> test get twice, the second get should be shorter than the first one." << std::endl;
-  {
-    auto worker_table = std::shared_ptr<SparseMatrixWorkerTable<int>>(
-      new SparseMatrixWorkerTable<int>(num_row, num_col));
-    auto server_table = std::shared_ptr<SparseMatrixServerTable<int>>(
-      new SparseMatrixServerTable<int>(num_row, num_col, false));
-    MV_Barrier();
-
-
-    timmer.Start();
-    worker_table->Get(data, size, &get_option);
-    std::cout << " " << timmer.elapse() << "s:\t" << "get all rows 1st time" << std::endl;
-
-    // do not need to get any rows, since all rows are up-to-date
-    timmer.Start();
-    worker_table->Get(data, size, &get_option);
-    std::cout << " " << timmer.elapse() << "s:\t" << "get all rows 2nd time" << std::endl;
-
-    for (auto i = 0; i < size; ++i) {
-      ASSERT_EQ(0, data[i]) << "Should be inited as 0";
-    }
-  }
-
-  std::cout << "==> test add to all rows" << std::endl;
-  {
-    auto worker_table = std::shared_ptr<SparseMatrixWorkerTable<int>>(
-      new SparseMatrixWorkerTable<int>(num_row, num_col));
-    auto server_table = std::shared_ptr<SparseMatrixServerTable<int>>(
-      new SparseMatrixServerTable<int>(num_row, num_col, false));
-    timmer.Start();
-    worker_table->Add(delta, size, &add_option);
-    worker_table->Get(data, size, &debug_option);
-    std::cout << " " << timmer.elapse() << "s:\t" << "add 1 to all values, and get all rows after adding" << std::endl;
-    for (auto i = 0; i < size; ++i) {
-      ASSERT_EQ(1, data[i]) << "Should be 1 after adding";
-    }
-  }
-
-  MV_Barrier();
   MV_ShutDown();
 }
 

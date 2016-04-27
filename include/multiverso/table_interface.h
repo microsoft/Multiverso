@@ -5,11 +5,14 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <cctype>
 
 #include "multiverso/blob.h"
 #include "multiverso/io/io.h"
 
 namespace multiverso {
+
+typedef int32_t integer_t;
 
 class Waiter;
 struct AddOption;
@@ -41,6 +44,7 @@ public:
   // add user defined data structure
 private:
   std::string table_name_;
+  // assuming there are at most 2^32 tables
   int table_id_;
   std::mutex m_;
   std::vector<Waiter*> waitings_;

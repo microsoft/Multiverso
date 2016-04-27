@@ -50,7 +50,7 @@ public:
   void Load(Stream* s) override;
 
 private:
-  int server_id_;
+  int32_t server_id_;
   std::vector<T> storage_;
   Updater<T>* updater_;
   size_t size_; // number of element with type T
