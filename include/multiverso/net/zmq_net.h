@@ -192,15 +192,10 @@ public:
   void SendRecv(int send_rank, const char* send_buf, int send_len,
     int recv_rank, char* recv_buf, int recv_len) const override {
     // send first
-    std::thread send_worker(
-      [this, send_rank, send_buf, send_len] {
-      SendTo(SendTo, send_buf, send_len);
-    }
-    );
+    SendTo(send_rank, send_buf, send_len);
     // then recv
     RecvFrom(recv_rank, recv_buf, recv_len);
     // wait for send complete
-    send_worker.join();
   }
 
   int thread_level_support() override { 
