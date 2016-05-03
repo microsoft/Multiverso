@@ -41,24 +41,24 @@ public:
     this->size_ = rhs.size_;
   }
 
-  char operator[](size_t i) const {
+  inline char operator[](size_t i) const {
     CHECK(0 <= i && i < size_);
     return data_.get()[i];
   }
 
   template <typename T>
-  T& As(size_t i = 0) const {
+  inline T& As(size_t i = 0) const {
     CHECK(size_ % sizeof(T) == 0 && i < size_ / sizeof(T));
     return (reinterpret_cast<T*>(data_.get()))[i];
   }
   template <typename T>
-  size_t size() const { return size_ / sizeof(T); }
+  inline size_t size() const { return size_ / sizeof(T); }
 
   // DeepCopy, for a shallow copy, use operator=
   void CopyFrom(const Blob& src);
 
-  char* data() const { return data_.get(); }
-  size_t size() const { return size_; }
+  inline char* data() const { return data_.get(); }
+  inline size_t size() const { return size_; }
 
 private:
   // Memory is shared and auto managed
