@@ -191,6 +191,7 @@
     <ClInclude Include="..\include\multiverso\table\kv_table.h" />
     <ClInclude Include="..\include\multiverso\table\matrix_table.h" />
     <ClInclude Include="..\include\multiverso\table\sparse_matrix_table.h" />
+    <ClInclude Include="..\include\multiverso\table_factory.h" />
     <ClInclude Include="..\include\multiverso\table_interface.h" />
     <ClInclude Include="..\include\multiverso\updater\adagrad_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\sgd_updater.h" />
@@ -226,6 +227,7 @@
     <ClCompile Include="table\array_table.cpp" />
     <ClCompile Include="table\matrix_table.cpp" />
     <ClCompile Include="table\sparse_matrix_table.cpp" />
+    <ClCompile Include="table_factory.cpp" />
     <ClCompile Include="updater\updater.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="util\log.cpp" />

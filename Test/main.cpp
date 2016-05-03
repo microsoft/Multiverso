@@ -276,13 +276,12 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
 
   MatrixWorkerTable<int>* worker_table =
     static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable());
-  //MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-  //MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
-  //if restore = true, will restore server data and return the next iter number of last dump file
-  //else do nothing and return 0
   if (worker_table == nullptr) {
     //no worker in this node
   }
+
+  //if restore = true, will restore server data and return the next iter number of last dump file
+  //else do nothing and return 0
   // int begin_iter = MV_LoadTable("serverTable_");
   MV_Barrier();//won't dump data without parameters
 
@@ -318,7 +317,6 @@ void TestAllreduce(int argc, char* argv[]) {
   std::cout << "a = " << a << std::endl;
   MV_ShutDown();
 }
-
 
 template<typename WT, typename ST>
 void TestmatrixPerformance(int argc, char* argv[],
