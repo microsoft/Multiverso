@@ -40,7 +40,7 @@ public:
   void ProcessReplyGet(std::vector<Blob>& reply_data) override;
 
 protected:
-  (T*)* row_index_;
+  T** row_index_;
   int get_reply_count_;                    // number of unprocessed get reply
   integer_t num_row_;
   integer_t num_col_;
