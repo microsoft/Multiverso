@@ -58,10 +58,10 @@ class SparseMatrixServerTable : public MatrixServerTable<T> {
      void UpdateGetState(int worker_id, int* keys, size_t key_size,
        std::vector<int>* out_rows);
      int GetLogicalRow(int local_row_id) {
-       return row_offset_ + local_row_id;
+       return this->row_offset_ + local_row_id;
      }
      int GetPhysicalRow(int global_row_id) {
-       return global_row_id - row_offset_;
+       return global_row_id - this->row_offset_;
      }
  private:
    bool** up_to_date_;
