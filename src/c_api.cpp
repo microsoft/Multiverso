@@ -33,8 +33,8 @@ extern "C" {
     ((multiverso::ArrayWorker<float>*) awf)->Get(data, size);
   }
 
-  void addArrayWorkerFloat(ArrayServerFloat awf, float* data, int size, struct UpdateOption *options) {
-    multiverso::UpdateOption mvoptions;
+  void addArrayWorkerFloat(ArrayServerFloat awf, float* data, int size, struct AddOption *options) {
+    multiverso::AddOption mvoptions;
     mvoptions.set_learning_rate(options->learning_rate);
     mvoptions.set_momentum(options->momentum);
     mvoptions.set_rho(options->rho);

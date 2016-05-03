@@ -1,7 +1,7 @@
 #ifndef MULTIVERSO_C_API_H_
 #define MULTIVERSO_C_API_H_
 
-struct UpdateOption {
+struct AddOption {
   float learning_rate;
   float momentum;
   float rho;
@@ -15,6 +15,6 @@ typedef void* ArrayServerFloat;
 ArrayServerFloat newArrayServerFloat(int);
 ArrayWorkerFloat newArrayWorkerFloat(int);
 void getArrayWorkerFloat(ArrayWorkerFloat, float*, int);
-void addArrayWorkerFloat(ArrayServerFloat, float*, int, struct UpdateOption*);
+void addArrayWorkerFloat(ArrayServerFloat, float*, int, struct AddOption*);
 
 #endif
