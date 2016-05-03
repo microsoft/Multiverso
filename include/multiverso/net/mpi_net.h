@@ -15,7 +15,14 @@
 #include "multiverso/util/mt_queue.h"
 
 #include <mpi.h>
+
+#if defined(__CYGWIN__)
+  /* TODO: Windows */
+#elif defined(__APPLE__)
+  /* TODO: Mac OS X */
+#elif defined(__linux__)
 #include <dlfcn.h>
+#endif
 
 
 #ifdef _MSC_VER
@@ -40,7 +47,7 @@ namespace {
     /* TODO: Windows */
   #elif defined(__APPLE__)
     /* TODO: Mac OS X */
-  #else
+  #elif defined(__linux__)
     /* GNU/Linux and others */
     #ifdef RTLD_NOLOAD
     mode |= RTLD_NOLOAD;
