@@ -8,12 +8,11 @@ namespace multiverso {
 
 template <typename T>
 ArrayWorker<T>::ArrayWorker(size_t size) : WorkerTable(), size_(size) {
-  // table_.resize(size);
   num_server_ = MV_NumServers();
   server_offsets_.push_back(0);
   CHECK(size_ > MV_NumServers());
-  int length = static_cast<int>(size_) / MV_NumServers();
-  for (int i = 1; i < MV_NumServers(); ++i) {
+  integer_t length = static_cast<integer_t>(size_) / MV_NumServers();
+  for (auto i = 1; i < MV_NumServers(); ++i) {
     server_offsets_.push_back(i * length); // may not balance
   }
   server_offsets_.push_back(size_);
@@ -25,8 +24,8 @@ template <typename T>
 void ArrayWorker<T>::Get(T* data, size_t size) {
   CHECK(size == size_);
   data_ = data;
-  int all_key = -1;
-  Blob whole_table(&all_key, sizeof(int));
+  integer_t all_key = -1;
+  Blob whole_table(&all_key, sizeof(integer_t));
   Log::Debug("worker %d begin get. \n", MV_Rank());
   WorkerTable::Get(whole_table);
   Log::Debug("worker %d getting all parameters.\n", MV_Rank());
@@ -35,9 +34,9 @@ void ArrayWorker<T>::Get(T* data, size_t size) {
 template <typename T>
 void ArrayWorker<T>::Add(T* data, size_t size, const AddOption* option) {
   CHECK(size == size_);
-  int all_key = -1;
+  integer_t all_key = -1;
 
-  Blob key(&all_key, sizeof(int));
+  Blob key(&all_key, sizeof(integer_t));
   Blob val(data, sizeof(T) * size);
   WorkerTable::Add(key, val, option);
   Log::Debug("worker %d adding parameters with size of %d.\n", MV_Rank(), size);
@@ -91,7 +90,7 @@ void ArrayServer<T>::ProcessAdd(const std::vector<Blob>& data) {
   if (data.size() == 3)
     option = new AddOption(data[2].data(), data[2].size());
   // Always request whole table
-  CHECK(keys.size<int>() == 1 && keys.As<int>() == -1); 
+  CHECK(keys.size<integer_t>() == 1 && keys.As<integer_t>() == -1); 
   CHECK(values.size() == size_ * sizeof(T));
   T* pvalues = reinterpret_cast<T*>(values.data());
   updater_->Update(size_, storage_.data(), pvalues, option);
@@ -101,10 +100,10 @@ void ArrayServer<T>::ProcessAdd(const std::vector<Blob>& data) {
 template <typename T>
 void ArrayServer<T>::ProcessGet(const std::vector<Blob>& data,
   std::vector<Blob>* result) {
-  size_t key_size = data[0].size<int>();
-  CHECK(key_size == 1 && data[0].As<int>() == -1); 
+  size_t key_size = data[0].size<integer_t>();
+  CHECK(key_size == 1 && data[0].As<integer_t>() == -1); 
   // Always request the whole table
-  Blob key(sizeof(int)); key.As<int>() = server_id_;
+  Blob key(sizeof(integer_t)); key.As<integer_t>() = server_id_;
   Blob values(sizeof(T) * size_);
   T* pvalues = reinterpret_cast<T*>(values.data());
   updater_->Access(size_, storage_.data(), pvalues);

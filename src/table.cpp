@@ -107,10 +107,10 @@ void WorkerTable::Notify(int id) {
 }
 
 WorkerTable* TableHelper::CreateTable() {
-  if (Zoo::Get()->server_rank() >= 0) {
+  if (MV_ServerId() >= 0) {
     CreateServerTable();
   }
-  if (Zoo::Get()->worker_rank() >= 0) {
+  if (MV_WorkerId() >= 0) {
     return CreateWorkerTable();
   }
   return nullptr;

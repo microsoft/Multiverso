@@ -14,7 +14,7 @@ namespace multiverso {
 template <typename T>
 class SparseMatrixWorkerTable : public MatrixWorkerTable<T> {
  public:
-   SparseMatrixWorkerTable(int num_row, int num_col)
+   SparseMatrixWorkerTable(integer_t num_row, integer_t num_col)
      : MatrixWorkerTable<T>(num_row, num_col) { }
     int Partition(const std::vector<Blob>& kv,
         std::unordered_map<int, std::vector<Blob>>* out) override;
@@ -25,10 +25,10 @@ class SparseMatrixWorkerTable : public MatrixWorkerTable<T> {
       const GetOption* option = nullptr);
 
     // data is user-allocated memory
-    void Get(int row_id, T* data, size_t size,
+    void Get(integer_t row_id, T* data, size_t size,
       const GetOption* option = nullptr);
 
-    void Get(const std::vector<int>& row_ids,
+    void Get(const std::vector<integer_t>& row_ids,
         const std::vector<T*>& data_vec, size_t size,
         const GetOption* option = nullptr);
 
@@ -37,9 +37,9 @@ class SparseMatrixWorkerTable : public MatrixWorkerTable<T> {
     void Get(T* data, size_t size) = delete;
 
     // data is user-allocated memory
-    void Get(int row_id, T* data, size_t size) = delete;
+    void Get(integer_t row_id, T* data, size_t size) = delete;
 
-    void Get(const std::vector<int>& row_ids,
+    void Get(const std::vector<integer_t>& row_ids,
         const std::vector<T*>& data_vec, size_t size) = delete;
 };
 
@@ -48,19 +48,19 @@ class Updater;
 template <typename T>
 class SparseMatrixServerTable : public MatrixServerTable<T> {
  public:
-     SparseMatrixServerTable(int num_row, int num_col, bool using_pipeline);
+     SparseMatrixServerTable(integer_t num_row, integer_t num_col, bool using_pipeline);
      ~SparseMatrixServerTable();
     void ProcessAdd(const std::vector<Blob>& data) override;
     void ProcessGet(const std::vector<Blob>& data,
         std::vector<Blob>* result) override;
  private:
      void UpdateAddState(int worker_id, Blob keys);
-     void UpdateGetState(int worker_id, int* keys, size_t key_size,
-       std::vector<int>* out_rows);
-     int GetLogicalRow(int local_row_id) {
+     void UpdateGetState(int worker_id, integer_t* keys, size_t key_size,
+       std::vector<integer_t>* out_rows);
+     integer_t GetLogicalRow(integer_t local_row_id) {
        return row_offset_ + local_row_id;
      }
-     int GetPhysicalRow(int global_row_id) {
+     integer_t GetPhysicalRow(integer_t global_row_id) {
        return global_row_id - row_offset_;
      }
  private:
