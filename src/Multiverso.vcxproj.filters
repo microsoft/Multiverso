@@ -109,6 +109,9 @@
     <ClInclude Include="..\include\multiverso\table_interface.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\multiverso\c_api.h">
+      <Filter>system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="system">
@@ -208,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="net\mpi_net.cpp">
       <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="c_api.cpp">
+      <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

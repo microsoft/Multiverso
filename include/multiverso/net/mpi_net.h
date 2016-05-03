@@ -16,11 +16,7 @@
 
 #include <mpi.h>
 
-#if defined(__CYGWIN__)
-  /* TODO: Windows */
-#elif defined(__APPLE__)
-  /* TODO: Mac OS X */
-#elif defined(__linux__)
+#ifndef _WIN32
 #include <dlfcn.h>
 #endif
 
@@ -43,6 +39,7 @@ namespace {
   {
     void *handle = 0;
     int mode = RTLD_NOW | RTLD_GLOBAL;
+  #ifndef _WIN32
   #if defined(__CYGWIN__)
     /* TODO: Windows */
   #elif defined(__APPLE__)
@@ -54,7 +51,8 @@ namespace {
     #endif
     if (!handle) handle = dlopen("libmpi_cxx.so",   mode);
   #endif
-  }
+  #endif
+}
 }
 
 class MPINetWrapper : public NetInterface {

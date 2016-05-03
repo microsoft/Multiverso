@@ -11,7 +11,7 @@ namespace multiverso {
      " at %s, line %d .\n", __FILE__,  __LINE__);
 
 #define CHECK_NOTNULL(pointer)                             \
-  if ((pointer) == nullptr) Log::Fatal(#pointer " Can't be NULL\n");
+  if ((pointer) == nullptr) multiverso::Log::Fatal(#pointer " Can't be NULL\n");
 
 // A enumeration type of log message levels. The values are ordered:
 // Debug < Info < Error < Fatal.

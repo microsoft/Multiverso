@@ -175,6 +175,7 @@
     <ClInclude Include="..\include\multiverso\blob.h" />
     <ClInclude Include="..\include\multiverso\communicator.h" />
     <ClInclude Include="..\include\multiverso\controller.h" />
+    <ClInclude Include="..\include\multiverso\c_api.h" />
     <ClInclude Include="..\include\multiverso\dashboard.h" />
     <ClInclude Include="..\include\multiverso\io\hdfs_stream.h" />
     <ClInclude Include="..\include\multiverso\io\io.h" />
@@ -211,6 +212,7 @@
     <ClCompile Include="actor.cpp" />
     <ClCompile Include="communicator.cpp" />
     <ClCompile Include="controller.cpp" />
+    <ClCompile Include="c_api.cpp" />
     <ClCompile Include="dashboard.cpp" />
     <ClCompile Include="io\hdfs_stream.cpp" />
     <ClCompile Include="io\io.cpp" />
