@@ -222,17 +222,17 @@ void TestMatrix(int argc, char* argv[]){
     // test data
     std::vector<float> delta(size);
     for (int i = 0; i < size; ++i)
-      delta[i] = i;
+      delta[i] = (float)i;
 
     float * data = new float[size];
-    m_prefetchThread = new std::thread([&](){
+    //m_prefetchThread = new std::thread([&](){
 
-      AddOption option;
-      worker_table->Add(delta.data(), size, &option); //add all
+    //  AddOption option;
+    //  worker_table->Add(delta.data(), size, &option); //add all
 
-      MV_Barrier();
-      worker_table->Get(data, size); //get all
-    });
+    //  MV_Barrier();
+    //  worker_table->Get(data, size); //get all
+    //});
 
     if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
     {

@@ -35,21 +35,25 @@ int Server::RegisterTable(ServerTable* server_table) {
 
 void Server::ProcessGet(MessagePtr& msg) {
   MONITOR_BEGIN(SERVER_PROCESS_GET);
-  MessagePtr reply(msg->CreateReplyMessage());
-  int table_id = msg->table_id();
-  CHECK(table_id >= 0 && table_id < store_.size());
-  store_[table_id]->ProcessGet(msg->data(), &reply->data());
-  SendTo(actor::kCommunicator, reply);
+  if (msg->data().size() != 0) {
+    MessagePtr reply(msg->CreateReplyMessage());
+    int table_id = msg->table_id();
+    CHECK(table_id >= 0 && table_id < store_.size());
+    store_[table_id]->ProcessGet(msg->data(), &reply->data());
+    SendTo(actor::kCommunicator, reply);
+  }
   MONITOR_END(SERVER_PROCESS_GET);
 }
 
 void Server::ProcessAdd(MessagePtr& msg) {
   MONITOR_BEGIN(SERVER_PROCESS_ADD)
-  MessagePtr reply(msg->CreateReplyMessage());
-  int table_id = msg->table_id();
-  CHECK(table_id >= 0 && table_id < store_.size());
-  store_[table_id]->ProcessAdd(msg->data());
-  SendTo(actor::kCommunicator, reply);
+  if (msg->data().size() != 0) {
+    MessagePtr reply(msg->CreateReplyMessage());
+    int table_id = msg->table_id();
+    CHECK(table_id >= 0 && table_id < store_.size());
+    store_[table_id]->ProcessAdd(msg->data());
+    SendTo(actor::kCommunicator, reply);
+  }
   MONITOR_END(SERVER_PROCESS_ADD)
 }
 
