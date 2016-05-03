@@ -27,15 +27,15 @@ DllExport void MV_Add(TableHandle handle, float* data, int size);
 
 // typedef void* ArrayWorkerFloat;
 // typedef void* ArrayServerFloat;
-// struct UpdateOption {
-//  float learning_rate;
-//  float momentum;
-//  float rho;
+// struct AddOption {
+//   float learning_rate;
+//   float momentum;
+//   float rho;
 // };
 // ArrayServerFloat newArrayServerFloat(int);
 // ArrayWorkerFloat newArrayWorkerFloat(int);
 // void getArrayWorkerFloat(ArrayWorkerFloat, float*, int);
-// void addArrayWorkerFloat(ArrayServerFloat, float*, int, struct UpdateOption*);
+// void addArrayWorkerFloat(ArrayServerFloat, float*, int, struct AddOption*);
 
 #ifdef __cplusplus
 }  // end extern "C"
