@@ -14,7 +14,7 @@ namespace multiverso {
 template <typename T>
 void SparseMatrixWorkerTable<T>::Get(T* data, size_t size,
   const GetOption* option) {
-  CHECK(size == num_col_ * num_row_);
+  CHECK(size == this->num_col_ * this->num_row_);
   integer_t whole_table = -1;
   Get(whole_table, data, size, option);
 }
@@ -23,12 +23,12 @@ void SparseMatrixWorkerTable<T>::Get(T* data, size_t size,
 template <typename T>
 void SparseMatrixWorkerTable<T>::Get(integer_t row_id, T* data, size_t size,
   const GetOption* option) {
-  if (row_id >= 0) CHECK(size == num_col_);
-  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
+  if (row_id >= 0) CHECK(size == this->num_col_);
+  for (auto i = 0; i < this->num_row_ + 1; ++i) this->row_index_[i] = nullptr;
   if (row_id == -1) {
-    row_index_[num_row_] = data;
+    this->row_index_[this->num_row_] = data;
   } else {
-    row_index_[row_id] = data; // data_ = data;
+    this->row_index_[row_id] = data; // data_ = data;
   }
   Blob keys(&row_id, sizeof(integer_t) * 1);
 
@@ -47,11 +47,11 @@ template <typename T>
 void SparseMatrixWorkerTable<T>::Get(const std::vector<integer_t>& row_ids,
   const std::vector<T*>& data_vec, size_t size, 
   const GetOption* option) {
-  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
-  CHECK(size == num_col_);
+  for (auto i = 0; i < this->num_row_ + 1; ++i) this->row_index_[i] = nullptr;
+  CHECK(size == this->num_col_);
   CHECK(row_ids.size() == data_vec.size());
   for (integer_t i = 0; i < row_ids.size(); ++i) {
-    row_index_[row_ids[i]] = data_vec[i];
+    this->row_index_[row_ids[i]] = data_vec[i];
   }
   Blob keys(row_ids.data(), sizeof(integer_t) * row_ids.size());
 
@@ -78,36 +78,36 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
     size_t keys_size = kv[0].size<integer_t>();
     integer_t* keys = reinterpret_cast<integer_t*>(kv[0].data());
     if (keys[0] == -1) {
-      for (auto i = 0; i < num_server_; ++i) {
+      for (auto i = 0; i < this->num_server_; ++i) {
         int rank = MV_ServerIdToRank(i);
         (*out)[rank].push_back(kv[0]);
       }
 
-      for (auto i = 0; i < num_server_; ++i){
+      for (auto i = 0; i < this->num_server_; ++i){
         int rank = MV_ServerIdToRank(i);
         if (kv.size() == 2) {// general option blob
           (*out)[rank].push_back(kv[1]);
         }
       }
 
-      CHECK(get_reply_count_ == 0);
-      get_reply_count_ = static_cast<int>(out->size());
+      CHECK(this->get_reply_count_ == 0);
+      this->get_reply_count_ = static_cast<int>(out->size());
       res = static_cast<int>(out->size());
     } else {
       // count row number in each server
       //std::unordered_map<int, integer_t> count;
       std::vector<integer_t> count;
       std::vector<int> dest;
-      count.resize(num_server_, 0);
-      integer_t num_row_each = num_row_ / num_server_;  //  num_server_;
+      count.resize(this->num_server_, 0);
+      integer_t num_row_each = this->num_row_ / this->num_server_;  //  num_server_;
       for (auto i = 0; i < keys_size; ++i) {
         int dst = keys[i] / num_row_each;
-        dst = (dst >= num_server_ ? num_server_ - 1 : dst);
+        dst = (dst >= this->num_server_ ? this->num_server_ - 1 : dst);
         dest.push_back(dst);
         ++count[dst];
       }
 
-      for (auto i = 0; i < num_server_; i++) { // allocate memory for blobs
+      for (auto i = 0; i < this->num_server_; i++) { // allocate memory for blobs
         int rank = MV_ServerIdToRank(i);
         if (count[i] != 0) {
           std::vector<Blob>& vec = (*out)[rank];
@@ -115,7 +115,7 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
         }
       }
       count.clear();
-      count.resize(num_server_, 0);
+      count.resize(this->num_server_, 0);
 
       for (auto i = 0; i < keys_size; ++i) {
         int dst = dest[i];
@@ -125,7 +125,7 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       }
 
 
-      for (auto i = 0; i < num_server_; ++i){
+      for (auto i = 0; i < this->num_server_; ++i){
         int rank = MV_ServerIdToRank(i);
         if (count[i] != 0) {
           if (kv.size() == 2) {// add option blob
@@ -134,8 +134,8 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
         }
       }
 
-      CHECK(get_reply_count_ == 0);
-      get_reply_count_ = static_cast<int>(out->size());
+      CHECK(this->get_reply_count_ == 0);
+      this->get_reply_count_ = static_cast<int>(out->size());
       res = static_cast<int>(out->size());
     }
   } else {
@@ -158,13 +158,13 @@ template <typename T>
 void SparseMatrixWorkerTable<T>::ProcessReplyGet(
   std::vector<Blob>& reply_data) {
   // replace row_index when original key == -1
-  if (row_index_[num_row_] != nullptr) {
+  if (this->row_index_[this->num_row_] != nullptr) {
     size_t keys_size = reply_data[0].size<integer_t>();
     Log::Debug("[SparseMatrixWorkerTable:ProcessReplyGet] worker = %d, #keys_size = %d\n", MV_Rank(),
       keys_size);
     integer_t* keys = reinterpret_cast<integer_t*>(reply_data[0].data());
     for (auto i = 0; i < keys_size; ++i) {
-      row_index_[keys[i]] = row_index_[num_row_] + keys[i] * num_col_;
+      this->row_index_[keys[i]] = this->row_index_[this->num_row_] + keys[i] * this->num_col_;
     }
   }
 
@@ -189,8 +189,8 @@ SparseMatrixServerTable<T>::SparseMatrixServerTable(integer_t num_row, integer_t
         
   up_to_date_ = new bool*[workers_nums_];
   for (auto i = 0; i < workers_nums_; ++i) {
-    up_to_date_[i] = new bool[my_num_row_];
-    memset(up_to_date_[i], 0, sizeof(bool) * my_num_row_);
+    up_to_date_[i] = new bool[this->my_num_row_];
+    memset(up_to_date_[i], 0, sizeof(bool) * this->my_num_row_);
   }
   Log::Debug("[SparseMatrixServerTable] workers_nums_= %d .\n", workers_nums_);
 }
@@ -204,7 +204,7 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
   if (keys_size == 1 && keys[0] == -1) {
     for (auto id = 0; id < workers_nums_; ++id) {
       if (id == worker_id) continue;
-      for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id) {
+      for (auto local_row_id = 0; local_row_id < this->my_num_row_; ++local_row_id) {
         // if other worker doen't update the row, we can marked it as the updated.
         up_to_date_[id][local_row_id] = false;
       }
@@ -227,14 +227,14 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, integer_t* keys,
   size_t key_size, std::vector<integer_t>* out_rows) {
 
   if (worker_id == -1) {
-    for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
+    for (auto local_row_id = 0; local_row_id < this->my_num_row_; ++local_row_id)  {
       out_rows->push_back(GetLogicalRow(local_row_id));
     }
     return;
   }
 
   if (key_size == 1 && keys[0] == -1) {
-    for (auto local_row_id = 0; local_row_id < my_num_row_; ++local_row_id)  {
+    for (auto local_row_id = 0; local_row_id < this->my_num_row_; ++local_row_id)  {
       if (!up_to_date_[worker_id][local_row_id]) {
         out_rows->push_back(GetLogicalRow(local_row_id));
         up_to_date_[worker_id][local_row_id] = true;
