@@ -16,7 +16,7 @@ std::string ele_type_str(EleType ele_type) {
   case kFloat:
     return "float_";
   case kDouble:
-    return "kdouble_";
+    return "double_";
   }
   return "unknown";
 }

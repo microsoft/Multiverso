@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include <cstring>
-
+#include <iostream>
 #include "multiverso/util/log.h"
 
 namespace multiverso {

@@ -172,6 +172,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\multiverso\actor.h" />
+    <ClInclude Include="..\include\multiverso\allocator.h" />
     <ClInclude Include="..\include\multiverso\blob.h" />
     <ClInclude Include="..\include\multiverso\communicator.h" />
     <ClInclude Include="..\include\multiverso\controller.h" />
@@ -210,6 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actor.cpp" />
+    <ClCompile Include="allocator.cpp" />
     <ClCompile Include="communicator.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="dashboard.cpp" />
