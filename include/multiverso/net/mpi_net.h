@@ -102,7 +102,7 @@ public:
       // NOTICE: Preload libmpi with the right mode. Otherwise python will load it in 
       // a private which will cause errors
       dlopen_libmpi();
-      if (*argc == 0) {
+      if (argc && *argc == 0) {
         // When using multithread, giving MPI_Init_thread argv with zero length will cause errors.
         MV_MPI_CALL(MPI_Init_thread(NULL, NULL, MPI_THREAD_SERIALIZED, &thread_provided_));
       } else {
