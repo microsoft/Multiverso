@@ -33,15 +33,8 @@ inline char* FreeList::Pop() {
 
 inline void FreeList::Push(MemoryBlock*block) {
   UNIQLOCK(mutex_);
-  //if (block->Unlink()) {
-    block->next = free_;
-    free_ = block;
-  //}
-}
-
-inline void FreeList::Refer(MemoryBlock*block) {
-  UNIQLOCK(mutex_);
-  block->Link();
+  block->next = free_;
+  free_ = block;
 }
 
 inline MemoryBlock::MemoryBlock(size_t size, FreeList* list) :
@@ -49,8 +42,6 @@ next(nullptr) {
   data_ = new char[size + header_size_];
   *(FreeList**)(data_) = list;
   *(MemoryBlock**)(data_ + g_pointer_size) = this;
-  //*(MemoryBlock**)(data_) = this;
-  //*(FreeList**)(data_ + g_pointer_size) = list;
 }
 
 MemoryBlock::~MemoryBlock() {
@@ -58,7 +49,6 @@ MemoryBlock::~MemoryBlock() {
 }
 
 inline void MemoryBlock::Unlink() {
-  //return ((--ref_) == 0);
   if ((--ref_) == 0) {
     (*(FreeList**)data_)->Push(this);
   }
@@ -87,17 +77,14 @@ char* Allocator::New(size_t size) {
 
 void Allocator::Free(char *data) {
   (*(MemoryBlock**)(data - g_pointer_size))->Unlink();
- /* data -= g_pointer_size;
-  (*(FreeList**)data)->Push(*(MemoryBlock**)(data-g_pointer_size));*/
 }
 
 void Allocator::Refer(char *data) {
   (*(MemoryBlock**)(data - g_pointer_size))->Link();
-  /*data -= g_pointer_size;
-  (*(FreeList**)data)->Refer(*(MemoryBlock**)(data - g_pointer_size));*/
 }
 
 Allocator::~Allocator() {
+  Log::Debug("~Allocator, final pool size: %d\n", pools_.size());
   for (auto i : pools_) {
     delete i.second;
   }

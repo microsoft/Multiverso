@@ -16,7 +16,6 @@ public:
   ~FreeList();
   char *Pop();
   void Push(MemoryBlock*);
-  void Refer(MemoryBlock*);
 private:
   MemoryBlock* free_ = nullptr;
   size_t size_;
@@ -44,8 +43,8 @@ public:
   void Refer(char *data);
   ~Allocator();
   inline static Allocator* Get() { 
-    static Allocator allo; 
-    return &allo; 
+    static Allocator allocator_; 
+    return &allocator_;
   }
 private:
   std::unordered_map<size_t, FreeList*> pools_;
