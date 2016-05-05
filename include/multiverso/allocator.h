@@ -1,8 +1,9 @@
 #ifndef MULTIVERSO_ALLOCATOR_H_
 #define MULTIVERSO_ALLOCATOR_H_
 
-#include <unordered_map>
 #include <mutex>
+#include <atomic>
+#include <unordered_map>
 
 namespace multiverso {
 
@@ -27,12 +28,12 @@ public:
   MemoryBlock(size_t size, FreeList* list);
   ~MemoryBlock();
   char* data();
-  bool Unlink();
+  void Unlink();
   void Link();
   MemoryBlock* next;
 private:
   char* data_;
-  int ref_ = 0;
+  std::atomic<int> ref_ = 0;
   static const size_t header_size_ = (sizeof(MemoryBlock*) << 1);
 };
 

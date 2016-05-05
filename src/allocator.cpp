@@ -33,10 +33,10 @@ inline char* FreeList::Pop() {
 
 inline void FreeList::Push(MemoryBlock*block) {
   UNIQLOCK(mutex_);
-  if (block->Unlink()) {
+  //if (block->Unlink()) {
     block->next = free_;
     free_ = block;
-  }
+  //}
 }
 
 inline void FreeList::Refer(MemoryBlock*block) {
@@ -47,16 +47,21 @@ inline void FreeList::Refer(MemoryBlock*block) {
 inline MemoryBlock::MemoryBlock(size_t size, FreeList* list) :
 next(nullptr) {
   data_ = new char[size + header_size_];
-  *(MemoryBlock**)(data_) = this;
-  *(FreeList**)(data_ + g_pointer_size) = list;
+  *(FreeList**)(data_) = list;
+  *(MemoryBlock**)(data_ + g_pointer_size) = this;
+  //*(MemoryBlock**)(data_) = this;
+  //*(FreeList**)(data_ + g_pointer_size) = list;
 }
 
 MemoryBlock::~MemoryBlock() {
   delete[]data_;
 }
 
-inline bool MemoryBlock::Unlink() {
-  return ((--ref_) == 0);
+inline void MemoryBlock::Unlink() {
+  //return ((--ref_) == 0);
+  if ((--ref_) == 0) {
+    (*(FreeList**)data_)->Push(this);
+  }
 }
 
 inline char* MemoryBlock::data() {
@@ -81,13 +86,15 @@ char* Allocator::New(size_t size) {
 }
 
 void Allocator::Free(char *data) {
-  data -= g_pointer_size;
-  (*(FreeList**)data)->Push(*(MemoryBlock**)(data-g_pointer_size));
+  (*(MemoryBlock**)(data - g_pointer_size))->Unlink();
+ /* data -= g_pointer_size;
+  (*(FreeList**)data)->Push(*(MemoryBlock**)(data-g_pointer_size));*/
 }
 
 void Allocator::Refer(char *data) {
-  data -= g_pointer_size;
-  (*(FreeList**)data)->Refer(*(MemoryBlock**)(data - g_pointer_size));
+  (*(MemoryBlock**)(data - g_pointer_size))->Link();
+  /*data -= g_pointer_size;
+  (*(FreeList**)data)->Refer(*(MemoryBlock**)(data - g_pointer_size));*/
 }
 
 Allocator::~Allocator() {

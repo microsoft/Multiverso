@@ -86,16 +86,16 @@ void TestArray(int argc, char* argv[]) {
 
   MV_Init(&argc, argv);
 
-  ArrayWorker<float>* shared_array = new ArrayWorker<float>(10000000);
-  ArrayServer<float>* server_array = new ArrayServer<float>(10000000);
+  ArrayWorker<float>* shared_array = new ArrayWorker<float>(50000000);
+  ArrayServer<float>* server_array = new ArrayServer<float>(50000000);
 
   MV_Barrier();
   Log::Info("Create tables OK\n");
 
-  std::vector<float> delta(10000000);
-  for (int i = 0; i < 10000000; ++i)
+  std::vector<float> delta(50000000);
+  for (int i = 0; i < 50000000; ++i)
     delta[i] = static_cast<float>(i);
-  float* data = new float[10000000];
+  float* data = new float[50000000];
 
   int iter = 1000;
 
@@ -103,7 +103,7 @@ void TestArray(int argc, char* argv[]) {
     // std::vector<float>& vec = shared_array->raw();
 
     // shared_array->Get();
-    shared_array->Get(data, 10000000);
+    shared_array->Get(data, 50000000);
 
     for (int j = 0; j < 10; ++j)
       std::cout << data[j] << " "; std::cout << std::endl;
@@ -112,8 +112,8 @@ void TestArray(int argc, char* argv[]) {
     option.set_learning_rate(1 - 0.0001 * i);
     option.set_momentum(0.99);
     option.set_rho(0.01f);
-    shared_array->Add(delta.data(), 10000000, &option);
-    shared_array->Add(delta.data(), 10000000, &option);
+    shared_array->Add(delta.data(), 50000000, &option);
+    shared_array->Add(delta.data(), 50000000, &option);
 
   }
   MV_ShutDown();
