@@ -69,6 +69,8 @@ inline void MemoryBlock::Link() {
 }
 
 char* Allocator::New(size_t size) {
+  const static size_t t = ((size_t)(-1)) << 5;
+  size = ((size & 31) ? ((size & t) + 32) : size);
   UNIQLOCK(mutex_);
   if (pools_[size] == nullptr) {
     pools_[size] = new FreeList(size);

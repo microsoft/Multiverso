@@ -86,11 +86,16 @@ void TestArray(int argc, char* argv[]) {
 
   MV_Init(&argc, argv);
 
-  ArrayWorker<float>* shared_array = new ArrayWorker<float>(1000000);
-  ArrayServer<float>* server_array = new ArrayServer<float>(1000000);
+  ArrayWorker<float>* shared_array = new ArrayWorker<float>(10000000);
+  ArrayServer<float>* server_array = new ArrayServer<float>(10000000);
 
   MV_Barrier();
   Log::Info("Create tables OK\n");
+
+  std::vector<float> delta(10000000);
+  for (int i = 0; i < 10000000; ++i)
+    delta[i] = static_cast<float>(i);
+  float* data = new float[10000000];
 
   int iter = 1000;
 
@@ -98,22 +103,17 @@ void TestArray(int argc, char* argv[]) {
     // std::vector<float>& vec = shared_array->raw();
 
     // shared_array->Get();
-    float* data = new float[1000000];
-    shared_array->Get(data, 1000000);
+    shared_array->Get(data, 10000000);
 
-    for (int i = 0; i < 10; ++i)
-      std::cout << data[i] << " "; std::cout << std::endl;
-
-    std::vector<float> delta(1000000);
-    for (int i = 0; i < 1000000; ++i)
-      delta[i] = static_cast<float>(i);
+    for (int j = 0; j < 10; ++j)
+      std::cout << data[j] << " "; std::cout << std::endl;
 
     AddOption option;
     option.set_learning_rate(1 - 0.0001 * i);
     option.set_momentum(0.99);
     option.set_rho(0.01f);
-    shared_array->Add(delta.data(), 1000000, &option);
-    shared_array->Add(delta.data(), 1000000, &option);
+    shared_array->Add(delta.data(), 10000000, &option);
+    shared_array->Add(delta.data(), 10000000, &option);
 
   }
   MV_ShutDown();
@@ -476,7 +476,7 @@ void TestDensePerf(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[]) {
-  Log::ResetLogLevel(LogLevel::Debug);
+  Log::ResetLogLevel(LogLevel::Info);
 
   if (argc == 1){
     multiverso::MV_Init();
