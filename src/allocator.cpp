@@ -4,13 +4,16 @@
 
 namespace multiverso {
 
-FreeList::FreeList(size_t size) {
-  this->size = size;
-  free = new MemoryBlock(size, this);
+#define UNIQLOCK(mutex_) std::unique_lock<std::mutex>lock(mutex_);
+#define UNLOCK() lock.unlock();
+
+inline FreeList::FreeList(size_t size) :
+size_(size) {
+  free_ = new MemoryBlock(size, this);
 }
 
 FreeList::~FreeList() {
-  MemoryBlock*move = free, *next;
+  MemoryBlock*move = free_, *next;
   while (move) {
     next = move->next;
     delete move;
@@ -18,40 +21,71 @@ FreeList::~FreeList() {
   }
 }
 
-char* FreeList::Pop() {
-  if (free == nullptr) {
-    free = new MemoryBlock(size, this);
+inline char* FreeList::Pop() {
+  UNIQLOCK(mutex_);
+  if (free_ == nullptr) {
+    free_ = new MemoryBlock(size_, this);
   }
-  MemoryBlock* block = free;
-  free = free->next;
-  return block->data();
+  char* data = free_->data();
+  free_ = free_->next;
+  return data;
 }
 
-MemoryBlock::MemoryBlock(size_t size, FreeList* list) :
+inline void FreeList::Push(MemoryBlock*block) {
+  UNIQLOCK(mutex_);
+  if (block->Unlink()) {
+    block->next = free_;
+    free_ = block;
+  }
+}
+
+inline void FreeList::Refer(MemoryBlock*block) {
+  UNIQLOCK(mutex_);
+  block->Link();
+}
+
+inline MemoryBlock::MemoryBlock(size_t size, FreeList* list) :
 next(nullptr) {
   data_ = new char[size + header_size_];
-  *(FreeList**)data_ = list;
-  *(MemoryBlock**)(data_ + g_pointer_size) = this;
+  *(MemoryBlock**)(data_) = this;
+  *(FreeList**)(data_ + g_pointer_size) = list;
 }
 
 MemoryBlock::~MemoryBlock() {
   delete[]data_;
 }
 
+inline bool MemoryBlock::Unlink() {
+  return ((--ref_) == 0);
+}
+
+inline char* MemoryBlock::data() {
+  ++ref_;
+  return data_ + header_size_;
+}
+
+inline void MemoryBlock::Link() {
+  ++ref_;
+}
+
 char* Allocator::New(size_t size) {
+  UNIQLOCK(mutex_);
   if (pools_[size] == nullptr) {
     pools_[size] = new FreeList(size);
   }
+  UNLOCK();
 
   return pools_[size]->Pop();
 }
 
 void Allocator::Free(char *data) {
-  MemoryBlock* block = *(MemoryBlock**)(data - g_pointer_size);
-  FreeList* list = *(FreeList**)(data - (g_pointer_size<<1));
+  data -= g_pointer_size;
+  (*(FreeList**)data)->Push(*(MemoryBlock**)(data-g_pointer_size));
+}
 
-  block->next = list->free;
-  list->free = block;
+void Allocator::Refer(char *data) {
+  data -= g_pointer_size;
+  (*(FreeList**)data)->Refer(*(MemoryBlock**)(data - g_pointer_size));
 }
 
 Allocator::~Allocator() {
