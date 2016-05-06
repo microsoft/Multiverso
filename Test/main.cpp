@@ -244,8 +244,10 @@ void TestMatrix(int argc, char* argv[]){
     std::vector<float*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10 * num_col] };
     std::vector<float*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
     AddOption option;
+    worker_table->Add(delta.data(), size, &option); //add all
     worker_table->Add(v, delta_rows, num_col, &option);
-    worker_table->Get(v, data_rows, num_col);
+    // worker_table->Get(v, data_rows, num_col);
+    worker_table->Get(data, size);
     MV_Barrier();
 
     printf("----------------------------\n");
