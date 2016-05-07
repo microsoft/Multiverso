@@ -5,7 +5,7 @@ import ctypes
 import os
 
 PROJECT_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir))
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir, os.path.pardir))
 
 
 class Loader(object):
