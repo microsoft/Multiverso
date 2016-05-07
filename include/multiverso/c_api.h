@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-typedef void* TableHandle;
+typedef void* TableHandler;
 
 DllExport void MV_Init(int* argc, char* argv[]);
 
@@ -19,11 +19,30 @@ DllExport void MV_ShutDown();
 
 DllExport void MV_Barrier();
 
-DllExport void MV_NewTable(int size, TableHandle* out);
+DllExport void MV_NumWorkers();
 
-DllExport void MV_Get(TableHandle handle, float* data, int size);
 
-DllExport void MV_Add(TableHandle handle, float* data, int size);
+// Array Table
+DllExport void MV_NewArrayTable(int size, TableHandler* out);
+
+DllExport void MV_GetArrayTable(TableHandler handler, float* data, int size);
+
+DllExport void MV_AddArrayTable(TableHandler handler, float* data, int size);
+
+
+// Matrix Table
+DllExport void MV_NewMatrixTable(int num_row, int num_col, TableHandler* out);
+
+DllExport void MV_GetMatrixTableAll(TableHandler handler, float* data, int size);
+
+DllExport void MV_AddMatrixTableAll(TableHandler handler, float* data, int size);
+
+DllExport void MV_GetMatrixTableByRows(TableHandler handler, int row_ids[],
+                                        int row_ids_n, int num_col, float* data[]);
+
+DllExport void MV_AddMatrixTableByRows(TableHandler handler, int row_ids[],
+                                        int row_ids_n, int num_col, float* data[]);
+
 
 // typedef void* ArrayWorkerFloat;
 // typedef void* ArrayServerFloat;

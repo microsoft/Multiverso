@@ -5,7 +5,7 @@ import ctypes
 import os
 
 PROJECT_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir))
+    os.path.dirname(__file__), os.path.pardir, os.path.pardir, os.path.pardir))
 
 
 class Loader(object):
@@ -23,4 +23,5 @@ class Loader(object):
     def get_lib(cls):
         if not cls.LIB:
             cls.LIB = cls.load_lib()
+            cls.LIB.MV_NumWorkers.restype = ctypes.c_int
         return cls.LIB
