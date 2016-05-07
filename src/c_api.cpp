@@ -2,6 +2,7 @@
 
 #include "multiverso/multiverso.h"
 #include "multiverso/table/array_table.h"
+#include "multiverso/table/matrix_table.h"
 #include "multiverso/util/log.h"
 
 
@@ -18,7 +19,12 @@ void MV_Barrier(){
   multiverso::MV_Barrier();
 }
 
-void MV_NewTable(int size, TableHandle* out) {
+void MV_NumWorkers(){
+  multiverso::MV_NumWorkers();
+}
+
+// Array Table
+void MV_NewArrayTable(int size, TableHandler* out) {
   // TODO(feiga): solve the memory issue
   multiverso::ArrayServer<float>* server = 
     new multiverso::ArrayServer<float>(size);
@@ -28,14 +34,50 @@ void MV_NewTable(int size, TableHandle* out) {
   *out = worker;
 }
 
-void MV_Get(TableHandle handle, float* data, int size) {
-  auto worker = reinterpret_cast<multiverso::ArrayWorker<float>*>(handle);
+void MV_GetArrayTable(TableHandler handler, float* data, int size) {
+  auto worker = reinterpret_cast<multiverso::ArrayWorker<float>*>(handler);
   worker->Get(data, size);
 }
 
-void MV_Add(TableHandle handle, float* data, int size) {
-  auto worker = reinterpret_cast<multiverso::ArrayWorker<float>*>(handle);
+void MV_AddArrayTable(TableHandler handler, float* data, int size) {
+  auto worker = reinterpret_cast<multiverso::ArrayWorker<float>*>(handler);
   worker->Add(data, size);
+}
+
+
+// MatrixTable
+void MV_NewMatrixTable(int num_row, int num_col, TableHandler* out) {
+  // TODO: solve the memory issue, when to release worker and server?
+  multiverso::MatrixServerTable<float>* server = 
+    new multiverso::MatrixServerTable<float>(num_row, num_col);
+  multiverso::MatrixWorkerTable<float>* worker = 
+    new multiverso::MatrixWorkerTable<float>(num_row, num_col);
+  CHECK_NOTNULL(server);
+  *out = worker;
+}
+
+void MV_GetMatrixTableAll(TableHandler handler, float* data, int size) {
+  auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
+  worker->Get(data, size);
+}
+
+void MV_AddMatrixTableAll(TableHandler handler, float* data, int size) {
+  auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
+  worker->Add(data, size);
+}
+
+void MV_GetMatrixTableByRows(TableHandler handler, int row_ids[],
+                              int row_ids_n, int num_col,  float** data) {
+  auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
+  worker->Get(std::vector<multiverso::integer_t>(row_ids, row_ids + row_ids_n),
+              std::vector<float*>(data, data + row_ids_n), num_col);
+}
+
+void MV_AddMatrixTableByRows(TableHandler handler, int row_ids[],
+                              int row_ids_n, int num_col, float* data[]) {
+  auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
+  worker->Add(std::vector<multiverso::integer_t>(row_ids, row_ids + row_ids_n),
+              std::vector<float*>(data, data + row_ids_n), num_col);
 }
 
   //ArrayServerFloat newArrayServerFloat(int i) {

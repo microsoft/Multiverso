@@ -23,4 +23,5 @@ class Loader(object):
     def get_lib(cls):
         if not cls.LIB:
             cls.LIB = cls.load_lib()
+            cls.LIB.MV_NumWorkers.restype = ctypes.c_int
         return cls.LIB
