@@ -21,6 +21,7 @@
 #include <multiverso/table/matrix_table.h>             
 #include <multiverso/table/sparse_matrix_table.h>
 #include <multiverso/updater/updater.h>
+#include <multiverso/table_factory.h>
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -86,8 +87,10 @@ void TestArray(int argc, char* argv[]) {
 
   MV_Init(&argc, argv);
 
-  ArrayWorker<float>* shared_array = new ArrayWorker<float>(50000000);
-  ArrayServer<float>* server_array = new ArrayServer<float>(50000000);
+  ArrayTableInitOption option{ 50000000 };
+  ArrayWorker<float>* shared_array = TableFactory::CreateTable<float>(option);
+  //ArrayWorker<float>* shared_array = new ArrayWorker<float>(50000000);
+//  ArrayServer<float>* server_array = new ArrayServer<float>(50000000);
 
   MV_Barrier();
   Log::Info("Create tables OK\n");
@@ -274,11 +277,8 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
   int num_row = 11, num_col = 10;
   int size = num_row * num_col;
 
-  MatrixWorkerTable<int>* worker_table =
-    static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable());
-  if (worker_table == nullptr) {
-    //no worker in this node
-  }
+  MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+  MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
 
   //if restore = true, will restore server data and return the next iter number of last dump file
   //else do nothing and return 0

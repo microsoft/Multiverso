@@ -69,6 +69,20 @@ protected:
   }
   size_t size_;
 };
+
+struct ArrayTableInitOption {
+  size_t size;
+};
+
+namespace trait {
+template<typename EleType>
+struct OptionTrait<EleType, ArrayTableInitOption> {
+  static std::string type;
+  typedef ArrayWorker<EleType> worker_table_type;
+  typedef ArrayServer<EleType> server_table_type;
+};
+}
+
 }
 
 #endif // MULTIVERSO_ARRAY_TABLE_H_

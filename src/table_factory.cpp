@@ -9,50 +9,6 @@ std::unordered_map<std::string,
   std::pair<worker_table_creater_t, server_table_creater_t> > 
   TableFactory::table_creaters_;
 
-std::string ele_type_str(EleType ele_type) {
-  switch (ele_type) {
-  case kInt:
-    return "int_";
-  case kFloat:
-    return "float_";
-  case kDouble:
-    return "double_";
-  }
-  return "unknown";
-}
-
-WorkerTable* TableFactory::CreateTable(
-  std::string& type,
-  void**table_args) {
-  CHECK(table_creaters_.find(type) != table_creaters_.end());
-
-  if (MV_ServerId() >= 0) {
-    table_creaters_[type].second(table_args);
-  }
-  if (MV_WorkerId() >= 0) {
-    return table_creaters_[type].first(table_args);
-  }
-  return nullptr;
-}
-
-WorkerTable* TableFactory::CreateTable(
-  EleType ele_type,
-  std::string& type,
-  void**table_args) {
-  std::string typestr = ele_type_str(ele_type) + type;  
-  return CreateTable(typestr, table_args);
-}
-
-WorkerTable* TableFactory::CreateTable(
-  EleType ele_type1,
-  EleType ele_type2,
-  std::string& type,
-  void**table_args) {
-  std::string typestr = ele_type_str(ele_type1) 
-    + ele_type_str(ele_type2) + type;
-  return CreateTable(typestr, table_args);
-}
-
 void TableFactory::RegisterTable(
   std::string& type,
   worker_table_creater_t wt,
@@ -80,23 +36,26 @@ void TableFactory::RegisterTable(
     server_table_creater<double>);                                 
 
 template<typename T>
-WorkerTable* create_array_worker(void **args) {
-  return new ArrayWorker<T>(*(size_t*)(*args));
+WorkerTable* create_array_worker(void *args) {
+  return new ArrayWorker<T>(((ArrayTableInitOption*)args)->size);
 }
 template<typename T>
-ServerTable* create_array_server(void **args) {
-  return new ArrayServer<T>(*(size_t*)(*args));
+ServerTable* create_array_server(void *args) {
+  return new ArrayServer<T>(((ArrayTableInitOption*)args)->size);
 }
 MV_REGISTER_TABLE_WITH_BASIC_TYPE(array, create_array_worker, create_array_server);
 
-template<typename T>
-WorkerTable* create_matrix_worker(void **args) {
-  return new MatrixWorkerTable<T>(*(integer_t*)(*args), *(integer_t*)(*(args+1)));
+namespace trait {
+#define DECLARE_OPTION_TRAIT_TYPE(eletype, optiontype, str)  \
+  template<>                                                 \
+  std::string OptionTrait<eletype, optiontype>::type = #str;
+
+#define DECLARE_OPTION_TRAIT_WITH_BASIC_TYPE(optiontype, str) \
+  DECLARE_OPTION_TRAIT_TYPE(int, optiontype, str)             \
+  DECLARE_OPTION_TRAIT_TYPE(float, optiontype, str)           \
+  DECLARE_OPTION_TRAIT_TYPE(double, optiontype, str)          \
+
+DECLARE_OPTION_TRAIT_WITH_BASIC_TYPE(ArrayTableInitOption, array);
 }
-template<typename T>
-ServerTable* create_matrix_server(void **args) {
-  return new MatrixServerTable<T>(*(integer_t*)(*args), *(integer_t*)(*(args + 1)));
-}
-MV_REGISTER_TABLE_WITH_BASIC_TYPE(matrix, create_matrix_worker, create_matrix_server);
 
 } // namespace multiverso
