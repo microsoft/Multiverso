@@ -18,6 +18,18 @@ void TableFactory::RegisterTable(
   table_creaters_[type] = std::make_pair(wt, st);
 }
 
+namespace table_factory {
+std::vector<ServerTable*> g_server_tables;
+void FreeServerTables() {
+  for (auto table : g_server_tables) {
+    delete table;
+  }
+}
+void PushServerTable(ServerTable*table) {
+  g_server_tables.push_back(table);
+}
+}
+
 #define MV_REGISTER_TABLE(type, worker_table_creater,  \
   server_table_creater)                                \
   namespace table_factory {                            \

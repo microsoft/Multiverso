@@ -16,7 +16,7 @@ public:
   template <typename EleType, typename OptionType>
   static typename trait::OptionTrait<EleType, OptionType>::worker_table_type* 
     CreateTable(const OptionType& option) {
-    std::string typestr = typeid(EleType).name() + '_' +
+    std::string typestr = typeid(EleType).name() + std::string("_") +
       trait::OptionTrait<EleType, OptionType>::type;
     return InnerCreateTable<EleType, OptionType>(typestr, option);
   }
@@ -24,6 +24,7 @@ public:
     std::string& type,
     worker_table_creater_t wt,
     server_table_creater_t st);
+  static void FreeServerTables();
 private:
   template <typename EleType, typename OptionType>
   static typename trait::OptionTrait<EleType, OptionType>::worker_table_type*
@@ -32,7 +33,7 @@ private:
     CHECK(table_creaters_.find(type) != table_creaters_.end());
 
     if (MV_ServerId() >= 0) {
-      table_creaters_[type].second((void*)&table_args);
+      table_factory::PushServerTable(table_creaters_[type].second((void*)&table_args));
     }
     if (MV_WorkerId() >= 0) {
       return reinterpret_cast<trait::OptionTrait<EleType, OptionType>::worker_table_type*>
@@ -54,6 +55,8 @@ struct TableRegister {
     TableFactory::RegisterTable(type, wt, st);
   }
 };
+void FreeServerTables();
+void PushServerTable(ServerTable*table);
 } // namespace table_factory
 
 } // namespace multiverso
