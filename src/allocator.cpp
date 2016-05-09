@@ -10,6 +10,19 @@ size_(size) {
   free_ = new MemoryBlock(size, this);
 }
 
+#ifdef _MSC_VER 
+#define ALIGN_MALLOC(data, size)      \
+  data = (char*)_aligned_malloc(size, \
+    MV_CONFIG_allocator_alignment);     
+#define ALIGN_FREE(data)              \
+  _aligned_free(data);
+#else   
+#define ALIGN_MALLOC(data, size)               \
+  CHECK(posix_memalign(&data,                  \
+    MV_CONFIG_allocator_alignment, size) == 0);
+#define ALIGN_FREE(data)    free(data);
+#endif
+
 FreeList::~FreeList() {
   MemoryBlock*move = free_, *next;
   while (move) {
@@ -35,15 +48,17 @@ inline void FreeList::Push(MemoryBlock*block) {
   free_ = block;
 }
 
+MV_DEFINE_int(allocator_alignment, 16, "alignment for align malloc");
+
 inline MemoryBlock::MemoryBlock(size_t size, FreeList* list) :
 next(nullptr) {
-  data_ = (char*)malloc(size + header_size_);
+  ALIGN_MALLOC(data_, size + header_size_);
   *(FreeList**)(data_) = list;
   *(MemoryBlock**)(data_ + g_pointer_size) = this;
 }
 
 MemoryBlock::~MemoryBlock() {
-  free(data_);
+  ALIGN_FREE(data_);
 }
 
 inline void MemoryBlock::Unlink() {
@@ -89,7 +104,8 @@ SmartAllocator::~SmartAllocator() {
 }
 
 char* Allocator::Malloc(size_t size) {
-  char* data = (char*)malloc(size + header_size_);
+  char* data;
+  ALIGN_MALLOC(data, size + header_size_);
   // record ref
   *(std::atomic<int>**)data = new std::atomic<int>(1);
   return data + header_size_;
@@ -99,7 +115,7 @@ void Allocator::Free(char* data) {
   data -= header_size_;
   if (--(**(std::atomic<int>**)data) == 0) {
     delete *(std::atomic<int>**)data;
-    free(data);
+    ALIGN_FREE(data);
   }
 }
 
