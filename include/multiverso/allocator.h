@@ -38,14 +38,21 @@ private:
 
 class Allocator {
 public:
-  char* New(size_t size);
+  virtual ~Allocator() = default;
+  virtual char* Malloc(size_t size);
+  virtual void Free(char* data);
+  virtual void Refer(char *data);
+  static Allocator* Get();
+private:
+  static const int header_size_ = sizeof(std::atomic<int>*);
+};
+
+class SmartAllocator : public Allocator {
+public:
+  char* Malloc(size_t size);
   void Free(char* data);
   void Refer(char *data);
-  ~Allocator();
-  inline static Allocator* Get() { 
-    static Allocator allocator_; 
-    return &allocator_;
-  }
+  ~SmartAllocator();
 private:
   std::unordered_map<size_t, FreeList*> pools_;
   std::mutex mutex_;

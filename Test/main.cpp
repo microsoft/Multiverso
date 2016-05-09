@@ -335,9 +335,10 @@ void TestmatrixPerformance(int argc, char* argv[],
   multiverso::SetCMDFlag("sync", true);
   int per = 0;
   int num_row = 1000000, num_col = 50;
-  if (argc == 1){
+  // ??? cause bug
+  /*if (argc == 1){
     num_row = atoi(argv[2]);
-  }
+  }*/
 
   int size = num_row * num_col;
   int worker_id = MV_Rank();

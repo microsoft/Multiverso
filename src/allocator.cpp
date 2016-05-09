@@ -1,11 +1,9 @@
 #include "multiverso/allocator.h"
 
 #include "multiverso/util/log.h"
+#include "multiverso/util/configure.h"
 
 namespace multiverso {
-
-#define UNIQLOCK(mutex_) std::unique_lock<std::mutex>lock(mutex_);
-#define UNLOCK() lock.unlock();
 
 inline FreeList::FreeList(size_t size) :
 size_(size) {
@@ -22,7 +20,7 @@ FreeList::~FreeList() {
 }
 
 inline char* FreeList::Pop() {
-  UNIQLOCK(mutex_);
+  std::lock_guard<std::mutex> lock(mutex_);
   if (free_ == nullptr) {
     free_ = new MemoryBlock(size_, this);
   }
@@ -32,20 +30,20 @@ inline char* FreeList::Pop() {
 }
 
 inline void FreeList::Push(MemoryBlock*block) {
-  UNIQLOCK(mutex_);
+  std::lock_guard<std::mutex> lock(mutex_);
   block->next = free_;
   free_ = block;
 }
 
 inline MemoryBlock::MemoryBlock(size_t size, FreeList* list) :
 next(nullptr) {
-  data_ = new char[size + header_size_];
+  data_ = (char*)malloc(size + header_size_);
   *(FreeList**)(data_) = list;
   *(MemoryBlock**)(data_ + g_pointer_size) = this;
 }
 
 MemoryBlock::~MemoryBlock() {
-  delete[]data_;
+  free(data_);
 }
 
 inline void MemoryBlock::Unlink() {
@@ -63,31 +61,58 @@ inline void MemoryBlock::Link() {
   ++ref_;
 }
 
-char* Allocator::New(size_t size) {
+char* SmartAllocator::Malloc(size_t size) {
   const static size_t t = ((size_t)(-1)) << 5;
   size = ((size & 31) ? ((size & t) + 32) : size);
-  UNIQLOCK(mutex_);
+  std::unique_lock<std::mutex> lock(mutex_);
   if (pools_[size] == nullptr) {
     pools_[size] = new FreeList(size);
   }
-  UNLOCK();
+  lock.unlock();
 
   return pools_[size]->Pop();
 }
 
-void Allocator::Free(char *data) {
+void SmartAllocator::Free(char *data) {
   (*(MemoryBlock**)(data - g_pointer_size))->Unlink();
 }
 
-void Allocator::Refer(char *data) {
+void SmartAllocator::Refer(char *data) {
   (*(MemoryBlock**)(data - g_pointer_size))->Link();
 }
 
-Allocator::~Allocator() {
-  Log::Debug("~Allocator, final pool size: %d\n", pools_.size());
+SmartAllocator::~SmartAllocator() {
+  Log::Debug("~SmartAllocator, final pool size: %d\n", pools_.size());
   for (auto i : pools_) {
     delete i.second;
   }
+}
+
+char* Allocator::Malloc(size_t size) {
+  char* data = (char*)malloc(size + header_size_);
+  // record ref
+  *(std::atomic<int>**)data = new std::atomic<int>(1);
+  return data + header_size_;
+}
+
+void Allocator::Free(char* data) {
+  data -= header_size_;
+  if (--(**(std::atomic<int>**)data) == 0) {
+    delete *(std::atomic<int>**)data;
+    free(data);
+  }
+}
+
+void Allocator::Refer(char* data) {
+  ++(**(std::atomic<int>**)(data - header_size_));
+}
+
+MV_DEFINE_string(allocator_type, "smart", "use smart allocator by default");
+Allocator* Allocator::Get() {
+  if (MV_CONFIG_allocator_type == "smart") {
+    return new SmartAllocator();
+  }
+  return new Allocator();
 }
 
 } // namespace multiverso 
