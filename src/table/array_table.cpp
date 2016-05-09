@@ -19,6 +19,10 @@ ArrayWorker<T>::ArrayWorker(size_t size) : WorkerTable(), size_(size) {
   Log::Debug("worker %d create arrayTable with %d elements.\n", MV_Rank(), size);
 }
 
+template <typename T>
+ArrayWorker<T>::ArrayWorker(const ArrayTableInitOption &option) {
+  new (this)ArrayWorker(option.size);
+}
 
 template <typename T>
 void ArrayWorker<T>::Get(T* data, size_t size) {
@@ -81,6 +85,11 @@ ArrayServer<T>::ArrayServer(size_t size) : ServerTable() {
   updater_ = Updater<T>::GetUpdater(size_);
   Log::Debug("server %d create arrayTable with %d elements of %d elements.\n", 
              server_id_, size_, size);
+}
+
+template <typename T>
+ArrayServer<T>::ArrayServer(const ArrayTableInitOption& option) {
+  new (this)ArrayServer(option.size);
 }
 
 template <typename T>
