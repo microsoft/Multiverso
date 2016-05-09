@@ -110,9 +110,11 @@ void Allocator::Refer(char* data) {
 MV_DEFINE_string(allocator_type, "smart", "use smart allocator by default");
 Allocator* Allocator::Get() {
   if (MV_CONFIG_allocator_type == "smart") {
-    return new SmartAllocator();
+    static SmartAllocator allocator_;
+    return &allocator_;
   }
-  return new Allocator();
+  static Allocator allocator_;
+  return &allocator_;
 }
 
 } // namespace multiverso 
