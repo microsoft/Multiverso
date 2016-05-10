@@ -70,17 +70,21 @@ public:
   virtual void ProcessGet(const std::vector<Blob>& data,
                           std::vector<Blob>* result) = 0;
 };
- 
-class TableHelper {
-public:
-  TableHelper() {}
-  WorkerTable* CreateTable();
-  virtual ~TableHelper() {}
 
-protected:
-  virtual WorkerTable* CreateWorkerTable() = 0;
-  virtual ServerTable* CreateServerTable() = 0;
-};
+namespace trait {
+template<typename EleType, typename OptionType>
+struct OptionTrait;
+}
+
+#define DEFINE_TABLE_TRAIT_WITH_INIT_OPTION(init_option,  \
+  worker_table_type, server_table_type)                   \
+  namespace trait {                                       \
+   template<typename EleType>                             \
+    struct OptionTrait<EleType, init_option> {            \
+      typedef worker_table_type<EleType> WorkerTableType; \
+      typedef server_table_type<EleType> ServerTableType; \
+    };                                                    \
+  }
 
 }  // namespace multiverso
 
