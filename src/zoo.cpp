@@ -141,7 +141,6 @@ void Zoo::FinishTrain() {
     msg->set_src(rank());
     msg->set_dst(dst_rank);
     msg->set_type(MsgType::Server_Finish_Train);
-    msg->Push(Blob(&nodes_[rank()], sizeof(Node)));
     SendTo(actor::kCommunicator, msg);
   }
   Log::Debug("rank %d finish train\n", Zoo::Get()->rank());
