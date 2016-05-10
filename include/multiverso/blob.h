@@ -5,9 +5,9 @@
 #include <string>
 #include <cstring>
 #include <iostream>
-#include "multiverso/util/log.h"
 
-#include "multiverso/allocator.h"
+#include "multiverso/util/log.h"
+#include "multiverso/util/allocator.h"
 
 namespace multiverso {
 

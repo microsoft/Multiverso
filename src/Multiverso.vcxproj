@@ -172,7 +172,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\multiverso\actor.h" />
-    <ClInclude Include="..\include\multiverso\allocator.h" />
     <ClInclude Include="..\include\multiverso\blob.h" />
     <ClInclude Include="..\include\multiverso\communicator.h" />
     <ClInclude Include="..\include\multiverso\controller.h" />
@@ -198,6 +197,7 @@
     <ClInclude Include="..\include\multiverso\updater\sgd_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\momentum_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\updater.h" />
+    <ClInclude Include="..\include\multiverso\util\allocator.h" />
     <ClInclude Include="..\include\multiverso\util\configure.h" />
     <ClInclude Include="..\include\multiverso\util\async_buffer.h" />
     <ClInclude Include="..\include\multiverso\util\log.h" />
@@ -211,7 +211,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actor.cpp" />
-    <ClCompile Include="allocator.cpp" />
     <ClCompile Include="communicator.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="dashboard.cpp" />
@@ -232,6 +231,7 @@
     <ClCompile Include="table_factory.cpp" />
     <ClCompile Include="updater\updater.cpp" />
     <ClCompile Include="timer.cpp" />
+    <ClCompile Include="util\allocator.cpp" />
     <ClCompile Include="util\log.cpp" />
     <ClCompile Include="util\configure.cpp" />
     <ClCompile Include="util\net_util.cpp" />
