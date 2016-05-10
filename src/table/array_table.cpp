@@ -19,6 +19,10 @@ ArrayWorker<T>::ArrayWorker(size_t size) : WorkerTable(), size_(size) {
   Log::Debug("worker %d create arrayTable with %d elements.\n", MV_Rank(), size);
 }
 
+template <typename T>
+ArrayWorker<T>::ArrayWorker(const ArrayTableOption &option)
+: ArrayWorker<T>(option.size) {
+}
 
 template <typename T>
 void ArrayWorker<T>::Get(T* data, size_t size) {
@@ -26,7 +30,6 @@ void ArrayWorker<T>::Get(T* data, size_t size) {
   data_ = data;
   integer_t all_key = -1;
   Blob whole_table(&all_key, sizeof(integer_t));
-  Log::Debug("worker %d begin get. \n", MV_Rank());
   WorkerTable::Get(whole_table);
   Log::Debug("worker %d getting all parameters.\n", MV_Rank());
 }
@@ -81,6 +84,11 @@ ArrayServer<T>::ArrayServer(size_t size) : ServerTable() {
   updater_ = Updater<T>::GetUpdater(size_);
   Log::Debug("server %d create arrayTable with %d elements of %d elements.\n", 
              server_id_, size_, size);
+}
+
+template <typename T>
+ArrayServer<T>::ArrayServer(const ArrayTableOption& option) 
+: ArrayServer<T>(option.size) {
 }
 
 template <typename T>

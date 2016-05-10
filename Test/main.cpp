@@ -21,6 +21,7 @@
 #include <multiverso/table/matrix_table.h>             
 #include <multiverso/table/sparse_matrix_table.h>
 #include <multiverso/updater/updater.h>
+#include <multiverso/table_factory.h>
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -86,11 +87,20 @@ void TestArray(int argc, char* argv[]) {
 
   MV_Init(&argc, argv);
 
-  ArrayWorker<float>* shared_array = new ArrayWorker<float>(1000000);
-  ArrayServer<float>* server_array = new ArrayServer<float>(1000000);
+  size_t array_size = 50000000;
+
+  ArrayTableOption option{ array_size };
+  ArrayWorker<float>* shared_array = MV_CreateTable<float>(option);
+  //ArrayWorker<float>* shared_array = new ArrayWorker<float>(50000000);
+  //ArrayServer<float>* server_array = new ArrayServer<float>(50000000);
 
   MV_Barrier();
   Log::Info("Create tables OK\n");
+
+  std::vector<float> delta(array_size);
+  for (int i = 0; i < array_size; ++i)
+    delta[i] = static_cast<float>(i);
+  float* data = new float[array_size];
 
   int iter = 1000;
 
@@ -98,22 +108,17 @@ void TestArray(int argc, char* argv[]) {
     // std::vector<float>& vec = shared_array->raw();
 
     // shared_array->Get();
-    float* data = new float[1000000];
-    shared_array->Get(data, 1000000);
+    shared_array->Get(data, array_size);
 
-    for (int i = 0; i < 10; ++i)
-      std::cout << data[i] << " "; std::cout << std::endl;
-
-    std::vector<float> delta(1000000);
-    for (int i = 0; i < 1000000; ++i)
-      delta[i] = static_cast<float>(i);
+    for (int j = 0; j < 10; ++j)
+      std::cout << data[j] << " "; std::cout << std::endl;
 
     AddOption option;
     option.set_learning_rate(1 - 0.0001 * i);
     option.set_momentum(0.99);
     option.set_rho(0.01f);
-    shared_array->Add(delta.data(), 1000000, &option);
-    shared_array->Add(delta.data(), 1000000, &option);
+    shared_array->Add(delta.data(), array_size, &option);
+    shared_array->Add(delta.data(), array_size, &option);
 
   }
   MV_ShutDown();
@@ -274,15 +279,11 @@ void TestCheckPoint(int argc, char* argv[], bool restore){
   int num_row = 11, num_col = 10;
   int size = num_row * num_col;
 
-  MatrixWorkerTable<int>* worker_table =
-    static_cast<MatrixWorkerTable<int>*>((new MatrixTableHelper<int>(num_row, num_col))->CreateTable());
-  //MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-  //MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+  MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+  MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+
   //if restore = true, will restore server data and return the next iter number of last dump file
   //else do nothing and return 0
-  if (worker_table == nullptr) {
-    //no worker in this node
-  }
   // int begin_iter = MV_LoadTable("serverTable_");
   MV_Barrier();//won't dump data without parameters
 
@@ -319,7 +320,6 @@ void TestAllreduce(int argc, char* argv[]) {
   MV_ShutDown();
 }
 
-
 template<typename WT, typename ST>
 void TestmatrixPerformance(int argc, char* argv[],
   std::function<std::shared_ptr<WT>(int num_row, int num_col)>CreateWorkerTable,
@@ -335,7 +335,7 @@ void TestmatrixPerformance(int argc, char* argv[],
   multiverso::SetCMDFlag("sync", true);
   int per = 0;
   int num_row = 1000000, num_col = 50;
-  if (argc == 1){
+  if (argc == 3){
     num_row = atoi(argv[2]);
   }
 
@@ -478,7 +478,7 @@ void TestDensePerf(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[]) {
-  Log::ResetLogLevel(LogLevel::Debug);
+  Log::ResetLogLevel(LogLevel::Info);
 
   if (argc == 1){
     multiverso::MV_Init();

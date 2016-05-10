@@ -3,6 +3,7 @@
 #include "multiverso/dashboard.h"
 #include "multiverso/net.h"
 #include "multiverso/zoo.h"
+#include "multiverso/table_factory.h"
 
 namespace multiverso {
 
@@ -12,6 +13,7 @@ void MV_Init(int* argc, char* argv[]) {
 
 void MV_ShutDown(bool finalize_net) {
   Zoo::Get()->Stop(finalize_net);
+  table_factory::FreeServerTables();
 }
 
 void MV_Barrier() { Zoo::Get()->Barrier(); }
