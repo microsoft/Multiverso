@@ -71,6 +71,7 @@ private:
   // private constructor
   Zoo();
   void RegisterNode();
+  void FinishTrain();
   void StartPS();
   void StopPS();
 

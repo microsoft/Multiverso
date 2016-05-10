@@ -22,6 +22,7 @@ Zoo::~Zoo() {}
 
 MV_DEFINE_string(ps_role, "default", "none / worker / server / default");
 MV_DEFINE_bool(ma, false, "model average, will not start server if true");
+MV_DECLARE_bool(sync);
 
 namespace {
 int ParsePSRole(const std::string& ps_role) {
@@ -91,6 +92,9 @@ void Zoo::StartPS() {
 }
 
 void Zoo::StopPS() {
+  if (MV_CONFIG_sync) {
+    FinishTrain();
+  }
   Barrier();
 
   Dashboard::Display();
@@ -129,6 +133,20 @@ void Zoo::RegisterNode() {
   }
   Log::Debug("rank %d end register\n", Zoo::Get()->rank());
 }
+
+void Zoo::FinishTrain() {
+  for (auto i = 0; i < num_servers_; i++) {
+    int dst_rank = server_id_to_rank(i);
+    MessagePtr msg(new Message());
+    msg->set_src(rank());
+    msg->set_dst(dst_rank);
+    msg->set_type(MsgType::Server_Finish_Train);
+    msg->Push(Blob(&nodes_[rank()], sizeof(Node)));
+    SendTo(actor::kCommunicator, msg);
+  }
+  Log::Debug("rank %d finish train\n", Zoo::Get()->rank());
+}
+
 
 void Zoo::Barrier() {
   MessagePtr msg(new Message());
