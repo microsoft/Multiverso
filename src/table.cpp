@@ -106,14 +106,4 @@ void WorkerTable::Notify(int id) {
   m_.unlock();
 }
 
-WorkerTable* TableHelper::CreateTable() {
-  if (MV_ServerId() >= 0) {
-    CreateServerTable();
-  }
-  if (MV_WorkerId() >= 0) {
-    return CreateWorkerTable();
-  }
-  return nullptr;
-}
-
 }  // namespace multiverso
