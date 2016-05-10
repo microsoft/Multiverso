@@ -89,7 +89,7 @@ void TestArray(int argc, char* argv[]) {
 
   size_t array_size = 50000000;
 
-  ArrayTableInitOption option{ array_size };
+  ArrayTableOption option{ array_size };
   ArrayWorker<float>* shared_array = MV_CreateTable<float>(option);
   //ArrayWorker<float>* shared_array = new ArrayWorker<float>(50000000);
   //ArrayServer<float>* server_array = new ArrayServer<float>(50000000);
@@ -261,8 +261,8 @@ void TestMatrix(int argc, char* argv[]){
           expected += (i * num_col + j) * count * MV_NumWorkers();;
         }
         float actual = data[i* num_col + j];
-      //  ASSERT_FLOAT_EQ(expected, actual) << "Should be equal after adding, row: " 
-//        << i << ", col:" << j << ", expected: " << expected << ", actual: " << actual;
+        ASSERT_FLOAT_EQ(expected, actual) << "Should be equal after adding, row: " 
+        << i << ", col:" << j << ", expected: " << expected << ", actual: " << actual;
       }
     }
     MV_Barrier();

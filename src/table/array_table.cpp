@@ -20,8 +20,8 @@ ArrayWorker<T>::ArrayWorker(size_t size) : WorkerTable(), size_(size) {
 }
 
 template <typename T>
-ArrayWorker<T>::ArrayWorker(const ArrayTableInitOption &option) {
-  new (this)ArrayWorker(option.size);
+ArrayWorker<T>::ArrayWorker(const ArrayTableOption &option)
+: ArrayWorker<T>(option.size) {
 }
 
 template <typename T>
@@ -87,8 +87,8 @@ ArrayServer<T>::ArrayServer(size_t size) : ServerTable() {
 }
 
 template <typename T>
-ArrayServer<T>::ArrayServer(const ArrayTableInitOption& option) {
-  new (this)ArrayServer(option.size);
+ArrayServer<T>::ArrayServer(const ArrayTableOption& option) 
+: ArrayServer<T>(option.size) {
 }
 
 template <typename T>

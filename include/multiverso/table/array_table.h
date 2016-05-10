@@ -7,7 +7,7 @@
 
 namespace multiverso {
 
-struct ArrayTableInitOption {
+struct ArrayTableOption {
   size_t size;
 };
 
@@ -15,7 +15,7 @@ template <typename T>
 class ArrayWorker : public WorkerTable {
 public:
   explicit ArrayWorker(size_t size);
-  explicit ArrayWorker(const ArrayTableInitOption &option);
+  explicit ArrayWorker(const ArrayTableOption &option);
   // std::vector<T>& raw() { return table_; }
 
   // Get all element, data is user-allocated memory
@@ -44,7 +44,7 @@ template <typename T>
 class ArrayServer : public ServerTable {
 public:
   explicit ArrayServer(size_t size);
-  explicit ArrayServer(const ArrayTableInitOption& option);
+  explicit ArrayServer(const ArrayTableOption& option);
 
   void ProcessAdd(const std::vector<Blob>& data) override;
 
@@ -62,7 +62,7 @@ private:
   
 };
 
-DEFINE_TABLE_TRAIT_WITH_INIT_OPTION(ArrayTableInitOption, ArrayWorker, ArrayServer);
+DEFINE_TABLE_TRAIT_WITH_INIT_OPTION(ArrayTableOption, ArrayWorker, ArrayServer);
 
 }
 

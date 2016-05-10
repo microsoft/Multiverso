@@ -5,23 +5,32 @@
 
 namespace multiverso {
 
+MV_DEFINE_int(allocator_alignment, 16, "alignment for align malloc");
+
+inline char* AlignMalloc(size_t size) {
+#ifdef _MSC_VER 
+  return (char*)_aligned_malloc(size, 
+    MV_CONFIG_allocator_alignment);
+#else
+  char *data;
+  CHECK(posix_memalign(&data, 
+    MV_CONFIG_allocator_alignment, size) == 0);
+  return data;
+#endif
+}
+
+inline void AlignFree(char *data) {
+#ifdef _MSC_VER 
+  _aligned_free(data);
+#else
+  free(data);
+#endif
+}
+
 inline FreeList::FreeList(size_t size) :
 size_(size) {
   free_ = new MemoryBlock(size, this);
 }
-
-#ifdef _MSC_VER 
-#define ALIGN_MALLOC(data, size)      \
-  data = (char*)_aligned_malloc(size, \
-    MV_CONFIG_allocator_alignment);     
-#define ALIGN_FREE(data)              \
-  _aligned_free(data);
-#else   
-#define ALIGN_MALLOC(data, size)               \
-  CHECK(posix_memalign(&data,                  \
-    MV_CONFIG_allocator_alignment, size) == 0);
-#define ALIGN_FREE(data)    free(data);
-#endif
 
 FreeList::~FreeList() {
   MemoryBlock*move = free_, *next;
@@ -48,17 +57,15 @@ inline void FreeList::Push(MemoryBlock*block) {
   free_ = block;
 }
 
-MV_DEFINE_int(allocator_alignment, 16, "alignment for align malloc");
-
 inline MemoryBlock::MemoryBlock(size_t size, FreeList* list) :
 next(nullptr) {
-  ALIGN_MALLOC(data_, size + header_size_);
+  data_ = AlignMalloc(size + header_size_);
   *(FreeList**)(data_) = list;
   *(MemoryBlock**)(data_ + g_pointer_size) = this;
 }
 
 MemoryBlock::~MemoryBlock() {
-  ALIGN_FREE(data_);
+  AlignFree(data_);
 }
 
 inline void MemoryBlock::Unlink() {
@@ -76,7 +83,7 @@ inline void MemoryBlock::Link() {
   ++ref_;
 }
 
-char* SmartAllocator::Malloc(size_t size) {
+char* SmartAllocator::Alloc(size_t size) {
   if (size <= 32) {
     size = 32;
   }
@@ -115,9 +122,8 @@ SmartAllocator::~SmartAllocator() {
   }
 }
 
-char* Allocator::Malloc(size_t size) {
-  char* data;
-  ALIGN_MALLOC(data, size + header_size_);
+char* Allocator::Alloc(size_t size) {
+  char* data = AlignMalloc(size + header_size_);
   // record ref
   *(std::atomic<int>**)data = new std::atomic<int>(1);
   return data + header_size_;
@@ -127,7 +133,7 @@ void Allocator::Free(char* data) {
   data -= header_size_;
   if (--(**(std::atomic<int>**)data) == 0) {
     delete *(std::atomic<int>**)data;
-    ALIGN_FREE(data);
+    AlignFree(data);
   }
 }
 

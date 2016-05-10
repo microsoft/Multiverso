@@ -21,18 +21,18 @@ namespace multiverso {
 
     explicit Blob(size_t size) : size_(size) {
       CHECK(size > 0);
-      data_ = Allocator::Get()->Malloc(size);
+      data_ = Allocator::Get()->Alloc(size);
       //data_.reset(new char[size]);
     }
 
     // Construct from external memory. Will copy a new piece
     Blob(const void* data, size_t size) : size_(size) {
-      data_ = Allocator::Get()->Malloc(size);
+      data_ = Allocator::Get()->Alloc(size);
       memcpy(data_, data, size_);
     }
 
     Blob(void* data, size_t size) : size_(size) {
-      data_ = Allocator::Get()->Malloc(size);
+      data_ = Allocator::Get()->Alloc(size);
       memcpy(data_, data, size_);
     }
 

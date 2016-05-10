@@ -39,7 +39,7 @@ private:
 class Allocator {
 public:
   virtual ~Allocator() = default;
-  virtual char* Malloc(size_t size);
+  virtual char* Alloc(size_t size);
   virtual void Free(char* data);
   virtual void Refer(char *data);
   static Allocator* Get();
@@ -49,7 +49,7 @@ private:
 
 class SmartAllocator : public Allocator {
 public:
-  char* Malloc(size_t size);
+  char* Alloc(size_t size);
   void Free(char* data);
   void Refer(char *data);
   ~SmartAllocator();

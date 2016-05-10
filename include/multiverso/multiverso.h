@@ -31,7 +31,9 @@ int  MV_ServerIdToRank(int server_id);
 template <typename EleType, typename OptionType>
 typename trait::OptionTrait<EleType, OptionType>::WorkerTableType*
 MV_CreateTable(const OptionType& option) {
-  return table_factory::CreateTable<EleType>(option);
+  auto table = table_factory::CreateTable<EleType>(option);
+  Zoo::Get()->Barrier();
+  return table;
 }
 
 // inplace sum by allreduce
