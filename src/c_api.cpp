@@ -23,6 +23,14 @@ void MV_NumWorkers(){
   multiverso::MV_NumWorkers();
 }
 
+int  MV_WorkerId(){
+  return multiverso::MV_WorkerId();
+}
+
+int  MV_ServerId(){
+  return multiverso::MV_ServerId();
+}
+
 // Array Table
 void MV_NewArrayTable(int size, TableHandler* out) {
   // TODO(feiga): solve the memory issue

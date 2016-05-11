@@ -26,6 +26,14 @@ def MV_NumWorkers():
     return LIB.MV_NumWorkers()
 
 
+def MV_WorkerId():
+    return LIB.MV_WorkerId()
+
+
+def MV_ServerId():
+    return MV_ServerId()
+
+
 class TableHandler(object):
     def __init__(self, size):
         raise NotImplementedError("You must implement the __init__ method.")
@@ -44,7 +52,7 @@ class ArrayTableHandler(TableHandler):
         LIB.MV_NewArrayTable(size, byref(self._handler))
 
     def get(self):
-        c_data = (c_float * self_size)()
+        c_data = (c_float * self._size)()
         LIB.MV_GetArrayTable(self._handler, c_data, self._size)
         return [d for d in c_data]
 
@@ -94,7 +102,7 @@ class MatrixTableHandler(TableHandler):
 
     def add(self, data=None, row_ids=None):
         '''
-            If row_ids is None, we will add all data, and the data 
+            If row_ids is None, we will add all data, and the data
             should be a array, e.g. [1, 2, 3, ....]
 
             Otherwise we will add the data according to the row_ids
@@ -104,15 +112,13 @@ class MatrixTableHandler(TableHandler):
             c_data = float_array_type(*data)
             LIB.MV_AddMatrixTableAll(self._handler, c_data, self._size)
         else:
-            if data == None:
+            if data is None:
                 return None
             row_ids_n = len(row_ids)
             int_array_type = c_int * row_ids_n
             float_array_type = c_float * self._num_col
-            float_array_array_type = float_array_type * row_ids_n
             float_pointer_array_type = POINTER(c_float) * row_ids_n
 
-            array_data = float_array_array_type()
             c_data = float_pointer_array_type(*[float_array_type(*row) for row in data])
             LIB.MV_AddMatrixTableByRows(self._handler, int_array_type(*row_ids),
                 row_ids_n, self._num_col, c_data)
