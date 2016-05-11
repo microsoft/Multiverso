@@ -13,6 +13,7 @@ template <typename T>
 class MatrixWorkerTable : public WorkerTable {
 public:
   MatrixWorkerTable(integer_t num_row, integer_t num_col);
+  MatrixServerTable(integer_t num_row, integer_t num_col, void(*filler)(std::vector<T> &));
   ~MatrixWorkerTable();
 
   // get whole table, data is user-allocated memory

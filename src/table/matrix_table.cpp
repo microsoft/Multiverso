@@ -243,6 +243,14 @@ MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :
 }
 
 template <typename T>
+MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col, void(*filler)(std::vector<T> &)) :
+MatrixServerTable<T>::MatrixServerTable(num_row, num_col) {
+	if (typeid(T) == typeid(float)){
+		filler(storage_);
+	}
+}
+
+template <typename T>
 void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
   CHECK(data.size() == 2 || data.size() == 3);
   size_t keys_size = data[0].size<integer_t>();
