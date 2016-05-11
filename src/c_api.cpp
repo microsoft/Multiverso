@@ -19,8 +19,8 @@ void MV_Barrier(){
   multiverso::MV_Barrier();
 }
 
-void MV_NumWorkers(){
-  multiverso::MV_NumWorkers();
+int MV_NumWorkers(){
+  return multiverso::MV_NumWorkers();
 }
 
 int  MV_WorkerId(){

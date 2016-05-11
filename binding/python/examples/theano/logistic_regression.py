@@ -44,12 +44,17 @@ import six.moves.cPickle as pickle
 import gzip
 import os
 import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, os.path.pardir)))
+
 import timeit
 
 import numpy
 
 import theano
 import theano.tensor as T
+
+from multiverso.api import MatrixTableHandler, ArrayTableHandler, MV_Init, MV_Barrier, MV_ShutDown, \
+                            MV_NumWorkers, MV_WorkerId
 
 
 class LogisticRegression(object):
@@ -78,24 +83,8 @@ class LogisticRegression(object):
 
         """
         # start-snippet-1
-        # initialize with 0 the weights W as a matrix of shape (n_in, n_out)
-        self.W = theano.shared(
-            value=numpy.zeros(
-                (n_in, n_out),
-                dtype=theano.config.floatX
-            ),
-            name='W',
-            borrow=True
-        )
-        # initialize the biases b as a vector of n_out 0s
-        self.b = theano.shared(
-            value=numpy.zeros(
-                (n_out,),
-                dtype=theano.config.floatX
-            ),
-            name='b',
-            borrow=True
-        )
+        self.W = T.dmatrix("W")
+        self.b = T.drow("b")
 
         # symbolic expression for computing the matrix of class-membership
         # probabilities
@@ -117,6 +106,10 @@ class LogisticRegression(object):
 
         # keep track of model input
         self.input = input
+
+        # dimensions sizes
+        self.n_in = n_in
+        self.n_out = n_out
 
     def negative_log_likelihood(self, y):
         """Return the mean of the negative log-likelihood of the prediction
@@ -315,7 +308,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     # compiling a Theano function that computes the mistakes that are made by
     # the model on a minibatch
     test_model = theano.function(
-        inputs=[index],
+        inputs=[index, classifier.W, classifier.b],
         outputs=classifier.errors(y),
         givens={
             x: test_set_x[index * batch_size: (index + 1) * batch_size],
@@ -324,7 +317,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     )
 
     validate_model = theano.function(
-        inputs=[index],
+        inputs=[index, classifier.W, classifier.b],
         outputs=classifier.errors(y),
         givens={
             x: valid_set_x[index * batch_size: (index + 1) * batch_size],
@@ -346,13 +339,12 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     # the same time updates the parameter of the model based on the rules
     # defined in `updates`
     train_model = theano.function(
-        inputs=[index],
-        outputs=cost,
-        updates=updates,
+        inputs=[index, classifier.W, classifier.b],
+        outputs=[cost, g_W, g_b],
         givens={
             x: train_set_x[index * batch_size: (index + 1) * batch_size],
             y: train_set_y[index * batch_size: (index + 1) * batch_size]
-        }
+        },
     )
     # end-snippet-3
 
@@ -378,17 +370,37 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
 
     done_looping = False
     epoch = 0
+
+    MV_Init()
+    total_worker = MV_NumWorkers()
+    worker_id = MV_WorkerId()
+    # if worker_id == 0, it will be the master woker
+    is_master_worker = worker_id == 0
+
+    W_tbh = MatrixTableHandler(classifier.n_in, classifier.n_out)
+    b_tbh = ArrayTableHandler(classifier.n_out)
+
+
     while (epoch < n_epochs) and (not done_looping):
         epoch = epoch + 1
         for minibatch_index in range(n_train_batches):
-
-            minibatch_avg_cost = train_model(minibatch_index)
-            # iteration number
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
-            if (iter + 1) % validation_frequency == 0:
+            # A worker will only use batch belonged to itself
+            if minibatch_index % total_worker == worker_id:
+                minibatch_avg_cost, t_g_W, t_g_b = train_model(minibatch_index,
+                    W_tbh.get_array(), b_tbh.get_array().reshape((1, b_tbh._size)))
+                W_tbh.add_array(-learning_rate * t_g_W)
+                b_tbh.add_array(-learning_rate * t_g_b)
+
+                # iteration number
+
+            # only master worker will output the model
+            if is_master_worker and (iter + 1) % validation_frequency == 0:
                 # compute zero-one loss on validation set
-                validation_losses = [validate_model(i)
+                new_W = W_tbh.get_array()
+                new_b = b_tbh.get_array().reshape((1, b_tbh._size))
+                validation_losses = [validate_model(i, new_W, new_b)
                                      for i in range(n_valid_batches)]
                 this_validation_loss = numpy.mean(validation_losses)
 
@@ -412,7 +424,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
                     best_validation_loss = this_validation_loss
                     # test it on the test set
 
-                    test_losses = [test_model(i)
+                    test_losses = [test_model(i, new_W, new_b)
                                    for i in range(n_test_batches)]
                     test_score = numpy.mean(test_losses)
 
@@ -437,19 +449,21 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
                 done_looping = True
                 break
 
-    end_time = timeit.default_timer()
-    print(
-        (
-            'Optimization complete with best validation score of %f %%,'
-            'with test performance %f %%'
+    if is_master_worker:
+        end_time = timeit.default_timer()
+        print(
+            (
+                'Optimization complete with best validation score of %f %%,'
+                'with test performance %f %%'
+            )
+            % (best_validation_loss * 100., test_score * 100.)
         )
-        % (best_validation_loss * 100., test_score * 100.)
-    )
-    print('The code run for %d epochs, with %f epochs/sec' % (
-        epoch, 1. * epoch / (end_time - start_time)))
-    print(('The code for file ' +
-           os.path.split(__file__)[1] +
-           ' ran for %.1fs' % ((end_time - start_time))), file=sys.stderr)
+        print('The code run for %d epochs, with %f epochs/sec' % (
+            epoch, 1. * epoch / (end_time - start_time)))
+        print(('The code for file ' +
+               os.path.split(__file__)[1] +
+               ' ran for %.1fs' % ((end_time - start_time))), file=sys.stderr)
+    MV_ShutDown()
 
 
 def predict():
