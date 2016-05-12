@@ -202,11 +202,11 @@ void TestIP() {
 void TestMatrix(int argc, char* argv[]){
   Log::Info("Test Matrix\n");
 
+  multiverso::SetCMDFlag("sync", true);
   MV_Init(&argc, argv);
 
-  int num_row = 11, num_col = 10;
+  int num_row = 33, num_col = 15;
   int size = num_row * num_col;
-  multiverso::SetCMDFlag("sync", true);
   MatrixWorkerTable<float>* worker_table = new MatrixWorkerTable<float>(num_row, num_col);
   MatrixServerTable<float>* server_table = new MatrixServerTable<float>(num_row, num_col);
   std::thread* m_prefetchThread = nullptr;
@@ -215,47 +215,35 @@ void TestMatrix(int argc, char* argv[]){
   while (true)
   {
     count++;
-    if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
-    {
-      m_prefetchThread->join();
-      delete m_prefetchThread;
-      m_prefetchThread = nullptr;
-    }
     std::vector<int> v = { 0, 1, 5, 10 };
 
     // test data
     std::vector<float> delta(size);
+    std::vector<float> data(size, 0);
     for (int i = 0; i < size; ++i)
       delta[i] = (float)i;
 
-    float * data = new float[size];
-    //m_prefetchThread = new std::thread([&](){
-
-    //  AddOption option;
-    //  worker_table->Add(delta.data(), size, &option); //add all
-
-    //  MV_Barrier();
-    //  worker_table->Get(data, size); //get all
-    //});
-
-    if (m_prefetchThread != nullptr && m_prefetchThread->joinable())
-    {
-      m_prefetchThread->join();
-      delete m_prefetchThread;
-      m_prefetchThread = nullptr;
+    worker_table->Add(delta.data(), size);
+    worker_table->Get(data.data(), size);
+    if (count % 1000 == 0)
+    { 
+      printf("Dense Add/Get, #test: %d.\n", count);
+      fflush(stdout);
     }
-    //test data_vec
+
     std::vector<float*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10 * num_col] };
     std::vector<float*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
-    AddOption option;
-    worker_table->Add(v, delta_rows, num_col, &option);
+    worker_table->Add(v, delta_rows, num_col);
     worker_table->Get(v, data_rows, num_col);
-    MV_Barrier();
 
-    printf("----------------------------\n");
-    for (int i = 0; i < num_row; ++i){
-      for (int j = 0; j < num_col; ++j){
-        float expected = (i * num_col + j) * count * MV_NumWorkers();
+    if (count % 1000 == 0)
+    {
+      printf("Sparse Add/Get, #test: %d.\n", count);
+      fflush(stdout);
+    }
+    for (auto i = 0; i < num_row; ++i) {
+      for (auto j = 0; j < num_col; ++j) {
+        float expected = (float)(i * num_col + j) * count * MV_NumWorkers();
         if (i == 0 || i == 1 || i == 5 || i == 10) {
           expected += (i * num_col + j) * count * MV_NumWorkers();;
         }
@@ -330,8 +318,8 @@ void TestmatrixPerformance(int argc, char* argv[],
   Log::Info("Test Matrix\n");
   Timer timmer;
 
-  MV_Init(&argc, argv);
   multiverso::SetCMDFlag("sync", true);
+  MV_Init(&argc, argv);
   int per = 0;
   int num_row = 1000000, num_col = 50;
   if (argc == 3){
