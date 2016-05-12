@@ -19,8 +19,11 @@ DllExport void MV_ShutDown();
 
 DllExport void MV_Barrier();
 
-DllExport void MV_NumWorkers();
+DllExport int MV_NumWorkers();
 
+DllExport int  MV_WorkerId();
+
+DllExport int  MV_ServerId();
 
 // Array Table
 DllExport void MV_NewArrayTable(int size, TableHandler* out);

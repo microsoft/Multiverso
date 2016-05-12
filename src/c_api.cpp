@@ -19,8 +19,16 @@ void MV_Barrier(){
   multiverso::MV_Barrier();
 }
 
-void MV_NumWorkers(){
-  multiverso::MV_NumWorkers();
+int MV_NumWorkers(){
+  return multiverso::MV_NumWorkers();
+}
+
+int  MV_WorkerId(){
+  return multiverso::MV_WorkerId();
+}
+
+int  MV_ServerId(){
+  return multiverso::MV_ServerId();
 }
 
 // Array Table
