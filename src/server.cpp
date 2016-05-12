@@ -90,7 +90,6 @@ public:
 
     // Return true when all clock reach a same number
     virtual bool Update(int i) {
-      Log::Debug(DebugString().c_str());
       ++local_clock_[i];
       if (global_clock_ < *(std::min_element(std::begin(local_clock_),
         std::end(local_clock_)))) {
