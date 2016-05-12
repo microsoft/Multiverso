@@ -90,6 +90,7 @@ public:
 
     // Return true when all clock reach a same number
     virtual bool Update(int i) {
+      Log::Debug(DebugString().c_str());
       ++local_clock_[i];
       if (global_clock_ < *(std::min_element(std::begin(local_clock_),
         std::end(local_clock_)))) {
@@ -181,6 +182,7 @@ protected:
 
   void ProcessFinishTrain(MessagePtr& msg) {
     int worker = Zoo::Get()->rank_to_worker_id(msg->src());
+    Log::Debug("[ProcessFinishTrain] Server %d, worker %d has finished training.\n", Zoo::Get()->server_rank(), worker);
 
     if (worker_get_clocks_->FinishTrain(worker)) {
       CHECK(msg_get_cache_.Empty());
