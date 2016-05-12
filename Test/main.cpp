@@ -89,8 +89,7 @@ void TestArray(int argc, char* argv[]) {
 
   size_t array_size = 50000000;
 
-  ArrayTableOption option{ array_size };
-  ArrayWorker<float>* shared_array = MV_CreateTable<float>(option);
+  ArrayWorker<float>* shared_array = MV_CreateTable(ArrayTableOption<float>(array_size));
   //ArrayWorker<float>* shared_array = new ArrayWorker<float>(50000000);
   //ArrayServer<float>* server_array = new ArrayServer<float>(50000000);
 
