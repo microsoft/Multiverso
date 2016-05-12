@@ -329,12 +329,6 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     g_W = T.grad(cost=cost, wrt=classifier.W)
     g_b = T.grad(cost=cost, wrt=classifier.b)
 
-    # start-snippet-3
-    # specify how to update the parameters of the model as a list of
-    # (variable, update expression) pairs.
-    updates = [(classifier.W, classifier.W - learning_rate * g_W),
-               (classifier.b, classifier.b - learning_rate * g_b)]
-
     # compiling a Theano function `train_model` that returns the cost, but in
     # the same time updates the parameter of the model based on the rules
     # defined in `updates`
@@ -352,30 +346,18 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     # TRAIN MODEL #
     ###############
     print('... training the model')
-    # early-stopping parameters
-    patience = 5000  # look as this many examples regardless
-    patience_increase = 2  # wait this much longer when a new best is
-                                  # found
-    improvement_threshold = 0.995  # a relative improvement of this much is
-                                  # considered significant
-    validation_frequency = min(n_train_batches, patience // 2)
-                                  # go through this many
-                                  # minibatche before checking the network
-                                  # on the validation set; in this case we
-                                  # check every epoch
-
-    best_validation_loss = numpy.inf
-    test_score = 0.
+    validation_frequency = n_train_batches
     start_time = timeit.default_timer()
 
     done_looping = False
     epoch = 0
 
     MV_Init()
+    WORKER_ID = MV_WorkerId()
+    # if WORKER_ID == 0, it will be the master woker
+    IS_MASTER_WORKER = WORKER_ID == 0
+
     total_worker = MV_NumWorkers()
-    worker_id = MV_WorkerId()
-    # if worker_id == 0, it will be the master woker
-    is_master_worker = worker_id == 0
 
     W_tbh = MatrixTableHandler(classifier.n_in, classifier.n_out)
     b_tbh = ArrayTableHandler(classifier.n_out)
@@ -387,7 +369,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
             # A worker will only use batch belonged to itself
-            if minibatch_index % total_worker == worker_id:
+            if minibatch_index % total_worker == WORKER_ID:
                 minibatch_avg_cost, t_g_W, t_g_b = train_model(minibatch_index,
                     W_tbh.get_array(), b_tbh.get_array().reshape((1, b_tbh._size)))
                 W_tbh.add_array(-learning_rate * t_g_W)
@@ -395,74 +377,51 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
 
                 # iteration number
 
-            # only master worker will output the model
-            if is_master_worker and (iter + 1) % validation_frequency == 0:
-                # compute zero-one loss on validation set
-                new_W = W_tbh.get_array()
-                new_b = b_tbh.get_array().reshape((1, b_tbh._size))
-                validation_losses = [validate_model(i, new_W, new_b)
-                                     for i in range(n_valid_batches)]
-                this_validation_loss = numpy.mean(validation_losses)
+        MV_Barrier()
+        # only master worker will output the model
+        if IS_MASTER_WORKER and (iter + 1) % validation_frequency == 0:
+            # compute zero-one loss on validation set
+            new_W = W_tbh.get_array()
+            new_b = b_tbh.get_array().reshape((1, b_tbh._size))
+            validation_losses = [validate_model(i, new_W, new_b)
+                                 for i in range(n_valid_batches)]
+            validation_loss = numpy.mean(validation_losses)
 
-                print(
-                    'epoch %i, minibatch %i/%i, validation error %f %%' %
-                    (
-                        epoch,
-                        minibatch_index + 1,
-                        n_train_batches,
-                        this_validation_loss * 100.
-                    )
+            print(
+                'epoch %i, minibatch %i/%i, validation error %f %%' %
+                (
+                    epoch,
+                    minibatch_index + 1,
+                    n_train_batches,
+                    validation_loss * 100.
                 )
+            )
 
-                # if we got the best validation score until now
-                if this_validation_loss < best_validation_loss:
-                    #improve patience if loss improvement is good enough
-                    if this_validation_loss < best_validation_loss *  \
-                       improvement_threshold:
-                        patience = max(patience, iter * patience_increase)
-
-                    best_validation_loss = this_validation_loss
-                    # test it on the test set
-
-                    test_losses = [test_model(i, new_W, new_b)
-                                   for i in range(n_test_batches)]
-                    test_score = numpy.mean(test_losses)
-
-                    print(
-                        (
-                            '     epoch %i, minibatch %i/%i, test error of'
-                            ' best model %f %%'
-                        ) %
-                        (
-                            epoch,
-                            minibatch_index + 1,
-                            n_train_batches,
-                            test_score * 100.
-                        )
-                    )
-
-                    # save the best model
-                    with open('best_model.pkl', 'wb') as f:
-                        pickle.dump(classifier, f)
-
-            if patience <= iter:
-                done_looping = True
-                break
-
-    if is_master_worker:
+    if IS_MASTER_WORKER:
         end_time = timeit.default_timer()
+
+        test_losses = [test_model(i, new_W, new_b)
+                       for i in range(n_test_batches)]
+        test_score = numpy.mean(test_losses)
+
         print(
             (
-                'Optimization complete with best validation score of %f %%,'
+                'Optimization complete with validation score of %f %%,'
                 'with test performance %f %%'
             )
-            % (best_validation_loss * 100., test_score * 100.)
+            % (validation_loss * 100., test_score * 100.)
         )
         print('The code run for %d epochs, with %f epochs/sec' % (
             epoch, 1. * epoch / (end_time - start_time)))
         print(('The code for file ' +
                os.path.split(__file__)[1] +
                ' ran for %.1fs' % ((end_time - start_time))), file=sys.stderr)
+
+        # save the model
+        with open('model.pkl', 'wb') as f:
+            classifier.W = new_W
+            classifier.b = new_b
+            pickle.dump(classifier, f)
     MV_ShutDown()
 
 
@@ -473,7 +432,7 @@ def predict():
     """
 
     # load the saved model
-    classifier = pickle.load(open('best_model.pkl'))
+    classifier = pickle.load(open('model.pkl'))
 
     # compile a predictor function
     predict_model = theano.function(
@@ -492,4 +451,4 @@ def predict():
 
 
 if __name__ == '__main__':
-    sgd_optimization_mnist()
+    sgd_optimization_mnist(n_epochs=100)
