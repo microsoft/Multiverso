@@ -6,33 +6,33 @@ from utils import Loader
 import numpy as np
 
 
-LIB = Loader.get_lib()
+mv_lib = Loader.get_lib()
 
 
-def MV_Init(args=[]):
+def init(args=[]):
     n = len(args)
     args_type = c_char_p * n
-    LIB.MV_Init(n, args_type(*[c_char_p(arg) for arg in args]))
+    mv_lib.MV_Init(n, args_type(*[c_char_p(arg) for arg in args]))
 
 
-def MV_ShutDown():
-    LIB.MV_ShutDown()
+def shutdown():
+    mv_lib.MV_ShutDown()
 
 
-def MV_Barrier():
-    LIB.MV_Barrier()
+def barrier():
+    mv_lib.MV_Barrier()
 
 
-def MV_NumWorkers():
-    return LIB.MV_NumWorkers()
+def workers_num():
+    return mv_lib.MV_NumWorkers()
 
 
-def MV_WorkerId():
-    return LIB.MV_WorkerId()
+def worker_id():
+    return mv_lib.MV_WorkerId()
 
 
-def MV_ServerId():
-    return MV_ServerId()
+def server_id():
+    return my_lib.MV_ServerId()
 
 
 class TableHandler(object):
@@ -50,18 +50,18 @@ class ArrayTableHandler(TableHandler):
     def __init__(self, size):
         self._handler = c_void_p()
         self._size = size
-        LIB.MV_NewArrayTable(size, byref(self._handler))
+        mv_lib.MV_NewArrayTable(size, byref(self._handler))
 
     def get(self):
         c_data = (c_float * self._size)()
-        LIB.MV_GetArrayTable(self._handler, c_data, self._size)
+        mv_lib.MV_GetArrayTable(self._handler, c_data, self._size)
         return [d for d in c_data]
 
     def get_array(self):
         return np.array(self.get())
 
     def add(self, data):
-        LIB.MV_AddArrayTable(self._handler, (c_float * self._size)(*data), self._size)
+        mv_lib.MV_AddArrayTable(self._handler, (c_float * self._size)(*data), self._size)
 
     def add_array(self, data):
         self.add(data.reshape(-1))
@@ -73,7 +73,7 @@ class MatrixTableHandler(TableHandler):
         self._num_row = num_row
         self._num_col = num_col
         self._size = num_col * num_row
-        LIB.MV_NewMatrixTable(num_row, num_col, byref(self._handler))
+        mv_lib.MV_NewMatrixTable(num_row, num_col, byref(self._handler))
 
     def _construct_matrix(self, c_data):
         res = []
@@ -93,7 +93,7 @@ class MatrixTableHandler(TableHandler):
         if row_ids is None:
             float_array_type = c_float * (self._num_row * self._num_col)
             c_data = float_array_type()
-            LIB.MV_GetMatrixTableAll(self._handler, c_data, self._size)
+            mv_lib.MV_GetMatrixTableAll(self._handler, c_data, self._size)
             return self._construct_matrix(c_data)
         else:
             row_ids_n = len(row_ids)
@@ -103,7 +103,7 @@ class MatrixTableHandler(TableHandler):
 
             array_data = float_array_array_type()
             c_data = float_pointer_array_type(*[row for row in array_data])
-            LIB.MV_GetMatrixTableByRows(self._handler, int_array_type(*row_ids),
+            mv_lib.MV_GetMatrixTableByRows(self._handler, int_array_type(*row_ids),
                 row_ids_n, self._num_col, c_data)
             return [[d for d in row] for row in array_data]
 
@@ -123,7 +123,7 @@ class MatrixTableHandler(TableHandler):
         if row_ids is None:
             float_array_type = c_float * (self._num_row * self._num_col)
             c_data = float_array_type(*data)
-            LIB.MV_AddMatrixTableAll(self._handler, c_data, self._size)
+            mv_lib.MV_AddMatrixTableAll(self._handler, c_data, self._size)
         else:
             if data is None:
                 return None
@@ -133,7 +133,7 @@ class MatrixTableHandler(TableHandler):
             float_pointer_array_type = POINTER(c_float) * row_ids_n
 
             c_data = float_pointer_array_type(*[float_array_type(*row) for row in data])
-            LIB.MV_AddMatrixTableByRows(self._handler, int_array_type(*row_ids),
+            mv_lib.MV_AddMatrixTableByRows(self._handler, int_array_type(*row_ids),
                 row_ids_n, self._num_col, c_data)
 
     def add_array(self, arr):

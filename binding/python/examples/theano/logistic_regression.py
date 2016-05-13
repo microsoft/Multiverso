@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding:utf8
 """
-
 This code is adapted from Deep Learning Tutorials
 http://deeplearning.net/tutorial/logreg.html
 
@@ -31,9 +30,8 @@ BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 OF SUCH DAMAGE.
-"""
 
-"""
+
 This tutorial introduces logistic regression using Theano and stochastic
 gradient descent.
 
@@ -85,8 +83,7 @@ import numpy
 import theano
 import theano.tensor as T
 
-from multiverso.api import MatrixTableHandler, ArrayTableHandler, MV_Init, MV_Barrier, MV_ShutDown, \
-    MV_NumWorkers, MV_WorkerId
+import multiverso as mv
 
 
 class LogisticRegression(object):
@@ -384,15 +381,15 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     done_looping = False
     epoch = 0
 
-    MV_Init()
-    WORKER_ID = MV_WorkerId()
+    mv.init()
+    WORKER_ID = mv.worker_id()
     # if WORKER_ID == 0, it will be the master woker
     IS_MASTER_WORKER = WORKER_ID == 0
 
-    total_worker = MV_NumWorkers()
+    total_worker = mv.workers_num()
 
-    W_tbh = MatrixTableHandler(classifier.n_in, classifier.n_out)
-    b_tbh = ArrayTableHandler(classifier.n_out)
+    W_tbh = mv.MatrixTableHandler(classifier.n_in, classifier.n_out)
+    b_tbh = mv.ArrayTableHandler(classifier.n_out)
 
     while (epoch < n_epochs) and (not done_looping):
         epoch = epoch + 1
@@ -408,7 +405,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
 
                 # iteration number
 
-        MV_Barrier()
+        mv.barrier()
         # only master worker will output the model
         if IS_MASTER_WORKER and (iter + 1) % validation_frequency == 0:
             # compute zero-one loss on validation set
@@ -453,7 +450,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
             classifier.W = new_W
             classifier.b = new_b
             pickle.dump(classifier, f)
-    MV_ShutDown()
+    mv.shutdown()
 
 
 def predict():
