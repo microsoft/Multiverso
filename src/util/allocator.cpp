@@ -12,10 +12,10 @@ inline char* AlignMalloc(size_t size) {
   return (char*)_aligned_malloc(size, 
     MV_CONFIG_allocator_alignment);
 #else
-  char *data;
+  void *data;
   CHECK(posix_memalign(&data, 
     MV_CONFIG_allocator_alignment, size) == 0);
-  return data;
+  return (char*)data;
 #endif
 }
 
@@ -58,7 +58,7 @@ inline void FreeList::Push(MemoryBlock*block) {
 }
 
 inline MemoryBlock::MemoryBlock(size_t size, FreeList* list) :
-next(nullptr) {
+next(nullptr), ref_(0) {
   data_ = AlignMalloc(size + header_size_);
   *(FreeList**)(data_) = list;
   *(MemoryBlock**)(data_ + g_pointer_size) = this;
