@@ -2,6 +2,7 @@
 #define MULTIVERSO_INCLUDE_MULTIVERSO_H_
 
 #include <string>
+#include "table_factory.h"
 
 namespace multiverso {
 
@@ -22,6 +23,18 @@ int  MV_ServerId();
 
 int  MV_WorkerIdToRank(int worker_id);
 int  MV_ServerIdToRank(int server_id);
+
+// create server table and worker table
+// \param option for table initiate
+// \return worker table pointer if this node is worker
+//  otherwise return nullptr
+template <typename TableOptionType>
+typename TableOptionType::WorkerTableType* 
+MV_CreateTable(const TableOptionType& option) {
+  auto table = table_factory::CreateTable(option);
+  Zoo::Get()->Barrier();
+  return table;
+}
 
 // inplace sum by allreduce
 template <typename ElemType>

@@ -74,47 +74,6 @@ protected:
   std::vector<T> storage_;
 };
 
-//older implementation
-template <typename T>
-class MatrixTableHelper : public TableHelper {
-public:
-  MatrixTableHelper(integer_t num_row, integer_t num_col) : num_row_(num_row), num_col_(num_col){}
-  ~MatrixTableHelper() {}
-
-protected:
-  WorkerTable* CreateWorkerTable() override{
-    return new MatrixWorkerTable<T>(num_row_, num_col_);
-  }
-  ServerTable* CreateServerTable() override{
-    return new MatrixServerTable<T>(num_row_, num_col_);
-  }
-  integer_t num_row_;
-  integer_t num_col_;
-};
-
-////new implementation
-//template<typename T>
-//class MatrixTableFactory : public TableFactory {
-//public:
-//  /*
-//  * args[0] : num_row
-//  * args[1] : num_col
-//  */
-//  MatrixTableFactory(const std::vector<void*>&args) {
-//    CHECK(args.size() == 2);
-//    num_row_ = *(int*)args[0];
-//    num_col_ = *(int*)args[1];
-//  }
-//protected:
-//  WorkerTable* CreateWorkerTable() override{
-//    return new MatrixWorkerTable<T>(num_row_, num_col_);
-//  }
-//  ServerTable* CreateServerTable() override{
-//    return new MatrixServerTable<T>(num_row_, num_col_);
-//  }
-//  int num_row_;
-//  int num_col_;
-//};
 }
 
 #endif // MULTIVERSO_MATRIX_TABLE_H_
