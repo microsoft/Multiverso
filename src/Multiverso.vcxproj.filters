@@ -112,6 +112,12 @@
     <ClInclude Include="..\include\multiverso\c_api.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\multiverso\util\allocator.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\multiverso\table_factory.h">
+      <Filter>system</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="system">
@@ -213,6 +219,12 @@
       <Filter>net</Filter>
     </ClCompile>
     <ClCompile Include="c_api.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="util\allocator.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="table_factory.cpp">
       <Filter>system</Filter>
     </ClCompile>
   </ItemGroup>
