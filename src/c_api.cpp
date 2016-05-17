@@ -33,14 +33,7 @@ int  MV_ServerId(){
 
 // Array Table
 void MV_NewArrayTable(int size, TableHandler* out) {
-  // TODO(you_N_G): use the new MV_CreateTable api
-  // TODO(feiga): solve the memory issue
-  multiverso::ArrayServer<float>* server = 
-    new multiverso::ArrayServer<float>(size);
-  multiverso::ArrayWorker<float>* worker = 
-    new multiverso::ArrayWorker<float>(size);
-  CHECK_NOTNULL(server);
-  *out = worker;
+  *out = multiverso::MV_CreateTable(multiverso::ArrayTableOption<float>(size));
 }
 
 void MV_GetArrayTable(TableHandler handler, float* data, int size) {
