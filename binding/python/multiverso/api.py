@@ -12,7 +12,7 @@ mv_lib = Loader.get_lib()
 def init(args=[]):
     n = len(args)
     args_type = c_char_p * n
-    mv_lib.MV_Init(n, args_type(*[c_char_p(arg) for arg in args]))
+    mv_lib.MV_Init(pointer(c_int(n)), args_type(*[c_char_p(arg) for arg in args]))
 
 
 def shutdown():
