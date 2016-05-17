@@ -7,7 +7,7 @@
 namespace multiverso {
 
 void ParseCMDFlags(int* argc, char* argv[]) {
-  if (argc == nullptr || argv == nullptr) return;
+  if (argc == nullptr || argv == nullptr || *argc == 0) return;
 
   int unused = 1;
   size_t pos;
