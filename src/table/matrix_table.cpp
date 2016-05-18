@@ -20,12 +20,24 @@ MatrixWorkerTable<T>::MatrixWorkerTable(integer_t num_row, integer_t num_col) :
   server_offsets_.push_back(0);
   integer_t length = num_row / num_server_;
   integer_t offset = length;
-  int i = 0;
-  while (length > 0 && offset < num_row && ++i < num_server_) {
-    server_offsets_.push_back(offset);
-    offset += length;
+  if (length > 0) {
+    int i = 0;
+    while (length > 0 && offset < num_row && ++i < num_server_) {
+      server_offsets_.push_back(offset);
+      offset += length;
+    }
+    server_offsets_.push_back(num_row);
+  } else {
+    int i = 0;
+    offset += 1;
+    while (offset < num_row && ++i < num_server_) {
+      server_offsets_.push_back(offset);
+      offset += 1;
+    }
+    server_offsets_.push_back(num_row);
   }
-  server_offsets_.push_back(num_row);
+  // using actual number of servers
+  num_server_ = (int)server_offsets_.size() - 1;
 
   Log::Debug("[Init] worker =  %d, type = matrixTable, size =  [ %d x %d ].\n",
     MV_Rank(), num_row, num_col);
@@ -128,8 +140,7 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
           (*out)[rank].push_back(kv[2]);
         }
       }
-    }
-    else {
+    } else {
       CHECK(get_reply_count_ == 0);
       get_reply_count_ = static_cast<int>(out->size());
     }
@@ -201,8 +212,7 @@ void MatrixWorkerTable<T>::ProcessReplyGet(std::vector<Blob>& reply_data) {
     CHECK(server_id < server_offsets_.size() - 1);
     memcpy(row_index_[num_row_] + server_offsets_[server_id] * num_col_,
       data, reply_data[1].size());
-  }
-  else {
+  } else {
     CHECK(reply_data[1].size() == keys_size * row_size_);
     integer_t offset = 0;
     for (auto i = 0; i < keys_size; ++i) {
@@ -230,8 +240,7 @@ MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :
     if (server_id_ == MV_NumServers() - 1){
       size = num_row - row_offset_;
     }
-  }
-  else {
+  } else {
     size = server_id_ < num_row ? 1 : 0;
     row_offset_ = server_id_;
   }
@@ -259,8 +268,7 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
     updater_->Update(ssize, storage_.data(), values, option);
     Log::Debug("[ProcessAdd] Server = %d, adding rows offset = %d, #rows = %d\n",
       server_id_, row_offset_, ssize / num_col_);
-  }
-  else {
+  } else {
     CHECK(data[1].size() == keys_size * sizeof(T) * num_col_);
 
     integer_t offset_v = 0;
