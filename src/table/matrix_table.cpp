@@ -126,6 +126,8 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
   size_t keys_size = kv[0].size<integer_t>();
   integer_t *keys = reinterpret_cast<integer_t*>(kv[0].data());
   if (keys_size == 1 && keys[0] == -1){
+    // using actual number of servers, so that one don't send message
+    // to empty servers.
     for (auto i = 0; i < num_server_; ++i){
       int rank = MV_ServerIdToRank(i);
       (*out)[rank].push_back(kv[0]);
@@ -151,7 +153,7 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
   std::vector<int> dest;
   std::vector<integer_t> count;
   count.resize(num_server_, 0);
-  integer_t num_row_each = num_row_ / num_server_; //  num_server_;
+  integer_t num_row_each = num_row_ / num_server_;
   for (auto i = 0; i < keys_size; ++i){
     int dst = keys[i] / num_row_each;
     dst = (dst >= num_server_ ? num_server_ - 1 : dst);
@@ -266,7 +268,7 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
     size_t ssize = storage_.size();
     CHECK(ssize == data[1].size<T>());
     updater_->Update(ssize, storage_.data(), values, option);
-    Log::Debug("[ProcessAdd] Server = %d, adding rows offset = %d, #rows = %d\n",
+    Log::Debug("[ProcessAdd] Server = %d, adding all rows offset = %d, #rows = %d\n",
       server_id_, row_offset_, ssize / num_col_);
   } else {
     CHECK(data[1].size() == keys_size * sizeof(T) * num_col_);
@@ -277,9 +279,9 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
       integer_t offset_s = (keys[i] - row_offset_) * num_col_;
       updater_->Update(num_col_, storage_.data(), values + offset_v, option, offset_s);
       offset_v += num_col_;
-      Log::Debug("[ProcessAdd] Server = %d, adding #row = %d\n",
-        server_id_, keys[i]);
     }
+    Log::Debug("[ProcessAdd] Server = %d, adding #rows = %d\n",
+      server_id_, keys_size);
   }
   delete option;
 }
@@ -302,7 +304,7 @@ void MatrixServerTable<T>::ProcessGet(const std::vector<Blob>& data,
     updater_->Access(storage_.size(), storage_.data(), pvalues);
     result->push_back(value);
     result->push_back(Blob(&server_id_, sizeof(int)));
-    Log::Debug("[ProcessGet] Server = %d, getting rows offset = %d, #rows = %d\n",
+    Log::Debug("[ProcessGet] Server = %d, getting all rows offset = %d, #rows = %d\n",
       server_id_, row_offset_, storage_.size() / num_col_);
     return;
   }
@@ -315,9 +317,10 @@ void MatrixServerTable<T>::ProcessGet(const std::vector<Blob>& data,
     integer_t offset_s = (keys[i] - row_offset_) * num_col_;
     updater_->Access(num_col_, storage_.data(), vals + offset_v, offset_s);
     offset_v += num_col_;
-    Log::Debug("[ProcessAdd] Server = %d, getting #row = %d\n",
-      server_id_, keys[i]);
   }
+  Log::Debug("[ProcessGet] Server = %d, getting row #rows = %d\n",
+    server_id_, keys_size);
+  return;
 }
 
 template <typename T>
