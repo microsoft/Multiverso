@@ -98,11 +98,12 @@ char* SmartAllocator::Alloc(size_t size) {
     size += 1;
   }
 
-  std::unique_lock<std::mutex> lock(mutex_);
-  if (pools_[size] == nullptr) {
-    pools_[size] = new FreeList(size);
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (pools_[size] == nullptr) {
+      pools_[size] = new FreeList(size);
+    }
   }
-  lock.unlock();
 
   return pools_[size]->Pop();
 }
