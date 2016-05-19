@@ -74,7 +74,7 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
   CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
   CHECK_NOTNULL(out);
 
-  if (kv.size() == 2) {
+  if (kv.size() == 2) {  // processing Get()
     size_t keys_size = kv[0].size<integer_t>();
     integer_t* keys = reinterpret_cast<integer_t*>(kv[0].data());
     if (keys[0] == -1) {
@@ -138,7 +138,7 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       this->get_reply_count_ = static_cast<int>(out->size());
       res = static_cast<int>(out->size());
     }
-  } else {
+  } else {  // processing Add()
     // call base class's Partition
     res = MatrixWorkerTable<T>::Partition(kv, out);
   }
@@ -209,8 +209,7 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
         up_to_date_[id][local_row_id] = false;
       }
     }
-  }
-  else {
+  } else {
     for (auto id = 0; id < workers_nums_; ++id) {
       if (id == worker_id) continue;
       for (auto i = 0; i < keys_size; ++i) {
@@ -240,8 +239,7 @@ void SparseMatrixServerTable<T>::UpdateGetState(int worker_id, integer_t* keys,
         up_to_date_[worker_id][local_row_id] = true;
       }
     }
-  }
-  else {
+  } else {
     for (auto i = 0; i < key_size; ++i)  {
       auto global_row_id = keys[i];
       auto local_row_id = GetPhysicalRow(global_row_id);
