@@ -41,6 +41,7 @@ FreeList::~FreeList() {
     delete move;
     move = next;
   }
+  delete mutex_;
 }
 
 inline char* FreeList::Pop() {
