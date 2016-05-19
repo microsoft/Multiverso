@@ -10,9 +10,15 @@
 namespace multiverso {
 
 template <typename T>
+struct MatrixTableOption;
+
+template <typename T>
 class MatrixWorkerTable : public WorkerTable {
 public:
+  explicit MatrixWorkerTable(const MatrixTableOption<T>& option);
+
   MatrixWorkerTable(integer_t num_row, integer_t num_col);
+
   ~MatrixWorkerTable();
 
   // get whole table, data is user-allocated memory
@@ -55,6 +61,8 @@ class Updater;
 template <typename T>
 class MatrixServerTable : public ServerTable {
 public:
+  explicit MatrixServerTable(const MatrixTableOption<T>& option);
+
   MatrixServerTable(integer_t num_row, integer_t num_col);
 
   void ProcessAdd(const std::vector<Blob>& data) override;
@@ -72,6 +80,13 @@ protected:
   integer_t row_offset_;
   Updater<T>* updater_;
   std::vector<T> storage_;
+};
+
+template <typename T>
+struct MatrixTableOption {
+  integer_t num_row;
+  integer_t num_col;
+  DEFINE_TABLE_TYPE(T, MatrixWorkerTable, MatrixServerTable);
 };
 
 }

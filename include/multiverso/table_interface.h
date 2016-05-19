@@ -1,7 +1,6 @@
 #ifndef MULTIVERSO_TABLE_INTERFACE_H_
 #define MULTIVERSO_TABLE_INTERFACE_H_
 
-#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -9,6 +8,8 @@
 
 #include "multiverso/blob.h"
 #include "multiverso/io/io.h"
+
+namespace std { class mutex; }
 
 namespace multiverso {
 
@@ -22,7 +23,7 @@ struct GetOption;
 class WorkerTable {
 public:
   WorkerTable();
-  virtual ~WorkerTable() = default;
+  virtual ~WorkerTable();
 
   void Get(Blob keys, const GetOption* option = nullptr);
   void Add(Blob keys, Blob values, const AddOption* option = nullptr);
@@ -46,7 +47,7 @@ private:
   std::string table_name_;
   // assuming there are at most 2^32 tables
   int table_id_;
-  std::mutex m_;
+  std::mutex* m_;
   std::vector<Waiter*> waitings_;
   int msg_id_;
 };
