@@ -399,9 +399,9 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
             # A worker will only use batch belonged to itself
             if minibatch_index % total_worker == WORKER_ID:
                 minibatch_avg_cost, t_g_W, t_g_b = train_model(minibatch_index,
-                    W_tbh.get_array(), b_tbh.get_array().reshape((1, b_tbh._size)))
-                W_tbh.add_array(-learning_rate * t_g_W)
-                b_tbh.add_array(-learning_rate * t_g_b)
+                    W_tbh.get(), b_tbh.get().reshape((1, b_tbh._size)))
+                W_tbh.add(-learning_rate * t_g_W)
+                b_tbh.add(-learning_rate * t_g_b)
 
                 # iteration number
 
@@ -409,8 +409,8 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
         # only master worker will output the model
         if IS_MASTER_WORKER and (iter + 1) % validation_frequency == 0:
             # compute zero-one loss on validation set
-            new_W = W_tbh.get_array()
-            new_b = b_tbh.get_array().reshape((1, b_tbh._size))
+            new_W = W_tbh.get()
+            new_b = b_tbh.get().reshape((1, b_tbh._size))
             validation_losses = [validate_model(i, new_W, new_b)
                                  for i in range(n_valid_batches)]
             validation_loss = numpy.mean(validation_losses)
