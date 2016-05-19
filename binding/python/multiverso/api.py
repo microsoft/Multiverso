@@ -53,18 +53,18 @@ class ArrayTableHandler(TableHandler):
         mv_lib.MV_NewArrayTable(size, byref(self._handler))
 
     def get(self):
+        '''
+        Data type of return value is numpy.ndarray
+        '''
         c_data = (c_float * self._size)()
         mv_lib.MV_GetArrayTable(self._handler, c_data, self._size)
-        return [d for d in c_data]
-
-    def get_array(self):
-        return np.array(self.get())
+        return np.array(list(c_data))
 
     def add(self, data):
-        mv_lib.MV_AddArrayTable(self._handler, (c_float * self._size)(*data), self._size)
-
-    def add_array(self, data):
-        self.add(data.reshape(-1))
+        '''
+        Data type of `data` is numpy.ndarray
+        '''
+        mv_lib.MV_AddArrayTable(self._handler, (c_float * self._size)(*np.array(data).reshape((-1,))), self._size)
 
 
 class MatrixTableHandler(TableHandler):
@@ -87,14 +87,15 @@ class MatrixTableHandler(TableHandler):
 
     def get(self, row_ids=None):
         '''
-            If row_ids is None, we will return all data in a list , e.g. [1, 2, 3, ...].
-            Otherwise we will return the data according to the row_ids
+        If row_ids is None, we will return all rows as numpy.narray , e.g.
+        array([[1, 3], [3, 4]]).  Otherwise we will return the data according
+        to the row_ids
         '''
         if row_ids is None:
             float_array_type = c_float * (self._num_row * self._num_col)
             c_data = float_array_type()
             mv_lib.MV_GetMatrixTableAll(self._handler, c_data, self._size)
-            return self._construct_matrix(c_data)
+            return np.array(list(c_data)).reshape((self._num_row, self._num_col))
         else:
             row_ids_n = len(row_ids)
             int_array_type = c_int * row_ids_n
@@ -105,13 +106,7 @@ class MatrixTableHandler(TableHandler):
             c_data = float_pointer_array_type(*[row for row in array_data])
             mv_lib.MV_GetMatrixTableByRows(self._handler, int_array_type(*row_ids),
                 row_ids_n, self._num_col, c_data)
-            return [[d for d in row] for row in array_data]
-
-    def get_array(self):
-        '''
-            return all data as array with demensions sizes setted
-        '''
-        return np.array(self.get()).reshape((self._num_row, self._num_col))
+            return np.array(self._construct_matrix(array_data)).reshape((row_ids_n, self._num_col))
 
     def add(self, data=None, row_ids=None):
         '''
@@ -122,7 +117,7 @@ class MatrixTableHandler(TableHandler):
         '''
         if row_ids is None:
             float_array_type = c_float * (self._num_row * self._num_col)
-            c_data = float_array_type(*data)
+            c_data = float_array_type(* np.array(data).reshape((-1, )))
             mv_lib.MV_AddMatrixTableAll(self._handler, c_data, self._size)
         else:
             if data is None:
@@ -132,9 +127,7 @@ class MatrixTableHandler(TableHandler):
             float_array_type = c_float * self._num_col
             float_pointer_array_type = POINTER(c_float) * row_ids_n
 
-            c_data = float_pointer_array_type(*[float_array_type(*row) for row in data])
+            c_data = float_pointer_array_type(*[float_array_type(*row)
+                                    for row in np.array(data).reshape((row_ids_n, self._num_col))])
             mv_lib.MV_AddMatrixTableByRows(self._handler, int_array_type(*row_ids),
                 row_ids_n, self._num_col, c_data)
-
-    def add_array(self, arr):
-        self.add(data=arr.reshape(-1))
