@@ -39,6 +39,8 @@ import load_data
 
 from theano.tensor.nnet.conv import conv2d
 from theano.tensor.signal.downsample import max_pool_2d
+import multiverso as mv
+from multiverso.theano_ext.sharedvar import mv_shared
 
 
 x_train, t_train, x_test, t_test = load_data.load_cifar10()
@@ -61,7 +63,7 @@ def floatX(x):
 
 
 def init_weights(shape, name):
-    return theano.shared(floatX(np.random.randn(*shape) * 0.1), name=name)
+    return mv_shared(floatX(np.random.randn(*shape) * 0.1), name=name)
 
 
 def momentum(cost, params, learning_rate, momentum):
@@ -89,6 +91,10 @@ def model(x, w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o):
     p_y_given_x = T.nnet.softmax(T.dot(h3, w_o) + b_o)
     return p_y_given_x
 
+mv.init()
+WORKER_ID = mv.worker_id()
+# if WORKER_ID == 0, it will be the master woker
+IS_MASTER_WORKER = WORKER_ID == 0
 
 w_c1 = init_weights((4, 3, 3, 3), name="w_c1")
 b_c1 = init_weights((4,), name="b_c1")
@@ -97,9 +103,9 @@ b_c2 = init_weights((8,), name="b_c2")
 w_h3 = init_weights((8 * 4 * 4, 100), name="w_h3")
 b_h3 = init_weights((100,), name="b_h3")
 w_o = init_weights((100, 10), name="w_o")
-b_o = init_weights((10,), name="w_o")
+b_o = init_weights((10,), name="b_o")
 
-params = [w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o]
+sharedvars = params = [w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o]
 
 p_y_given_x = model(x, *params)
 y = T.argmax(p_y_given_x, axis=1)
@@ -123,7 +129,14 @@ for i in range(50):
         t_batch = t_train[start:start + batch_size]
         cost = train(x_batch, t_batch)
 
+        # sync value with multiverso after every batch
+        for sv in sharedvars:
+            sv.mv_sync()
+
     predictions_test = predict(x_test)
     accuracy = np.mean(predictions_test == labels_test)
 
     print "epoch %d - accuracy: %.4f" % (i + 1, accuracy)
+
+
+mv.shutdown()
