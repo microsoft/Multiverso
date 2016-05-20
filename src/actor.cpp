@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <string>
+#include <thread>
 
 #include "multiverso/message.h"
 #include "multiverso/util/log.h"
