@@ -83,6 +83,7 @@ def mv_shared(value, name=None, strict=False, allow_downcast=None, **kwargs):
                 var = ctor(value, name=name, strict=strict,
                            allow_downcast=allow_downcast, **kwargs)
                 utils.add_tag_trace(var)
+                mv_shared.shared_vars.append(var)
                 return var
             except TypeError:
                 continue
@@ -104,6 +105,12 @@ def mv_shared(value, name=None, strict=False, allow_downcast=None, **kwargs):
                     (value, kwargs))
 
 mv_shared.constructors = []
+mv_shared.shared_vars = []  # all shared_vars in multiverso will becored here
+
+
+def sync_all_mv_shared_vars():
+    for sv in mv_shared.shared_vars:
+        sv.mv_sync()
 
 
 def shared_constructor(ctor, remove=False):

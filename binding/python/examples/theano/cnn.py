@@ -3,7 +3,7 @@
 
 """
 This code is adapted from
-http://blog.csdn.net/shadow_guo/article/details/49055823
+https://github.com/benanne/theano-tutorial/blob/master/6_convnet.py
 
 The MIT License (MIT)
 
@@ -40,7 +40,7 @@ import load_data
 from theano.tensor.nnet.conv import conv2d
 from theano.tensor.signal.downsample import max_pool_2d
 import multiverso as mv
-from multiverso.theano_ext.sharedvar import mv_shared
+from multiverso.theano_ext.sharedvar import mv_shared, sync_all_mv_shared_vars
 
 
 x_train, t_train, x_test, t_test = load_data.load_cifar10()
@@ -71,7 +71,7 @@ def momentum(cost, params, learning_rate, momentum):
     updates = []
 
     for p, g in zip(params, grads):
-        mparam_i = theano.shared(np.zeros(p.get_value().shape, dtype=theano.config.floatX))
+        mparam_i = mv_shared(np.zeros(p.get_value().shape, dtype=theano.config.floatX))
         v = momentum * mparam_i - learning_rate * g
         updates.append((mparam_i, v))
         updates.append((p, p + v))
@@ -92,9 +92,11 @@ def model(x, w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o):
     return p_y_given_x
 
 mv.init()
-WORKER_ID = mv.worker_id()
+worker_id = mv.worker_id()
 # if WORKER_ID == 0, it will be the master woker
-IS_MASTER_WORKER = WORKER_ID == 0
+is_master_worker = worker_id == 0
+workers_num = mv.workers_num()
+
 
 w_c1 = init_weights((4, 3, 3, 3), name="w_c1")
 b_c1 = init_weights((4,), name="b_c1")
@@ -106,6 +108,7 @@ w_o = init_weights((100, 10), name="w_o")
 b_o = init_weights((10,), name="b_o")
 
 sharedvars = params = [w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o]
+
 
 p_y_given_x = model(x, *params)
 y = T.argmax(p_y_given_x, axis=1)
@@ -120,23 +123,36 @@ train = theano.function([x, t], cost, updates=updates, allow_input_downcast=True
 predict = theano.function([x], y, allow_input_downcast=True)
 
 
+mv.barrier()
+
+# the non-master process sync values to the master's init values.
+if not is_master_worker:
+    sync_all_mv_shared_vars()
+
+
 # train model
 batch_size = 50
 
 for i in range(50):
     for start in range(0, len(x_train), batch_size):
+        # every process only train batches assigned to itself
+        if start / batch_size % workers_num != worker_id:
+            continue
         x_batch = x_train[start:start + batch_size]
         t_batch = t_train[start:start + batch_size]
         cost = train(x_batch, t_batch)
 
         # sync value with multiverso after every batch
-        for sv in sharedvars:
-            sv.mv_sync()
+        sync_all_mv_shared_vars()
 
-    predictions_test = predict(x_test)
-    accuracy = np.mean(predictions_test == labels_test)
+    mv.barrier() # barrier every epoch
 
-    print "epoch %d - accuracy: %.4f" % (i + 1, accuracy)
+    # master will calc the accuracy
+    if is_master_worker:
+        predictions_test = predict(x_test)
+        accuracy = np.mean(predictions_test == labels_test)
+
+        print "epoch %d - accuracy: %.4f" % (i + 1, accuracy)
 
 
 mv.shutdown()
