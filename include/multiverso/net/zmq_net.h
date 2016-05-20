@@ -103,7 +103,6 @@ public:
     zmq_close(receiver_);
     for (auto& p : senders_) if (p) zmq_close(p);
     zmq_ctx_destroy(context_);
-    Log::Info("Finalize net\n");
   }
 
   bool active() const override { return active_; }
