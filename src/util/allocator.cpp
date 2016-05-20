@@ -1,5 +1,7 @@
 #include "multiverso/util/allocator.h"
 
+#include <mutex>
+
 #include "multiverso/util/log.h"
 #include "multiverso/util/configure.h"
 
@@ -27,8 +29,8 @@ inline void AlignFree(char *data) {
 #endif
 }
 
-inline FreeList::FreeList(size_t size) :
-size_(size) {
+inline FreeList::FreeList(size_t size) : size_(size) {
+  mutex_ = new std::mutex();
   free_ = new MemoryBlock(size, this);
 }
 
@@ -39,10 +41,11 @@ FreeList::~FreeList() {
     delete move;
     move = next;
   }
+  delete mutex_;
 }
 
 inline char* FreeList::Pop() {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::lock_guard<std::mutex> lock(*mutex_);
   if (free_ == nullptr) {
     free_ = new MemoryBlock(size_, this);
   }
@@ -52,7 +55,7 @@ inline char* FreeList::Pop() {
 }
 
 inline void FreeList::Push(MemoryBlock*block) {
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::lock_guard<std::mutex> lock(*mutex_);
   block->next = free_;
   free_ = block;
 }
@@ -99,7 +102,7 @@ char* SmartAllocator::Alloc(size_t size) {
   }
 
   {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<std::mutex> lock(*mutex_);
     if (pools_[size] == nullptr) {
       pools_[size] = new FreeList(size);
     }
@@ -116,8 +119,13 @@ void SmartAllocator::Refer(char *data) {
   (*(MemoryBlock**)(data - g_pointer_size))->Link();
 }
 
+SmartAllocator::SmartAllocator() {
+  mutex_ = new std::mutex();
+}
+
 SmartAllocator::~SmartAllocator() {
   Log::Debug("~SmartAllocator, final pool size: %d\n", pools_.size());
+  delete mutex_;
   for (auto i : pools_) {
     delete i.second;
   }

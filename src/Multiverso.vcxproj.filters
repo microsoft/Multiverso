@@ -221,5 +221,8 @@
     <ClCompile Include="table_factory.cpp">
       <Filter>system</Filter>
     </ClCompile>
+    <ClCompile Include="blob.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

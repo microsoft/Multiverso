@@ -12,7 +12,12 @@ namespace multiverso {
 
 WorkerTable::WorkerTable() {
   msg_id_ = 0;
+  m_ = new std::mutex();
   table_id_ = Zoo::Get()->RegisterTable(this);
+}
+
+WorkerTable::~WorkerTable() {
+  delete m_;
 }
 
 ServerTable::ServerTable() {
@@ -36,10 +41,10 @@ void WorkerTable::Add(Blob keys, Blob values,
 
 int WorkerTable::GetAsync(Blob keys,
                           const GetOption* option) {
-  m_.lock();
+  m_->lock();
   int id = msg_id_++;
   waitings_.push_back(new Waiter());
-  m_.unlock();
+  m_->unlock();
   MessagePtr msg(new Message());
   msg->set_src(Zoo::Get()->rank());
   msg->set_type(MsgType::Request_Get);
@@ -57,10 +62,10 @@ int WorkerTable::GetAsync(Blob keys,
 
 int WorkerTable::AddAsync(Blob keys, Blob values,
                           const AddOption* option) {
-  m_.lock();
+  m_->lock();
   int id = msg_id_++;
   waitings_.push_back(new Waiter());
-  m_.unlock();
+  m_->unlock();
   MessagePtr msg(new Message());
   msg->set_src(Zoo::Get()->rank());
   msg->set_type(MsgType::Request_Add);
@@ -79,31 +84,31 @@ int WorkerTable::AddAsync(Blob keys, Blob values,
 
 void WorkerTable::Wait(int id) {
   // CHECK(waitings_.find(id) != waitings_.end());
-  m_.lock();
+  m_->lock();
   CHECK(waitings_[id] != nullptr);
   Waiter* w = waitings_[id];
-  m_.unlock();
+  m_->unlock();
 
   w->Wait();
 
-  m_.lock();
+  m_->lock();
   delete waitings_[id];
   waitings_[id] = nullptr;
-  m_.unlock();
+  m_->unlock();
 }
 
 void WorkerTable::Reset(int msg_id, int num_wait) {
-  m_.lock();
+  m_->lock();
   CHECK_NOTNULL(waitings_[msg_id]);
   waitings_[msg_id]->Reset(num_wait);
-  m_.unlock();
+  m_->unlock();
 }
 
 void WorkerTable::Notify(int id) {
-  m_.lock();
+  m_->lock();
   CHECK_NOTNULL(waitings_[id]);
   waitings_[id]->Notify();
-  m_.unlock();
+  m_->unlock();
 }
 
 }  // namespace multiverso

@@ -1,7 +1,6 @@
 #ifndef MULTIVERSO_ZOO_H_
 #define MULTIVERSO_ZOO_H_
 
-#include <atomic>
 #include <string>
 #include <vector>
 #include <unordered_map>

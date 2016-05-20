@@ -10,6 +10,10 @@
 namespace multiverso {
 
 template <typename T>
+MatrixWorkerTable<T>::MatrixWorkerTable(const MatrixTableOption<T>& option) :
+MatrixWorkerTable(option.num_row, option.num_col) {}
+
+template <typename T>
 MatrixWorkerTable<T>::MatrixWorkerTable(integer_t num_row, integer_t num_col) :
   WorkerTable(), num_row_(num_row), num_col_(num_col) {
   row_size_ = num_col * sizeof(T);
@@ -20,12 +24,24 @@ MatrixWorkerTable<T>::MatrixWorkerTable(integer_t num_row, integer_t num_col) :
   server_offsets_.push_back(0);
   integer_t length = num_row / num_server_;
   integer_t offset = length;
-  int i = 0;
-  while (length > 0 && offset < num_row && ++i < num_server_) {
-    server_offsets_.push_back(offset);
-    offset += length;
+  if (length > 0) {
+    int i = 0;
+    while (length > 0 && offset < num_row && ++i < num_server_) {
+      server_offsets_.push_back(offset);
+      offset += length;
+    }
+    server_offsets_.push_back(num_row);
+  } else {
+    int i = 0;
+    offset += 1;
+    while (offset < num_row && ++i < num_server_) {
+      server_offsets_.push_back(offset);
+      offset += 1;
+    }
+    server_offsets_.push_back(num_row);
   }
-  server_offsets_.push_back(num_row);
+  // using actual number of servers
+  num_server_ = (int)server_offsets_.size() - 1;
 
   Log::Debug("[Init] worker =  %d, type = matrixTable, size =  [ %d x %d ].\n",
     MV_Rank(), num_row, num_col);
@@ -114,6 +130,8 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
   size_t keys_size = kv[0].size<integer_t>();
   integer_t *keys = reinterpret_cast<integer_t*>(kv[0].data());
   if (keys_size == 1 && keys[0] == -1){
+    // using actual number of servers, so that one don't send message
+    // to empty servers.
     for (auto i = 0; i < num_server_; ++i){
       int rank = MV_ServerIdToRank(i);
       (*out)[rank].push_back(kv[0]);
@@ -128,8 +146,7 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
           (*out)[rank].push_back(kv[2]);
         }
       }
-    }
-    else {
+    } else {
       CHECK(get_reply_count_ == 0);
       get_reply_count_ = static_cast<int>(out->size());
     }
@@ -140,7 +157,7 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
   std::vector<int> dest;
   std::vector<integer_t> count;
   count.resize(num_server_, 0);
-  integer_t num_row_each = num_row_ / num_server_; //  num_server_;
+  integer_t num_row_each = num_row_ / num_server_;
   for (auto i = 0; i < keys_size; ++i){
     int dst = keys[i] / num_row_each;
     dst = (dst >= num_server_ ? num_server_ - 1 : dst);
@@ -201,8 +218,7 @@ void MatrixWorkerTable<T>::ProcessReplyGet(std::vector<Blob>& reply_data) {
     CHECK(server_id < server_offsets_.size() - 1);
     memcpy(row_index_[num_row_] + server_offsets_[server_id] * num_col_,
       data, reply_data[1].size());
-  }
-  else {
+  } else {
     CHECK(reply_data[1].size() == keys_size * row_size_);
     integer_t offset = 0;
     for (auto i = 0; i < keys_size; ++i) {
@@ -211,11 +227,12 @@ void MatrixWorkerTable<T>::ProcessReplyGet(std::vector<Blob>& reply_data) {
       offset += num_col_;
     }
   }
-  if (--get_reply_count_ == 0) {  }
+  --get_reply_count_;
 }
 
-
-
+template <typename T>
+MatrixServerTable<T>::MatrixServerTable(const MatrixTableOption<T>& option) :
+MatrixServerTable(option.num_row, option.num_col) {}
 
 template <typename T>
 MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :
@@ -230,8 +247,7 @@ MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :
     if (server_id_ == MV_NumServers() - 1){
       size = num_row - row_offset_;
     }
-  }
-  else {
+  } else {
     size = server_id_ < num_row ? 1 : 0;
     row_offset_ = server_id_;
   }
@@ -257,10 +273,9 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
     size_t ssize = storage_.size();
     CHECK(ssize == data[1].size<T>());
     updater_->Update(ssize, storage_.data(), values, option);
-    Log::Debug("[ProcessAdd] Server = %d, adding rows offset = %d, #rows = %d\n",
+    Log::Debug("[ProcessAdd] Server = %d, adding all rows offset = %d, #rows = %d\n",
       server_id_, row_offset_, ssize / num_col_);
-  }
-  else {
+  } else {
     CHECK(data[1].size() == keys_size * sizeof(T) * num_col_);
 
     integer_t offset_v = 0;
@@ -269,9 +284,9 @@ void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
       integer_t offset_s = (keys[i] - row_offset_) * num_col_;
       updater_->Update(num_col_, storage_.data(), values + offset_v, option, offset_s);
       offset_v += num_col_;
-      Log::Debug("[ProcessAdd] Server = %d, adding #row = %d\n",
-        server_id_, keys[i]);
     }
+    Log::Debug("[ProcessAdd] Server = %d, adding #rows = %d\n",
+      server_id_, keys_size);
   }
   delete option;
 }
@@ -294,7 +309,7 @@ void MatrixServerTable<T>::ProcessGet(const std::vector<Blob>& data,
     updater_->Access(storage_.size(), storage_.data(), pvalues);
     result->push_back(value);
     result->push_back(Blob(&server_id_, sizeof(int)));
-    Log::Debug("[ProcessGet] Server = %d, getting rows offset = %d, #rows = %d\n",
+    Log::Debug("[ProcessGet] Server = %d, getting all rows offset = %d, #rows = %d\n",
       server_id_, row_offset_, storage_.size() / num_col_);
     return;
   }
@@ -307,9 +322,10 @@ void MatrixServerTable<T>::ProcessGet(const std::vector<Blob>& data,
     integer_t offset_s = (keys[i] - row_offset_) * num_col_;
     updater_->Access(num_col_, storage_.data(), vals + offset_v, offset_s);
     offset_v += num_col_;
-    Log::Debug("[ProcessAdd] Server = %d, getting #row = %d\n",
-      server_id_, keys[i]);
   }
+  Log::Debug("[ProcessGet] Server = %d, getting row #rows = %d\n",
+    server_id_, keys_size);
+  return;
 }
 
 template <typename T>

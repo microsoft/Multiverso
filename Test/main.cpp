@@ -202,26 +202,31 @@ void TestIP() {
 void TestMatrix(int argc, char* argv[]){
   Log::Info("Test Matrix\n");
 
+  Log::ResetLogLevel(LogLevel::Info);
   multiverso::SetCMDFlag("sync", true);
   MV_Init(&argc, argv);
 
-  int num_row = 33, num_col = 15;
+  int num_row = 8, num_col = 3592;
   int size = num_row * num_col;
-  MatrixWorkerTable<float>* worker_table = new MatrixWorkerTable<float>(num_row, num_col);
-  MatrixServerTable<float>* server_table = new MatrixServerTable<float>(num_row, num_col);
+  // MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+  // MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+  MatrixTableOption<int> option;
+  option.num_row = num_row;
+  option.num_col = num_col;
+  MatrixWorkerTable<int>* worker_table = multiverso::MV_CreateTable(option);
   std::thread* m_prefetchThread = nullptr;
   MV_Barrier();
   int count = 0;
   while (true)
   {
     count++;
-    std::vector<int> v = { 0, 1, 5, 10 };
+    std::vector<int> v = { 0, 1, 3, 7 };
 
     // test data
-    std::vector<float> delta(size);
-    std::vector<float> data(size, 0);
-    for (int i = 0; i < size; ++i)
-      delta[i] = (float)i;
+    std::vector<int> delta(size);
+    std::vector<int> data(size, 0);
+    for (auto i = 0; i < size; ++i)
+      delta[i] = (int)i;
 
     worker_table->Add(delta.data(), size);
     worker_table->Get(data.data(), size);
@@ -231,9 +236,11 @@ void TestMatrix(int argc, char* argv[]){
       fflush(stdout);
     }
 
-    std::vector<float*> data_rows = { &data[0], &data[num_col], &data[5 * num_col], &data[10 * num_col] };
-    std::vector<float*> delta_rows = { &delta[0], &delta[num_col], &delta[5 * num_col], &delta[10 * num_col] };
+    std::vector<int*> data_rows = { &data[0], &data[num_col], &data[3 * num_col], &data[7 * num_col] };
+    std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[3 * num_col], &delta[7 * num_col] };
     worker_table->Add(v, delta_rows, num_col);
+    worker_table->Get(v, data_rows, num_col);
+    MV_Barrier();
     worker_table->Get(v, data_rows, num_col);
 
     if (count % 1000 == 0)
@@ -243,18 +250,19 @@ void TestMatrix(int argc, char* argv[]){
     }
     for (auto i = 0; i < num_row; ++i) {
       for (auto j = 0; j < num_col; ++j) {
-        float expected = (float)(i * num_col + j) * count * MV_NumWorkers();
-        if (i == 0 || i == 1 || i == 5 || i == 10) {
-          expected += (i * num_col + j) * count * MV_NumWorkers();;
+        int expected = (int)(i * num_col + j) * count * MV_NumWorkers();
+        if (i == 0 || i == 1 || i == 3 || i == 7) {
+          expected += (int)(i * num_col + j) * count * MV_NumWorkers();
         }
-        float actual = data[i* num_col + j];
-        ASSERT_FLOAT_EQ(expected, actual) << "Should be equal after adding, row: " 
+        int actual = data[i* num_col + j];
+        ASSERT_EQ(expected, actual) << "Should be equal after adding, row: " 
         << i << ", col:" << j << ", expected: " << expected << ", actual: " << actual;
       }
     }
     MV_Barrier();
 
   }
+  delete worker_table;
   MV_ShutDown();
 }
 
@@ -398,8 +406,8 @@ void TestmatrixPerformance(int argc, char* argv[],
       for (auto i = 0; i < num_row; ++i) {
         auto row_start = data + i * num_col;
         for (auto col = 0; col < num_col; ++col) {
-          auto expected = i * num_col + col;
-          auto actual = *(row_start + col);
+          float expected = (float) i * num_col + col;
+          float actual = *(row_start + col);
           if (i % 10 <= percent) {
             ASSERT_FLOAT_EQ(expected, actual) << "Should be updated after adding, worker_id:"
               << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
