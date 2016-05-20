@@ -223,7 +223,7 @@ void MatrixWorkerTable<T>::ProcessReplyGet(std::vector<Blob>& reply_data) {
       offset += num_col_;
     }
   }
-  if (--get_reply_count_ == 0) {  }
+  --get_reply_count_;
 }
 
 
