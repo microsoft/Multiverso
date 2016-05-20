@@ -1,5 +1,6 @@
 #include "multiverso/table/array_table.h"
 
+#include "multiverso/io/io.h"
 #include "multiverso/multiverso.h"
 #include "multiverso/util/log.h"
 #include "multiverso/updater/updater.h"

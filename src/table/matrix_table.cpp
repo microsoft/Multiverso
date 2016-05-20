@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "multiverso/io/io.h"
 #include "multiverso/multiverso.h"
 #include "multiverso/util/log.h"
 #include "multiverso/util/quantization_util.h"
