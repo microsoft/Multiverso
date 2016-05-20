@@ -33,6 +33,14 @@ class MVSharedVariable(SharedVariable):
         self.set_value(self._mv_array.get().reshape(self.get_value().shape))
         self._last_mv_data = self.get_value(borrow=False)
 
+    def __getstate__(self):
+        '''
+        This is for cPickle to store state.
+        '''
+        odict = self.__dict__.copy()  # copy the dict since we change it
+        del odict['_mv_array']  # remove mv_array, because we can't pickle it
+        return odict
+
 
 class MVTensorSharedVariable(_tensor_py_operators, MVSharedVariable):
     pass

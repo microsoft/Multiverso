@@ -84,6 +84,7 @@ import theano
 import theano.tensor as T
 
 import multiverso as mv
+from multiverso.theano_ext.sharedvar import mv_shared, sync_all_mv_shared_vars
 
 
 class LogisticRegression(object):
@@ -112,8 +113,24 @@ class LogisticRegression(object):
 
         """
         # start-snippet-1
-        self.W = T.dmatrix("W")
-        self.b = T.drow("b")
+        # initialize with 0 the weights W as a matrix of shape (n_in, n_out)
+        self.W = mv_shared(
+            value=numpy.zeros(
+                (n_in, n_out),
+                dtype=theano.config.floatX
+            ),
+            name='W',
+            borrow=True
+        )
+        # initialize the biases b as a vector of n_out 0s
+        self.b = mv_shared(
+            value=numpy.zeros(
+                (n_out,),
+                dtype=theano.config.floatX
+            ),
+            name='b',
+            borrow=True
+        )
 
         # symbolic expression for computing the matrix of class-membership
         # probabilities
@@ -135,10 +152,6 @@ class LogisticRegression(object):
 
         # keep track of model input
         self.input = input
-
-        # dimensions sizes
-        self.n_in = n_in
-        self.n_out = n_out
 
     def negative_log_likelihood(self, y):
         """Return the mean of the negative log-likelihood of the prediction
@@ -318,6 +331,13 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     ######################
     print('... building the model')
 
+    mv.init()
+    WORKER_ID = mv.worker_id()
+    # if WORKER_ID == 0, it will be the master woker
+    IS_MASTER_WORKER = WORKER_ID == 0
+
+    total_worker = mv.workers_num()
+
     # allocate symbolic variables for the data
     index = T.lscalar()  # index to a [mini]batch
 
@@ -337,7 +357,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     # compiling a Theano function that computes the mistakes that are made by
     # the model on a minibatch
     test_model = theano.function(
-        inputs=[index, classifier.W, classifier.b],
+        inputs=[index],
         outputs=classifier.errors(y),
         givens={
             x: test_set_x[index * batch_size: (index + 1) * batch_size],
@@ -346,7 +366,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     )
 
     validate_model = theano.function(
-        inputs=[index, classifier.W, classifier.b],
+        inputs=[index],
         outputs=classifier.errors(y),
         givens={
             x: valid_set_x[index * batch_size: (index + 1) * batch_size],
@@ -358,16 +378,23 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     g_W = T.grad(cost=cost, wrt=classifier.W)
     g_b = T.grad(cost=cost, wrt=classifier.b)
 
+    # start-snippet-3
+    # specify how to update the parameters of the model as a list of
+    # (variable, update expression) pairs.
+    updates = [(classifier.W, classifier.W - learning_rate * g_W),
+               (classifier.b, classifier.b - learning_rate * g_b)]
+
     # compiling a Theano function `train_model` that returns the cost, but in
     # the same time updates the parameter of the model based on the rules
     # defined in `updates`
     train_model = theano.function(
-        inputs=[index, classifier.W, classifier.b],
-        outputs=[cost, g_W, g_b],
+        inputs=[index],
+        outputs=cost,
+        updates=updates,
         givens={
             x: train_set_x[index * batch_size: (index + 1) * batch_size],
             y: train_set_y[index * batch_size: (index + 1) * batch_size]
-        },
+        }
     )
     # end-snippet-3
 
@@ -381,54 +408,38 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     done_looping = False
     epoch = 0
 
-    mv.init()
-    WORKER_ID = mv.worker_id()
-    # if WORKER_ID == 0, it will be the master woker
-    IS_MASTER_WORKER = WORKER_ID == 0
-
-    total_worker = mv.workers_num()
-
-    W_tbh = mv.MatrixTableHandler(classifier.n_in, classifier.n_out)
-    b_tbh = mv.ArrayTableHandler(classifier.n_out)
-
     while (epoch < n_epochs) and (not done_looping):
         epoch = epoch + 1
         for minibatch_index in range(n_train_batches):
-            iter = (epoch - 1) * n_train_batches + minibatch_index
-
             # A worker will only use batch belonged to itself
             if minibatch_index % total_worker == WORKER_ID:
-                minibatch_avg_cost, t_g_W, t_g_b = train_model(minibatch_index,
-                    W_tbh.get(), b_tbh.get().reshape((1, b_tbh._size)))
-                W_tbh.add(-learning_rate * t_g_W)
-                b_tbh.add(-learning_rate * t_g_b)
+                minibatch_avg_cost = train_model(minibatch_index)
+                sync_all_mv_shared_vars()
 
-                # iteration number
+            iter = (epoch - 1) * n_train_batches + minibatch_index
 
-        mv.barrier()
-        # only master worker will output the model
-        if IS_MASTER_WORKER and (iter + 1) % validation_frequency == 0:
-            # compute zero-one loss on validation set
-            new_W = W_tbh.get()
-            new_b = b_tbh.get().reshape((1, b_tbh._size))
-            validation_losses = [validate_model(i, new_W, new_b)
-                                 for i in range(n_valid_batches)]
-            validation_loss = numpy.mean(validation_losses)
+            # only master worker will output the model
+            if IS_MASTER_WORKER and (iter + 1) % validation_frequency == 0:
+                # compute zero-one loss on validation set
+                validation_losses = [validate_model(i)
+                                     for i in range(n_valid_batches)]
+                validation_loss = numpy.mean(validation_losses)
 
-            print(
-                'epoch %i, minibatch %i/%i, validation error %f %%' %
-                (
-                    epoch,
-                    minibatch_index + 1,
-                    n_train_batches,
-                    validation_loss * 100.
+                print(
+                    'epoch %i, minibatch %i/%i, validation error %f %%' %
+                    (
+                        epoch,
+                        minibatch_index + 1,
+                        n_train_batches,
+                        validation_loss * 100.
+                    )
                 )
-            )
+        mv.barrier()
 
     if IS_MASTER_WORKER:
         end_time = timeit.default_timer()
 
-        test_losses = [test_model(i, new_W, new_b)
+        test_losses = [test_model(i)
                        for i in range(n_test_batches)]
         test_score = numpy.mean(test_losses)
 
@@ -447,8 +458,6 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
 
         # save the model
         with open('model.pkl', 'wb') as f:
-            classifier.W = new_W
-            classifier.b = new_b
             pickle.dump(classifier, f)
     mv.shutdown()
 

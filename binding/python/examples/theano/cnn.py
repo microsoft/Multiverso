@@ -107,7 +107,7 @@ b_h3 = init_weights((100,), name="b_h3")
 w_o = init_weights((100, 10), name="w_o")
 b_o = init_weights((10,), name="b_o")
 
-sharedvars = params = [w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o]
+params = [w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o]
 
 
 p_y_given_x = model(x, *params)
