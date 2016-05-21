@@ -212,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actor.cpp" />
+    <ClCompile Include="blob.cpp" />
     <ClCompile Include="communicator.cpp" />
     <ClCompile Include="controller.cpp" />
     <ClCompile Include="c_api.cpp" />
