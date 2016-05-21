@@ -100,7 +100,9 @@ void Zoo::StopPS() {
   Dashboard::Display();
 
   // Stop all actors
-  for (auto actor : zoo_) { actor.second->Stop(); }
+  for (auto actor : zoo_) { 
+    actor.second->Stop(); 
+  }
 }
 
 void Zoo::RegisterNode() {
