@@ -3,6 +3,8 @@
 mv = {}
 
 ffi = require('ffi')
+util = require('util')
+
 ffi.cdef[[
     typedef void* TableHandler;
     void MV_Init(int* argc, char* argv[]);
@@ -72,18 +74,11 @@ end
 function mv.ArrayTableHandler:get()
     cdata = ffi.new("float[?]", self._size)
     libmv.MV_GetArrayTable(self._handler[0], cdata, self._size)
-    data = {}
-    for i=1, tonumber(self._size) do
-        data[i] = cdata[i - 1]
-    end
-    return torch.Tensor(data)
+    return util.cdata2tensor(cdata, tonumber(self._size))
 end
 
 function mv.ArrayTableHandler:add(data)
-    cdata = ffi.new("float[?]", self._size)
-    for i=1, tonumber(self._size) do
-        cdata[i - 1] = data[i]
-    end
+    cdata = util.tensor2cdata(data, tonumber(self._size))
     libmv.MV_AddArrayTable(self._handler[0], cdata, self._size)
 end
 
