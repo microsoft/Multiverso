@@ -3,7 +3,7 @@ INCLUDE_DIRECTORIES(${MULTIVERSO_HEADER_DIR})
 MESSAGE(${TEST_INC})
 INCLUDE_DIRECTORIES(${TEST_INC})
 
-SET(MULTIVERSO_TEST_SRC main.cpp test_filter.cpp)
+SET(MULTIVERSO_TEST_SRC main.cpp test_filter.cpp test_async_buffer.cpp)
 
 SET(CMAKE_CXX_COMPILER mpicxx)
 
