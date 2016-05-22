@@ -21,4 +21,26 @@ function util.array2cdata(data, size, cdata_type)
     return cdata
 end
 
+function util.cdata2matrix(data, num_row, num_col)
+    data = torch.Tensor(num_row, num_col)
+    for i=1, num_row do
+        for j=1, num_col do
+            data[i][j] = cdata[i - 1][j - 1]
+        end
+    end
+    return data
+end
+
+function util.matrix2cdata(data, num_row, num_col, cdata_type)
+    cdata_type = cdata_type or "float*[?]"
+    cdata = ffi.new(cdata_type, num_row)
+    for i=1, num_row do
+        cdata[i - 1] = ffi.new("float[?]", num_col)
+        for j=1, num_col do
+            cdata[i - 1][j - 1] = data[i][j]
+        end
+    end
+    return cdata
+end
+
 return util
