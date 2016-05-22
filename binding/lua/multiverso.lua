@@ -74,11 +74,11 @@ end
 function mv.ArrayTableHandler:get()
     cdata = ffi.new("float[?]", self._size)
     libmv.MV_GetArrayTable(self._handler[0], cdata, self._size)
-    return util.cdata2tensor(cdata, tonumber(self._size))
+    return util.cdata2array(cdata, tonumber(self._size))
 end
 
 function mv.ArrayTableHandler:add(data)
-    cdata = util.tensor2cdata(data, tonumber(self._size))
+    cdata = util.array2cdata(data, tonumber(self._size))
     libmv.MV_AddArrayTable(self._handler[0], cdata, self._size)
 end
 

@@ -4,15 +4,15 @@ util = {}
 
 ffi = require('ffi')
 
-function util.cdata2tensor(cdata, size)
-    data = {}
+function util.cdata2array(cdata, size)
+    data = torch.Tensor(size)
     for i=1, size do
         data[i] = cdata[i - 1]
     end
-    return torch.Tensor(data)
+    return data
 end
 
-function util.tensor2cdata(data, size, cdata_type)
+function util.array2cdata(data, size, cdata_type)
     cdata_type = cdata_type or "float[?]"
     cdata = ffi.new(cdata_type, size)
     for i=1, size do
