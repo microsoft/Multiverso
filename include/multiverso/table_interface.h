@@ -7,6 +7,7 @@
 #include <cctype>
 
 #include "multiverso/blob.h"
+#include "multiverso/io/io.h"
 
 namespace std { class mutex; }
 
@@ -50,9 +51,6 @@ private:
   std::vector<Waiter*> waitings_;
   int msg_id_;
 };
-
-// TODO(feiga): move to a seperate file
-class Stream;
 
 // interface for checkpoint table
 class Serializable {
