@@ -43,9 +43,9 @@ DllExport void MV_AddMatrixTableAll(TableHandler handler, float* data, int size)
 DllExport void MV_GetMatrixTableByRows(TableHandler handler, int row_ids[],
                                         int row_ids_n, int num_col, float* data[]);
 
-DllExport void MV_AddMatrixTableByRows(TableHandler handler, int row_ids[],
-                                        int row_ids_n, int num_col, float* data[]);
-
+DllExport void MV_AddMatrixTableByRows(TableHandler handler, float* data,
+                                       int num_col, int row_ids[],
+                                       int row_ids_n);
 
 // typedef void* ArrayWorkerFloat;
 // typedef void* ArrayServerFloat;
