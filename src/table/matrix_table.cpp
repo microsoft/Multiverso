@@ -129,11 +129,7 @@ void MatrixWorkerTable<T>::Add(T* data, size_t size, integer_t* row_ids,
   } else {
     CHECK(size == num_col_);
     Blob ids_blob(row_ids, sizeof(integer_t) * row_ids_size);
-    Blob data_blob(row_ids_size * row_size_);
-    //copy each row
-    for (auto i = 0; i < row_ids_size; ++i){
-      memcpy(data_blob.data() + i * row_size_, &data[i * num_col_], row_size_);
-    }
+    Blob data_blob(data, row_ids_size * row_size_);
     WorkerTable::Add(ids_blob, data_blob, option);
     Log::Debug("[Add] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids_size);
   }
