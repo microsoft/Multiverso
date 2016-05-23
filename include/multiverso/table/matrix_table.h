@@ -39,6 +39,9 @@ public:
            const std::vector<T*>& data_vec, size_t size, 
            const AddOption* option = nullptr);
 
+  void Add(T* data, size_t size, integer_t* row_ids, integer_t row_ids_size,
+           const AddOption* option = nullptr);
+
   int Partition(const std::vector<Blob>& kv,
     std::unordered_map<int, std::vector<Blob>>* out) override;
 
