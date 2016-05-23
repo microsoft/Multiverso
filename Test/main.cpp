@@ -208,8 +208,12 @@ void TestMatrix(int argc, char* argv[]){
 
   int num_row = 8, num_col = 3592;
   int size = num_row * num_col;
-  MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-  MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+  // MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+  // MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+  MatrixTableOption<int> option;
+  option.num_row = num_row;
+  option.num_col = num_col;
+  MatrixWorkerTable<int>* worker_table = multiverso::MV_CreateTable(option);
   std::thread* m_prefetchThread = nullptr;
   MV_Barrier();
   int count = 0;
@@ -258,6 +262,7 @@ void TestMatrix(int argc, char* argv[]){
     MV_Barrier();
 
   }
+  delete worker_table;
   MV_ShutDown();
 }
 

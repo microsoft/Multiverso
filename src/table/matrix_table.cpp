@@ -10,6 +10,10 @@
 namespace multiverso {
 
 template <typename T>
+MatrixWorkerTable<T>::MatrixWorkerTable(const MatrixTableOption<T>& option) :
+MatrixWorkerTable(option.num_row, option.num_col) {}
+
+template <typename T>
 MatrixWorkerTable<T>::MatrixWorkerTable(integer_t num_row, integer_t num_col) :
   WorkerTable(), num_row_(num_row), num_col_(num_col) {
   row_size_ = num_col * sizeof(T);
@@ -223,11 +227,12 @@ void MatrixWorkerTable<T>::ProcessReplyGet(std::vector<Blob>& reply_data) {
       offset += num_col_;
     }
   }
-  if (--get_reply_count_ == 0) {  }
+  --get_reply_count_;
 }
 
-
-
+template <typename T>
+MatrixServerTable<T>::MatrixServerTable(const MatrixTableOption<T>& option) :
+MatrixServerTable(option.num_row, option.num_col) {}
 
 template <typename T>
 MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :

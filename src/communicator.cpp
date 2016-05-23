@@ -1,6 +1,7 @@
 #include "multiverso/communicator.h"
 
 #include <memory>
+#include <thread>
 
 #include "multiverso/zoo.h"
 #include "multiverso/net.h"
@@ -10,7 +11,6 @@
 namespace multiverso {
 
 namespace message {
-// TODO(feiga): refator the ugly statement
 bool to_server(MsgType type) {
   return (static_cast<int>(type)) > 0 &&
          (static_cast<int>(type)) < 32;
@@ -24,7 +24,6 @@ bool to_worker(MsgType type) {
 bool to_controler(MsgType type) {
   return (static_cast<int>(type)) > 32;
 }
-
 }  // namespace message
 
 Communicator::Communicator() : Actor(actor::kCommunicator) {
@@ -34,8 +33,7 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
 }
 
 Communicator::~Communicator() {
-  if (recv_thread_.get() && recv_thread_->joinable())
-    recv_thread_->join();
+
 }
 
 void Communicator::Main() {
@@ -81,7 +79,7 @@ void Communicator::Communicate() {
     size_t size = net_util_->Recv(&msg);
     if (size == -1) {
       Log::Debug("recv return -1\n");
-      return;
+      break;
     }
     if (size > 0) {
       // a message received
