@@ -37,10 +37,10 @@ plt.ion()
 
 import load_data
 
-from theano.tensor.nnet.conv import conv2d
-from theano.tensor.signal.downsample import max_pool_2d
+from theano.tensor.nnet import conv
+from theano.tensor.signal import downsample
 import multiverso as mv
-from multiverso.theano_ext.sharedvar import mv_shared, sync_all_mv_shared_vars
+from multiverso.theano_ext import sharedvar
 
 
 x_train, t_train, x_test, t_test = load_data.load_cifar10()
@@ -63,7 +63,7 @@ def floatX(x):
 
 
 def init_weights(shape, name):
-    return mv_shared(floatX(np.random.randn(*shape) * 0.1), name=name)
+    return sharedvar.mv_shared(floatX(np.random.randn(*shape) * 0.1), name=name)
 
 
 def momentum(cost, params, learning_rate, momentum):
@@ -71,7 +71,7 @@ def momentum(cost, params, learning_rate, momentum):
     updates = []
 
     for p, g in zip(params, grads):
-        mparam_i = mv_shared(np.zeros(p.get_value().shape, dtype=theano.config.floatX))
+        mparam_i = sharedvar.mv_shared(np.zeros(p.get_value().shape, dtype=theano.config.floatX))
         v = momentum * mparam_i - learning_rate * g
         updates.append((mparam_i, v))
         updates.append((p, p + v))
@@ -80,11 +80,11 @@ def momentum(cost, params, learning_rate, momentum):
 
 
 def model(x, w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o):
-    c1 = T.maximum(0, conv2d(x, w_c1) + b_c1.dimshuffle('x', 0, 'x', 'x'))
-    p1 = max_pool_2d(c1, (3, 3))
+    c1 = T.maximum(0, conv.conv2d(x, w_c1) + b_c1.dimshuffle('x', 0, 'x', 'x'))
+    p1 = downsample.max_pool_2d(c1, (3, 3))
 
-    c2 = T.maximum(0, conv2d(p1, w_c2) + b_c2.dimshuffle('x', 0, 'x', 'x'))
-    p2 = max_pool_2d(c2, (2, 2))
+    c2 = T.maximum(0, conv.conv2d(p1, w_c2) + b_c2.dimshuffle('x', 0, 'x', 'x'))
+    p2 = downsample.max_pool_2d(c2, (2, 2))
 
     p2_flat = p2.flatten(2)
     h3 = T.maximum(0, T.dot(p2_flat, w_h3) + b_h3)
@@ -127,7 +127,7 @@ mv.barrier()
 
 # the non-master process sync values to the master's init values.
 if not is_master_worker:
-    sync_all_mv_shared_vars()
+    sharedvar.sync_all_mv_shared_vars()
 
 
 # train model
@@ -143,9 +143,9 @@ for i in range(50):
         cost = train(x_batch, t_batch)
 
         # sync value with multiverso after every batch
-        sync_all_mv_shared_vars()
+        sharedvar.sync_all_mv_shared_vars()
 
-    mv.barrier() # barrier every epoch
+    mv.barrier()  # barrier every epoch
 
     # master will calc the accuracy
     if is_master_worker:

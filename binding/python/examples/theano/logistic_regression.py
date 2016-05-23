@@ -84,7 +84,7 @@ import theano
 import theano.tensor as T
 
 import multiverso as mv
-from multiverso.theano_ext.sharedvar import mv_shared, sync_all_mv_shared_vars
+from multiverso.theano_ext import sharedvar
 
 
 class LogisticRegression(object):
@@ -114,7 +114,7 @@ class LogisticRegression(object):
         """
         # start-snippet-1
         # initialize with 0 the weights W as a matrix of shape (n_in, n_out)
-        self.W = mv_shared(
+        self.W = sharedvar.mv_shared(
             value=numpy.zeros(
                 (n_in, n_out),
                 dtype=theano.config.floatX
@@ -123,7 +123,7 @@ class LogisticRegression(object):
             borrow=True
         )
         # initialize the biases b as a vector of n_out 0s
-        self.b = mv_shared(
+        self.b = sharedvar.mv_shared(
             value=numpy.zeros(
                 (n_out,),
                 dtype=theano.config.floatX
@@ -332,9 +332,9 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     print('... building the model')
 
     mv.init()
-    WORKER_ID = mv.worker_id()
-    # if WORKER_ID == 0, it will be the master woker
-    IS_MASTER_WORKER = WORKER_ID == 0
+    worker_id = mv.worker_id()
+    # if worker_id == 0, it will be the master woker
+    is_master_worker = worker_id == 0
 
     total_worker = mv.workers_num()
 
@@ -412,14 +412,14 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
         epoch = epoch + 1
         for minibatch_index in range(n_train_batches):
             # A worker will only use batch belonged to itself
-            if minibatch_index % total_worker == WORKER_ID:
+            if minibatch_index % total_worker == worker_id:
                 minibatch_avg_cost = train_model(minibatch_index)
-                sync_all_mv_shared_vars()
+                sharedvar.sync_all_mv_shared_vars()
 
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
             # only master worker will output the model
-            if IS_MASTER_WORKER and (iter + 1) % validation_frequency == 0:
+            if is_master_worker and (iter + 1) % validation_frequency == 0:
                 # compute zero-one loss on validation set
                 validation_losses = [validate_model(i)
                                      for i in range(n_valid_batches)]
@@ -436,7 +436,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
                 )
         mv.barrier()
 
-    if IS_MASTER_WORKER:
+    if is_master_worker:
         end_time = timeit.default_timer()
 
         test_losses = [test_model(i)

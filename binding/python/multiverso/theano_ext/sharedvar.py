@@ -113,7 +113,7 @@ def mv_shared(value, name=None, strict=False, allow_downcast=None, **kwargs):
                     (value, kwargs))
 
 mv_shared.constructors = []
-mv_shared.shared_vars = []  # all shared_vars in multiverso will becored here
+mv_shared.shared_vars = []  # all shared_vars in multiverso will be recorded here
 
 
 def sync_all_mv_shared_vars():
