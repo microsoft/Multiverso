@@ -116,9 +116,8 @@ void MatrixWorkerTable<T>::Add(const std::vector<integer_t>& row_ids,
 }
 
 template <typename T>
-void MatrixWorkerTable<T>::Add(T* data, size_t size, integer_t* row_ids,
-                               integer_t row_ids_size,
-                               const AddOption* option) {
+void MatrixWorkerTable<T>::Add(T* data, size_t size, const AddOption* option,
+                               integer_t* row_ids, integer_t row_ids_size) {
   if (row_ids_size == 0) {
     CHECK(size == num_col_ * num_row_);
     integer_t row_id = -1;
