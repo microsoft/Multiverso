@@ -123,6 +123,17 @@ void MatrixWorkerTable<T>::Add(const std::vector<integer_t>& row_ids,
 }
 
 template <typename T>
+void MatrixWorkerTable<T>::Add(T* data, size_t size, integer_t* row_ids,
+                               integer_t row_ids_size,
+                               const AddOption* option) {
+  CHECK(size == num_col_);
+  Blob ids_blob(row_ids, sizeof(integer_t) * row_ids_size);
+  Blob data_blob(data, row_ids_size * row_size_);
+  WorkerTable::Add(ids_blob, data_blob, option);
+  Log::Debug("[Add] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids_size);
+}
+
+template <typename T>
 int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
   std::unordered_map<int, std::vector<Blob>>* out) {
   CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
