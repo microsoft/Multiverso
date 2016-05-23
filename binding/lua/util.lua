@@ -43,4 +43,10 @@ function util.matrix2cdata(data, num_row, num_col, cdata_type)
     return cdata
 end
 
+function util.Set(list)
+  local set = {}
+  for _, l in ipairs(list) do set[l] = true end
+  return set
+end
+
 return util
