@@ -33,6 +33,14 @@ class MVSharedVariable(SharedVariable):
         self.set_value(self._mv_array.get().reshape(self.get_value().shape))
         self._last_mv_data = self.get_value(borrow=False)
 
+    def __getstate__(self):
+        '''
+        This is for cPickle to store state.
+        '''
+        odict = self.__dict__.copy()  # copy the dict since we change it
+        del odict['_mv_array']  # remove mv_array, because we can't pickle it
+        return odict
+
 
 class MVTensorSharedVariable(_tensor_py_operators, MVSharedVariable):
     pass
@@ -83,6 +91,7 @@ def mv_shared(value, name=None, strict=False, allow_downcast=None, **kwargs):
                 var = ctor(value, name=name, strict=strict,
                            allow_downcast=allow_downcast, **kwargs)
                 utils.add_tag_trace(var)
+                mv_shared.shared_vars.append(var)
                 return var
             except TypeError:
                 continue
@@ -104,6 +113,12 @@ def mv_shared(value, name=None, strict=False, allow_downcast=None, **kwargs):
                     (value, kwargs))
 
 mv_shared.constructors = []
+mv_shared.shared_vars = []  # all shared_vars in multiverso will be recorded here
+
+
+def sync_all_mv_shared_vars():
+    for sv in mv_shared.shared_vars:
+        sv.mv_sync()
 
 
 def shared_constructor(ctor, remove=False):
