@@ -6,8 +6,6 @@
 #include <cstring>
 #include <iostream>
 
-#include "multiverso/util/log.h"
-
 namespace multiverso {
 
 // Manage a chunk of memory. Blob can share memory with other Blobs.
@@ -33,13 +31,11 @@ public:
   void operator=(const Blob& rhs);
 
   inline char operator[](size_t i) const {
-    CHECK(0 <= i && i < size_);
     return data_[i];
   }
 
   template <typename T>
   inline T& As(size_t i = 0) const {
-    CHECK(size_ % sizeof(T) == 0 && i < size_ / sizeof(T));
     return (reinterpret_cast<T*>(data_))[i];
   }
   template <typename T>

@@ -10,7 +10,6 @@ set(MULTIVERSO_SRC actor.cpp communicator.cpp controller.cpp dashboard.cpp multi
 
 link_directories(${THIRD_PARTY_LIB} ${LIBRARY_PATH})
 
-
 if(USE_HDFS)
 	link_directories(${HDFS_LIB})
 	LINK_DIRECTORIES(${JVM_LIB})

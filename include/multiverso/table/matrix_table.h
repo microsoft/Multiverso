@@ -3,7 +3,6 @@
 
 #include "multiverso/multiverso.h"
 #include "multiverso/table_interface.h"
-#include "multiverso/util/log.h"
 
 #include <vector>
 
