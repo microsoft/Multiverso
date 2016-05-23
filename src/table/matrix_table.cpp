@@ -90,13 +90,6 @@ void MatrixWorkerTable<T>::Get(const std::vector<integer_t>& row_ids,
 }
 
 template <typename T>
-void MatrixWorkerTable<T>::Add(T* data, size_t size, const AddOption* option) {
-  CHECK(size == num_col_ * num_row_);
-  integer_t whole_table = -1;
-  Add(whole_table, data, size, option);
-}
-
-template <typename T>
 void MatrixWorkerTable<T>::Add(integer_t row_id, T* data, size_t size, 
                                const AddOption* option) {
   if (row_id >= 0) CHECK(size == num_col_);
@@ -120,6 +113,25 @@ void MatrixWorkerTable<T>::Add(const std::vector<integer_t>& row_ids,
   }
   WorkerTable::Add(ids_blob, data_blob, option);
   Log::Debug("[Add] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids.size());
+}
+
+template <typename T>
+void MatrixWorkerTable<T>::Add(T* data, size_t size, const AddOption* option,
+                               integer_t* row_ids, integer_t row_ids_size) {
+  if (row_ids_size == 0) {
+    CHECK(size == num_col_ * num_row_);
+    integer_t row_id = -1;
+    Blob ids_blob(&row_id, sizeof(integer_t));
+    Blob data_blob(data, size * sizeof(T));
+    WorkerTable::Add(ids_blob, data_blob, option);
+    Log::Debug("[Add] worker = %d, #row = %d\n", MV_Rank(), row_id);
+  } else {
+    CHECK(size == num_col_);
+    Blob ids_blob(row_ids, sizeof(integer_t) * row_ids_size);
+    Blob data_blob(data, row_ids_size * row_size_);
+    WorkerTable::Add(ids_blob, data_blob, option);
+    Log::Debug("[Add] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids_size);
+  }
 }
 
 template <typename T>
