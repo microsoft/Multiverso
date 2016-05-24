@@ -69,16 +69,16 @@ void MV_AddMatrixTableAll(TableHandler handler, float* data, int size) {
   worker->Add(data, size);
 }
 
-void MV_GetMatrixTableByRows(TableHandler handler, float* data, int num_col,
+void MV_GetMatrixTableByRows(TableHandler handler, float* data, int size,
                              int row_ids[], int row_ids_n) {
   auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
-  worker->Get(data, num_col, row_ids, row_ids_n);
+  worker->Get(data, size, row_ids, row_ids_n);
 }
 
-void MV_AddMatrixTableByRows(TableHandler handler, float* data, int num_col,
+void MV_AddMatrixTableByRows(TableHandler handler, float* data, int size,
                              int row_ids[], int row_ids_n) {
   auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
-  worker->Add(data, num_col, row_ids, row_ids_n);
+  worker->Add(data, size, row_ids, row_ids_n);
 }
 
   //ArrayServerFloat newArrayServerFloat(int i) {
