@@ -48,12 +48,20 @@ function mv_test.testMatrix()
         mv.barrier()
         data = tbh:get()
         mv.barrier()
-        for j = 1, data:size()[1] do
-            for k = 1, data:size()[2] do
+        for j = 1, data:size(1) do
+            for k = 1, data:size(2) do
                 expected = ((j - 1) * num_col + k) * i * num_workers
                 if row_ids_set[j - 1] then
                     expected = expected + ((j - 1) * num_col + k) * i * num_workers
                 end
+                mv_tester:eq(expected, data[j][k])
+            end
+        end
+        data = tbh:get(row_ids)
+        mv.barrier()
+        for j = 1, data:size(1) do
+            for k = 1, data:size(2) do
+                expected = (row_ids[j] * num_col + k) * i * num_workers * 2
                 mv_tester:eq(expected, data[j][k])
             end
         end
