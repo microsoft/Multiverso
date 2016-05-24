@@ -100,7 +100,9 @@ void Zoo::StopPS() {
   Dashboard::Display();
 
   // Stop all actors
-  for (auto actor : zoo_) { actor.second->Stop(); }
+  for (auto actor : zoo_) { 
+    actor.second->Stop(); 
+  }
 }
 
 void Zoo::RegisterNode() {
@@ -132,6 +134,11 @@ void Zoo::RegisterNode() {
     }
   }
   Log::Debug("rank %d end register\n", Zoo::Get()->rank());
+}
+
+void Zoo::RegisterActor(const std::string name, Actor* actor) {
+  CHECK(zoo_[name] == nullptr);
+  zoo_[name] = actor;
 }
 
 void Zoo::FinishTrain() {

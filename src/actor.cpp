@@ -30,6 +30,7 @@ void Actor::Stop() {
   while (!mailbox_->Empty()) { ; }
   mailbox_->Exit();
   thread_->join();
+  is_working_ = false;
 }
 
 void Actor::Receive(MessagePtr& msg) { mailbox_->Push(msg); }
