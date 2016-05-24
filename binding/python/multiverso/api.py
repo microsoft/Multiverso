@@ -99,14 +99,11 @@ class MatrixTableHandler(TableHandler):
         else:
             row_ids_n = len(row_ids)
             int_array_type = c_int * row_ids_n
-            float_array_array_type = c_float * self._num_col * row_ids_n
-            float_pointer_array_type = POINTER(c_float) * row_ids_n
-
-            array_data = float_array_array_type()
-            c_data = float_pointer_array_type(*[row for row in array_data])
-            mv_lib.MV_GetMatrixTableByRows(self._handler, int_array_type(*row_ids),
-                row_ids_n, self._num_col, c_data)
-            return np.array(self._construct_matrix(array_data)).reshape((row_ids_n, self._num_col))
+            float_array_type = c_float * (row_ids_n * self._num_col)
+            c_data = float_array_type()
+            mv_lib.MV_GetMatrixTableByRows(self._handler, c_data, self._num_col,
+                                           int_array_type(*row_ids), row_ids_n)
+            return np.array(self._construct_matrix(c_data)).reshape((row_ids_n, self._num_col))
 
     def add(self, data=None, row_ids=None):
         '''
