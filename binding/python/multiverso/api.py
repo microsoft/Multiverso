@@ -124,10 +124,8 @@ class MatrixTableHandler(TableHandler):
                 return None
             row_ids_n = len(row_ids)
             int_array_type = c_int * row_ids_n
-            float_array_type = c_float * self._num_col
-            float_pointer_array_type = POINTER(c_float) * row_ids_n
+            float_array_type = c_float * (self._num_col * row_ids_n)
 
-            c_data = float_pointer_array_type(*[float_array_type(*row)
-                                    for row in np.array(data).reshape((row_ids_n, self._num_col))])
-            mv_lib.MV_AddMatrixTableByRows(self._handler, int_array_type(*row_ids),
-                row_ids_n, self._num_col, c_data)
+            c_data = float_array_type(* np.array(data).reshape((-1, )))
+            mv_lib.MV_AddMatrixTableByRows(self._handler, c_data, self._num_col,
+                int_array_type(*row_ids), row_ids_n)

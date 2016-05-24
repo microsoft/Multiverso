@@ -76,11 +76,10 @@ void MV_GetMatrixTableByRows(TableHandler handler, int row_ids[],
               std::vector<float*>(data, data + row_ids_n), num_col);
 }
 
-void MV_AddMatrixTableByRows(TableHandler handler, int row_ids[],
-                              int row_ids_n, int num_col, float* data[]) {
+void MV_AddMatrixTableByRows(TableHandler handler, float* data, int num_col,
+                             int row_ids[], int row_ids_n) {
   auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
-  worker->Add(std::vector<multiverso::integer_t>(row_ids, row_ids + row_ids_n),
-              std::vector<float*>(data, data + row_ids_n), num_col);
+  worker->Add(data, num_col, row_ids, row_ids_n);
 }
 
   //ArrayServerFloat newArrayServerFloat(int i) {
