@@ -23,8 +23,8 @@ ffi.cdef[[
     void MV_NewMatrixTable(int num_row, int num_col, TableHandler* out);
     void MV_GetMatrixTableAll(TableHandler handler, float* data, int size);
     void MV_AddMatrixTableAll(TableHandler handler, float* data, int size);
-    void MV_GetMatrixTableByRows(TableHandler handler, int row_ids[], int row_ids_n, int num_col,  float** data);
-    void MV_AddMatrixTableByRows(TableHandler handler, float* data, int num_col, int row_ids[], int row_ids_n);
+    void MV_GetMatrixTableByRows(TableHandler handler, float* data, int size, int row_ids[], int row_ids_n);
+    void MV_AddMatrixTableByRows(TableHandler handler, float* data, int size, int row_ids[], int row_ids_n);
 ]]
 
 package.cpath = "../../build/src/?.so;" .. package.cpath
@@ -81,11 +81,11 @@ end
 function mv.ArrayTableHandler:get()
     cdata = ffi.new("float[?]", self._size)
     libmv.MV_GetArrayTable(self._handler[0], cdata, self._size)
-    return util.cdata2array(cdata, tonumber(self._size))
+    return util.cdata2tensor(cdata, tonumber(self._size))
 end
 
 function mv.ArrayTableHandler:add(data)
-    cdata = util.array2cdata(data, tonumber(self._size))
+    cdata = util.tensor2cdata(data)
     libmv.MV_AddArrayTable(self._handler[0], cdata, self._size)
 end
 
@@ -113,28 +113,31 @@ function mv.MatrixTableHandler:get(row_ids)
     if row_ids == nil then
         cdata = ffi.new("float[?]", self._size)
         libmv.MV_GetMatrixTableAll(self._handler[0], cdata, self._size)
-        data = util.cdata2array(cdata, tonumber(self._size))
+        data = util.cdata2tensor(cdata, tonumber(self._size))
         return torch.reshape(data, tonumber(self._num_row), tonumber(self._num_col))
     else
-        crow_ids = util.array2cdata(row_ids, #row_ids, "int[?]")
+        crow_ids = util.tensor2cdata(row_ids, 'int')
         crow_ids_n = ffi.new("int", #row_ids)
-        cdata = ffi.new("float*[?]", #row_ids * self._num_col)
-        lib.MV_GetMatrixTableByRows(self._handler[0], crow_ids, crow_ids_n, self._num_col, cdata)
-        data = util.cdata2array(cdata, tonumber(self._size))
-        return torch.reshape(data, #row_ids, self._num_col)
+        cdata = ffi.new("float[?]", #row_ids * self._num_col)
+        libmv.MV_GetMatrixTableByRows(self._handler[0], cdata,
+                                      crow_ids_n * self._num_col,
+                                      crow_ids, crow_ids_n)
+        data = util.cdata2tensor(cdata, tonumber(#row_ids * self._num_col))
+        return torch.reshape(data, #row_ids, tonumber(self._num_col))
     end
 end
 
 function mv.MatrixTableHandler:add(data, row_ids)
     if row_ids == nil then
-        cdata = util.array2cdata(data, tonumber(self._size))
+        cdata = util.tensor2cdata(data)
         libmv.MV_AddMatrixTableAll(self._handler[0], cdata, self._size)
     else
         data = torch.reshape(data, #row_ids, tonumber(self._num_col))
-        crow_ids = util.array2cdata(row_ids, #row_ids, "int[?]")
+        crow_ids = util.tensor2cdata(row_ids, 'int')
         crow_ids_n = ffi.new("int", #row_ids)
-        cdata = util.matrix2cdata(data, #row_ids, tonumber(self._num_col))
-        libmv.MV_AddMatrixTableByRows(self._handler[0], cdata, self._num_col,
+        cdata = util.tensor2cdata(data)
+        libmv.MV_AddMatrixTableByRows(self._handler[0], cdata,
+                                      crow_ids_n * self._num_col,
                                       crow_ids, crow_ids_n)
     end
 end

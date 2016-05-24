@@ -22,6 +22,7 @@ def TestMatrix():
     num_row = 11
     num_col = 10
     size = num_col * num_row
+    workers_num = mv.workers_num()
     tbh = mv.MatrixTableHandler(num_row, num_col)
     mv.barrier()
     for count in xrange(1, 20):
@@ -33,9 +34,15 @@ def TestMatrix():
         mv.barrier()
         for i, row in enumerate(data):
             for j, actual in enumerate(row):
-                expected = (i * num_col + j) * count * mv.workers_num()
+                expected = (i * num_col + j) * count * workers_num
                 if i in row_ids:
-                    expected += (i * num_col + j) * count * mv.workers_num()
+                    expected += (i * num_col + j) * count * workers_num
+                assert(expected == actual)
+        data = tbh.get(row_ids)
+        mv.barrier()
+        for i, row in enumerate(data):
+            for j, actual in enumerate(row):
+                expected = (row_ids[i] * num_col + j) * count * workers_num * 2
                 assert(expected == actual)
     mv.shutdown()
 
