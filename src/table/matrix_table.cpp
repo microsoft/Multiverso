@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "multiverso/io/io.h"
 #include "multiverso/multiverso.h"
 #include "multiverso/util/log.h"
 #include "multiverso/util/quantization_util.h"
@@ -119,6 +120,17 @@ void MatrixWorkerTable<T>::Add(const std::vector<integer_t>& row_ids,
   }
   WorkerTable::Add(ids_blob, data_blob, option);
   Log::Debug("[Add] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids.size());
+}
+
+template <typename T>
+void MatrixWorkerTable<T>::Add(T* data, size_t size, integer_t* row_ids,
+                               integer_t row_ids_size,
+                               const AddOption* option) {
+  CHECK(size == num_col_);
+  Blob ids_blob(row_ids, sizeof(integer_t) * row_ids_size);
+  Blob data_blob(data, row_ids_size * row_size_);
+  WorkerTable::Add(ids_blob, data_blob, option);
+  Log::Debug("[Add] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids_size);
 }
 
 template <typename T>

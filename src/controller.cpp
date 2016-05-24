@@ -4,6 +4,7 @@
 
 #include "multiverso/message.h"
 #include "multiverso/node.h"
+#include "multiverso/util/log.h"
 #include "multiverso/zoo.h"
 
 namespace multiverso {

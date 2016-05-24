@@ -3,7 +3,6 @@
 
 #include "multiverso/multiverso.h"
 #include "multiverso/table_interface.h"
-#include "multiverso/util/log.h"
 
 #include <vector>
 
@@ -38,6 +37,9 @@ public:
 
   void Add(const std::vector<integer_t>& row_ids,
            const std::vector<T*>& data_vec, size_t size, 
+           const AddOption* option = nullptr);
+
+  void Add(T* data, size_t size, integer_t* row_ids, integer_t row_ids_size,
            const AddOption* option = nullptr);
 
   int Partition(const std::vector<Blob>& kv,
