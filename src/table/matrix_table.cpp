@@ -90,6 +90,19 @@ void MatrixWorkerTable<T>::Get(const std::vector<integer_t>& row_ids,
 }
 
 template <typename T>
+void MatrixWorkerTable<T>::Get(T* data, size_t size, integer_t* row_ids,
+                               integer_t row_ids_size) {
+  CHECK(size == num_col_);
+  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
+  for (auto i = 0; i < row_ids_size; ++i){
+    row_index_[row_ids[i]] = &data[i * num_col_];
+  }
+  Blob ids_blob(row_ids, sizeof(integer_t) * row_ids_size);
+  WorkerTable::Get(ids_blob);
+  Log::Debug("[Get] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids_size);
+}
+
+template <typename T>
 void MatrixWorkerTable<T>::Add(T* data, size_t size, const AddOption* option) {
   CHECK(size == num_col_ * num_row_);
   integer_t whole_table = -1;

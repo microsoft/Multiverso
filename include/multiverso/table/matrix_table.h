@@ -29,6 +29,8 @@ public:
   void Get(const std::vector<integer_t>& row_ids,
            const std::vector<T*>& data_vec, size_t size);
 
+  void Get(T* data, size_t size, integer_t* row_ids, integer_t row_ids_size);
+
   // Add whole table
   void Add(T* data, size_t size, const AddOption* option = nullptr);
 
