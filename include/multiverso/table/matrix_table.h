@@ -29,7 +29,8 @@ public:
   void Get(const std::vector<integer_t>& row_ids,
            const std::vector<T*>& data_vec, size_t size);
 
-  void Get(T* data, size_t size, integer_t* row_ids, integer_t row_ids_size);
+  // Get specific rows.
+  void Get(T* data, size_t col_size, integer_t* row_ids, integer_t row_ids_size);
 
   // Add whole table
   void Add(T* data, size_t size, const AddOption* option = nullptr);
@@ -41,7 +42,8 @@ public:
            const std::vector<T*>& data_vec, size_t size, 
            const AddOption* option = nullptr);
 
-  void Add(T* data, size_t size, integer_t* row_ids, integer_t row_ids_size,
+  // Add specific rows.
+  void Add(T* data, size_t col_size, integer_t* row_ids, integer_t row_ids_size,
            const AddOption* option = nullptr);
 
   int Partition(const std::vector<Blob>& kv,
