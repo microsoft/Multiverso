@@ -65,7 +65,7 @@ void Worker::ProcessAdd(MessagePtr& msg) {
     MessagePtr msg(new Message());
     msg->set_src(Zoo::Get()->rank());
     //msg->set_dst(it.first);
-    msg->set_dst(i);
+    msg->set_dst(Zoo::Get()->server_id_to_rank(i));
     msg->set_type(MsgType::Request_Add);
     msg->set_msg_id(msg_id);
     msg->set_table_id(table_id);
