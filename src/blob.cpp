@@ -1,6 +1,7 @@
 #include "multiverso/blob.h"
 
 #include "multiverso/util/allocator.h"
+#include "multiverso/util/log.h"
 
 namespace multiverso {
 

@@ -4,6 +4,7 @@
 
 #include "multiverso/dashboard.h"
 #include "multiverso/util/mt_queue.h"
+#include "multiverso/util/log.h"
 #include "multiverso/zoo.h"
 
 namespace multiverso {

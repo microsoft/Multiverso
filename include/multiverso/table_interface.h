@@ -7,7 +7,6 @@
 #include <cctype>
 
 #include "multiverso/blob.h"
-#include "multiverso/io/io.h"
 
 namespace std { class mutex; }
 
