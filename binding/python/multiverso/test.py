@@ -31,7 +31,7 @@ class TestMultiversoTables(unittest.TestCase):
         workers_num = mv.workers_num()
         tbh = mv.MatrixTableHandler(num_row, num_col)
         mv.barrier()
-        for count in xrange(1, 20):
+        for count in xrange(1, 21):
             row_ids = [0, 1, 5, 10]
             tbh.add(range(size))
             tbh.add([range(rid * num_col, (1 + rid) * num_col) for rid in row_ids], row_ids)
