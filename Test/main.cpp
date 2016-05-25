@@ -5,6 +5,7 @@
 #include <ctime>
 #include <algorithm>
 #include <numeric>
+#include <memory>
 
 #include <mpi.h>
 
@@ -24,7 +25,6 @@
 #include <multiverso/table_factory.h>
 
 #include <gtest/gtest.h>
-#include <memory>
 
 using namespace multiverso;
 
@@ -85,40 +85,36 @@ void TestKV(int argc, char* argv[]) {
 void TestArray(int argc, char* argv[]) {
   Log::Info("Test Array \n");
 
+  multiverso::SetCMDFlag("sync", true);
   MV_Init(&argc, argv);
 
-  size_t array_size = 50000000;
+  size_t array_size = 5;
 
-  ArrayWorker<float>* shared_array = MV_CreateTable(ArrayTableOption<float>(array_size));
-  //ArrayWorker<float>* shared_array = new ArrayWorker<float>(50000000);
-  //ArrayServer<float>* server_array = new ArrayServer<float>(50000000);
+  ArrayWorker<int>* shared_array = MV_CreateTable(ArrayTableOption<int>(array_size));
 
   MV_Barrier();
-  Log::Info("Create tables OK\n");
+  Log::Info("Create tables OK. Rank = %d, worker_id = %d\n", MV_Rank(), MV_WorkerId());
 
-  std::vector<float> delta(array_size);
+  std::vector<int> delta(array_size);
   for (int i = 0; i < array_size; ++i)
-    delta[i] = static_cast<float>(i);
-  float* data = new float[array_size];
+    delta[i] = static_cast<int>(i);
+  int* data = new int[array_size];
 
-  int iter = 1000;
+  int iter = 1000000000;
 
   for (int i = 0; i < iter; ++i) {
-    // std::vector<float>& vec = shared_array->raw();
-
-    // shared_array->Get();
+    shared_array->Add(delta.data(), array_size);
     shared_array->Get(data, array_size);
-
-    for (int j = 0; j < 10; ++j)
-      std::cout << data[j] << " "; std::cout << std::endl;
-
-    AddOption option;
-    option.set_learning_rate(1 - 0.0001 * i);
-    option.set_momentum(0.99);
-    option.set_rho(0.01f);
-    shared_array->Add(delta.data(), array_size, &option);
-    shared_array->Add(delta.data(), array_size, &option);
-
+    for (int k = 0; k < array_size; ++k) {
+      if (data[k] != delta[k] * (i + 1) * MV_NumWorkers()) {
+        std::cout << "i + 1 = " << i + 1 << " k = " << k << std::endl;
+        for (int j = 0; j < array_size; ++j) {
+          std::cout << data[j] << " ";
+        }
+        exit(1);
+      }
+    }
+    if (i % 1000 == 0) { printf("iter = %d\n", i); fflush(stdout); }
   }
   MV_ShutDown();
 }
@@ -267,7 +263,7 @@ void TestIP() {
 
 
 void TestMatrix(int argc, char* argv[]){
-  Log::ResetLogLevel(LogLevel::Info);
+  // Log::ResetLogLevel(LogLevel::Debug);
   multiverso::SetCMDFlag("sync", true);
   MV_Init(&argc, argv);
 
