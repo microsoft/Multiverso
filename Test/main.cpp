@@ -5,6 +5,7 @@
 #include <ctime>
 #include <algorithm>
 #include <numeric>
+#include <memory>
 
 #include <mpi.h>
 
@@ -24,7 +25,6 @@
 #include <multiverso/table_factory.h>
 
 #include <gtest/gtest.h>
-#include <memory>
 
 using namespace multiverso;
 
@@ -85,40 +85,36 @@ void TestKV(int argc, char* argv[]) {
 void TestArray(int argc, char* argv[]) {
   Log::Info("Test Array \n");
 
+  multiverso::SetCMDFlag("sync", true);
   MV_Init(&argc, argv);
 
-  size_t array_size = 50000000;
+  size_t array_size = 5;
 
-  ArrayWorker<float>* shared_array = MV_CreateTable(ArrayTableOption<float>(array_size));
-  //ArrayWorker<float>* shared_array = new ArrayWorker<float>(50000000);
-  //ArrayServer<float>* server_array = new ArrayServer<float>(50000000);
+  ArrayWorker<int>* shared_array = MV_CreateTable(ArrayTableOption<int>(array_size));
 
   MV_Barrier();
-  Log::Info("Create tables OK\n");
+  Log::Info("Create tables OK. Rank = %d, worker_id = %d\n", MV_Rank(), MV_WorkerId());
 
-  std::vector<float> delta(array_size);
+  std::vector<int> delta(array_size);
   for (int i = 0; i < array_size; ++i)
-    delta[i] = static_cast<float>(i);
-  float* data = new float[array_size];
+    delta[i] = static_cast<int>(i);
+  int* data = new int[array_size];
 
-  int iter = 1000;
+  int iter = 1000000000;
 
   for (int i = 0; i < iter; ++i) {
-    // std::vector<float>& vec = shared_array->raw();
-
-    // shared_array->Get();
+    shared_array->Add(delta.data(), array_size);
     shared_array->Get(data, array_size);
-
-    for (int j = 0; j < 10; ++j)
-      std::cout << data[j] << " "; std::cout << std::endl;
-
-    AddOption option;
-    option.set_learning_rate(1 - 0.0001 * i);
-    option.set_momentum(0.99);
-    option.set_rho(0.01f);
-    shared_array->Add(delta.data(), array_size, &option);
-    shared_array->Add(delta.data(), array_size, &option);
-
+    for (int k = 0; k < array_size; ++k) {
+      if (data[k] != delta[k] * (i + 1) * MV_NumWorkers()) {
+        std::cout << "i + 1 = " << i + 1 << " k = " << k << std::endl;
+        for (int j = 0; j < array_size; ++j) {
+          std::cout << data[j] << " ";
+        }
+        exit(1);
+      }
+    }
+    if (i % 1000 == 0) { printf("iter = %d\n", i); fflush(stdout); }
   }
   MV_ShutDown();
 }
@@ -199,21 +195,99 @@ void TestIP() {
   for (auto ip : ip_list) Log::Info("%s\n", ip.c_str());
 }
 
-void TestMatrix(int argc, char* argv[]){
-  Log::Info("Test Matrix\n");
+//void TestMatrix(int argc, char* argv[]){
+//  Log::Info("Test Matrix\n");
+//
+//  Log::ResetLogLevel(LogLevel::Info);
+//  multiverso::SetCMDFlag("sync", true);
+//  MV_Init(&argc, argv);
+//
+//  int num_row = 8, num_col = 3592;
+//  int size = num_row * num_col;
+//  // MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
+//  // MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
+//  MatrixTableOption<int> option;
+//  option.num_row = num_row;
+//  option.num_col = num_col;
+//  MatrixWorkerTable<int>* worker_table = multiverso::MV_CreateTable(option);
+//  std::thread* m_prefetchThread = nullptr;
+//  MV_Barrier();
+//  int count = 0;
+//  while (true)
+//  {
+//    count++;
+//    std::vector<int> v = { 0, 1, 3, 7 };
+//
+//    // test data
+//    std::vector<int> delta(size);
+//    std::vector<int> data(size, 0);
+//    for (auto i = 0; i < size; ++i)
+//      delta[i] = (int)i;
+//
+//    worker_table->Add(delta.data(), size);
+//    worker_table->Get(data.data(), size);
+//    if (count % 1000 == 0)
+//    { 
+//      printf("Dense Add/Get, #test: %d.\n", count);
+//      fflush(stdout);
+//    }
+//
+//    std::vector<int*> data_rows = { &data[0], &data[num_col], &data[3 * num_col], &data[7 * num_col] };
+//    std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[3 * num_col], &delta[7 * num_col] };
+//    worker_table->Add(v, delta_rows, num_col);
+//    worker_table->Get(v, data_rows, num_col);
+//    //MV_Barrier();
+//    //worker_table->Get(v, data_rows, num_col);
+//
+//    if (count % 1000 == 0)
+//    {
+//      printf("Sparse Add/Get, #test: %d.\n", count);
+//      fflush(stdout);
+//    }
+//    for (auto i = 0; i < num_row; ++i) {
+//      for (auto j = 0; j < num_col; ++j) {
+//        int expected = (int)(i * num_col + j) * count * MV_NumWorkers();
+//        if (i == 0 || i == 1 || i == 3 || i == 7) {
+//          expected += (int)(i * num_col + j) * count * MV_NumWorkers();
+//        }
+//        int actual = data[i* num_col + j];
+//        ASSERT_EQ(expected, actual) << "Should be equal after adding, row: " 
+//        << i << ", col:" << j << ", expected: " << expected << ", actual: " << actual;
+//      }
+//    }
+//
+//  }
+//  delete worker_table;
+//  MV_ShutDown();
+////}
 
-  Log::ResetLogLevel(LogLevel::Info);
+
+void TestMatrix(int argc, char* argv[]){
+  // Log::ResetLogLevel(LogLevel::Debug);
   multiverso::SetCMDFlag("sync", true);
   MV_Init(&argc, argv);
 
   int num_row = 8, num_col = 3592;
-  int size = num_row * num_col;
-  // MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-  // MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
-  MatrixTableOption<int> option;
-  option.num_row = num_row;
-  option.num_col = num_col;
-  MatrixWorkerTable<int>* worker_table = multiverso::MV_CreateTable(option);
+  int num_tables = 5;
+  std::vector<int> num_table_size;
+  std::vector<MatrixTableOption<int>* > table_options;
+  std::vector<MatrixWorkerTable<int>* > worker_tables;
+
+  for (auto i = 0; i < num_tables - 1 ; i++)
+  {
+    table_options.push_back(new MatrixTableOption<int>());
+    table_options[i]->num_col = num_col;
+    table_options[i]->num_row = num_row + i;
+    num_table_size.push_back(num_col * (num_row + i));
+    worker_tables.push_back(multiverso::MV_CreateTable(*table_options[i]));
+  }
+
+  table_options.push_back(new MatrixTableOption<int>());
+  table_options[4]->num_col = num_col;
+  table_options[4]->num_row = 1;
+  num_table_size.push_back(num_col * (1));
+  worker_tables.push_back(multiverso::MV_CreateTable(*table_options[4]));
+
   std::thread* m_prefetchThread = nullptr;
   MV_Barrier();
   int count = 0;
@@ -223,25 +297,36 @@ void TestMatrix(int argc, char* argv[]){
     std::vector<int> v = { 0, 1, 3, 7 };
 
     // test data
-    std::vector<int> delta(size);
-    std::vector<int> data(size, 0);
-    for (auto i = 0; i < size; ++i)
-      delta[i] = (int)i;
+    std::vector<std::vector<int>> delta(num_tables);
+    std::vector<std::vector<int>> data(num_tables);
+    for (auto j =0; j < num_tables; j++)
+    {
+      delta[j].resize(num_table_size[j]);
+      data[j].resize(num_table_size[j], 0);
+      for (auto i = 0; i < num_table_size[j]; ++i)
+        delta[j][i] = (int)i;
+    }
 
-    worker_table->Add(delta.data(), size);
-    worker_table->Get(data.data(), size);
+    for (auto j = 0; j < num_tables; j++)
+    { 
+      worker_tables[j]->Add(delta[j].data(), num_table_size[j]);
+      worker_tables[j]->Get(data[j].data(), num_table_size[j]);
+    }
     if (count % 1000 == 0)
     { 
       printf("Dense Add/Get, #test: %d.\n", count);
       fflush(stdout);
     }
 
-    std::vector<int*> data_rows = { &data[0], &data[num_col], &data[3 * num_col], &data[7 * num_col] };
-    std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[3 * num_col], &delta[7 * num_col] };
-    worker_table->Add(v, delta_rows, num_col);
-    worker_table->Get(v, data_rows, num_col);
-    MV_Barrier();
-    worker_table->Get(v, data_rows, num_col);
+    std::vector<int*> data_rows = { &data[0][0], &data[0][num_col], &data[0][3 * num_col], &data[0][7 * num_col] };
+    std::vector<int*> delta_rows = { &delta[0][0], &delta[0][num_col], &delta[0][3 * num_col], &delta[0][7 * num_col] };
+    for (auto j = 0; j < num_tables - 1; j++)
+    { 
+      worker_tables[j]->Add(v, delta_rows, num_col);
+      worker_tables[j]->Get(v, data_rows, num_col);
+    }
+    //MV_Barrier();
+    //worker_table->Get(v, data_rows, num_col);
 
     if (count % 1000 == 0)
     {
@@ -254,18 +339,16 @@ void TestMatrix(int argc, char* argv[]){
         if (i == 0 || i == 1 || i == 3 || i == 7) {
           expected += (int)(i * num_col + j) * count * MV_NumWorkers();
         }
-        int actual = data[i* num_col + j];
+        int actual = data[0][i* num_col + j];
         ASSERT_EQ(expected, actual) << "Should be equal after adding, row: " 
         << i << ", col:" << j << ", expected: " << expected << ", actual: " << actual;
       }
     }
-    MV_Barrier();
 
   }
-  delete worker_table;
+  worker_tables.clear();
   MV_ShutDown();
 }
-
 void TestCheckPoint(int argc, char* argv[], bool restore){
   Log::Info("Test CheckPoint\n");
 
@@ -326,7 +409,7 @@ void TestmatrixPerformance(int argc, char* argv[],
   Log::Info("Test Matrix\n");
   Timer timmer;
 
-  multiverso::SetCMDFlag("sync", true);
+  //multiverso::SetCMDFlag("sync", true);
   MV_Init(&argc, argv);
   int per = 0;
   int num_row = 1000000, num_col = 50;
