@@ -1,0 +1,2 @@
+test:
+	luajit test.lua
