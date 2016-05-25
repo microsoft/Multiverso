@@ -4,7 +4,9 @@ I presume you followed the [README](../../README.md) and have build multiverso s
 
 # Run tests
 ```
-python ./multiverso/test.py
+cd ./multiverso
+python -m unittest test.TestMultiversoTables.test_array
+python -m unittest test.TestMultiversoTables.test_matrix
 ```
 
 

@@ -64,7 +64,9 @@ class ArrayTableHandler(TableHandler):
         '''
         Data type of `data` is numpy.ndarray
         '''
-        mv_lib.MV_AddArrayTable(self._handler, (c_float * self._size)(*np.array(data).reshape((-1,))), self._size)
+        data = np.array(data)
+        assert(data.size == self._size)
+        mv_lib.MV_AddArrayTable(self._handler, (c_float * self._size)(*data.reshape((-1,))), self._size)
 
 
 class MatrixTableHandler(TableHandler):
@@ -113,18 +115,20 @@ class MatrixTableHandler(TableHandler):
 
             Otherwise we will add the data according to the row_ids
         '''
+        assert(data is not None)
+        data = np.array(data)
         if row_ids is None:
+            assert(data.size == self._size)
             float_array_type = c_float * (self._num_row * self._num_col)
-            c_data = float_array_type(* np.array(data).reshape((-1, )))
+            c_data = float_array_type(* data.reshape((-1, )))
             mv_lib.MV_AddMatrixTableAll(self._handler, c_data, self._size)
         else:
-            if data is None:
-                return None
             row_ids_n = len(row_ids)
+            assert(data.size == row_ids_n * self._num_col)
             int_array_type = c_int * row_ids_n
             float_array_type = c_float * (self._num_col * row_ids_n)
 
-            c_data = float_array_type(* np.array(data).reshape((-1, )))
+            c_data = float_array_type(* data.reshape((-1, )))
             mv_lib.MV_AddMatrixTableByRows(self._handler, c_data,
                                            row_ids_n * self._num_col,
                                            int_array_type(*row_ids), row_ids_n)
