@@ -5,5 +5,10 @@ Build multiverso successfully by following the [README > build](../../README.md#
 
 ## Unit Tests
 ```
+make test
+```
+or
+
+```
 luajit test.lua
 ```
