@@ -17,6 +17,7 @@ typedef int32_t integer_t;
 class Waiter;
 struct AddOption;
 struct GetOption;
+enum MsgType;
 
 // User implementent this
 class WorkerTable {
@@ -30,14 +31,15 @@ public:
   int GetAsync(Blob keys, const GetOption* option = nullptr);
   int AddAsync(Blob keys, Blob values, const AddOption* option = nullptr);
 
-  void Wait(int id);
+  void Wait(integer_t id);
 
-  void Reset(int msg_id, int num_wait);
+  void Reset(integer_t msg_id, integer_t num_wait);
 
-  void Notify(int id);
+  void Notify(integer_t id);
 
   virtual int Partition(const std::vector<Blob>& kv,
-    std::unordered_map<int, std::vector<Blob> >* out) = 0;
+   std::unordered_map<int, std::vector<Blob> >* out,
+                             MsgType partition_type) = 0;
 
   virtual void ProcessReplyGet(std::vector<Blob>&) = 0;
 
@@ -45,10 +47,10 @@ public:
 private:
   std::string table_name_;
   // assuming there are at most 2^32 tables
-  int table_id_;
+  integer_t table_id_;
   std::mutex* m_;
   std::vector<Waiter*> waitings_;
-  int msg_id_;
+  integer_t msg_id_;
 };
 
 // TODO(feiga): move to a seperate file

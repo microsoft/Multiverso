@@ -148,7 +148,7 @@ void MatrixWorkerTable<T>::Add(T* data, size_t size, integer_t* row_ids,
 
 template <typename T>
 int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
-  std::unordered_map<int, std::vector<Blob>>* out) {
+  std::unordered_map<int, std::vector<Blob>>* out, MsgType ) {
   CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
   CHECK_NOTNULL(out);
 
@@ -269,7 +269,7 @@ MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :
   integer_t size = num_row / MV_NumServers();
   if (size > 0) {
     row_offset_ = size * server_id_; // Zoo::Get()->rank();
-    if (server_id_ == MV_NumServers() - 1){
+    if (server_id_ == MV_NumServers() - 1) {
       size = num_row - row_offset_;
     }
   } else {

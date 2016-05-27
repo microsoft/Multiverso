@@ -24,7 +24,8 @@ public:
   void Add(T* data, size_t size, const AddOption* option = nullptr);
 
   int Partition(const std::vector<Blob>& kv,
-                std::unordered_map<int, std::vector<Blob> >* out) override;
+                std::unordered_map<int, std::vector<Blob> >* out,
+                MsgType partition_type) override;
 
   void ProcessReplyGet(std::vector<Blob>& reply_data) override;
   

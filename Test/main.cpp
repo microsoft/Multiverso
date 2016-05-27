@@ -20,6 +20,7 @@
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
 #include <multiverso/table/matrix_table.h>             
+#include <multiverso/table/matrix.h>
 #include <multiverso/table/sparse_matrix_table.h>
 #include <multiverso/updater/updater.h>
 #include <multiverso/table_factory.h>
@@ -270,19 +271,20 @@ void TestMatrix(int argc, char* argv[]){
   int num_row = 8, num_col = 3592;
   int num_tables = 5;
   std::vector<int> num_table_size;
-  std::vector<MatrixTableOption<int>* > table_options;
-  std::vector<MatrixWorkerTable<int>* > worker_tables;
+  std::vector<MatrixOption<int>* > table_options;
+  std::vector<MatrixWorker<int>* > worker_tables;
 
   for (auto i = 0; i < num_tables - 1 ; i++)
   {
-    table_options.push_back(new MatrixTableOption<int>());
+    table_options.push_back(new MatrixOption<int>());
     table_options[i]->num_col = num_col;
     table_options[i]->num_row = num_row + i;
+    table_options[i]->is_sparse = true;
     num_table_size.push_back(num_col * (num_row + i));
     worker_tables.push_back(multiverso::MV_CreateTable(*table_options[i]));
   }
 
-  table_options.push_back(new MatrixTableOption<int>());
+  table_options.push_back(new MatrixOption<int>());
   table_options[4]->num_col = num_col;
   table_options[4]->num_row = 1;
   num_table_size.push_back(num_col * (1));
@@ -502,7 +504,7 @@ void TestmatrixPerformance(int argc, char* argv[],
         }
       }
 
-      MV_Barrier();
+      //MV_Barrier();
     }
 
   MV_Barrier();
@@ -513,21 +515,21 @@ void TestmatrixPerformance(int argc, char* argv[],
 }
 
 void TestSparsePerf(int argc, char* argv[]) {
-  TestmatrixPerformance<SparseMatrixWorkerTable<float>, SparseMatrixServerTable<float>>(argc,
+  TestmatrixPerformance<MatrixWorker<float>, MatrixServer<float>>(argc,
     argv,
     [](int num_row, int num_col) {
-    return std::shared_ptr<SparseMatrixWorkerTable<float>>(
-      new SparseMatrixWorkerTable<float>(num_row, num_col));
+    return std::shared_ptr<MatrixWorker<float>>(
+      new MatrixWorker<float>(num_row, num_col, true));
   },
     [](int num_row, int num_col) {
-    return std::shared_ptr<SparseMatrixServerTable<float>>(
-      new SparseMatrixServerTable<float>(num_row, num_col, false));
+    return std::shared_ptr<MatrixServer<float>>(
+      new MatrixServer<float>(num_row, num_col, true, false));
   },
-    [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const AddOption* option, const int worker_id) {
+    [](const std::shared_ptr<MatrixWorker<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const AddOption* option, const int worker_id) {
     worker_table->Add(row_ids, data_vec, size, option);
   },
 
-    [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
+    [](const std::shared_ptr<MatrixWorker<float>>& worker_table, float* data, size_t size, int worker_id) {
     GetOption get_option;
     get_option.set_worker_id(worker_id);
     worker_table->Get(data, size, &get_option);

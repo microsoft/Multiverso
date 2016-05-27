@@ -17,7 +17,7 @@ class SparseMatrixWorkerTable : public MatrixWorkerTable<T> {
    SparseMatrixWorkerTable(integer_t num_row, integer_t num_col)
      : MatrixWorkerTable<T>(num_row, num_col) { }
     int Partition(const std::vector<Blob>& kv,
-        std::unordered_map<int, std::vector<Blob>>* out) override;
+      std::unordered_map<int, std::vector<Blob>>* out, MsgType partition_type) override;
     void ProcessReplyGet(std::vector<Blob>& reply_data) override;
 
     // get whole table, data is user-allocated memory

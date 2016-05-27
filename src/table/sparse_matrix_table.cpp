@@ -69,7 +69,7 @@ void SparseMatrixWorkerTable<T>::Get(const std::vector<integer_t>& row_ids,
 
 template <typename T>
 int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
-  std::unordered_map<int, std::vector<Blob>>* out) {
+  std::unordered_map<int, std::vector<Blob>>* out, MsgType partition_type) {
   int res;
   CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
   CHECK_NOTNULL(out);
@@ -140,7 +140,7 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
     }
   } else {  // processing Add()
     // call base class's Partition
-    res = MatrixWorkerTable<T>::Partition(kv, out);
+    res = MatrixWorkerTable<T>::Partition(kv, out, partition_type);
   }
 
    // only have effect when adding elements
@@ -205,7 +205,7 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
     for (auto id = 0; id < workers_nums_; ++id) {
       if (id == worker_id) continue;
       for (auto local_row_id = 0; local_row_id < this->my_num_row_; ++local_row_id) {
-        // if other worker doen't update the row, we can marked it as the updated.
+        // if other worker doesn't update the row, we can marked it as the updated.
         up_to_date_[id][local_row_id] = false;
       }
     }
@@ -213,7 +213,7 @@ void SparseMatrixServerTable<T>::UpdateAddState(int worker_id,
     for (auto id = 0; id < workers_nums_; ++id) {
       if (id == worker_id) continue;
       for (auto i = 0; i < keys_size; ++i) {
-        // if other worker doen't update the row, we can marked it as the updated.
+        // if other worker doesn't update the row, we can marked it as the updated.
         auto local_row_id = GetPhysicalRow(keys[i]);
         up_to_date_[id][local_row_id] = false;
       }
