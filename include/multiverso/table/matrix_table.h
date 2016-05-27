@@ -70,6 +70,7 @@ public:
   explicit MatrixServerTable(const MatrixTableOption<T>& option);
 
   MatrixServerTable(integer_t num_row, integer_t num_col);
+  MatrixServerTable(integer_t num_row, integer_t num_col, void(*filler)(std::vector<T> &));
 
   void ProcessAdd(const std::vector<Blob>& data) override;
 
