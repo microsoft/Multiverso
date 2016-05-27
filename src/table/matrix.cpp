@@ -111,7 +111,7 @@ namespace multiverso {
     }
 
     WorkerTable::Get(Blob(row_ids.data(), sizeof(integer_t)* row_ids.size()), option);
-    Log::Debug("[Get] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids.size());
+    Log::Debug("[Get] worker = %d, #rows_set = %d / %d\n", MV_Rank(), row_ids.size(), num_row_);
 
     if (is_option_mine) delete option;
   }
@@ -135,27 +135,31 @@ namespace multiverso {
     }
 
     WorkerTable::Get(ids_blob, option);
-    Log::Debug("[Get] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids_size);
+    Log::Debug("[Get] worker = %d, #rows_set = %d / %d\n", MV_Rank(), row_ids_size, num_row_);
     if (is_option_mine) delete option;
   }
 
   template <typename T>
   void MatrixWorker<T>::Add(T* data, size_t size, const AddOption* option) {
     CHECK(size == num_col_ * num_row_);
-    if (is_sparse_) {
+    if (is_sparse_ && true) {
       // REVIEW[qiwye] does this pre-optimation bring too much overhead?
       std::vector<integer_t> row_ids;
       for (auto i = 0; i < num_row_; i++) {
-        if (!std::count(data + (i * num_col_), data + ((i + 1) * num_col_), (T)0) == num_col_) {
+        auto zero_count = std::count(data + (i * num_col_), data + ((i + 1) * num_col_), (T)0);
+        if (zero_count != num_col_) {
           row_ids.push_back(i);
         }
       }
-      Blob ids_blob(&row_ids[0], sizeof(integer_t)* row_ids.size());
+      Blob ids_blob(row_ids.data(), sizeof(integer_t)* row_ids.size());
       Blob data_blob(row_ids.size() * row_size_);
 
       for (auto i = 0; i < row_ids.size(); ++i){
-        memcpy(data_blob.data() + i * row_size_, data + row_ids[i] * row_size_ , row_size_);
+        if (MV_Rank() == 0)
+        Log::Debug("rows_id = %d\n", row_ids[i]);
+        //memcpy(data_blob.data() + i * row_size_, data + row_ids[i] * row_size_ , row_size_);
       }
+      memcpy(data_blob.data(), data, row_size_ * num_row_);
 
       bool is_option_mine = false;
       if (option == nullptr) {
@@ -164,7 +168,7 @@ namespace multiverso {
       }
 
       WorkerTable::Add(ids_blob, data_blob, option);
-      Log::Debug("[Add] Sparse: worker = %d, #rows_set = %d\n", MV_Rank(), row_ids.size());
+      Log::Debug("[Add] Sparse: worker = %d, #rows_set = %d / %d\n", MV_Rank(), row_ids.size(), num_row_);
       if (is_option_mine) delete option;
 
     } else {
@@ -213,7 +217,7 @@ namespace multiverso {
     }
 
     WorkerTable::Add(ids_blob, data_blob, option);
-    Log::Debug("[Add] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids.size());
+    Log::Debug("[Add] worker = %d, #rows_set = %d / %d\n", MV_Rank(), row_ids.size(), num_row_);
     if (is_option_mine) delete option;
   }
 
@@ -233,7 +237,7 @@ namespace multiverso {
     }
 
     WorkerTable::Add(ids_blob, data_blob, option);
-    Log::Debug("[Add] worker = %d, #rows_set = %d\n", MV_Rank(), row_ids_size);
+    Log::Debug("[Add] worker = %d, #rows_set = %d / %d\n", MV_Rank(), row_ids_size, num_row_);
     if (is_option_mine) delete option;
   }
 
