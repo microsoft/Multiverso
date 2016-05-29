@@ -11,18 +11,24 @@ class TestMultiversoTables(unittest.TestCase):
     python -m unittest test.TestMultiversoTables.test_matrix
     '''
 
-    def test_array(self):
-        size = 10000
+    def _test_array(self, size):
         tbh = mv.ArrayTableHandler(size)
         mv.barrier()
 
         for i in xrange(100):
-            tbh.add(range(size))
-            tbh.add(range(size))
+            tbh.add(range(1, size + 1))
+            tbh.add(range(1, size + 1))
             mv.barrier()
             for j, actual in enumerate(tbh.get()):
-                self.assertEqual(j * (i + 1) * 2 * mv.workers_num(), actual)
+                self.assertEqual((j + 1) * (i + 1) * 2 * mv.workers_num(), actual)
             mv.barrier()
+
+    def test_small_array(self):
+        # TODO : this is not supported by multiverso because of the size limited
+        self._test_array(1)
+
+    def test_array(self):
+        self._test_array(10000)
 
     def test_matrix(self):
         num_row = 11
