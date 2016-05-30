@@ -142,7 +142,7 @@ namespace multiverso {
   template <typename T>
   void MatrixWorker<T>::Add(T* data, size_t size, const AddOption* option) {
     CHECK(size == num_col_ * num_row_);
-    if (is_sparse_ && false) {
+    if (is_sparse_ && true) {
       // REVIEW[qiwye] does this pre-optimation bring too much overhead?
       std::vector<integer_t> row_ids;
       for (auto i = 0; i < num_row_; i++) {
@@ -155,7 +155,7 @@ namespace multiverso {
       Blob data_blob(row_ids.size() * row_size_);
 
       for (auto i = 0; i < row_ids.size(); ++i){
-        memcpy(data_blob.data() + i * row_size_, data + row_ids[i] * row_size_ , row_size_);
+        memcpy(data_blob.data() + i * num_col_, data + row_ids[i] * num_col_, row_size_);
       }
 
       bool is_option_mine = false;
