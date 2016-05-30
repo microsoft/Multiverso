@@ -1,9 +1,8 @@
-#!/usr/bin/env lua
+require 'torch'
+local ffi = require 'ffi'
+local util = require 'multiverso.util'
 
-mv = {}
-
-ffi = require('ffi')
-util = require('util')
+local mv = {}
 
 ffi.cdef[[
     typedef void* TableHandler;

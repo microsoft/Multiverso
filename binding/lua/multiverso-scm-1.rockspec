@@ -1,0 +1,35 @@
+package = "multiverso"
+version = "scm-1"
+
+source = {
+    url = "https://github.com/Microsoft/multiverso"
+}
+
+description = {
+    summary = "Torch binding for multiverso.",
+    detailed = [[
+        Multiverso is a parameter server framework for distributed machine
+        learning, this package make it possible to have multiverso embedded in
+        your original torch programs.
+    ]],
+    homepage = "http://www.dmtk.io",
+    license = "MIT"
+}
+
+dependencies = {
+    "torch >= 7.0"
+}
+
+build = {
+   type = "command",
+   build_command = [[
+cmake -E make_directory build;
+cd build;
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$(LUA_BINDIR)/.." -DCMAKE_INSTALL_PREFIX="$(PREFIX)"; 
+$(MAKE)
+   ]],
+   install_command = [[
+cp -f ../../build/src/libmultiverso.so $(LUA_LIBDIR);
+cd build && $(MAKE) install;
+    ]]
+}
