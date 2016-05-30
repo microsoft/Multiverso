@@ -3,10 +3,15 @@
 require 'torch'
 
 mv = require('multiverso')
-util = require('util')
 
 local mv_test = torch.TestSuite()
 local mv_tester = torch.Tester()
+
+function Set(list)
+  local set = {}
+  for _, l in ipairs(list) do set[l] = true end
+  return set
+end
 
 function mv_test.testArray()
     size = 100000
@@ -31,7 +36,7 @@ function mv_test.testMatrix()
 
     for i = 1, 20 do
         row_ids = {0, 1, 5, 10}
-        row_ids_set = util.Set(row_ids)
+        row_ids_set = Set(row_ids)
         tbh:add(torch.range(1, size))
         data = torch.range(
             row_ids[1] * num_col + 1,
