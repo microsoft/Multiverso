@@ -508,24 +508,20 @@ namespace multiverso {
   }
 
   template <typename T>
-  void MatrixServer<T>::UpdateAddState(int worker_id,
+  void MatrixServer<T>::UpdateAddState(int ,
                                       Blob keys_blob) {
     size_t keys_size = keys_blob.size<integer_t>();
     integer_t* keys = reinterpret_cast<integer_t*>(keys_blob.data());
-    // add all values
+
     if (keys_size == 1 && keys[0] == -1) {
       for (auto id = 0; id < workers_nums_; ++id) {
-        if (id == worker_id) continue;
         for (auto local_row_id = 0; local_row_id < this->my_num_row_; ++local_row_id) {
-          // if other worker doen't update the row, we can marked it as the updated.
           up_to_date_[id][local_row_id] = false;
         }
       }
     } else {
       for (auto id = 0; id < workers_nums_; ++id) {
-        if (id == worker_id) continue;
         for (auto i = 0; i < keys_size; ++i) {
-          // if other worker doen't update the row, we can marked it as the updated.
           auto local_row_id = GetPhysicalRow(keys[i]);
           up_to_date_[id][local_row_id] = false;
         }
@@ -535,7 +531,7 @@ namespace multiverso {
 
   template <typename T>
   void MatrixServer<T>::UpdateGetState(int worker_id, integer_t* keys,
-    size_t key_size, std::vector<integer_t>* out_rows) {
+                    size_t key_size, std::vector<integer_t>* out_rows) {
 
     if (worker_id == -1) {
       for (auto local_row_id = 0; local_row_id < this->my_num_row_; ++local_row_id)  {
