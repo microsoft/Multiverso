@@ -15,9 +15,12 @@ util.tensor_type = {
 }
 
 function util.tensor2cdata(data, data_type)
+    if type(data) == 'table' then
+        data = torch.Tensor(data)
+    end
     data_type = data_type or 'float'
     tensor_type = util.tensor_type[data_type]
-    return torch.Tensor(data):contiguous():type(tensor_type):data()
+    return data:contiguous():type(tensor_type):data()
 end
 
 function util.cdata2tensor(cdata, sizes, data_type)
