@@ -155,7 +155,7 @@ namespace multiverso {
       Blob data_blob(row_ids.size() * row_size_);
 
       for (auto i = 0; i < row_ids.size(); ++i){
-        memcpy(data_blob.data() + i * num_col_, data + row_ids[i] * num_col_, row_size_);
+        memcpy(data_blob.data() + i * row_size_, data + row_ids[i] * num_col_, row_size_);
       }
 
       bool is_option_mine = false;
@@ -454,7 +454,7 @@ namespace multiverso {
 
   template <typename T>
   void MatrixServer<T>::ProcessGet(const std::vector<Blob>& data,
-    std::vector<Blob>* result) {
+                                       std::vector<Blob>* result) {
     // TODO[qiwye] Adding filter logic
     CHECK(data.size() == 1 || data.size() == 2);
     CHECK_NOTNULL(result);
@@ -509,7 +509,7 @@ namespace multiverso {
 
   template <typename T>
   void MatrixServer<T>::UpdateAddState(int worker_id,
-                                                 Blob keys_blob) {
+                                      Blob keys_blob) {
     size_t keys_size = keys_blob.size<integer_t>();
     integer_t* keys = reinterpret_cast<integer_t*>(keys_blob.data());
     // add all values
