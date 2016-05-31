@@ -21,7 +21,7 @@ MatrixWorkerTable<T>::MatrixWorkerTable(integer_t num_row, integer_t num_col) :
   get_reply_count_ = 0;
 
   num_server_ = MV_NumServers();
-  //compute row offsets in all servers
+  //  compute row offsets in all servers
   server_offsets_.push_back(0);
   integer_t length = num_row / num_server_;
   integer_t offset = length;
@@ -42,7 +42,7 @@ MatrixWorkerTable<T>::MatrixWorkerTable(integer_t num_row, integer_t num_col) :
     server_offsets_.push_back(num_row);
   }
   // using actual number of servers
-  num_server_ = (int)server_offsets_.size() - 1;
+  num_server_ = static_cast<int>(server_offsets_.size() - 1);
 
   Log::Debug("[Init] worker =  %d, type = matrixTable, size =  [ %d x %d ].\n",
     MV_Rank(), num_row, num_col);
@@ -56,7 +56,7 @@ MatrixWorkerTable<T>::~MatrixWorkerTable() {
 }
 
 template <typename T>
-void MatrixWorkerTable<T>::Get(T* data, size_t size){
+void MatrixWorkerTable<T>::Get(T* data, size_t size) {
   CHECK(size == num_col_ * num_row_);
   integer_t whole_table = -1;
   Get(whole_table, data, size);
@@ -69,7 +69,7 @@ void MatrixWorkerTable<T>::Get(integer_t row_id, T* data, size_t size) {
   if (row_id == -1) {
     row_index_[num_row_] = data;
   } else {
-    row_index_[row_id] = data; // data_ = data;
+    row_index_[row_id] = data;  // data_ = data;
   }
   WorkerTable::Get(Blob(&row_id, sizeof(integer_t)));
   Log::Debug("[Get] worker = %d, #row = %d\n", MV_Rank(), row_id);
@@ -77,12 +77,12 @@ void MatrixWorkerTable<T>::Get(integer_t row_id, T* data, size_t size) {
 
 template <typename T>
 void MatrixWorkerTable<T>::Get(const std::vector<integer_t>& row_ids,
-  const std::vector<T*>& data_vec,
-  size_t size) {
+                                     const std::vector<T*>& data_vec,
+                                                         size_t size) {
   CHECK(size == num_col_);
   CHECK(row_ids.size() == data_vec.size());
   for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
-  for (auto i = 0; i < row_ids.size(); ++i){
+  for (auto i = 0; i < row_ids.size(); ++i) {
     row_index_[row_ids[i]] = data_vec[i];
   }
   WorkerTable::Get(Blob(row_ids.data(), sizeof(integer_t)* row_ids.size()));
@@ -91,10 +91,10 @@ void MatrixWorkerTable<T>::Get(const std::vector<integer_t>& row_ids,
 
 template <typename T>
 void MatrixWorkerTable<T>::Get(T* data, size_t size, integer_t* row_ids,
-                               integer_t row_ids_size) {
+                                                 integer_t row_ids_size) {
   CHECK(size == num_col_ * row_ids_size);
   for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
-  for (auto i = 0; i < row_ids_size; ++i){
+  for (auto i = 0; i < row_ids_size; ++i) {
     row_index_[row_ids[i]] = &data[i * num_col_];
   }
   Blob ids_blob(row_ids, sizeof(integer_t) * row_ids_size);
@@ -110,8 +110,8 @@ void MatrixWorkerTable<T>::Add(T* data, size_t size, const AddOption* option) {
 }
 
 template <typename T>
-void MatrixWorkerTable<T>::Add(integer_t row_id, T* data, size_t size, 
-                               const AddOption* option) {
+void MatrixWorkerTable<T>::Add(integer_t row_id, T* data, size_t size,
+                                              const AddOption* option) {
   if (row_id >= 0) CHECK(size == num_col_);
   Blob ids_blob(&row_id, sizeof(integer_t));
   Blob data_blob(data, size * sizeof(T));
@@ -127,8 +127,8 @@ void MatrixWorkerTable<T>::Add(const std::vector<integer_t>& row_ids,
   CHECK(size == num_col_);
   Blob ids_blob(&row_ids[0], sizeof(integer_t)* row_ids.size());
   Blob data_blob(row_ids.size() * row_size_);
-  //copy each row
-  for (auto i = 0; i < row_ids.size(); ++i){
+  // copy each row
+  for (auto i = 0; i < row_ids.size(); ++i) {
     memcpy(data_blob.data() + i * row_size_, data_vec[i], row_size_);
   }
   WorkerTable::Add(ids_blob, data_blob, option);
@@ -148,26 +148,26 @@ void MatrixWorkerTable<T>::Add(T* data, size_t size, integer_t* row_ids,
 
 template <typename T>
 int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
-  std::unordered_map<int, std::vector<Blob>>* out, MsgType ) {
+  MsgType, std::unordered_map<int, std::vector<Blob>>* out) {
   CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
   CHECK_NOTNULL(out);
 
   size_t keys_size = kv[0].size<integer_t>();
   integer_t *keys = reinterpret_cast<integer_t*>(kv[0].data());
-  if (keys_size == 1 && keys[0] == -1){
+  if (keys_size == 1 && keys[0] == -1) {
     // using actual number of servers, so that one don't send message
     // to empty servers.
-    for (auto i = 0; i < num_server_; ++i){
+    for (auto i = 0; i < num_server_; ++i) {
       int rank = MV_ServerIdToRank(i);
       (*out)[rank].push_back(kv[0]);
     }
-    if (kv.size() >= 2){	//process add values
+    if (kv.size() >= 2) {	 // process add values
       for (integer_t i = 0; i < num_server_; ++i){
         int rank = MV_ServerIdToRank(i);
         Blob blob(kv[1].data() + server_offsets_[i] * row_size_,
           (server_offsets_[i + 1] - server_offsets_[i]) * row_size_);
         (*out)[rank].push_back(blob);
-        if (kv.size() == 3) {// update option blob
+        if (kv.size() == 3) {  // update option blob
           (*out)[rank].push_back(kv[2]);
         }
       }

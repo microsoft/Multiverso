@@ -38,8 +38,8 @@ public:
   void Notify(integer_t id);
 
   virtual int Partition(const std::vector<Blob>& kv,
-   std::unordered_map<int, std::vector<Blob> >* out,
-                             MsgType partition_type) = 0;
+   MsgType partition_type,
+   std::unordered_map<int, std::vector<Blob> >* out) = 0;
 
   virtual void ProcessReplyGet(std::vector<Blob>&) = 0;
 

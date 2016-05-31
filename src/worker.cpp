@@ -32,7 +32,7 @@ void Worker::ProcessGet(MessagePtr& msg) {
   int table_id = msg->table_id();
   int msg_id = msg->msg_id();
   std::unordered_map<int, std::vector<Blob>> partitioned_key;
-  int num = cache_[table_id]->Partition(msg->data(), &partitioned_key, MsgType::Request_Get);
+  int num = cache_[table_id]->Partition(msg->data(), MsgType::Request_Get, &partitioned_key);
   cache_[table_id]->Reset(msg_id, num);
   //for (auto i = 0; i < Zoo::Get()->num_servers(); i++) {
   for (auto& it : partitioned_key) {
@@ -58,7 +58,7 @@ void Worker::ProcessAdd(MessagePtr& msg) {
   std::unordered_map<int, std::vector<Blob>> partitioned_kv;
   CHECK_NOTNULL(msg.get());
   CHECK(!msg->data().empty());
-  int num = cache_[table_id]->Partition(msg->data(), &partitioned_kv, MsgType::Request_Add);
+  int num = cache_[table_id]->Partition(msg->data(), MsgType::Request_Add, &partitioned_kv);
   cache_[table_id]->Reset(msg_id, num);
   //for (auto i = 0; i < Zoo::Get()->num_servers(); i++) {
   for (auto& it : partitioned_kv) {

@@ -69,7 +69,8 @@ void SparseMatrixWorkerTable<T>::Get(const std::vector<integer_t>& row_ids,
 
 template <typename T>
 int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
-  std::unordered_map<int, std::vector<Blob>>* out, MsgType partition_type) {
+  MsgType partition_type,
+  std::unordered_map<int, std::vector<Blob>>* out) {
   int res;
   CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
   CHECK_NOTNULL(out);
@@ -140,7 +141,7 @@ int SparseMatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
     }
   } else {  // processing Add()
     // call base class's Partition
-    res = MatrixWorkerTable<T>::Partition(kv, out, partition_type);
+    res = MatrixWorkerTable<T>::Partition(kv, partition_type, out);
   }
 
    // only have effect when adding elements
