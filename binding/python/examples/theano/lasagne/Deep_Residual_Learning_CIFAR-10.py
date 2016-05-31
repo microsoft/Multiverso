@@ -52,7 +52,8 @@ worker_id = mv.worker_id()
 is_master_worker = worker_id == 0
 workers_num = mv.workers_num()
 # NOTICE: To use multiple gpus, we must set the environment before import theano.
-os.environ["THEANO_FLAGS"] = 'device=gpu%s' % worker_id
+if "THEANO_FLAGS" not in os.environ:
+    os.environ["THEANO_FLAGS"] = 'floatX=float32,device=gpu%d,lib.cnmem=1' % worker_id
 
 import numpy as np
 import theano

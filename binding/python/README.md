@@ -84,3 +84,23 @@ mvnpm = param_manager.MVNetParamManager(network, is_master_worker)  # is_master_
 # When you are ready to add the delta of the variable in this model to the parameter server and get the latest value, you can run this function
 mvnpm.update_all_param()
 ```
+
+# How to use multi-GPU in theano with multiverso
+Assuming you have multiple GPUs in your server and you have installed the (CUDA backend)[http://deeplearning.net/software/theano/tutorial/using_gpu.html#cuda].
+
+First make sure you have read [this section](http://deeplearning.net/software/theano/install.html#using-the-gpu) and understand how to configure which GPU will be used.
+
+With multiverso, your program will run in multiple processes. If you hope that different GPUs will be used in different processes, it is not so convenient to configure it as usual.
+
+Here is a example to achieve that different GPUs will be used in different processes.
+In this example, the i-th worker will use the i-th gpu. You can add code like this before `import theano`
+```
+import multiverso as mv
+mv.init()
+worker_id = mv.worker_id()
+# NOTICE: To use multiple gpus, we must set the environment before import theano.
+if "THEANO_FLAGS" not in os.environ:
+    os.environ["THEANO_FLAGS"] = 'floatX=float32,device=gpu%d,lib.cnmem=1' % worker_id
+
+# import theano after this
+```
