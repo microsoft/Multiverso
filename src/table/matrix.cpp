@@ -1,6 +1,7 @@
 #include "multiverso/table/matrix.h"
 
 #include <vector>
+#include <algorithm>
 
 #include "multiverso/io/io.h"
 #include "multiverso/multiverso.h"
