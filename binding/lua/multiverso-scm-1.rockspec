@@ -9,8 +9,8 @@ description = {
     summary = "Torch binding for multiverso.",
     detailed = [[
         Multiverso is a parameter server framework for distributed machine
-        learning, this package make it possible to have multiverso embedded in
-        your original torch programs.
+        learning. This package can leverage multiple machines and GPUs to
+        speed up the torch programs.
     ]],
     homepage = "http://www.dmtk.io",
     license = "MIT"
