@@ -17,6 +17,7 @@ typedef int32_t integer_t;
 class Waiter;
 struct AddOption;
 struct GetOption;
+enum MsgType;
 
 // User implementent this
 class WorkerTable {
@@ -37,7 +38,8 @@ public:
   void Notify(int id);
 
   virtual int Partition(const std::vector<Blob>& kv,
-    std::unordered_map<int, std::vector<Blob> >* out) = 0;
+   MsgType partition_type,
+   std::unordered_map<int, std::vector<Blob> >* out) = 0;
 
   virtual void ProcessReplyGet(std::vector<Blob>&) = 0;
 
@@ -48,6 +50,7 @@ private:
   int table_id_;
   std::mutex* m_;
   std::vector<Waiter*> waitings_;
+  // assuming there are at most 2^32 msgs waiting in line
   int msg_id_;
 };
 
