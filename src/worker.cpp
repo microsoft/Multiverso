@@ -32,20 +32,20 @@ void Worker::ProcessGet(MessagePtr& msg) {
   int table_id = msg->table_id();
   int msg_id = msg->msg_id();
   std::unordered_map<int, std::vector<Blob>> partitioned_key;
-  int num = cache_[table_id]->Partition(msg->data(), &partitioned_key);
+  int num = cache_[table_id]->Partition(msg->data(), MsgType::Request_Get, &partitioned_key);
   cache_[table_id]->Reset(msg_id, num);
-  for (auto i = 0; i < Zoo::Get()->num_servers(); i++) {
-  //for (auto& it : partitioned_key) {
+  //for (auto i = 0; i < Zoo::Get()->num_servers(); i++) {
+  for (auto& it : partitioned_key) {
     MessagePtr msg(new Message());
     msg->set_src(Zoo::Get()->rank());
-    //msg->set_dst(it.first);
-    msg->set_dst(i);
+    msg->set_dst(it.first);
+    //msg->set_dst(i);
     msg->set_type(MsgType::Request_Get);
     msg->set_msg_id(msg_id);
     msg->set_table_id(table_id);
-    //msg->set_data(it.second);
-    if (partitioned_key.find(i) != partitioned_key.end())
-      msg->set_data(partitioned_key[i]);
+    msg->set_data(it.second);
+    //if (partitioned_key.find(i) != partitioned_key.end())
+    //  msg->set_data(partitioned_key[i]);
     SendTo(actor::kCommunicator, msg);
   }
   MONITOR_END(WORKER_PROCESS_GET)
@@ -58,20 +58,20 @@ void Worker::ProcessAdd(MessagePtr& msg) {
   std::unordered_map<int, std::vector<Blob>> partitioned_kv;
   CHECK_NOTNULL(msg.get());
   CHECK(!msg->data().empty());
-  int num = cache_[table_id]->Partition(msg->data(), &partitioned_kv);
+  int num = cache_[table_id]->Partition(msg->data(), MsgType::Request_Add, &partitioned_kv);
   cache_[table_id]->Reset(msg_id, num);
-  for (auto i = 0; i < Zoo::Get()->num_servers(); i++) {
-  //for (auto& it : partitioned_kv) {
+  //for (auto i = 0; i < Zoo::Get()->num_servers(); i++) {
+  for (auto& it : partitioned_kv) {
+    //int dst_rank = Zoo::Get()->server_id_to_rank(it.first);
     MessagePtr msg(new Message());
     msg->set_src(Zoo::Get()->rank());
-    //msg->set_dst(it.first);
-    msg->set_dst(i);
+    msg->set_dst(it.first); 
     msg->set_type(MsgType::Request_Add);
     msg->set_msg_id(msg_id);
     msg->set_table_id(table_id);
-    //msg->set_data(it.second);
-    if (partitioned_kv.find(i) != partitioned_kv.end())
-      msg->set_data(partitioned_kv[i]);
+    msg->set_data(it.second);
+    //if (partitioned_kv.find(dst_rank) != partitioned_kv.end())
+    //  msg->set_data(partitioned_kv[dst_rank]);
     SendTo(actor::kCommunicator, msg);
   }
   MONITOR_END(WORKER_PROCESS_ADD)

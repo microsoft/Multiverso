@@ -35,7 +35,7 @@ public:
   std::unordered_map<Key, Val>& raw() { return table_; }
    
   int Partition(const std::vector<Blob>& kv, 
-    std::unordered_map<int, std::vector<Blob> >* out) override {
+    MsgType, std::unordered_map<int, std::vector<Blob> >* out) override {
     CHECK(kv.size() == 1 || kv.size() == 2);
     CHECK_NOTNULL(out);
     std::unordered_map<int, int> counts;
