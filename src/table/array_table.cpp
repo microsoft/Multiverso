@@ -4,6 +4,7 @@
 #include "multiverso/multiverso.h"
 #include "multiverso/util/log.h"
 #include "multiverso/updater/updater.h"
+#include "multiverso/dashboard.h"
 
 namespace multiverso {
 
@@ -26,13 +27,20 @@ ArrayWorker<T>::ArrayWorker(const ArrayTableOption<T> &option)
 }
 
 template <typename T>
-void ArrayWorker<T>::Get(T* data, size_t size) {
+int ArrayWorker<T>::GetAsync(T*data, size_t size) {
   CHECK(size == size_);
   data_ = data;
   integer_t all_key = -1;
   Blob whole_table(&all_key, sizeof(integer_t));
-  WorkerTable::Get(whole_table);
   Log::Debug("worker %d getting all parameters.\n", MV_Rank());
+  return WorkerTable::GetAsync(whole_table);
+}
+
+template <typename T>
+void ArrayWorker<T>::Get(T* data, size_t size) {
+  MONITOR_BEGIN(WORKER_TABLE_SYNC_GET)
+    Wait(GetAsync(data, size));
+  MONITOR_END(WORKER_TABLE_SYNC_GET)
 }
 
 template <typename T>

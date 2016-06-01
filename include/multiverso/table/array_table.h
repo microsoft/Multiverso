@@ -19,7 +19,7 @@ public:
 
   // Get all element, data is user-allocated memory
   void Get(T* data, size_t size);
-
+  int GetAsync(T*data, size_t size);
   // Add all element
   void Add(T* data, size_t size, const AddOption* option = nullptr);
 
