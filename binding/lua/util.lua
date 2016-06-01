@@ -31,10 +31,4 @@ function util.cdata2tensor(cdata, sizes, data_type)
     return data
 end
 
-function util.Set(list)
-  local set = {}
-  for _, l in ipairs(list) do set[l] = true end
-  return set
-end
-
 return util
