@@ -31,11 +31,11 @@ public:
   int GetAsync(Blob keys, const GetOption* option = nullptr);
   int AddAsync(Blob keys, Blob values, const AddOption* option = nullptr);
 
-  void Wait(integer_t id);
+  void Wait(int id);
 
-  void Reset(integer_t msg_id, integer_t num_wait);
+  void Reset(int msg_id, int num_wait);
 
-  void Notify(integer_t id);
+  void Notify(int id);
 
   virtual int Partition(const std::vector<Blob>& kv,
    MsgType partition_type,
@@ -47,10 +47,11 @@ public:
 private:
   std::string table_name_;
   // assuming there are at most 2^32 tables
-  integer_t table_id_;
+  int table_id_;
   std::mutex* m_;
   std::vector<Waiter*> waitings_;
-  integer_t msg_id_;
+  // assuming there are at most 2^32 msgs waiting in line
+  int msg_id_;
 };
 
 // TODO(feiga): move to a seperate file

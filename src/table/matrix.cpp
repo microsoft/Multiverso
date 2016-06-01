@@ -158,7 +158,8 @@ void MatrixWorker<T>::Add(T* data, size_t size, const AddOption* option) {
     Blob data_blob(row_ids.size() * row_size_);
 
     for (auto i = 0; i < row_ids.size(); ++i) {
-      memcpy(data_blob.data() + i * row_size_, data + row_ids[i] * num_col_, row_size_);
+      memcpy(data_blob.data() + i * row_size_,
+        data + row_ids[i] * num_col_, row_size_);
     }
 
     bool is_option_mine = false;
@@ -168,7 +169,8 @@ void MatrixWorker<T>::Add(T* data, size_t size, const AddOption* option) {
     }
 
     WorkerTable::Add(ids_blob, data_blob, option);
-    Log::Debug("[Add] Sparse: worker = %d, #rows_set = %d / %d\n", MV_Rank(), row_ids.size(), num_row_);
+    Log::Debug("[Add] Sparse: worker = %d, #rows_set = %d / %d\n",
+      MV_Rank(), row_ids.size(), num_row_);
     if (is_option_mine) delete option;
 
   }

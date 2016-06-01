@@ -77,8 +77,8 @@ void MatrixWorkerTable<T>::Get(integer_t row_id, T* data, size_t size) {
 
 template <typename T>
 void MatrixWorkerTable<T>::Get(const std::vector<integer_t>& row_ids,
-                                     const std::vector<T*>& data_vec,
-                                                         size_t size) {
+  const std::vector<T*>& data_vec,
+  size_t size) {
   CHECK(size == num_col_);
   CHECK(row_ids.size() == data_vec.size());
   for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
@@ -91,7 +91,7 @@ void MatrixWorkerTable<T>::Get(const std::vector<integer_t>& row_ids,
 
 template <typename T>
 void MatrixWorkerTable<T>::Get(T* data, size_t size, integer_t* row_ids,
-                                                 integer_t row_ids_size) {
+  integer_t row_ids_size) {
   CHECK(size == num_col_ * row_ids_size);
   for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
   for (auto i = 0; i < row_ids_size; ++i) {
@@ -137,8 +137,8 @@ void MatrixWorkerTable<T>::Add(const std::vector<integer_t>& row_ids,
 
 template <typename T>
 void MatrixWorkerTable<T>::Add(T* data, size_t size, integer_t* row_ids,
-                               integer_t row_ids_size,
-                               const AddOption* option) {
+  integer_t row_ids_size,
+  const AddOption* option) {
   CHECK(size == num_col_ * row_ids_size);
   Blob ids_blob(row_ids, sizeof(integer_t) * row_ids_size);
   Blob data_blob(data, row_ids_size * row_size_);
