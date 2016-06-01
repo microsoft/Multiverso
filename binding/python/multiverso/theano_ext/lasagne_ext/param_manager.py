@@ -50,12 +50,10 @@ class MVNetParamManager(object):
         1) calc all the delta of params in the network and add the delta to multiverso server
         2) get the latest value from the multiverso server
         '''
-        latest_network_params = []
-        for arr in lasagne.layers.get_all_param_values(self.network):
-            latest_network_params.extend([i for i in np.nditer(arr)])
-        latest_network_params = np.array(latest_network_params)
+        cur_network_params = np.concatenate([
+            arr.reshape(-1) for arr in lasagne.layers.get_all_param_values(self.network)])
 
-        params_delta = latest_network_params - self.all_param_list
+        params_delta = cur_network_params - self.all_param_list
         self.tbh.add(params_delta)
         self.all_param_list = self.tbh.get()
         self._set_all_param_to_net()
