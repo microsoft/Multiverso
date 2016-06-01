@@ -45,6 +45,7 @@ class TableHandler(object):
     def add(self, data):
         raise NotImplementedError("You must implement the add method.")
 
+
 # types
 C_FLOAT_P = POINTER(c_float)
 
@@ -70,7 +71,6 @@ class ArrayTableHandler(TableHandler):
         if not isinstance(data, np.ndarray):
             data = np.array(data)
         assert(data.size == self._size)
-
         data = data.astype(np.float32)
         mv_lib.MV_AddArrayTable(self._handler, data.ctypes.data_as(C_FLOAT_P), self._size)
 
