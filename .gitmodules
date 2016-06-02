@@ -1,0 +1,4 @@
+[submodule "binding/lua/demos/fb.resnet.torch"]
+	path = binding/lua/demos/fb.resnet.torch
+	url = https://github.com/huxuan/fb.resnet.torch.git
+	branch = multiverso
