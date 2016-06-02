@@ -24,6 +24,7 @@
 #include <multiverso/updater/updater.h>
 #include <multiverso/table_factory.h>
 
+
 #include <gtest/gtest.h>
 
 using namespace multiverso;
