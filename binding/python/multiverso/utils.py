@@ -4,8 +4,7 @@
 import ctypes
 import os
 
-PROJECT_PATH = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), os.path.pardir, os.path.pardir, os.path.pardir))
+PACKAGE_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 class Loader(object):
@@ -16,7 +15,7 @@ class Loader(object):
     def load_lib(cls):
         # TODO: write some scripts load .so or .dll
         # TODO: adapt it for windows
-        path = os.path.join(PROJECT_PATH,"build", "src", "libmultiverso.so")
+        path = os.path.join(PACKAGE_PATH, "libmultiverso.so")
         return ctypes.cdll.LoadLibrary(path)
 
     @classmethod

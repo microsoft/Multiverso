@@ -1,10 +1,12 @@
+
+
 # Requirements
 I presume you followed the [README](../../README.md) and have build multiverso successfully.
 
 
 # Run tests
 ```
-make test
+nosetests
 ```
 
 
