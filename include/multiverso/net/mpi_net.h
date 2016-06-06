@@ -37,9 +37,9 @@ namespace {
 
   static void dlopen_libmpi()
   {
+  #ifndef _WIN32
     void *handle = 0;
     int mode = RTLD_NOW | RTLD_GLOBAL;
-  #ifndef _WIN32
   #if defined(__CYGWIN__)
     /* TODO: Windows */
   #elif defined(__APPLE__)
