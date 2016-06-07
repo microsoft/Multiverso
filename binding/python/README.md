@@ -1,7 +1,12 @@
 
 
 # Requirements
+
+## On linux
 I presume you followed the [README](../../README.md) and have build multiverso successfully.
+
+## On windows
+I presume you have MSBuild.exe installed and your system can find it in the $PATH．　Then you should run [build_dll.bat](../../src/build_dll.bat)　to build the .dll file.
 
 
 # Run tests
@@ -18,7 +23,7 @@ mpirun -np 4 python ./examples/theano/logistic_regression.py
 
 
 # How to write python code with multiverso
-You can start with the [test example][./multiverso/test.py]
+You can start with the [test example](./multiverso/test.py)
 
 
 

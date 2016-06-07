@@ -16,7 +16,7 @@ def copy_dynamic_lib():
     '''
     # TODO: find better way to get the dynamic library
     if platform.system() == "Windows":
-        mv_lib_path = os.path.join(PROJECT_PATH, "x64", "release", "Multiverso.dll")
+        mv_lib_path = os.path.join(PROJECT_PATH, "src", "x64", "release", "Multiverso.dll")
     else:
         mv_lib_path = os.path.join(PROJECT_PATH, "build", "src", "libmultiverso.so")
     if os.path.exists(mv_lib_path):
