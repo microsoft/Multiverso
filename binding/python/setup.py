@@ -1,8 +1,12 @@
 from setuptools import setup
-from setuptools.command.install import install
 import shutil
 import os
 import platform
+
+from distutils.command.build import build
+from setuptools.command.develop import develop
+from setuptools.command.install_lib import install_lib
+from setuptools.command.easy_install import easy_install
 
 PACKAGE_PATH = os.path.abspath(os.path.dirname(__file__))
 PROJECT_PATH = os.path.abspath(os.path.join(PACKAGE_PATH, os.path.pardir, os.path.pardir))
@@ -24,22 +28,37 @@ def copy_dynamic_lib():
         return True
     else:
         msg = "The multiverso dynamic library(" + mv_lib_path + ") can't be "\
-                "found  , please make sure you have followed the guide here"\
-                "(https://github.com/Microsoft/multiverso/#build) and built"\
-                "it successfully."
+              "found  , please make sure you have followed the guide here"\
+              "(https://github.com/Microsoft/multiverso/#build) and built"\
+              "it successfully."
         # Make the message colorful
         print "\033[93m" + msg + '\033[0m'
         return False
 
 
-class mv_install(install):
-    '''
-    This customized command will place the multiverso.so to the right place.
-    '''
+# These customized commands will place the multiverso dynamic library to the right place
+class mv_build(build):
     def run(self):
-        # TODO: find better way to get the libmultiverso.so
         if copy_dynamic_lib():
-            install.run(self)
+            build.run(self)
+
+
+class mv_easy_install(easy_install):
+    def run(self):
+        if copy_dynamic_lib():
+            easy_install.run(self)
+
+
+class mv_install_lib(install_lib):
+    def run(self):
+        if copy_dynamic_lib():
+            install_lib.run(self)
+
+
+class mv_develop(develop):
+    def run(self):
+        if copy_dynamic_lib():
+            develop.run(self)
 
 
 def readme():
@@ -56,10 +75,12 @@ setup(name='multiverso-python',
       url='https://github.com/Microsoft/multiverso',
       author='Microsoft',
       license='MIT',
-      packages=['examples.theano', 'examples.theano.lasagne', 'multiverso',
-          'multiverso.theano_ext', 'multiverso.theano_ext.lasagne_ext'],
+      packages=['multiverso', 'multiverso.theano_ext', 'multiverso.theano_ext.lasagne_ext'],
       install_requires=["theano", "lasagne"],
-      cmdclass={"install": mv_install},
+      cmdclass={'build': mv_build,
+                'easy_install': mv_easy_install,
+                'install_lib': mv_install_lib,
+                'develop': mv_develop},
       package_dir={'multiverso': 'multiverso'},
       package_data={
           'multiverso': ['libmultiverso.so', 'Multiverso.dll'],
