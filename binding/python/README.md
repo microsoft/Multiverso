@@ -23,10 +23,8 @@ mpirun -np 4 python ./examples/theano/logistic_regression.py
 
 
 # How to write python code with multiverso
-You can start with the [test example](./multiverso/test.py) to learn the basic use of multiverso apis.
-
-Then you test and run the [examples](./examples/).  The original code links are written at the beginning of them. You can compare the multiverso version with the original ones to find the differences.
-The places need to be modified to use multiverso are all inserted comments like `# MULTIVERSO: XXX`
+1. You could start with the [test example](./multiverso/test.py) to learn the basic use of multiverso apis.
+2. After understanding the basic use of multiverso apis, you can test and run the [examples](./examples/).  The original code links are written at the beginning of them. You can compare the multiverso version with the original ones to find the differences. The places need to be modified to use multiverso are all inserted comments like `# MULTIVERSO: XXX`
 
 
 
@@ -129,6 +127,7 @@ Here is the result of running [Deep_Residual_Learning_CIFAR-10](./examples/thean
 |Hosts|1|
 |GPU|GeForce GTX TITAN X * 4|
 |CPU|Intel(R) Core(TM) i7-5960X CPU @ 3.00GHz  * 1|
+|Memory| 128GB |
 
 
 ## Theano settings
