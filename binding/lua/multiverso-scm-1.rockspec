@@ -29,7 +29,6 @@ cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$(LUA_BINDIR)/.." -DCMA
 $(MAKE)
    ]],
    install_command = [[
-cp -f ../../build/src/libmultiverso.so $(LUA_LIBDIR);
 cd build && $(MAKE) install;
     ]]
 }
