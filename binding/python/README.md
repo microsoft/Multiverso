@@ -23,7 +23,8 @@ mpirun -np 4 python ./examples/theano/logistic_regression.py
 
 
 # How to write python code with multiverso
-You can start with the [test example](./multiverso/test.py)
+1. You could start with the [test example](./multiverso/test.py) to learn the basic use of multiverso apis.
+2. After understanding the basic use of multiverso apis, you can test and run the [examples](./examples/).  The original code links are written at the beginning of them. You can compare the multiverso version with the original ones to find the differences. The places need to be modified to use multiverso are all inserted comments like `# MULTIVERSO: XXX`
 
 
 
@@ -77,14 +78,18 @@ If you don't use shared variables to store and update the parameters, you can st
 # How to use multiverso in lasagne
 First, make sure you have understood the last section.
 
-Lasagne provides many functions to help you build models easilier. Multiverso python binding provides a convenient manager to make managing and synchronizing the variables easilier.
+Lasagne provides many functions to help you build models more easily. Multiverso python binding provides a convenient manager to make managing and synchronizing the variables more easily.
 
 You can use code like this to manage your parameters
 ```
 from multiverso.theano_ext.lasagne_ext import param_manager
 
 network = build_model()  # build_model is a function you implement to build model
-mvnpm = param_manager.MVNetParamManager(network, is_master_worker)  # is_master_worker is true only in one process. When it is true, the process will initialize the parameters
+
+# When is_master_worker is true, the process will initialize the parameters.
+# Make sure only one process will initialize the parameters. So is_master_worker
+# is true only in one process.
+mvnpm = param_manager.MVNetParamManager(network, is_master_worker)
 
 # training the model
 
@@ -111,3 +116,61 @@ if "THEANO_FLAGS" not in os.environ:
 
 # import theano after this
 ```
+
+# Experiments
+
+Here is the result of running [Deep_Residual_Learning_CIFAR-10](./examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
+
+## Hardware
+|||
+| -------- |:--------:|
+|Hosts|1|
+|GPU|GeForce GTX TITAN X * 4|
+|CPU|Intel(R) Core(TM) i7-5960X CPU @ 3.00GHz  * 1|
+|Memory| 128GB |
+
+
+## Theano settings
+Here is the settings in my `~/.theanorc`
+```
+[global]
+device = gpu
+floatX = float32
+
+[cuda]
+root = /usr/local/cuda-7.5/
+
+[lib]
+cnmem = 1
+```
+
+## About the Model
+|||
+| :---- | -----: |
+|Total epoch|82|
+|Batch size|128|
+|Depth|32|
+|Learning rate change schedule|Initialized as 0.1, Changed to 0.01 from epoch 41, Changed to 0.001 from epoch 61|
+|number of parameters in model|    464,154|
+
+
+Clarification
+- An epoch represents all the processes divides all the data equally and  go through them once together
+- A barrier is used at the end of every epoch
+- I didn't use warm start in  ASGD
+- The time to load the data is not considered in the experiment.
+
+
+# The results
+I've run 4 experiments. The configuration and the result of each configuration are listed below.
+
+|Short Name | With multiverso | number of Process | number of GPU | Sync every X minibatches |  Best model validation accuracy | Time per epoch / s |
+| :---- | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
+| 0M-1G | 0 | 1 | 1 | --| 92.61 % | 100.02|
+|1M-1G-1S | 1 | 1 | 1 | 1 | 92.61 % | 109.78|
+|1M-4G-1S | 1 | 4 | 4 | 1 | 92.15 % | 29.38|
+|1M-4G-3S | 1 | 4 | 4 | 3 | 89.61 % | 27.46|
+
+![accuracy_epoch](./docs/imgs/accuracy_epoch.png)
+![accuracy_time](./docs/imgs/accuracy_time.png)
+![time_epoch](./docs/imgs/time_epoch.png)
