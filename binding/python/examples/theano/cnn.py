@@ -39,7 +39,10 @@ import load_data
 
 from theano.tensor.nnet import conv
 from theano.tensor.signal import downsample
+# MULTIVERSO: import multiverso
 import multiverso as mv
+# MULTIVERSO: the sharedvar in theano_ext acts same like Theano's
+# sharedVariables. But it use multiverso as the backend
 from multiverso.theano_ext import sharedvar
 
 
@@ -63,6 +66,7 @@ def floatX(x):
 
 
 def init_weights(shape, name):
+    # MULTIVERSO: relace the shared variable with mv_shared
     return sharedvar.mv_shared(floatX(np.random.randn(*shape) * 0.1), name=name)
 
 
@@ -71,6 +75,7 @@ def momentum(cost, params, learning_rate, momentum):
     updates = []
 
     for p, g in zip(params, grads):
+        # MULTIVERSO: relace the shared variable with mv_shared
         mparam_i = sharedvar.mv_shared(np.zeros(p.get_value().shape, dtype=theano.config.floatX))
         v = momentum * mparam_i - learning_rate * g
         updates.append((mparam_i, v))
@@ -91,10 +96,12 @@ def model(x, w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o):
     p_y_given_x = T.nnet.softmax(T.dot(h3, w_o) + b_o)
     return p_y_given_x
 
+# MULTIVERSO: you should call mv.init before call multiverso apis
 mv.init()
 worker_id = mv.worker_id()
 # if WORKER_ID == 0, it will be the master woker
 is_master_worker = worker_id == 0
+# MULTIVERSO: every process has distinct worker id
 workers_num = mv.workers_num()
 
 
@@ -123,10 +130,15 @@ train = theano.function([x, t], cost, updates=updates, allow_input_downcast=True
 predict = theano.function([x], y, allow_input_downcast=True)
 
 
+# MULTIVERSO: all the workers will synchronize at the place you call barrier
 mv.barrier()
 
-# the non-master process sync values to the master's init values.
+# MULTIVERSO: Make sure only one process initialized the value. So the
+# non-master process should synchronize values from the master's init values.
 if not is_master_worker:
+    # MULTIVERSO: when you want to commit all the delta of parameters produced
+    # by mv_shared and update the latest parameters from parameter server, you
+    # can call this function to synchronize the values
     sharedvar.sync_all_mv_shared_vars()
 
 
@@ -142,9 +154,10 @@ for i in range(50):
         t_batch = t_train[start:start + batch_size]
         cost = train(x_batch, t_batch)
 
-        # sync value with multiverso after every batch
+        # MULTIVERSO: sync value with multiverso after every batch
         sharedvar.sync_all_mv_shared_vars()
 
+    # MULTIVERSO: all the workers will synchronize at the place you call barrier
     mv.barrier()  # barrier every epoch
 
     # master will calc the accuracy
@@ -154,5 +167,5 @@ for i in range(50):
 
         print "epoch %d - accuracy: %.4f" % (i + 1, accuracy)
 
-
+# MULTIVERSO: You must call shutdown at the end of the file
 mv.shutdown()

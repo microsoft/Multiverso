@@ -23,7 +23,10 @@ mpirun -np 4 python ./examples/theano/logistic_regression.py
 
 
 # How to write python code with multiverso
-You can start with the [test example](./multiverso/test.py)
+You can start with the [test example](./multiverso/test.py) to learn the basic use of multiverso apis.
+
+Then you test and run the [examples](./examples/).  The original code links are written at the beginning of them. You can compare the multiverso version with the original ones to find the differences.
+The places need to be modified to use multiverso are all inserted comments like `# MULTIVERSO: XXX`
 
 
 
@@ -77,14 +80,18 @@ If you don't use shared variables to store and update the parameters, you can st
 # How to use multiverso in lasagne
 First, make sure you have understood the last section.
 
-Lasagne provides many functions to help you build models easilier. Multiverso python binding provides a convenient manager to make managing and synchronizing the variables easilier.
+Lasagne provides many functions to help you build models more easily. Multiverso python binding provides a convenient manager to make managing and synchronizing the variables more easily.
 
 You can use code like this to manage your parameters
 ```
 from multiverso.theano_ext.lasagne_ext import param_manager
 
 network = build_model()  # build_model is a function you implement to build model
-mvnpm = param_manager.MVNetParamManager(network, is_master_worker)  # is_master_worker is true only in one process. When it is true, the process will initialize the parameters
+
+# When is_master_worker is true, the process will initialize the parameters.
+# Make sure only one process will initialize the parameters. So is_master_worker
+# is true only in one process.
+mvnpm = param_manager.MVNetParamManager(network, is_master_worker)
 
 # training the model
 

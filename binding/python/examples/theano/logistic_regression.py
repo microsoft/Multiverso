@@ -83,7 +83,10 @@ import numpy
 import theano
 import theano.tensor as T
 
+# MULTIVERSO: import multiverso
 import multiverso as mv
+# MULTIVERSO: the sharedvar in theano_ext acts same like Theano's
+# sharedVariables. But it use multiverso as the backend
 from multiverso.theano_ext import sharedvar
 
 
@@ -114,6 +117,7 @@ class LogisticRegression(object):
         """
         # start-snippet-1
         # initialize with 0 the weights W as a matrix of shape (n_in, n_out)
+        # MULTIVERSO: replace the shared variable with mv_shared
         self.W = sharedvar.mv_shared(
             value=numpy.zeros(
                 (n_in, n_out),
@@ -123,6 +127,7 @@ class LogisticRegression(object):
             borrow=True
         )
         # initialize the biases b as a vector of n_out 0s
+        # MULTIVERSO: replace the shared variable with mv_shared
         self.b = sharedvar.mv_shared(
             value=numpy.zeros(
                 (n_out,),
@@ -331,11 +336,14 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     ######################
     print('... building the model')
 
+    # MULTIVERSO: you should call mv.init before call multiverso apis
     mv.init()
+    # MULTIVERSO: every process has distinct worker id
     worker_id = mv.worker_id()
-    # if worker_id == 0, it will be the master woker
+    # if worker_id == 0, it will be the master worker
     is_master_worker = worker_id == 0
 
+    # MULTIVERSO: mv.workers_num will return the number of workers
     total_worker = mv.workers_num()
 
     # allocate symbolic variables for the data
@@ -411,14 +419,19 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     while (epoch < n_epochs) and (not done_looping):
         epoch = epoch + 1
         for minibatch_index in range(n_train_batches):
-            # A worker will only use batch belonged to itself
+            # MULTIVERSO: we distribute the batches to different workers.
+            # A worker will only train batches belonged to itself
             if minibatch_index % total_worker == worker_id:
                 minibatch_avg_cost = train_model(minibatch_index)
+                # MULTIVERSO: when you want to commit all the delta of
+                # parameters produced by mv_shared and update the latest
+                # parameters from parameter server, you can call this function to
+                # synchronize the values
                 sharedvar.sync_all_mv_shared_vars()
 
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
-            # only master worker will output the model
+            # MULTIVERSO: only master worker will output the model
             if is_master_worker and (iter + 1) % validation_frequency == 0:
                 # compute zero-one loss on validation set
                 validation_losses = [validate_model(i)
@@ -434,8 +447,11 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
                         validation_loss * 100.
                     )
                 )
+        # MULTIVERSO: all the workers will synchronize at the place you call barrier
         mv.barrier()
 
+    # MULTIVERSO: You should make sure only one process will output the result.
+    # Otherwise results will be outputted repeatedly
     if is_master_worker:
         end_time = timeit.default_timer()
 
@@ -459,6 +475,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
         # save the model
         with open('model.pkl', 'wb') as f:
             pickle.dump(classifier, f)
+    # MULTIVERSO: You must call shutdown at the end of the file
     mv.shutdown()
 
 
