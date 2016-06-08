@@ -14,7 +14,16 @@ ffi.cdef[[
     int MV_ServerId();
 ]]
 
-libmv = ffi.load('libmultiverso', 'true')
+package.cpath = '/usr/local/lib/?.so;' .. package.cpath
+libmv_path = package.searchpath('libmultiverso', package.cpath, '')
+if libmv_path == nil then
+    print([[
+[Error] Multiverso shared object, `libmultiverso.so`, NOT FOUND!
+Please build & install `multiverso` according to the instruction [1].
+[1] https://github.com/Microsoft/multiverso#build]])
+    return
+end
+libmv = ffi.load(libmv_path, 'true')
 
 mv.ArrayTableHandler = require('multiverso.ArrayTableHandler')
 mv.MatrixTableHandler = require('multiverso.MatrixTableHandler')
