@@ -118,3 +118,60 @@ if "THEANO_FLAGS" not in os.environ:
 
 # import theano after this
 ```
+
+# Experiments
+
+Here is the result of running [Deep_Residual_Learning_CIFAR-10](./examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
+
+## Hardware
+|||
+| -------- |:--------:|
+|Hosts|1|
+|GPU|GeForce GTX TITAN X * 4|
+|CPU|Intel(R) Core(TM) i7-5960X CPU @ 3.00GHz  * 1|
+
+
+## Theano settings
+Here is the settings in my `~/.theanorc`
+```
+[global]
+device = gpu
+floatX = float32
+
+[cuda]
+root = /usr/local/cuda-7.5/
+
+[lib]
+cnmem = 1
+```
+
+## About the Model
+|||
+| :---- | -----: |
+|Total epoch|82|
+|Batch size|128|
+|Depth|32|
+|Learning rate change schedule|Initialized as 0.1, Changed to 0.01 from epoch 41, Changed to 0.001 from epoch 61|
+|number of parameters in model|    464,154|
+
+
+Clarification
+- An epoch represents all the processes divides all the data equally and  go through them once together
+- A barrier is used at the end of every epoch
+- I didn't use warm start in  ASGD
+- The time to load the data is not considered in the experiment.
+
+
+# The results
+I've run 4 experiments. The configuration and the result of each configuration are listed below.
+
+|Short Name | With multiverso | number of Process | number of GPU | Sync every X minibatches |  Best model validation accuracy | Time per epoch / s |
+| :---- | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
+| 0M-1G | 0 | 1 | 1 | --| 92.61 % | 100.02|
+|1M-1G-1S | 1 | 1 | 1 | 1 | 92.61 % | 109.78|
+|1M-4G-1S | 1 | 4 | 4 | 1 | 92.15 % | 29.38|
+|1M-4G-3S | 1 | 4 | 4 | 3 | 89.61 % | 27.46|
+
+![accuracy_epoch](./docs/imgs/accuracy_epoch.png)
+![accuracy_time](./docs/imgs/accuracy_time.png)
+![time_epoch](./docs/imgs/time_epoch.png)
