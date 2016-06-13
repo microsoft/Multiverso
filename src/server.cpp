@@ -115,9 +115,11 @@ public:
     }
 
     std::string DebugString() {
-      std::string os = "global ";
+      std::string rank = "rank " + std::to_string(MV_Rank());
+      std::string os = rank + " global ";
       os += std::to_string(global_clock_) + " local: ";
       for (auto i : local_clock_) os += std::to_string(i) + " ";
+      os += "\n";
       return os;
     }
 
