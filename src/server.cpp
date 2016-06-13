@@ -74,6 +74,7 @@ public:
     int num_worker = Zoo::Get()->num_workers();
     worker_get_clocks_.reset(new VectorClock(num_worker));
     worker_add_clocks_.reset(new VectorClock(num_worker));
+    num_waited_add_.resize(num_worker, 0);
   }
 
   // make some modification to suit to the sync server
@@ -138,6 +139,7 @@ protected:
     if (worker_get_clocks_->local_clock(worker) >
         worker_get_clocks_->global_clock()) {
       msg_add_cache_.Push(msg);
+      ++num_waited_add_[worker];
       return;
     }
     // 2. Process Add
@@ -160,8 +162,7 @@ protected:
     int worker = Zoo::Get()->rank_to_worker_id(msg->src());
     if (worker_add_clocks_->local_clock(worker) >
         worker_add_clocks_->global_clock() || 
-        worker_get_clocks_->local_clock(worker) > 
-        worker_get_clocks_->global_clock()) {
+        num_waited_add_[worker] > 0) {
       // Will wait for other worker finished Add
       msg_get_cache_.Push(msg);
       return;
@@ -176,6 +177,7 @@ protected:
         int add_worker = Zoo::Get()->rank_to_worker_id(add_msg->src());
         Server::ProcessAdd(add_msg);
         CHECK(!worker_add_clocks_->Update(add_worker));
+        --num_waited_add_[add_worker];
       }
     }
   }
@@ -209,6 +211,7 @@ protected:
 private:
   std::unique_ptr<VectorClock> worker_get_clocks_;
   std::unique_ptr<VectorClock> worker_add_clocks_;
+  std::vector<int> num_waited_add_;
 
   MtQueue<MessagePtr> msg_add_cache_;
   MtQueue<MessagePtr> msg_get_cache_;
