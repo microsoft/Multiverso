@@ -4,9 +4,9 @@
 import ctypes
 import os
 import platform
+from ctypes.util import find_library
 
 PACKAGE_PATH = os.path.abspath(os.path.dirname(__file__))
-PROJECT_PATH = os.path.join(PACKAGE_PATH, os.path.pardir, os.path.pardir, os.path.pardir)
 
 
 class Loader(object):
@@ -14,17 +14,47 @@ class Loader(object):
     LIB = None
 
     @classmethod
-    def load_lib(cls):
+    def _find_mv_path(cls):
         if platform.system() == "Windows":
+            mv_lib_path = find_library("Multiverso")
+            if mv_lib_path is None:
+                print "* Fail to load Multiverso.dll from the windows $PATH."\
+                      "Because Multiverso.dll can not be found in the $PATH "\
+                      "directories. Go on loading Multiverso from the package."
+            else:
+                return mv_lib_path
+
             mv_lib_path = os.path.join(PACKAGE_PATH, "Multiverso.dll")
+            if not os.path.exists(mv_lib_path):
+                print "* Fail to load Multiverso.dll from the package. Because"\
+                      " the file " + mv_lib_path + " can not be found."
+            else:
+                return mv_lib_path
         else:
+            mv_lib_path = find_library("multiverso")
+            if mv_lib_path is None:
+                print "* Fail to load libmultiverso.so from the system"\
+                      "libraries. Because libmultiverso.so can't be found in"\
+                      "library paths. Go on loading Multiverso from the package."
+            else:
+                return mv_lib_path
+
             mv_lib_path = os.path.join(PACKAGE_PATH, "libmultiverso.so")
-        if not os.path.exists(mv_lib_path):
-            msg = "The multiverso dynamic library(" + mv_lib_path + ") can't be "\
-                  "found  , please make sure you have run python setup.py install"\
-                  "to install the multivers-python package successfully"
-            # Make the message colorful
-            print "\033[93m" + msg + '\033[0m'
+            if not os.path.exists(mv_lib_path):
+                print "* Fail to load libmultiverso.so from the package. Because"\
+                      " the file " + mv_lib_path + " can not be found."
+            else:
+                return mv_lib_path
+        return None
+
+    @classmethod
+    def load_lib(cls):
+        mv_lib_path = cls._find_mv_path()
+        if mv_lib_path is None:
+            print "Fail to load the multiverso library. Please make sure you"\
+                  "  have installed multiverso successfully"
+        else:
+            print "Find the multiverso library successfully(%s)" % mv_lib_path
         return ctypes.cdll.LoadLibrary(mv_lib_path)
 
     @classmethod
