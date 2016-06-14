@@ -6,28 +6,22 @@ OPTION(USE_HDFS "won't use hdfs on default, set ON to enable" OFF)
 OPTION(TEST "Build all tests." ON)
 
 find_package(MPI REQUIRED)
-if(UNIX)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
-endif()
-
-if(USE_HDFS)
-	ADD_DEFINITIONS(-DMULTIVERSO_USE_HDFS)
-	SET(JVM_LIB /usr/local/java/default/jre/lib/amd64/server)
-	SET(HDFS_LIB /usr/local/hadoop/lib/native)
-endif(USE_HDFS)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
-# [TODO] change the THIRD_PARTY to an option
-SET(THIRD_PARTY /usr/local)
-#SET(THIRD_PARTY ${PROJECT_SOURCE_DIR}/third_party)
-SET(THIRD_PARTY_INC ${THIRD_PARTY}/include)
-SET(THIRD_PARTY_LIB ${THIRD_PARTY}/lib)
-SET(MULTIVERSO_HEADER_DIR ${PROJECT_SOURCE_DIR}/include)
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-SET(MULTIVERSO_LIBRARY_DIR ${PROJECT_BINARY_DIR}/lib)
-SET(TEST_INC ${PROJECT_SOURCE_DIR}/Test)
 
-Message(MPI_CXX_COMPILER)
+if(USE_HDFS)
+    ADD_DEFINITIONS(-DMULTIVERSO_USE_HDFS)
+    # TODO: I think these paths should not be hard coded
+    SET(JVM_LIB /usr/local/java/default/jre/lib/amd64/server)
+    SET(HDFS_LIB /usr/local/hadoop/lib/native)
+    LINK_DIRECTORIES(${HDFS_LIB})
+    LINK_DIRECTORIES(${JVM_LIB})
+endif(USE_HDFS)
+
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(Test)
+
+# TODO: more header files should be installed. Only c_api.h is installed so far
+install (FILES ${PROJECT_SOURCE_DIR}/include/multiverso/c_api.h DESTINATION include/multiverso)
