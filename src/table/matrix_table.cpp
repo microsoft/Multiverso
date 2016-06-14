@@ -284,10 +284,17 @@ MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :
 }
 
 template <typename T>
-MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col, void(*filler)(std::vector<T> &)) :
+MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col, float min_value,float max_value) :
 MatrixServerTable<T>::MatrixServerTable(num_row, num_col) {
 	if (typeid(T) == typeid(float)){
-		filler(storage_);
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> dis(min_value,max_value);
+
+		for (int i = 0; i<storage_.size(); i++)
+		{
+			storage_[i] = dis(gen);
+		}
 	}
 }
 
