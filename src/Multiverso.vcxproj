@@ -191,6 +191,7 @@
     <ClInclude Include="..\include\multiverso\server.h" />
     <ClInclude Include="..\include\multiverso\table\array_table.h" />
     <ClInclude Include="..\include\multiverso\table\kv_table.h" />
+    <ClInclude Include="..\include\multiverso\table\matrix.h" />
     <ClInclude Include="..\include\multiverso\table\matrix_table.h" />
     <ClInclude Include="..\include\multiverso\table\sparse_matrix_table.h" />
     <ClInclude Include="..\include\multiverso\table_factory.h" />
@@ -230,6 +231,7 @@
     <ClCompile Include="server.cpp" />
     <ClCompile Include="table.cpp" />
     <ClCompile Include="table\array_table.cpp" />
+    <ClCompile Include="table\matrix.cpp" />
     <ClCompile Include="table\matrix_table.cpp" />
     <ClCompile Include="table\sparse_matrix_table.cpp" />
     <ClCompile Include="table_factory.cpp" />

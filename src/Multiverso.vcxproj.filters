@@ -118,6 +118,9 @@
     <ClInclude Include="..\include\multiverso\table_factory.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\multiverso\table\matrix.h">
+      <Filter>table</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="system">
@@ -229,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="blob.cpp">
       <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="table\matrix.cpp">
+      <Filter>table</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
