@@ -20,6 +20,7 @@
 #include <multiverso/table/array_table.h>
 #include <multiverso/table/kv_table.h>
 #include <multiverso/table/matrix_table.h>             
+#include <multiverso/table/matrix.h>
 #include <multiverso/table/sparse_matrix_table.h>
 #include <multiverso/updater/updater.h>
 #include <multiverso/table_factory.h>
@@ -195,98 +196,33 @@ void TestIP() {
   for (auto ip : ip_list) Log::Info("%s\n", ip.c_str());
 }
 
-//void TestMatrix(int argc, char* argv[]){
-//  Log::Info("Test Matrix\n");
-//
-//  Log::ResetLogLevel(LogLevel::Info);
-//  multiverso::SetCMDFlag("sync", true);
-//  MV_Init(&argc, argv);
-//
-//  int num_row = 8, num_col = 3592;
-//  int size = num_row * num_col;
-//  // MatrixWorkerTable<int>* worker_table = new MatrixWorkerTable<int>(num_row, num_col);
-//  // MatrixServerTable<int>* server_table = new MatrixServerTable<int>(num_row, num_col);
-//  MatrixTableOption<int> option;
-//  option.num_row = num_row;
-//  option.num_col = num_col;
-//  MatrixWorkerTable<int>* worker_table = multiverso::MV_CreateTable(option);
-//  std::thread* m_prefetchThread = nullptr;
-//  MV_Barrier();
-//  int count = 0;
-//  while (true)
-//  {
-//    count++;
-//    std::vector<int> v = { 0, 1, 3, 7 };
-//
-//    // test data
-//    std::vector<int> delta(size);
-//    std::vector<int> data(size, 0);
-//    for (auto i = 0; i < size; ++i)
-//      delta[i] = (int)i;
-//
-//    worker_table->Add(delta.data(), size);
-//    worker_table->Get(data.data(), size);
-//    if (count % 1000 == 0)
-//    { 
-//      printf("Dense Add/Get, #test: %d.\n", count);
-//      fflush(stdout);
-//    }
-//
-//    std::vector<int*> data_rows = { &data[0], &data[num_col], &data[3 * num_col], &data[7 * num_col] };
-//    std::vector<int*> delta_rows = { &delta[0], &delta[num_col], &delta[3 * num_col], &delta[7 * num_col] };
-//    worker_table->Add(v, delta_rows, num_col);
-//    worker_table->Get(v, data_rows, num_col);
-//    //MV_Barrier();
-//    //worker_table->Get(v, data_rows, num_col);
-//
-//    if (count % 1000 == 0)
-//    {
-//      printf("Sparse Add/Get, #test: %d.\n", count);
-//      fflush(stdout);
-//    }
-//    for (auto i = 0; i < num_row; ++i) {
-//      for (auto j = 0; j < num_col; ++j) {
-//        int expected = (int)(i * num_col + j) * count * MV_NumWorkers();
-//        if (i == 0 || i == 1 || i == 3 || i == 7) {
-//          expected += (int)(i * num_col + j) * count * MV_NumWorkers();
-//        }
-//        int actual = data[i* num_col + j];
-//        ASSERT_EQ(expected, actual) << "Should be equal after adding, row: " 
-//        << i << ", col:" << j << ", expected: " << expected << ", actual: " << actual;
-//      }
-//    }
-//
-//  }
-//  delete worker_table;
-//  MV_ShutDown();
-////}
-
 
 void TestMatrix(int argc, char* argv[]){
-  // Log::ResetLogLevel(LogLevel::Debug);
+  //Log::ResetLogLevel(LogLevel::Debug);
   multiverso::SetCMDFlag("sync", true);
   MV_Init(&argc, argv);
 
-  int num_row = 8, num_col = 3592;
-  int num_tables = 5;
+  int num_row = 11, num_col = 3592;
+  int num_tables = 2;
   std::vector<int> num_table_size;
-  std::vector<MatrixTableOption<int>* > table_options;
-  std::vector<MatrixWorkerTable<int>* > worker_tables;
+  std::vector<MatrixOption<int>* > table_options;
+  std::vector<MatrixWorker<int>* > worker_tables;
 
-  for (auto i = 0; i < num_tables - 1 ; i++)
+  for (auto i = 0; i < num_tables-1; i++)
   {
-    table_options.push_back(new MatrixTableOption<int>());
+    table_options.push_back(new MatrixOption<int>());
     table_options[i]->num_col = num_col;
     table_options[i]->num_row = num_row + i;
+    table_options[i]->is_sparse = true;
     num_table_size.push_back(num_col * (num_row + i));
     worker_tables.push_back(multiverso::MV_CreateTable(*table_options[i]));
   }
 
-  table_options.push_back(new MatrixTableOption<int>());
-  table_options[4]->num_col = num_col;
-  table_options[4]->num_row = 1;
+  table_options.push_back(new MatrixOption<int>());
+  table_options[num_tables - 1]->num_col = num_col;
+  table_options[num_tables - 1]->num_row = 1;
   num_table_size.push_back(num_col * (1));
-  worker_tables.push_back(multiverso::MV_CreateTable(*table_options[4]));
+  worker_tables.push_back(multiverso::MV_CreateTable(*table_options[num_tables-1]));
 
   std::thread* m_prefetchThread = nullptr;
   MV_Barrier();
@@ -304,7 +240,7 @@ void TestMatrix(int argc, char* argv[]){
       delta[j].resize(num_table_size[j]);
       data[j].resize(num_table_size[j], 0);
       for (auto i = 0; i < num_table_size[j]; ++i)
-        delta[j][i] = (int)i;
+        delta[j][i] = (int)i + 1;
     }
 
     for (auto j = 0; j < num_tables; j++)
@@ -335,9 +271,9 @@ void TestMatrix(int argc, char* argv[]){
     }
     for (auto i = 0; i < num_row; ++i) {
       for (auto j = 0; j < num_col; ++j) {
-        int expected = (int)(i * num_col + j) * count * MV_NumWorkers();
+        int expected = (int)(i * num_col + j + 1) * count * MV_NumWorkers();
         if (i == 0 || i == 1 || i == 3 || i == 7) {
-          expected += (int)(i * num_col + j) * count * MV_NumWorkers();
+          expected += (int)(i * num_col + j + 1) * count * MV_NumWorkers();
         }
         int actual = data[0][i* num_col + j];
         ASSERT_EQ(expected, actual) << "Should be equal after adding, row: " 
@@ -502,7 +438,7 @@ void TestmatrixPerformance(int argc, char* argv[],
         }
       }
 
-      MV_Barrier();
+      //MV_Barrier();
     }
 
   MV_Barrier();
@@ -513,21 +449,21 @@ void TestmatrixPerformance(int argc, char* argv[],
 }
 
 void TestSparsePerf(int argc, char* argv[]) {
-  TestmatrixPerformance<SparseMatrixWorkerTable<float>, SparseMatrixServerTable<float>>(argc,
+  TestmatrixPerformance<MatrixWorker<float>, MatrixServer<float>>(argc,
     argv,
     [](int num_row, int num_col) {
-    return std::shared_ptr<SparseMatrixWorkerTable<float>>(
-      new SparseMatrixWorkerTable<float>(num_row, num_col));
+    return std::shared_ptr<MatrixWorker<float>>(
+      new MatrixWorker<float>(num_row, num_col, true));
   },
     [](int num_row, int num_col) {
-    return std::shared_ptr<SparseMatrixServerTable<float>>(
-      new SparseMatrixServerTable<float>(num_row, num_col, false));
+    return std::shared_ptr<MatrixServer<float>>(
+      new MatrixServer<float>(num_row, num_col, true, false));
   },
-    [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const AddOption* option, const int worker_id) {
+    [](const std::shared_ptr<MatrixWorker<float>>& worker_table, const std::vector<int>& row_ids, const std::vector<float*>& data_vec, size_t size, const AddOption* option, const int worker_id) {
     worker_table->Add(row_ids, data_vec, size, option);
   },
 
-    [](const std::shared_ptr<SparseMatrixWorkerTable<float>>& worker_table, float* data, size_t size, int worker_id) {
+    [](const std::shared_ptr<MatrixWorker<float>>& worker_table, float* data, size_t size, int worker_id) {
     GetOption get_option;
     get_option.set_worker_id(worker_id);
     worker_table->Get(data, size, &get_option);

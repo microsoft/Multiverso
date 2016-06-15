@@ -48,6 +48,7 @@ void ArrayWorker<T>::Add(T* data, size_t size, const AddOption* option) {
 
 template <typename T>
 int ArrayWorker<T>::Partition(const std::vector<Blob>& kv,
+  MsgType,
   std::unordered_map<int, std::vector<Blob> >* out) {
   CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
   for (int i = 0; i < num_server_; ++i) (*out)[i].push_back(kv[0]);
