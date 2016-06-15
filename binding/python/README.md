@@ -3,10 +3,10 @@
 # Requirements
 
 ## On linux
-I presume you followed the [README](../../README.md) and have build multiverso successfully.
+I presume you followed the [README](../../README.md) and have build and install multiverso successfully.
 
 ## On windows
-I presume you have MSBuild.exe installed and your system can find it in the $PATH．　Then you should run [build_dll.bat](../../src/build_dll.bat)　to build the .dll file.
+I presume you have MSBuild.exe installed and your system can find it in the $PATH. Then you should run [build_dll.bat](../../src/build_dll.bat)　to build the .dll file and install the .dll in either system $PATH or the multiverso package.
 
 
 # Run tests

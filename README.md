@@ -9,12 +9,13 @@ For more details, please view our website [http://www.dmtk.io](http://www.dmtk.i
 Build
 ----------
 
-**Linux** (Tested on Ubuntu 12.04)
+**Linux** (Tested on Ubuntu 14.04)
 
-1. Run ``` mkdir build ```
-2. Run ``` cd build ```
-3. Run ``` cmake .. ```
-4. Run ``` make ```
+1. Run `sudo apt-get install libopenmpi-dev openmpi-bin build-essential cmake`
+2. Run `mkdir build`
+3. Run `cd build`
+4. Run `cmake ..`
+5. Run `make && make install`
 
 **Windows**
 
