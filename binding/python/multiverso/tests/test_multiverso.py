@@ -2,6 +2,9 @@
 # coding:utf8
 import multiverso as mv
 import unittest
+import numpy as np
+import theano
+from multiverso.theano_ext import sharedvar
 
 
 def setUpModule():
@@ -67,6 +70,41 @@ class TestMultiversoTables(unittest.TestCase):
                 for j, actual in enumerate(row):
                     expected = (row_ids[i] * num_col + j) * count * workers_num * 2
                     self.assertEqual(expected, actual)
+
+
+class TestMultiversoSharedVariable(unittest.TestCase):
+    '''
+    Use the commands below to run test
+    $ nosetests
+    '''
+
+    def _test_sharedvar(self, row, col):
+        W = sharedvar.mv_shared(
+            value=np.zeros(
+                (row, col),
+                dtype=theano.config.floatX
+            ),
+            name='W',
+            borrow=True
+        )
+        delta = np.array(range(1, row * col + 1),
+                        dtype=theano.config.floatX).reshape((row, col))
+        train_model = theano.function([], updates=[(W, W + delta)])
+        mv.barrier()
+
+        for i in xrange(100):
+            train_model()
+            train_model()
+            sharedvar.sync_all_mv_shared_vars()
+            mv.barrier()
+            # to get the newest value, we must sync again
+            sharedvar.sync_all_mv_shared_vars()
+            for j, actual in enumerate(W.get_value().reshape(-1)):
+                self.assertEqual((j + 1) * (i + 1) * 2 * mv.workers_num(), actual)
+            mv.barrier()
+
+    def test_sharedvar(self):
+        self._test_sharedvar(200, 200)
 
 
 if __name__ == '__main__':
