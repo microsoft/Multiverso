@@ -18,12 +18,12 @@ Global
 		release|x64 = release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.debug_zmq|x64.ActiveCfg = debug|x64
-		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.debug_zmq|x64.Build.0 = debug|x64
+		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.debug_zmq|x64.ActiveCfg = debug_zmq|x64
+		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.debug_zmq|x64.Build.0 = debug_zmq|x64
 		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.debug|x64.ActiveCfg = debug|x64
 		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.debug|x64.Build.0 = debug|x64
-		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.release_zmq|x64.ActiveCfg = release|x64
-		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.release_zmq|x64.Build.0 = release|x64
+		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.release_zmq|x64.ActiveCfg = release_zmq|x64
+		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.release_zmq|x64.Build.0 = release_zmq|x64
 		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.release|x64.ActiveCfg = release|x64
 		{546681D6-495C-4AEE-BBC2-3CAEC86B5137}.release|x64.Build.0 = release|x64
 		{16F14058-B116-49D9-8BA0-209F3AFFE849}.debug_zmq|x64.ActiveCfg = debug_zmq|x64

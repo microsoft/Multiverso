@@ -84,18 +84,13 @@ public:
     explicit VectorClock(int n) : 
       local_clock_(n, 0), global_clock_(0), size_(0) {}
 
-    static bool except_max_int_compare(int a, int b) {
-      return (b == std::numeric_limits<int>::max() ? false : a < b);
-    }
-
     // Return true when all clock reach a same number
     virtual bool Update(int i) {
       ++local_clock_[i];
       if (global_clock_ < *(std::min_element(std::begin(local_clock_),
         std::end(local_clock_)))) {
         ++global_clock_;
-        if (global_clock_ == *(std::max_element(std::begin(local_clock_),
-          std::end(local_clock_), except_max_int_compare))) {
+        if (global_clock_ == max_element()) {
           return true;
         }
       }
@@ -107,8 +102,7 @@ public:
       if (global_clock_ < *(std::min_element(std::begin(local_clock_),
         std::end(local_clock_)))) {
         ++global_clock_;
-        if (global_clock_ == *(std::max_element(std::begin(local_clock_),
-          std::end(local_clock_), except_max_int_compare))) {
+        if (global_clock_ == max_element()) {
           return true;
         }
       }
@@ -125,6 +119,14 @@ public:
     int local_clock(int i) const { return local_clock_[i]; }
     int global_clock() const { return global_clock_; }
 
+  private:
+    int max_element() const {
+      int max = -1;
+      for (auto val : local_clock_) {
+        max = (val != std::numeric_limits<int>::max() && val > max) ? val : max;
+      }
+      return max;
+    }
   protected:
     std::vector<int> local_clock_;
     int global_clock_;
@@ -182,7 +184,7 @@ protected:
 
   void ProcessFinishTrain(MessagePtr& msg) {
     int worker = Zoo::Get()->rank_to_worker_id(msg->src());
-    Log::Debug("[ProcessFinishTrain] Server %d, worker %d has finished training.\n", 
+    Log::Info("[ProcessFinishTrain] Server %d, worker %d has finished training.\n", 
                Zoo::Get()->server_rank(), worker);
     if (worker_get_clocks_->FinishTrain(worker)) {
       CHECK(msg_get_cache_.Empty());
