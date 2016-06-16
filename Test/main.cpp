@@ -105,6 +105,10 @@ void TestArray(int argc, char* argv[]) {
   int iter = 10 * (MV_Rank() + 10);
   for (int i = 0; i < iter; ++i) {
     shared_array->Add(delta.data(), array_size);
+    shared_array->Add(delta.data(), array_size);
+    shared_array->Add(delta.data(), array_size);
+    shared_array->Get(data, array_size);
+    shared_array->Get(data, array_size);
     shared_array->Get(data, array_size);
     for (int k = 0; k < array_size; ++k) {
       if (data[k] != delta[k] * (i + 1) * MV_NumWorkers()) {
