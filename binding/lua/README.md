@@ -25,3 +25,9 @@ or
 ```
 luajit test.lua
 ```
+
+## Documentation
+
+- [Tutorial](./docs/TUTORIAL.md)
+- [API](./docs/API.md)
+- [Benchmark](./docs/BENCHMARK.md)
