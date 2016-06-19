@@ -11,11 +11,14 @@ Build
 
 **Linux** (Tested on Ubuntu 14.04)
 
-1. Run `sudo apt-get install libopenmpi-dev openmpi-bin build-essential cmake`
-2. Run `mkdir build`
-3. Run `cd build`
-4. Run `cmake ..`
-5. Run `make && make install`
+```
+sudo apt-get install libopenmpi-dev openmpi-bin build-essential cmake
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+```
 
 **Windows**
 
