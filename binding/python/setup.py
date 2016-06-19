@@ -17,7 +17,11 @@ setup(name='multiverso-python',
       author='Microsoft',
       license='MIT',
       packages=['multiverso', 'multiverso.theano_ext', 'multiverso.theano_ext.lasagne_ext'],
-      install_requires=["theano", "lasagne"],
+      # TODO: The lasagne on pypi is too old. multiverso need some functions in
+      # lasagne-0.2 which is not released yet. Please replace the dev version
+      # with the stable release later.
+      dependency_links = ['https://github.com/Lasagne/Lasagne/tarball/master#egg=lasagne-0.2.dev1'],
+      install_requires=["theano>=0.8.2", "lasagne==0.2.dev1"],
       classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
