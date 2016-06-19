@@ -56,7 +56,7 @@ if multiverso.is_master then
 else
   -- Wait the master worker to finish setting.
   multiverso.barrier()
-  -- Get the initial model from server.
+  -- Get the initial model from the server.
   params:copy(tbh:get())
 end
 
