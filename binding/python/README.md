@@ -3,7 +3,7 @@
 # Requirements
 
 ## On linux
-I presume you followed the [README](../../README.md) and have build and install multiverso successfully.
+I presume you followed the [README](../../README.md#build) and have build and install multiverso successfully.
 
 ## On windows
 I presume you have MSBuild.exe installed and your system can find it in the $PATH. Then you should run [build_dll.bat](../../src/build_dll.bat)　to build the .dll file and install the .dll in either system $PATH or the multiverso package.
@@ -26,6 +26,23 @@ mpirun -np 4 python ./examples/theano/logistic_regression.py
 1. You could start with the [test example](./multiverso/test.py) to learn the basic use of multiverso apis.
 2. After understanding the basic use of multiverso apis, you can test and run the [examples](./examples/).  The original code links are written at the beginning of them. You can compare the multiverso version with the original ones to find the differences. The places need to be modified to use multiverso are all inserted comments like `# MULTIVERSO: XXX`
 
+Here is a typical example of python code with multvierso
+```python
+# import multiverso.
+import multiverso as mv
+# Init multiverso.
+mv.init()
+# Get total number of workers.
+print mv.workers_num()
+# Get the id for current worker.
+print mv.worker_id()
+
+# Here is your code to create tables and sync values.
+
+# Shutdown multiverso
+mv.shutdown()
+```
+
 
 
 # How to use multiverso in theano
@@ -45,7 +62,7 @@ self.W = theano.shared(
 )
 ```
 
-If you want to use multiverso, you can modify them like this.
+If you want to use multiverso, you can modify them like this. `mv_shared` is just a wrapper of `theano.shared`. It acts same as `theano.shared`, but it give you convenient interface to sync values.
 ```
 from multiverso.theano_ext import sharedvar
 W = sharedvar.mv_shared(

@@ -69,5 +69,10 @@ mv_shared.shared_vars = []  # all shared_vars in multiverso will be recorded her
 
 
 def sync_all_mv_shared_vars():
+    '''
+    Sync value with multiverso. It is often used when you are training model,
+    and it will add the gradients (delta value) to the server and update the
+    latest value from the server.
+    '''
     for sv in mv_shared.shared_vars:
         sv.mv_sync()
