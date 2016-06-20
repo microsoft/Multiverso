@@ -6,7 +6,7 @@
 I presume you followed the [README](../../README.md#build) and have build and install multiverso successfully.
 
 ## On windows
-I presume you have MSBuild.exe installed and your system can find it in the $PATH. Then you should run [build_dll.bat](../../src/build_dll.bat)　to build the .dll file and install the .dll in either system $PATH or the multiverso package.
+I presume you have MSBuild.exe installed and your system can find it in the $PATH. Then you should run [build_dll.bat](../../src/build_dll.bat)　to build the .dll file and install the .dll. We don't have auto-installer for windows now, you have to copy the .dll to either system $PATH or the multiverso package folder.
 
 
 # Run tests
@@ -15,11 +15,15 @@ nosetests
 ```
 
 
-# Run logistic regression example with multi-process
+# Run your multiverso program with multi-process
+Here is an example of running logistic regression with multi-process.
 ```
 mpirun -np 4 python ./examples/theano/logistic_regression.py
 ```
 
+
+# Api documents
+All the api documents are written as docstrings in the python source
 
 
 # How to write python code with multiverso
@@ -111,7 +115,7 @@ mvnpm = param_manager.MVNetParamManager(network, is_master_worker)
 # training the model
 
 # When you are ready to add the delta of the variable in this model to the parameter server and get the latest value, you can run this function
-mvnpm.update_all_param()
+mvnpm.sync_all_param()
 ```
 
 # How to use multi-GPU in theano with multiverso
@@ -137,6 +141,9 @@ if "THEANO_FLAGS" not in os.environ:
 # Experiments
 
 Here is the result of running [Deep_Residual_Learning_CIFAR-10](./examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
+
+## Task Description
+Perform CIFAR-10 classification with residential networking implementation based on Lasagne.
 
 ## Hardware
 |||

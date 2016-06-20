@@ -10,6 +10,15 @@ mv_lib = Loader.get_lib()
 
 
 class TableHandler(object):
+    '''`TableHandler` is an interface to sync different kinds of values.
+
+    If you are not writing python code based on theano or lasagne, you are
+    supposed to sync models (for initialization) and gradients (during
+    training) so as to let multiverso help you manage the models in distributed
+    environments.
+    Otherwise, you'd better use the classes in `multiverso.theano_ext` or
+    `multiverso.theano_ext.lasagne_ext`
+    '''
     def __init__(self, size):
         raise NotImplementedError("You must implement the __init__ method.")
 
@@ -25,22 +34,29 @@ C_FLOAT_P = ctypes.POINTER(ctypes.c_float)
 
 
 class ArrayTableHandler(TableHandler):
+    '''`ArrayTableHandler` is used to sync array-like (one-dimensional) value.'''
     def __init__(self, size):
+        '''Constructor for syncing array-like (one-dimensional) value.
+
+        The `size` should be a int equal to the size of value we want to sync.
+        '''
         self._handler = ctypes.c_void_p()
         self._size = size
         mv_lib.MV_NewArrayTable(size, ctypes.byref(self._handler))
 
     def get(self):
-        '''
-        Data type of return value is numpy.ndarray
+        '''get the latest value from multiverso ArrayTable
+
+        Data type of return value is numpy.ndarray with one-dimensional
         '''
         data = np.zeros((self._size, ), dtype=np.dtype("float32"))
         mv_lib.MV_GetArrayTable(self._handler, data.ctypes.data_as(C_FLOAT_P), self._size)
         return data
 
     def add(self, data):
-        '''
-        Data type of `data` is numpy.ndarray
+        '''add the data to the multiverso ArrayTable
+
+        Data type of `data` is numpy.ndarray with one-dimensional
         '''
         if not isinstance(data, np.ndarray):
             data = np.array(data)
@@ -51,6 +67,11 @@ class ArrayTableHandler(TableHandler):
 
 class MatrixTableHandler(TableHandler):
     def __init__(self, num_row, num_col):
+        '''Constructor for syncing matrix-like (two-dimensional) value.
+
+        The `num_row` should be the number of rows and the `num_col` should be
+        the number of columns.
+        '''
         self._handler = ctypes.c_void_p()
         self._num_row = num_row
         self._num_col = num_col
@@ -58,10 +79,15 @@ class MatrixTableHandler(TableHandler):
         mv_lib.MV_NewMatrixTable(num_row, num_col, ctypes.byref(self._handler))
 
     def get(self, row_ids=None):
-        '''
+        '''get the latest value from multiverso MatrixTable
+
         If row_ids is None, we will return all rows as numpy.narray , e.g.
-        array([[1, 3], [3, 4]]).  Otherwise we will return the data according
-        to the row_ids
+        array([[1, 3], [3, 4]]).
+        Otherwise we will return the data according to the row_ids(e.g. you can
+        pass [1] to row_ids to get only the first row, it will return a
+        two-dimensional numpy.ndarray with one row)
+
+        Data type of return value is numpy.ndarray with two-dimensional
         '''
         if row_ids is None:
             data = np.zeros((self._num_row, self._num_col), dtype=np.dtype("float32"))
@@ -77,11 +103,14 @@ class MatrixTableHandler(TableHandler):
             return data
 
     def add(self, data=None, row_ids=None):
-        '''
-            If row_ids is None, we will add all data, and the data
-            should be a list, e.g. [1, 2, 3, ...]
+        '''add the data to the multiverso MatrixTable
 
-            Otherwise we will add the data according to the row_ids
+        If row_ids is None, we will add all data, and the data
+        should be a list, e.g. [1, 2, 3, ...]
+
+        Otherwise we will add the data according to the row_ids
+
+        Data type of `data` is numpy.ndarray with two-dimensional
         '''
         assert(data is not None)
         if not isinstance(data, np.ndarray):
