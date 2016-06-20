@@ -50,6 +50,8 @@ void Zoo::Stop(bool finalize_net) {
   if (!MV_CONFIG_ma) { StopPS(); }
   // Stop the network
   if (finalize_net) net_util_->Finalize();
+  for (auto actor : zoo_) delete actor.second;
+  Log::Info("Multiverso Shutdown successfully\n");
 }
 
 int Zoo::rank() const { return NetInterface::Get()->rank(); }

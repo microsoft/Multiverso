@@ -33,7 +33,7 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
 }
 
 Communicator::~Communicator() {
-
+  recv_thread_->join();
 }
 
 void Communicator::Main() {
@@ -78,8 +78,9 @@ void Communicator::Communicate() {
     MessagePtr msg(new Message());
     size_t size = net_util_->Recv(&msg);
     if (size == -1) {
-      Log::Debug("recv return -1\n");
-      break;
+      continue;
+      // Log::Debug("recv return -1\n");
+      // break;
     }
     if (size > 0) {
       // a message received
