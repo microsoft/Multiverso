@@ -12,7 +12,7 @@ Perform CIFAR-10 classification with torch resnet implementation.
 
 - **Hosts** : 1
 - **GPU** : GeForce GTX TITAN X * 4
-- **CPU** : ntel(R) Core(TM) i7-5960X CPU @ 3.00GHz  * 16
+- **CPU** : Intel(R) Core(TM) i7-5960X CPU @ 3.00GHz
 - **Memory** : 128GB
 
 ## Common settings
