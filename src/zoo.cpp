@@ -150,7 +150,6 @@ void Zoo::FinishTrain() {
     msg->set_type(MsgType::Server_Finish_Train);
     SendTo(actor::kCommunicator, msg);
   }
-  Log::Debug("rank %d finish train\n", Zoo::Get()->rank());
 }
 
 

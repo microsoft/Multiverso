@@ -89,7 +89,7 @@ void TestArray(int argc, char* argv[]) {
   multiverso::SetCMDFlag("sync", true);
   MV_Init(&argc, argv);
 
-  size_t array_size = 5;
+  size_t array_size = 500;
 
   ArrayWorker<int>* shared_array = MV_CreateTable(ArrayTableOption<int>(array_size));
 
@@ -99,23 +99,27 @@ void TestArray(int argc, char* argv[]) {
   std::vector<int> delta(array_size);
   for (int i = 0; i < array_size; ++i)
     delta[i] = static_cast<int>(i);
+
   int* data = new int[array_size];
 
-  int iter = 1000000000;
-
+  int iter = 10 * (MV_Rank() + 10);
   for (int i = 0; i < iter; ++i) {
     shared_array->Add(delta.data(), array_size);
+    shared_array->Add(delta.data(), array_size);
+    shared_array->Add(delta.data(), array_size);
+    shared_array->Get(data, array_size);
+    shared_array->Get(data, array_size);
     shared_array->Get(data, array_size);
     for (int k = 0; k < array_size; ++k) {
       if (data[k] != delta[k] * (i + 1) * MV_NumWorkers()) {
-        std::cout << "i + 1 = " << i + 1 << " k = " << k << std::endl;
-        for (int j = 0; j < array_size; ++j) {
-          std::cout << data[j] << " ";
-        }
-        exit(1);
+        // std::cout << "i + 1 = " << i + 1 << " k = " << k << std::endl;
+        // for (int j = 0; j < array_size; ++j) {
+          // std::cout << data[j] << " ";
+        // }
+        // exit(1);
       }
     }
-    if (i % 1000 == 0) { printf("iter = %d\n", i); fflush(stdout); }
+    { printf("iter = %d\n", i); fflush(stdout); }
   }
   MV_ShutDown();
 }

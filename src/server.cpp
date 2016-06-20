@@ -74,6 +74,7 @@ public:
     int num_worker = Zoo::Get()->num_workers();
     worker_get_clocks_.reset(new VectorClock(num_worker));
     worker_add_clocks_.reset(new VectorClock(num_worker));
+    num_waited_add_.resize(num_worker, 0);
   }
 
   // make some modification to suit to the sync server
@@ -83,18 +84,13 @@ public:
     explicit VectorClock(int n) : 
       local_clock_(n, 0), global_clock_(0), size_(0) {}
 
-    static bool except_max_int_compare(int a, int b) {
-      return (b == std::numeric_limits<int>::max() ? false : a < b);
-    }
-
     // Return true when all clock reach a same number
     virtual bool Update(int i) {
       ++local_clock_[i];
       if (global_clock_ < *(std::min_element(std::begin(local_clock_),
         std::end(local_clock_)))) {
         ++global_clock_;
-        if (global_clock_ == *(std::max_element(std::begin(local_clock_),
-          std::end(local_clock_), except_max_int_compare))) {
+        if (global_clock_ == max_element()) {
           return true;
         }
       }
@@ -103,11 +99,9 @@ public:
 
     virtual bool FinishTrain(int i) {
       local_clock_[i] = std::numeric_limits<int>::max();
-      if (global_clock_ < *(std::min_element(std::begin(local_clock_),
-        std::end(local_clock_)))) {
-        ++global_clock_;
-        if (global_clock_ == *(std::max_element(std::begin(local_clock_),
-          std::end(local_clock_), except_max_int_compare))) {
+      if (global_clock_ < min_element()) {
+        global_clock_ = min_element();
+        if (global_clock_ == max_element()) {
           return true;
         }
       }
@@ -117,13 +111,27 @@ public:
     std::string DebugString() {
       std::string os = "global ";
       os += std::to_string(global_clock_) + " local: ";
-      for (auto i : local_clock_) os += std::to_string(i) + " ";
+      for (auto i : local_clock_) { 
+        if (i == std::numeric_limits<int>::max()) os += "-1 ";
+        else os += std::to_string(i) + " ";
+      }
       return os;
     }
 
     int local_clock(int i) const { return local_clock_[i]; }
     int global_clock() const { return global_clock_; }
 
+  private:
+    int max_element() const {
+      int max = global_clock_;
+      for (auto val : local_clock_) {
+        max = (val != std::numeric_limits<int>::max() && val > max) ? val : max;
+      }
+      return max;
+    }
+    int min_element() const {
+      return *std::min_element(std::begin(local_clock_), std::end(local_clock_));
+    }
   protected:
     std::vector<int> local_clock_;
     int global_clock_;
@@ -136,6 +144,7 @@ protected:
     if (worker_get_clocks_->local_clock(worker) >
         worker_get_clocks_->global_clock()) {
       msg_add_cache_.Push(msg);
+      ++num_waited_add_[worker];
       return;
     }
     // 2. Process Add
@@ -158,8 +167,7 @@ protected:
     int worker = Zoo::Get()->rank_to_worker_id(msg->src());
     if (worker_add_clocks_->local_clock(worker) >
         worker_add_clocks_->global_clock() || 
-        worker_get_clocks_->local_clock(worker) > 
-        worker_get_clocks_->global_clock()) {
+        num_waited_add_[worker] > 0) {
       // Will wait for other worker finished Add
       msg_get_cache_.Push(msg);
       return;
@@ -174,24 +182,13 @@ protected:
         int add_worker = Zoo::Get()->rank_to_worker_id(add_msg->src());
         Server::ProcessAdd(add_msg);
         CHECK(!worker_add_clocks_->Update(add_worker));
+        --num_waited_add_[add_worker];
       }
     }
   }
 
   void ProcessFinishTrain(MessagePtr& msg) {
     int worker = Zoo::Get()->rank_to_worker_id(msg->src());
-    Log::Debug("[ProcessFinishTrain] Server %d, worker %d has finished training.\n", 
-               Zoo::Get()->server_rank(), worker);
-    if (worker_get_clocks_->FinishTrain(worker)) {
-      CHECK(msg_get_cache_.Empty());
-      while (!msg_add_cache_.Empty()) {
-        MessagePtr add_msg;
-        CHECK(msg_add_cache_.TryPop(add_msg));
-        int add_worker = Zoo::Get()->rank_to_worker_id(add_msg->src());
-        Server::ProcessAdd(add_msg);
-        worker_add_clocks_->Update(add_worker);
-      }
-    }
     if (worker_add_clocks_->FinishTrain(worker)) {
       CHECK(msg_add_cache_.Empty());
       while (!msg_get_cache_.Empty()) {
@@ -199,7 +196,18 @@ protected:
         CHECK(msg_get_cache_.TryPop(get_msg));
         int get_worker = Zoo::Get()->rank_to_worker_id(get_msg->src());
         Server::ProcessGet(get_msg);
-        worker_get_clocks_->Update(get_worker);
+        CHECK(!worker_get_clocks_->Update(get_worker));
+      }
+    }
+    if (worker_get_clocks_->FinishTrain(worker)) {
+      CHECK(msg_get_cache_.Empty());
+      while (!msg_add_cache_.Empty()) {
+        MessagePtr add_msg;
+        CHECK(msg_add_cache_.TryPop(add_msg));
+        int add_worker = Zoo::Get()->rank_to_worker_id(add_msg->src());
+        Server::ProcessAdd(add_msg);
+        CHECK(!worker_add_clocks_->Update(add_worker));
+        --num_waited_add_[add_worker];
       }
     }
   }
@@ -207,6 +215,7 @@ protected:
 private:
   std::unique_ptr<VectorClock> worker_get_clocks_;
   std::unique_ptr<VectorClock> worker_add_clocks_;
+  std::vector<int> num_waited_add_;
 
   MtQueue<MessagePtr> msg_add_cache_;
   MtQueue<MessagePtr> msg_get_cache_;
