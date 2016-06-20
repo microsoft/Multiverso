@@ -315,7 +315,7 @@ def main(n=5, num_epochs=82, model=None):
                 # parameters manage by MVNetParamManager and update the latest
                 # parameters from parameter server, you can call this function to
                 # synchronize the values
-                mvnpm.update_all_param()
+                mvnpm.sync_all_param()
 
             # And a full pass over the validation data:
             # MULTIVERSO: all the workers will synchronize at the place you call barrier
@@ -352,7 +352,7 @@ def main(n=5, num_epochs=82, model=None):
         mv.barrier()
         if is_master_worker:
             # MULTIVERSO: update the parameters before save the model
-            mvnpm.update_all_param()
+            mvnpm.sync_all_param()
             # dump the network weights to a file :
             np.savez('cifar10_deep_residual_model.npz', *lasagne.layers.get_all_param_values(network))
     else:

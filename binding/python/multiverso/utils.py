@@ -10,6 +10,10 @@ PACKAGE_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 class Loader(object):
+    '''
+    This loader is responsible for loading multiverso dynamic library in both
+    *nux and windows
+    '''
 
     LIB = None
 

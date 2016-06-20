@@ -7,10 +7,19 @@ import multiverso as mv
 
 
 class MVNetParamManager(object):
+    '''
+    MVNetParamManager is manager to make managing and synchronizing the
+    variables in lasagne more easily
+    '''
     def __init__(self, network, is_master=True):
-        '''
+        ''' The constructor of MVNetParamManager
+
         The constructor will associate the parameter with multiverso array
-        table
+        table.
+
+        When is_master_worker is true, the process will initialize the
+        parameters.  Make sure only one process will initialize the parameters.
+        So is_master_worker is true only in one process.
         '''
         self.shapes = []
         self.dtypes = []
@@ -44,8 +53,9 @@ class MVNetParamManager(object):
             n += size
         lasagne.layers.set_all_param_values(self.network, params)
 
-    def update_all_param(self):
-        '''
+    def sync_all_param(self):
+        '''sync all parameters with multiverso server
+
         This function will
         1) calc all the delta of params in the network and add the delta to multiverso server
         2) get the latest value from the multiverso server
