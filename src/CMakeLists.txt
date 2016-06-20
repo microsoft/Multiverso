@@ -8,3 +8,6 @@ add_library(multiverso SHARED ${MULTIVERSO_SRC})
 target_link_libraries(multiverso ${MPI_LIBRARY})
 
 install (TARGETS multiverso DESTINATION lib)
+if (UNIX)
+    install(CODE "execute_process(COMMAND ldconfig)")  # run ldconfig. Otherwise ld.so.cache won't be created.
+endif()
