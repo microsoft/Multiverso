@@ -143,7 +143,7 @@ if "THEANO_FLAGS" not in os.environ:
 Here is the result of running [Deep_Residual_Learning_CIFAR-10](./examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
 
 ## Task Description
-Perform CIFAR-10 classification with residential networking implementation based on Lasagne.
+Perform CIFAR-10 classification with residual networking implementation based on Lasagne.
 
 ## Hardware
 |||

@@ -51,8 +51,6 @@ import multiverso as mv
 mv.init()
 # MULTIVERSO: every process has distinct worker id
 worker_id = mv.worker_id()
-# if worker_id == 0, it will be the master woker
-is_master_worker = worker_id == 0
 # MULTIVERSO: mv.workers_num will return the number of workers
 workers_num = mv.workers_num()
 # NOTICE: To use multiple gpus, we must set the environment before import theano.
@@ -249,11 +247,8 @@ def main(n=5, num_epochs=82, model=None):
     print("number of parameters in model: %d" % lasagne.layers.count_params(network, trainable=True))
 
     # MULTIVERSO: MVNetParamManager is a parameter manager which can
-    # synchronize parameters of Lasagne with multiverso.  When is_master_worker
-    # is true, the process will initialize the parameters.  Make sure only one
-    # process will initialize the parameters. So is_master_worker is true only
-    # in one process.
-    mvnpm = param_manager.MVNetParamManager(network, is_master_worker)
+    # synchronize parameters of Lasagne with multiverso.
+    mvnpm = param_manager.MVNetParamManager(network)
 
     if model is None:
         # Create a loss expression for training, i.e., a scalar objective we want
@@ -320,7 +315,7 @@ def main(n=5, num_epochs=82, model=None):
             # And a full pass over the validation data:
             # MULTIVERSO: all the workers will synchronize at the place you call barrier
             mv.barrier()
-            if is_master_worker:
+            if mv.is_master_worker():
                 val_err = 0
                 val_acc = 0
                 val_batches = 0
@@ -350,7 +345,7 @@ def main(n=5, num_epochs=82, model=None):
 
         # MULTIVERSO: all the workers will synchronize at the place you call barrier
         mv.barrier()
-        if is_master_worker:
+        if mv.is_master_worker():
             # MULTIVERSO: update the parameters before save the model
             mvnpm.sync_all_param()
             # dump the network weights to a file :
@@ -361,7 +356,7 @@ def main(n=5, num_epochs=82, model=None):
              param_values = [f['arr_%d' % i] for i in range(len(f.files))]
         lasagne.layers.set_all_param_values(network, param_values)
 
-    if is_master_worker:
+    if mv.is_master_worker():
         # Calculate validation error of model:
         test_err = 0
         test_acc = 0

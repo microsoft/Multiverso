@@ -49,3 +49,12 @@ def worker_id():
 
 def server_id():
     return mv_lib.MV_ServerId()
+
+def is_master_worker():
+    ''' If the worker is master worker
+
+    Some things only need one worker process, such as validation, output the
+    result, initialize the parameters and so on. So we mark the worker 0 as the
+    master worker to finish these things.
+    '''
+    return worker_id() == 0

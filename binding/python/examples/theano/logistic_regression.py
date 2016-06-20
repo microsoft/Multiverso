@@ -340,8 +340,6 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
     mv.init()
     # MULTIVERSO: every process has distinct worker id
     worker_id = mv.worker_id()
-    # if worker_id == 0, it will be the master worker
-    is_master_worker = worker_id == 0
 
     # MULTIVERSO: mv.workers_num will return the number of workers
     total_worker = mv.workers_num()
@@ -432,7 +430,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
             iter = (epoch - 1) * n_train_batches + minibatch_index
 
             # MULTIVERSO: only master worker will output the model
-            if is_master_worker and (iter + 1) % validation_frequency == 0:
+            if mv.is_master_worker() and (iter + 1) % validation_frequency == 0:
                 # compute zero-one loss on validation set
                 validation_losses = [validate_model(i)
                                      for i in range(n_valid_batches)]
@@ -452,7 +450,7 @@ def sgd_optimization_mnist(learning_rate=0.13, n_epochs=1000,
 
     # MULTIVERSO: You should make sure only one process will output the result.
     # Otherwise results will be outputted repeatedly
-    if is_master_worker:
+    if mv.is_master_worker():
         end_time = timeit.default_timer()
 
         test_losses = [test_model(i)

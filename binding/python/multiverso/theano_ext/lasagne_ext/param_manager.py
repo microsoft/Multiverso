@@ -11,15 +11,12 @@ class MVNetParamManager(object):
     MVNetParamManager is manager to make managing and synchronizing the
     variables in lasagne more easily
     '''
-    def __init__(self, network, is_master=True):
+    def __init__(self, network):
         ''' The constructor of MVNetParamManager
 
         The constructor will associate the parameter with multiverso array
         table.
 
-        When is_master_worker is true, the process will initialize the
-        parameters.  Make sure only one process will initialize the parameters.
-        So is_master_worker is true only in one process.
         '''
         self.shapes = []
         self.dtypes = []
@@ -38,10 +35,13 @@ class MVNetParamManager(object):
         self.all_param_list = np.array(self.all_param_list)
 
         self.tbh = mv.ArrayTableHandler(len(self.all_param_list))
-        if is_master:
+
+        # When it is master worker, the process will initialize the parameters.
+        # Others will get the values initialized by master worker.
+        if mv.is_master_worker():
             self.tbh.add(self.all_param_list)
         mv.barrier()
-        if not is_master:
+        if not mv.is_master_worker():
             self.all_param_list = self.tbh.get()
             self._set_all_param_to_net()
 
