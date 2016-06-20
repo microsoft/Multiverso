@@ -18,7 +18,7 @@ THIRD_PARTY_LIB = $(THIRD_PARTY)/lib
 
 INC_FLAGS = -I$(HEADERS_DIR)
 INC_FLAGS += -I$(THIRD_PARTY_INC)
-LD_FLAGS = -L$(THIRD_PARTY_LIB) -lzmq 
+LD_FLAGS = -L$(THIRD_PARTY_LIB) -lzmq
 
 LIB_SRC_DIR = $(PROJECT)/src/multiverso
 SERVER_SRC_DIR = $(PROJECT)/src/multiverso_server
@@ -37,32 +37,32 @@ MULTIVERSO_LIB = $(LIB)/libmultiverso.a
 MULTIVERSO_SERVER = $(BIN)/multiverso_server
 
 MKDIR = $(BIN) \
-        $(LIB)
+      $(LIB)
 
 all: path \
-     multiverso \
-     multiverso_server
-        
+   multiverso \
+   multiverso_server
+    
 path: $(MKDIR)
 
 $(MKDIR):
-    mkdir -p $@
+  mkdir -p $@
 
 $(MULTIVERSO_LIB): $(LIB_OBJ) 
-    ar csrv $@ $(LIB_OBJ)
+  ar csrv $@ $(LIB_OBJ)
 
 $(MULTIVERSO_SERVER): $(SERVER_OBJ) $(MULTIVERSO_LIB)
-    $(CXX) $(SERVER_OBJ) $(MULTIVERSO_LIB) $(CXXFLAGS) $(INC_FLAGS) $(LD_FLAGS) -o $@
+  $(CXX) $(SERVER_OBJ) $(MULTIVERSO_LIB) $(CXXFLAGS) $(INC_FLAGS) $(LD_FLAGS) -o $@
 
 $(LIB_OBJ): %.o: %.cpp $(HEADERS)
-    $(CXX) $(CXXFLAGS) $(INC_FLAGS) -c $< -o $@
+  $(CXX) $(CXXFLAGS) $(INC_FLAGS) -c $< -o $@
 
 $(SERVER_OBJ): %.o: %.cpp $(HEADERS) $(SERVER_HEADERS)
-    $(CXX) $(CXXFLAGS) $(INC_FLAGS) $(LD_FLAGS) -c $< -o $@
+  $(CXX) $(CXXFLAGS) $(INC_FLAGS) $(LD_FLAGS) -c $< -o $@
 
 multiverso: path $(MULTIVERSO_LIB)
 
 multiverso_server: path $(MULTIVERSO_SERVER)
 
 clean:
-    rm -rf $(BIN) $(LIB) $(LIB_OBJ) $(SERVER_OBJ)
+  rm -rf $(BIN) $(LIB) $(LIB_OBJ) $(SERVER_OBJ)
