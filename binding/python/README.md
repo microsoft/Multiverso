@@ -23,7 +23,7 @@ mpirun -np 4 python ./examples/theano/logistic_regression.py
 
 
 # Api documents
-All the api documents are written as docstrings in the python source
+All the api documents are written as docstrings in the python source.
 
 
 # How to write python code with multiverso
@@ -40,12 +40,35 @@ mv.init()
 print mv.workers_num()
 # Get the id for current worker.
 print mv.worker_id()
+# if the worker is master worker.
+print mv.is_master_worker()
+
 
 # Here is your code to create tables and sync values.
 
 # Shutdown multiverso
 mv.shutdown()
 ```
+
+## About the master worker
+Some things only need one worker process, such as validation, outputing the result, initializing the parameters and so on. So we mark the worker 0 as the master worker to finish these things. You can use `mv.is_master_worker` to distinguish the master worker and others.
+For example, if you want to make sure only one process will initialize the parameters, you can write similar code below.
+```
+import multiverso as mv
+# create your table handler tbh and initial value params
+if mv.is_master_worker():
+    # Only master worker will set the initial value.
+    tbh.add(params)
+    # Set a barrier for other workers to wait.
+    mv.barrier()
+else:
+    # Wait the master worker to finish setting.
+    mv.barrier()
+    # Get the initial model from the server.
+    params = tbh.get()
+```
+
+There are similar strategies in `theano_ext.sharedvar` and `lasagne_ext.param_manager` when initializing values. They are already implemented in the constructors.
 
 
 
@@ -69,6 +92,8 @@ self.W = theano.shared(
 If you want to use multiverso, you can modify them like this. `mv_shared` is just a wrapper of `theano.shared`. It acts same as `theano.shared`, but it give you convenient interface to sync values.
 ```
 from multiverso.theano_ext import sharedvar
+# Only the master worker can initialize the shared value. The initial value from
+# other processes will be ignored
 W = sharedvar.mv_shared(
     value=numpy.zeros(
         (n_in, n_out),
@@ -107,10 +132,9 @@ from multiverso.theano_ext.lasagne_ext import param_manager
 
 network = build_model()  # build_model is a function you implement to build model
 
-# When is_master_worker is true, the process will initialize the parameters.
-# Make sure only one process will initialize the parameters. So is_master_worker
-# is true only in one process.
-mvnpm = param_manager.MVNetParamManager(network, is_master_worker)
+# Only the master worker can initialize the parameters initial value from
+# other processes will be ignored
+mvnpm = param_manager.MVNetParamManager(network)
 
 # training the model
 
@@ -143,7 +167,7 @@ if "THEANO_FLAGS" not in os.environ:
 Here is the result of running [Deep_Residual_Learning_CIFAR-10](./examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
 
 ## Task Description
-Perform CIFAR-10 classification with residual networking implementation based on Lasagne.
+Perform CIFAR-10 classification with residual networks implementation based on Lasagne.
 
 ## Hardware
 |||

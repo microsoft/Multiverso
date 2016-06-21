@@ -15,8 +15,8 @@ class MVNetParamManager(object):
         ''' The constructor of MVNetParamManager
 
         The constructor will associate the parameter with multiverso array
-        table.
-
+        table.  Only the master worker can initialize the parameters. The
+        initial value from other processes will be ignored
         '''
         self.shapes = []
         self.dtypes = []

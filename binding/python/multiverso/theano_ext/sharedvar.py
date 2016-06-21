@@ -16,6 +16,12 @@ class MVSharedVariable(object):
     ArrayTable is addded to make it easier to sync values.
     '''
     def __init__(self, svobj):
+        '''Constructor of the MVSharedVariable
+
+        The constructor will create ArrayTableHandler and associate the shared
+        variable with it.  Only the master worker can initialize the
+        parameters. The initial value from other processes will be ignored
+        '''
         assert(isinstance(svobj, SharedVariable))
         self._svobj = svobj
         self._mv_array = mv.ArrayTableHandler(self._svobj.get_value().size)

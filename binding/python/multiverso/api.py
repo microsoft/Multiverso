@@ -8,6 +8,7 @@ import numpy as np
 
 mv_lib = Loader.get_lib()
 
+WORKER_ID = None
 
 def init(args=[]):
     '''Initialize mutliverso.
@@ -44,7 +45,11 @@ def workers_num():
 
 def worker_id():
     '''Return the id (zero-based index) for current worker.'''
-    return mv_lib.MV_WorkerId()
+    global WORKER_ID
+    if WORKER_ID is None:
+        # 
+        WORKER_ID = mv_lib.MV_WorkerId()
+    return WORKER_ID
 
 
 def server_id():
@@ -53,8 +58,8 @@ def server_id():
 def is_master_worker():
     ''' If the worker is master worker
 
-    Some things only need one worker process, such as validation, output the
-    result, initialize the parameters and so on. So we mark the worker 0 as the
-    master worker to finish these things.
+    Some things only need one worker process, such as validation, outputing the
+    result, initializing the parameters and so on. So we mark the worker 0 as
+    the master worker to finish these things.
     '''
     return worker_id() == 0
