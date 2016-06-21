@@ -99,8 +99,6 @@ def model(x, w_c1, b_c1, w_c2, b_c2, w_h3, b_h3, w_o, b_o):
 # MULTIVERSO: you should call mv.init before call multiverso apis
 mv.init()
 worker_id = mv.worker_id()
-# if WORKER_ID == 0, it will be the master woker
-is_master_worker = worker_id == 0
 # MULTIVERSO: every process has distinct worker id
 workers_num = mv.workers_num()
 
@@ -133,14 +131,6 @@ predict = theano.function([x], y, allow_input_downcast=True)
 # MULTIVERSO: all the workers will synchronize at the place you call barrier
 mv.barrier()
 
-# MULTIVERSO: Make sure only one process initialized the value. So the
-# non-master process should synchronize values from the master's init values.
-if not is_master_worker:
-    # MULTIVERSO: when you want to commit all the delta of parameters produced
-    # by mv_shared and update the latest parameters from parameter server, you
-    # can call this function to synchronize the values
-    sharedvar.sync_all_mv_shared_vars()
-
 
 # train model
 batch_size = 50
@@ -161,7 +151,7 @@ for i in range(50):
     mv.barrier()  # barrier every epoch
 
     # master will calc the accuracy
-    if is_master_worker:
+    if mv.is_master_worker():
         predictions_test = predict(x_test)
         accuracy = np.mean(predictions_test == labels_test)
 
