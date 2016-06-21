@@ -61,7 +61,7 @@ model of the master worker from the server.
 
 ```lua
 if multiverso.is_master then
-    -- Only master worker set the initial value.
+    -- Only master worker will set the initial value.
     tbh:add(params)
     -- Set a barrier for other workers to wait.
     multiverso.barrier()
