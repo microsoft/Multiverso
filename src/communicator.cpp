@@ -33,7 +33,6 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
 }
 
 Communicator::~Communicator() {
-  recv_thread_->join();
 }
 
 void Communicator::Main() {
@@ -43,6 +42,7 @@ void Communicator::Main() {
   case NetThreadLevel::THREAD_MULTIPLE: {
     recv_thread_.reset(new std::thread(&Communicator::Communicate, this));
     Actor::Main();
+    recv_thread_->join();
     break;
   }
   case NetThreadLevel::THREAD_SERIALIZED: {
@@ -74,7 +74,7 @@ void Communicator::ProcessMessage(MessagePtr& msg) {
 }
 
 void Communicator::Communicate() {
-  while (net_util_->active()) {
+  while (is_working_) {
     MessagePtr msg(new Message());
     size_t size = net_util_->Recv(&msg);
     if (size == -1) {
