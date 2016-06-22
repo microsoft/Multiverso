@@ -20,13 +20,23 @@ LocalStream::LocalStream(const URI& uri, FileOpenMode mode) {
   std::string mode_str;
   switch (mode){
   case FileOpenMode::Read:
-    mode_str = "rb";
+    mode_str = "r";
     break;
   case FileOpenMode::Write:
-    mode_str = "wb";
+    mode_str = "w";
     break;
   case FileOpenMode::Append:
+    mode_str = "a";
+    break;
+  case FileOpenMode::BinaryAppend:
     mode_str = "ab";
+    break;
+  case FileOpenMode::BinaryRead:
+    mode_str = "rb";
+    break;
+  case FileOpenMode::BinaryWrite:
+    mode_str = "wb";
+    break;
   }
 #ifdef _MSC_VER
   fopen_s(&fp_, uri.name.c_str(), mode_str.c_str());
