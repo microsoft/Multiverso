@@ -1,4 +1,4 @@
-# multiverso lua binding
+# Multiverso Torch/Lua Binding
 
 ## Requirements
 Build multiverso successfully by following the [README > build](../../README.md#build).
@@ -25,3 +25,9 @@ or
 ```
 luajit test.lua
 ```
+
+## Documentation
+
+- [Tutorial](./docs/TUTORIAL.md)
+- [API](./docs/API.md)
+- [Benchmark](./docs/BENCHMARK.md)

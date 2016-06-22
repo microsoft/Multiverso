@@ -45,18 +45,18 @@ end
 
 local params, gradParams = model:getParameters()
 
--- Create ArrayTableHandler for sync parameters.
+-- Create ArrayTableHandler for syncing parameters.
 local tbh = multiverso.ArrayTableHandler:new(params:size(1))
 -- Set/Get the initial parameters.
 if multiverso.is_master then
   -- Only master worker set the initial value.
   tbh:add(params)
-  -- Set a milestone for other workers to wait.
+  -- Set a barrier for other workers to wait.
   multiverso.barrier()
 else
-  -- Wait master worker to finish setting.
+  -- Wait the master worker to finish setting.
   multiverso.barrier()
-  -- Get the initial model from server.
+  -- Get the initial model from the server.
   params:copy(tbh:get())
 end
 
@@ -68,18 +68,17 @@ for epoch=1,1000 do
   model:backward(batchInputs, dloss_doutput)
 
   -- Sync parameters:
-  -- 1) Add the delta value to server.
+  -- 1) Add the gradients (delta value) to the server.
   tbh:add(-0.01 * gradParams)
-  -- 2) Set/Copy the value get from server.
+  -- 2) (Optional) Sync all workers after each epoch.
+  multiverso.barrier()
+  -- 3) Fetch the newest value from the server.
   params:copy(tbh:get())
 
   -- Print should also only exist in master worker.
   if multiverso.is_master then
     print(epoch)
   end
-
-  -- Sync all workers after each epoch.
-  multiverso.barrier()
 end
 
 -- Only test in master worker.
