@@ -11,10 +11,15 @@
 #include "multiverso/message.h"
 #include "multiverso/util/log.h"
 #include "multiverso/util/net_util.h"
+#include "multiverso/util/configure.h"
 
 #include <zmq.h>
 
 namespace multiverso {
+
+MV_DEFINE_string(machine_file, "", "path of machine file");
+MV_DEFINE_int(port, 55555 , "port used to communication");
+
 class ZMQNetWrapper : public NetInterface {
 public:
   // argc >= 2
@@ -23,10 +28,10 @@ public:
   void Init(int* argc, char** argv) override {
     // get machine file 
     if (active_) return;
-    CHECK(*argc > 2);
+    // CHECK(*argc > 2);
     std::vector<std::string> machine_lists;
-    ParseMachineFile(argv[1], &machine_lists);
-    int port = atoi(argv[2]);
+    ParseMachineFile(MV_CONFIG_machine_file, &machine_lists);
+    int port = MV_CONFIG_port; // atoi(argv[2]);
 
     size_ = static_cast<int>(machine_lists.size());
     CHECK(size_ > 0);
