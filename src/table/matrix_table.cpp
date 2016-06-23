@@ -378,7 +378,7 @@ MatrixServerTable<T>::MatrixServerTable(num_row, num_col) {
 
 		for (int i = 0; i<storage_.size(); i++)
 		{
-			storage_[i] = dis(gen);
+			storage_[i] = static_cast<T>(dis(gen));
 		}
 	}
 }

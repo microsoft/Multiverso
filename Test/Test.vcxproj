@@ -72,13 +72,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(MSMPI_INC);$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(SolutionDir)/src;$(SolutionDir)/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\git_dictionary\multiverso-master_update\multiverso-master\include;</IncludePath>
-    <LibraryPath>$(MSMPI_LIB64);$(SolutionDir)/x64/$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\git_dictionary\multiverso-master_update\multiverso-master\x64\debug;</LibraryPath>
+    <IncludePath>$(ProjectDir);$(MSMPI_INC);$(SolutionDir)/src;$(SolutionDir)/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\git_dictionary\multiverso-master_update\multiverso-master\include;</IncludePath>
+    <LibraryPath>$(MSMPI_LIB64);$(SolutionDir)/x64/$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_zmq|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(ProjectDir);$(MSMPI_INC);$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(SolutionDir)/src;$(SolutionDir)/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\multiverso-next\lib</IncludePath>
-    <LibraryPath>$(MSMPI_LIB64);$(SolutionDir)/x64/$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib</LibraryPath>
+    <LibraryPath>$(MSMPI_LIB64);$(SolutionDir)/x64/$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <LinkIncremental>false</LinkIncremental>
