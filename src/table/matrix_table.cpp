@@ -284,6 +284,21 @@ MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :
 }
 
 template <typename T>
+MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col, float min_value,float max_value) :
+MatrixServerTable<T>::MatrixServerTable(num_row, num_col) {
+	if (typeid(T) == typeid(float)){
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<float> dis(min_value,max_value);
+
+		for (int i = 0; i<storage_.size(); i++)
+		{
+			storage_[i] = dis(gen);
+		}
+	}
+}
+
+template <typename T>
 void MatrixServerTable<T>::ProcessAdd(const std::vector<Blob>& data) {
   CHECK(data.size() == 2 || data.size() == 3);
   size_t keys_size = data[0].size<integer_t>();
