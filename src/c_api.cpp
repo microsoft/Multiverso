@@ -46,6 +46,11 @@ void MV_AddArrayTable(TableHandler handler, float* data, int size) {
   worker->Add(data, size);
 }
 
+void MV_AddAsyncArrayTable(TableHandler handler, float* data, int size) {
+  auto worker = reinterpret_cast<multiverso::ArrayWorker<float>*>(handler);
+  worker->AddAsync(data, size);
+}
+
 
 // MatrixTable
 void MV_NewMatrixTable(int num_row, int num_col, TableHandler* out) {
@@ -62,6 +67,11 @@ void MV_AddMatrixTableAll(TableHandler handler, float* data, int size) {
   worker->Add(data, size);
 }
 
+void MV_AddAsyncMatrixTableAll(TableHandler handler, float* data, int size) {
+  auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
+  worker->AddAsync(data, size);
+}
+
 void MV_GetMatrixTableByRows(TableHandler handler, float* data, int size,
                              int row_ids[], int row_ids_n) {
   auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
@@ -73,4 +83,11 @@ void MV_AddMatrixTableByRows(TableHandler handler, float* data, int size,
   auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
   worker->Add(data, size, row_ids, row_ids_n);
 }
+
+void MV_AddAsyncMatrixTableByRows(TableHandler handler, float* data, int size,
+                             int row_ids[], int row_ids_n) {
+  auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
+  worker->AddAsync(data, size, row_ids, row_ids_n);
+}
+
 }

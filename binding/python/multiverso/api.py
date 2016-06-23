@@ -52,7 +52,7 @@ def server_id():
 
 
 def is_master_worker():
-    ''' If the worker is master worker
+    '''If the worker is master worker
 
     Some things only need one worker process, such as validation, outputing the
     result, initializing the parameters and so on. So we mark the worker 0 as
