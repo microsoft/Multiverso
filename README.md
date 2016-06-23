@@ -20,12 +20,6 @@ Build
 
 For windows users, please refer to README in windows folder.
 
-
-Code of Conduct
-----------
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
 Related Projects
 ----------
 
@@ -35,3 +29,7 @@ Current distributed systems based on multiverso:
 * [distributed_word_embedding](https://github.com/Microsoft/distributed_word_embedding) Distributed system for word embedding
 * [distributed_skipgram_mixture](https://github.com/Microsoft/distributed_skipgram_mixture) Distributed skipgram mixture for multi-sense word embedding
 
+Microsoft Open Source Code of Conduct
+------------
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
