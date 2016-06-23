@@ -46,6 +46,32 @@ public:
   void Add(T* data, size_t size, integer_t* row_ids, integer_t row_ids_size,
            const AddOption* option = nullptr);
 
+  // Async version API
+  int GetAsync(T* data, size_t size);
+
+  // data is user-allocated memory
+  int GetAsync(integer_t row_id, T* data, size_t size);
+
+  int GetAsync(const std::vector<integer_t>& row_ids,
+    const std::vector<T*>& data_vec, size_t size);
+
+  // Get specific rows.
+  int GetAsync(T* data, size_t size, integer_t* row_ids, integer_t row_ids_size);
+
+  // Add whole table
+  int AddAsync(T* data, size_t size, const AddOption* option = nullptr);
+
+  int AddAsync(integer_t row_id, T* data, size_t size,
+    const AddOption* option = nullptr);
+
+  int AddAsync(const std::vector<integer_t>& row_ids,
+    const std::vector<T*>& data_vec, size_t size,
+    const AddOption* option = nullptr);
+
+  // Add specific rows.
+  int AddAsync(T* data, size_t size, integer_t* row_ids, integer_t row_ids_size,
+    const AddOption* option = nullptr);
+
   int Partition(const std::vector<Blob>& kv,
     MsgType partition_type,
     std::unordered_map<int, std::vector<Blob>>* out) override;

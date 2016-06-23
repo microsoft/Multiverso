@@ -147,6 +147,91 @@ void MatrixWorkerTable<T>::Add(T* data, size_t size, integer_t* row_ids,
 }
 
 template <typename T>
+int MatrixWorkerTable<T>::GetAsync(T* data, size_t size) {
+  CHECK(size == num_col_ * num_row_);
+  integer_t whole_table = -1;
+  return GetAsync(whole_table, data, size);
+}
+
+template <typename T>
+int MatrixWorkerTable<T>::GetAsync(integer_t row_id, T* data, size_t size) {
+  if (row_id >= 0) CHECK(size == num_col_);
+  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
+  if (row_id == -1) {
+    row_index_[num_row_] = data;
+  } else {
+    row_index_[row_id] = data;  // data_ = data;
+  }
+  return WorkerTable::GetAsync(Blob(&row_id, sizeof(integer_t)));
+}
+
+template <typename T>
+int MatrixWorkerTable<T>::GetAsync(const std::vector<integer_t>& row_ids,
+  const std::vector<T*>& data_vec,
+  size_t size) {
+  CHECK(size == num_col_);
+  CHECK(row_ids.size() == data_vec.size());
+  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
+  for (auto i = 0; i < row_ids.size(); ++i) {
+    row_index_[row_ids[i]] = data_vec[i];
+  }
+  return WorkerTable::GetAsync(Blob(row_ids.data(), sizeof(integer_t)* row_ids.size()));
+}
+
+template <typename T>
+int MatrixWorkerTable<T>::GetAsync(T* data, size_t size, integer_t* row_ids,
+  integer_t row_ids_size) {
+  CHECK(size == num_col_ * row_ids_size);
+  for (auto i = 0; i < num_row_ + 1; ++i) row_index_[i] = nullptr;
+  for (auto i = 0; i < row_ids_size; ++i) {
+    row_index_[row_ids[i]] = &data[i * num_col_];
+  }
+  Blob ids_blob(row_ids, sizeof(integer_t) * row_ids_size);
+  return WorkerTable::GetAsync(ids_blob);
+}
+
+template <typename T>
+int MatrixWorkerTable<T>::AddAsync(T* data, size_t size, const AddOption* option) {
+  CHECK(size == num_col_ * num_row_);
+  integer_t whole_table = -1;
+  return AddAsync(whole_table, data, size, option);
+}
+
+template <typename T>
+int MatrixWorkerTable<T>::AddAsync(integer_t row_id, T* data, size_t size,
+                                              const AddOption* option) {
+  if (row_id >= 0) CHECK(size == num_col_);
+  Blob ids_blob(&row_id, sizeof(integer_t));
+  Blob data_blob(data, size * sizeof(T));
+  return WorkerTable::AddAsync(ids_blob, data_blob, option);
+}
+
+template <typename T>
+int MatrixWorkerTable<T>::AddAsync(const std::vector<integer_t>& row_ids,
+                               const std::vector<T*>& data_vec,
+                               size_t size,
+                               const AddOption* option) {
+  CHECK(size == num_col_);
+  Blob ids_blob(&row_ids[0], sizeof(integer_t)* row_ids.size());
+  Blob data_blob(row_ids.size() * row_size_);
+  // copy each row
+  for (auto i = 0; i < row_ids.size(); ++i) {
+    memcpy(data_blob.data() + i * row_size_, data_vec[i], row_size_);
+  }
+  return WorkerTable::AddAsync(ids_blob, data_blob, option);
+}
+
+template <typename T>
+int MatrixWorkerTable<T>::AddAsync(T* data, size_t size, integer_t* row_ids,
+  integer_t row_ids_size,
+  const AddOption* option) {
+  CHECK(size == num_col_ * row_ids_size);
+  Blob ids_blob(row_ids, sizeof(integer_t) * row_ids_size);
+  Blob data_blob(data, row_ids_size * row_size_);
+  return WorkerTable::AddAsync(ids_blob, data_blob, option);
+}
+
+template <typename T>
 int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
   MsgType, std::unordered_map<int, std::vector<Blob>>* out) {
   CHECK(kv.size() == 1 || kv.size() == 2 || kv.size() == 3);
