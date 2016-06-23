@@ -18,14 +18,23 @@ namespace multiverso {
 LocalStream::LocalStream(const URI& uri, FileOpenMode mode) {
   path_ = uri.path;
   std::string mode_str;
-  switch (mode){
+  switch (mode) {
   case FileOpenMode::Read:
-    mode_str = "rb";
+    mode_str = "r";
     break;
   case FileOpenMode::Write:
-    mode_str = "wb";
+    mode_str = "w";
     break;
   case FileOpenMode::Append:
+    mode_str = "a";
+    break;
+  case FileOpenMode::BinaryRead:
+    mode_str = "rb";
+    break;
+  case FileOpenMode::BinaryWrite:
+    mode_str = "wb";
+    break;
+  case FileOpenMode::BinaryAppend:
     mode_str = "ab";
   }
 #ifdef _MSC_VER
