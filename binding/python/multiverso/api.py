@@ -8,7 +8,6 @@ import numpy as np
 
 mv_lib = Loader.get_lib()
 
-WORKER_ID = None
 
 def init(args=[]):
     '''Initialize mutliverso.
@@ -45,15 +44,12 @@ def workers_num():
 
 def worker_id():
     '''Return the id (zero-based index) for current worker.'''
-    global WORKER_ID
-    if WORKER_ID is None:
-        # 
-        WORKER_ID = mv_lib.MV_WorkerId()
-    return WORKER_ID
+    return mv_lib.MV_WorkerId()
 
 
 def server_id():
     return mv_lib.MV_ServerId()
+
 
 def is_master_worker():
     ''' If the worker is master worker
