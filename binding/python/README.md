@@ -3,10 +3,10 @@
 # Requirements
 
 ## On linux
-I presume you followed the [README](../../README.md#build) and have build and install multiverso successfully.
+Please followed the [README](../../README.md#build) and have build and install multiverso successfully.
 
 ## On windows
-I presume you have MSBuild.exe installed and your system can find it in the $PATH. Then you should run [build_dll.bat](../../src/build_dll.bat)　to build the .dll file and install the .dll. We don't have auto-installer for windows now, you have to copy the .dll to either system $PATH or the multiverso package folder.
+You need MSBuild.exe installed and your system can find it in the $PATH. Then you should run [build_dll.bat](../../src/build_dll.bat) to build the .dll file and install the .dll. Multiverso doesn't have auto-installer for windows now, you have to copy the .dll to either system $PATH or the multiverso package folder.
 
 
 # Run tests
@@ -30,7 +30,7 @@ All the api documents are written as docstrings in the python source.
 1. You could start with the [test example](./multiverso/test.py) to learn the basic use of multiverso apis.
 2. After understanding the basic use of multiverso apis, you can test and run the [examples](./examples/).  The original code links are written at the beginning of them. You can compare the multiverso version with the original ones to find the differences. The places need to be modified to use multiverso are all inserted comments like `# MULTIVERSO: XXX`
 
-Here is a typical example of python code with multvierso
+Here is a typical example of python code with multvierso.
 ```python
 # import multiverso.
 import multiverso as mv
@@ -43,15 +43,14 @@ print mv.worker_id()
 # if the worker is master worker.
 print mv.is_master_worker()
 
-
-# Here is your code to create tables and sync values.
+# Here is your code to create tables, train models and sync values.
 
 # Shutdown multiverso
 mv.shutdown()
 ```
 
 ## About the master worker
-Some things only need one worker process, such as validation, outputing the result, initializing the parameters and so on. So we mark the worker 0 as the master worker to finish these things. You can use `mv.is_master_worker` to distinguish the master worker and others.
+Some things only need one worker process, such as validation, outputting the result, initializing the parameters and so on. So we mark the worker 0 as the master worker to finish these things. You can use `mv.is_master_worker` to distinguish the master worker from others.
 For example, if you want to make sure only one process will initialize the parameters, you can write similar code below.
 ```
 import multiverso as mv
@@ -75,9 +74,9 @@ There are similar strategies in `theano_ext.sharedvar` and `lasagne_ext.param_ma
 # How to use multiverso in theano
 First, make sure you have understood `mv.init()`, `mv.shutdown()` and `mv.barrier()` mentioned in last section.  You should add the same functions in your theano python script.
 
-In theano, parameters usually stored in sharedVariables.
+In theano, parameters are usually stored in sharedVariables.
 
-For example, you may find code like this in a theano script
+For example, sharedVariables can be created like this in a theano script.
 ```
 self.W = theano.shared(
     value=numpy.zeros(
@@ -89,7 +88,7 @@ self.W = theano.shared(
 )
 ```
 
-If you want to use multiverso, you can modify them like this. `mv_shared` is just a wrapper of `theano.shared`. It acts same as `theano.shared`, but it give you convenient interface to sync values.
+If you want to use multiverso, you can modify them like this.
 ```
 from multiverso.theano_ext import sharedvar
 # Only the master worker can initialize the shared value. The initial value from
@@ -115,25 +114,27 @@ W.mv_sync()
 sharedvar.sync_all_mv_shared_vars()
 ```
 
+`mv_shared` is just a wrapper of `theano.shared`. It acts same as `theano.shared`, but it give you much more convenient interface to sync values.
+
 If your program will run in multi-process and you want to initialize your parameters, you should initialize your shared variables with the value you want only in one process and initialize them with zero in other processes.
 
 
-If you don't use shared variables to store and update the parameters, you can still use the `add` and `get` functions to sync parameters
+If you don't use shared variables to store and update the parameters, you can still use the `add` and `get` functions to sync parameters.
 
 
 # How to use multiverso in lasagne
 First, make sure you have understood the last section.
 
-Lasagne provides many functions to help you build models more easily. Multiverso python binding provides a convenient manager to make managing and synchronizing the variables more easily.
+Lasagne provides many functions to help you build models more easily. Multiverso python binding provides a manager to make managing and synchronizing the parameters in Lasagne more easily.
 
-You can use code like this to manage your parameters
+You can write code like this to manage your parameters.
 ```
 from multiverso.theano_ext.lasagne_ext import param_manager
 
 network = build_model()  # build_model is a function you implement to build model
 
-# Only the master worker can initialize the parameters initial value from
-# other processes will be ignored
+# The MVNetParamManager will initialize the parameters and sync them with
+# parameter server
 mvnpm = param_manager.MVNetParamManager(network)
 
 # training the model
@@ -143,19 +144,19 @@ mvnpm.sync_all_param()
 ```
 
 # How to use multi-GPU in theano with multiverso
-Assuming you have multiple GPUs in your server and you have installed the (CUDA backend)[http://deeplearning.net/software/theano/tutorial/using_gpu.html#cuda].
+You need multiple GPUs in your server and have installed the (CUDA backend)[http://deeplearning.net/software/theano/tutorial/using_gpu.html#cuda].
 
-First make sure you have read [this section](http://deeplearning.net/software/theano/install.html#using-the-gpu) and understand how to configure which GPU will be used.
+First, make sure you have read [this section](http://deeplearning.net/software/theano/install.html#using-the-gpu) and understand how to configure which GPU will be used.
 
-With multiverso, your program will run in multiple processes. If you hope that different GPUs will be used in different processes, it is not so convenient to configure it as usual.
+With multiverso, your program will run in multiple processes.
 
-Here is a example to achieve that different GPUs will be used in different processes.
-In this example, the i-th worker will use the i-th gpu. You can add code like this before `import theano`
+Here is an example to make different GPUs used in different processes.
+In this example, the i-th worker will use the i-th gpu. You need to add code like this before `import theano`.
 ```
 import multiverso as mv
 mv.init()
 worker_id = mv.worker_id()
-# NOTICE: To use multiple gpus, we must set the environment before import theano.
+# NOTICE: To use multiple gpus, we need to set the environment before import theano.
 if "THEANO_FLAGS" not in os.environ:
     os.environ["THEANO_FLAGS"] = 'floatX=float32,device=gpu%d,lib.cnmem=1' % worker_id
 
@@ -179,7 +180,7 @@ Perform CIFAR-10 classification with residual networks implementation based on L
 
 
 ## Theano settings
-Here is the settings in my `~/.theanorc`
+Here is the content of `~/.theanorc`
 ```
 [global]
 device = gpu
@@ -203,14 +204,14 @@ cnmem = 1
 
 
 Clarification
-- An epoch represents all the processes divides all the data equally and  go through them once together
-- A barrier is used at the end of every epoch
-- I didn't use warm start in  ASGD
-- The time to load the data is not considered in the experiment.
+- An epoch represents all the processes divide all the data equally and go through them once together.
+- A barrier is used at the end of every epoch.
+- This experiment didn't use warm start in ASGD.
+- The time to load the data is not considered in the time of the experiment.
 
 
 # The results
-I've run 4 experiments. The configuration and the result of each configuration are listed below.
+4 experiments have been run. The configuration and the results of each configuration are listed below.
 
 |Short Name | With multiverso | number of Process | number of GPU | Sync every X minibatches |  Best model validation accuracy | Time per epoch / s |
 | :---- | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
