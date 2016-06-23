@@ -1,10 +1,12 @@
 #ifndef MULTIVERSO_MATRIX_TABLE_H_
 #define MULTIVERSO_MATRIX_TABLE_H_
 
+
 #include "multiverso/multiverso.h"
 #include "multiverso/table_interface.h"
 
 #include <vector>
+#include <random>
 
 namespace multiverso {
 
@@ -97,6 +99,7 @@ public:
   explicit MatrixServerTable(const MatrixTableOption<T>& option);
 
   MatrixServerTable(integer_t num_row, integer_t num_col);
+  MatrixServerTable(integer_t num_row, integer_t num_col, float min_value, float max_value);
 
   void ProcessAdd(const std::vector<Blob>& data) override;
 
