@@ -49,14 +49,7 @@ void MV_AddArrayTable(TableHandler handler, float* data, int size) {
 
 // MatrixTable
 void MV_NewMatrixTable(int num_row, int num_col, TableHandler* out) {
-  // TODO(you_N_G): use the new MV_CreateTable api
-  // TODO: solve the memory issue, when to release worker and server?
-  multiverso::MatrixServerTable<float>* server = 
-    new multiverso::MatrixServerTable<float>(num_row, num_col);
-  multiverso::MatrixWorkerTable<float>* worker = 
-    new multiverso::MatrixWorkerTable<float>(num_row, num_col);
-  CHECK_NOTNULL(server);
-  *out = worker;
+  *out = multiverso::MV_CreateTable(multiverso::MatrixTableOption<float>(num_row, num_col));
 }
 
 void MV_GetMatrixTableAll(TableHandler handler, float* data, int size) {
@@ -80,24 +73,4 @@ void MV_AddMatrixTableByRows(TableHandler handler, float* data, int size,
   auto worker = reinterpret_cast<multiverso::MatrixWorkerTable<float>*>(handler);
   worker->Add(data, size, row_ids, row_ids_n);
 }
-
-  //ArrayServerFloat newArrayServerFloat(int i) {
-  //  return (ArrayServerFloat) new multiverso::ArrayServer<float>(i);
-  //}
-
-  //ArrayWorkerFloat newArrayWorkerFloat(int i) {
-  //  return (ArrayWorkerFloat) new multiverso::ArrayWorker<float>(i);
-  //}
-
-  //void getArrayWorkerFloat(ArrayWorkerFloat awf, float* data, int size) {
-  //  ((multiverso::ArrayWorker<float>*) awf)->Get(data, size);
-  //}
-
-  // void addArrayWorkerFloat(ArrayServerFloat awf, float* data, int size, struct AddOption *options) {
-  //   multiverso::AddOption mvoptions;
-  //   mvoptions.set_learning_rate(options->learning_rate);
-  //   mvoptions.set_momentum(options->momentum);
-  //   mvoptions.set_rho(options->rho);
-  //   ((multiverso::ArrayWorker<float>*) awf)->Add(data, size, &mvoptions);
-  // }
 }
