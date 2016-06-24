@@ -7,9 +7,9 @@ For more details, please view our website [http://www.dmtk.io](http://www.dmtk.i
 
 #Linux Installation
 
-cmake CMakeLists.txt
+1. cmake ./CMakeLists.txt
 
-make
+2. make
 
 # Windows Installation
 
