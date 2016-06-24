@@ -12,12 +12,10 @@ Build
 **Linux** (Tested on Ubuntu 14.04)
 
 ```
-sudo apt-get install libopenmpi-dev openmpi-bin build-essential cmake
-mkdir build
-cd build
-cmake ..
-make
-sudo make install
+sudo apt-get install libopenmpi-dev openmpi-bin build-essential cmake git
+git clone https://github.com/Microsoft/multiverso.git && cd multiverso
+mkdir build && cd build
+cmake .. && make && sudo make install
 ```
 
 **Windows**
