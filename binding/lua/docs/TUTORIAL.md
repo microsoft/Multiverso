@@ -2,6 +2,8 @@
 
 ## Setup
 
+1. Install CUDA, cuDNN, Torch and Torch cuDNN bindings according to this
+   [guide](https://github.com/Microsoft/fb.resnet.torch/blob/multiverso/INSTALL.md).
 1. Install Multiverso shared object by referring to the
    [Build](../../../README.md#build) instruction of multiverso project.
 1. Install multiverso torch package by referring to the
