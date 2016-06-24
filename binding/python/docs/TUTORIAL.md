@@ -1,8 +1,9 @@
 # How to write python code with multiverso
 1. You could start with the [test example](../multiverso/tests/test_multiverso.py) to learn the basic use of multiverso apis.
-2. After understanding the basic use of multiverso apis, you can test and run the [examples](../examples/).  The original code links are written at the beginning of them. You can compare the multiverso version with the original ones to find the differences. The places need to be modified to use multiverso are all inserted comments like `# MULTIVERSO: XXX`
+1. Try the [examples](../examples/): The links of the original version are listed at the header part. All the modifications are commented with `# MULTIVERSO: XXX` and you can compare them with the original one.
 
-Here is a typical example of python code with multvierso.
+
+Here is a typical usage of multiverso python binding.
 ```python
 # import multiverso.
 import multiverso as mv
@@ -22,7 +23,7 @@ mv.shutdown()
 ```
 
 ## About the master worker
-Some things only need one worker process, such as validation, outputting the result, initializing the parameters and so on. So we mark the worker 0 as the master worker to finish these things. You can use `mv.is_master_worker` to distinguish the master worker from others.
+Some things should only be done in specific worker, such as validation, outputting the results, initializing the parameters and so on. So you can benefit from mv.is_master_worker() api to mark worker 0 as the master one to complete these tasks.
 For example, if you want to make sure only one process will initialize the parameters, you can write similar code below.
 ```
 import multiverso as mv
@@ -39,12 +40,12 @@ else:
     params = tbh.get()
 ```
 
-There are similar strategies in `theano_ext.sharedvar` and `lasagne_ext.param_manager` when initializing values. They are already implemented in the constructors.
+Similar strategies are also applied in `theano_ext.sharedvar` and `lasagne_ext.param_manager` during initialization and already implemented in the constructors.
 
 
 
 # How to use multiverso in theano
-First, make sure you have understood `mv.init()`, `mv.shutdown()` and `mv.barrier()` mentioned in last section.  You should add the same functions in your theano python script.
+First, similarly, add `mv.init()`, `mv.shutdown()` and `mv.barrier()` mentioned above in your codebase.
 
 In theano, parameters are usually stored in sharedVariables.
 
@@ -76,7 +77,7 @@ W = sharedvar.mv_shared(
 
 # build the model
 
-# train the modle
+# train the model
 
 # When you are ready to add the delta of the variable to parameter server and sync the latest value, you can run this function
 W.mv_sync()
@@ -86,20 +87,18 @@ W.mv_sync()
 sharedvar.sync_all_mv_shared_vars()
 ```
 
-`mv_shared` is just a wrapper of `theano.shared`. It acts same as `theano.shared`, but it give you much more convenient interface to sync values.
+`mv_shared` is just a wrapper of `theano.shared`. It acts same as `theano.shared`, while making it more convenient to sync values.
 
-If your program will run in multi-process and you want to initialize your parameters, you should initialize your shared variables with the value you want only in one process and initialize them with zero in other processes.
-
-
-If you don't use shared variables to store and update the parameters, you can still use the `add` and `get` functions to sync parameters.
+`add` and `get` can also be used to sync parameters if you don't use shared variables.
 
 
 # How to use multiverso in lasagne
-First, make sure you have understood the last section.
+First, add `mv.init()`, `mv.shutdown()` and `mv.barrier()` mentioned above in your codebase.
 
-Lasagne provides many functions to help you build models more easily. Multiverso python binding provides a manager to make managing and synchronizing the parameters in Lasagne more easily.
+Lasagne provides many functions to build models in theano. Multiverso python binding provides a manager to make managing and synchronizing the parameters in Lasagne more easily.
 
 You can write code like this to manage your parameters.
+A typical usage of managing the parameters is shown as below.
 ```
 from multiverso.theano_ext.lasagne_ext import param_manager
 
@@ -109,14 +108,14 @@ network = build_model()  # build_model is a function you implement to build mode
 # parameter server
 mvnpm = param_manager.MVNetParamManager(network)
 
-# training the model
+# Train the model
 
 # When you are ready to add the delta of the variable in this model to the parameter server and get the latest value, you can run this function
 mvnpm.sync_all_param()
 ```
 
 
-# Run your multiverso program with multi-process
+# Run your multiverso program with 4 processes
 Here is an example of running logistic regression with multi-process.
 ```
 mpirun -np 4 python ./examples/theano/logistic_regression.py
@@ -124,14 +123,14 @@ mpirun -np 4 python ./examples/theano/logistic_regression.py
 
 
 # How to use multi-GPU in theano with multiverso
-You need multiple GPUs in your server and have installed the [CUDA backend](http://deeplearning.net/software/theano/tutorial/using_gpu.html#cuda).
+You need multiple GPUs on your server and have [CUDA backend](http://deeplearning.net/software/theano/tutorial/using_gpu.html#cuda) installed.
 
-First, make sure you have read [this section](http://deeplearning.net/software/theano/install.html#using-the-gpu) and understand how to configure which GPU will be used.
+First, look through [this section](http://deeplearning.net/software/theano/install.html#using-the-gpu) to understand the configuration of which GPU will be used.
 
-With multiverso, your program will run in multiple processes.
+Second, run the program with multiverso in multiple processes.
 
-Here is an example to make different GPUs used in different processes.
-In this example, the i-th worker will use the i-th gpu. You need to add code like this before `import theano`.
+Here is an example to make different processes use different GPUs.
+In this example, the i-th worker will use the i-th GPU. You need to add code like this before `import theano`.
 ```
 import multiverso as mv
 mv.init()

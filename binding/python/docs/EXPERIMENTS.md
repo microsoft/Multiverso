@@ -1,6 +1,7 @@
 # Experiments
 
-Here is the result of running [Deep_Residual_Learning_CIFAR-10](../examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
+## Codebase
+[Deep_Residual_Learning_CIFAR-10](../examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
 
 ## Task Description
 Perform CIFAR-10 classification with residual networks implementation based on Lasagne.
@@ -15,7 +16,7 @@ Perform CIFAR-10 classification with residual networks implementation based on L
 
 
 ## Theano settings
-Here is the content of `~/.theanorc`
+Configuration of `~/.theanorc`
 ```
 [global]
 device = gpu
@@ -34,21 +35,21 @@ cnmem = 1
 |Total epoch|82|
 |Batch size|128|
 |Depth|32|
-|Learning rate change schedule|Initialized as 0.1, Changed to 0.01 from epoch 41, Changed to 0.001 from epoch 61|
+|Learning rate change schedule|Initialized as 0.1, Changed to 0.01 from epoch 41, to 0.001 from epoch 61|
 |number of parameters in model|    464,154|
 
 
 Clarification
 - An epoch represents all the processes divide all the data equally and go through them once together.
-- A barrier is used at the end of every epoch.
-- This experiment didn't use warm start in ASGD.
+- A barrier is used at the end of each epoch.
+- This experiment doesn't use warm start in ASGD.
 - The time to load the data is not considered in the time of the experiment.
 
 
 # The results
-4 experiments have been run. The configuration and the results of each configuration are listed below.
+The results of 4 experiments with different configurations are shown as following.
 
-|Short Name | With multiverso | number of Process | number of GPU | Sync every X minibatches |  Best model validation accuracy | Time per epoch / s |
+|Short Name | With multiverso | Number of Process(es) | Number of GPU(s) | Sync every X minibatches |  Best model validation accuracy | Time per epoch / s |
 | :---- | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
 | 0M-1G | 0 | 1 | 1 | --| 92.61 % | 100.02|
 |1M-1G-1S | 1 | 1 | 1 | 1 | 92.61 % | 109.78|

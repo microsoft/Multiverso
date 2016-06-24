@@ -1,5 +1,3 @@
-
-
 # Installation
 
 ## On linux
@@ -18,4 +16,4 @@ nosetests
 # Documentation
 * [Experiments](./docs/EXPERIMENTS.md)
 * [Tutorial](./docs/TUTORIAL.md)
-* All the api documents are written as docstrings in the python source.
+* Api documents are written as docstrings in the python source code.
