@@ -120,6 +120,7 @@ protected:
 
 template <typename T>
 struct MatrixTableOption {
+  MatrixTableOption(integer_t num_row, integer_t num_col):num_row(num_row), num_col(num_col){}
   integer_t num_row;
   integer_t num_col;
   DEFINE_TABLE_TYPE(T, MatrixWorkerTable, MatrixServerTable);

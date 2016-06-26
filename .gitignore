@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.swp
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -266,3 +267,6 @@ _Pvt_Extensions
 *.exe
 *.out
 *.app
+
+# Python
+*.pyc
