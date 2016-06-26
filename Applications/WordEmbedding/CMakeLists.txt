@@ -8,7 +8,7 @@ find_package(MPI REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -Wno-sign-compare -fno-omit-frame-pointer -fopenmp")
 
 set(MULTIVERSO_INC ${MULTIVERSO_DIR}/include)
-set(MULTIVERSO_LIB ${MULTIVERSO_DIR}/src)
+set(MULTIVERSO_LIB ${MULTIVERSO_DIR}/build/src)
 set(MULTIVERSO_SRC ${MULTIVERSO_DIR}/src)
 
 include_directories(${MULTIVERSO_INC})
