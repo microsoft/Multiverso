@@ -9,12 +9,17 @@ import numpy as np
 mv_lib = Loader.get_lib()
 
 
-def init(args=[]):
+def init(sync=False):
     '''Initialize mutliverso.
 
     This should be called only once before training at the beginning of the
     whole project.
+    If sync is True, a sync server will be created. Otherwise an async server
+    will be created.
     '''
+    args = [""]  # the first argument will be ignored. So we put a placeholder here
+    if sync:
+        args.append("-sync=true")
     n = len(args)
     args_type = ctypes.c_char_p * n
     mv_lib.MV_Init(ctypes.pointer(ctypes.c_int(n)), args_type(*[ctypes.c_char_p(arg) for arg in args]))
