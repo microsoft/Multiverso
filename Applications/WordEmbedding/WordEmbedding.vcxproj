@@ -114,7 +114,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="src\block_queue.h" />
     <ClInclude Include="src\communicator.h" />
     <ClInclude Include="src\constant.h" />
@@ -141,9 +140,6 @@
     <ClCompile Include="src\trainer.cpp" />
     <ClCompile Include="src\util.cpp" />
     <ClCompile Include="src\word_embedding.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="WordEmbedding.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

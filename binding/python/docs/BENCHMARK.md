@@ -1,10 +1,10 @@
-# Experiments
-
-## Codebase
-[Deep_Residual_Learning_CIFAR-10](../examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
+# Multiverso Python Binding Benchmark
 
 ## Task Description
 Perform CIFAR-10 classification with residual networks implementation based on Lasagne.
+
+## Codebase
+[Deep_Residual_Learning_CIFAR-10](../examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
 
 ## Hardware
 |||
@@ -49,13 +49,12 @@ Clarification
 # The results
 The results of 4 experiments with different configurations are shown as following.
 
-|Short Name | With multiverso | Number of Process(es) | Number of GPU(s) | Sync every X minibatches |  Best model validation accuracy | Time per epoch / s |
+|Short Name | # Process(es) | #GPU(s) per Process | Use multiverso | Sync every X minibatches | Seconds per epoch |  Best model validation accuracy |
 | :---- | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
-| 0M-1G | 0 | 1 | 1 | --| 92.61 % | 100.02|
-|1M-1G-1S | 1 | 1 | 1 | 1 | 92.61 % | 109.78|
-|1M-4G-1S | 1 | 4 | 4 | 1 | 92.15 % | 29.38|
-|1M-4G-3S | 1 | 4 | 4 | 3 | 89.61 % | 27.46|
+| 1P1G0M | 1 | 1 | 0 | -- | 100.02 | 92.61 % |
+|1P1G1M1S | 1 | 1 | 1 | 1 | 109.78 | 93.03 % |
+|4P1G1M1S | 4 | 1 | 1 | 1 | 29.38 | 92.15 % |
+|4P1G1M3S | 4 | 1 | 1 | 3 | 27.46 | 89.61 % |
 
 ![accuracy_epoch](./imgs/accuracy_epoch.png)
 ![accuracy_time](./imgs/accuracy_time.png)
-![time_epoch](./imgs/time_epoch.png)

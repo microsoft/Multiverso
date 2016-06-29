@@ -30,13 +30,11 @@ Perform CIFAR-10 classification with torch resnet implementation.
 
 ## Results
 
-| Code Name | #Process | #GPU per Process | Use multiverso | Seconds per epoch | Best Model            |
-| :-------: | :------: | :--------------: | :------------: | :---------------: | :-------------------: |
-| 1P1G0M    | 1        | 1                | 0              | 20.366            | top1:7.288 top5:0.218 |
-| 1P4G0M    | 1        | 4                | 0              | 10.045            | top1:7.704 top5:0.289 |
-| 4P1G1M    | 4        | 1                | 1              |  6.303            | top1:8.610 top5:0.273 |
+| Code Name | #Process(es) | #GPU(s) per Process | Use multiverso | Seconds per epoch | Best Model |
+| :-------: | :----------: | :-----------------: | :------------: | :---------------: | :--------: |
+| 1P1G0M    | 1            | 1                   | 0              | 20.366            | 92.712 %   |
+| 1P4G0M    | 1            | 4                   | 0              | 10.045            | 92.296 %   |
+| 4P1G1M    | 4            | 1                   | 1              |  6.303            | 91.390 %   |
 
 ![top1error_vs_epoch](./imgs/top1error_vs_epoch.png)
-![top5error_vs_epoch](./imgs/top5error_vs_epoch.png)
 ![top1error_vs_runningtime](./imgs/top1error_vs_runningtime.png)
-![top5error_vs_runningtime](./imgs/top5error_vs_runningtime.png)

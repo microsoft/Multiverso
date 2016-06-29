@@ -23,21 +23,14 @@ mv.shutdown()
 ```
 
 ## About the master worker
-Some things should only be done in specific worker, such as validation, outputting the results, initializing the parameters and so on. So you can benefit from mv.is_master_worker() api to mark worker 0 as the master one to complete these tasks.
-For example, if you want to make sure only one process will initialize the parameters, you can write similar code below.
+Some things should only be done in specific worker, such as validation, outputting the results and so on. So you can benefit from mv.is_master_worker() api to mark worker 0 as the master one to complete these tasks.
+For example, if you want to make sure only one process will output the validation results, you can write similar code below.
 ```
 import multiverso as mv
-# create your table handler tbh and initial value params
+# train your model
 if mv.is_master_worker():
-    # Only master worker will set the initial value.
-    tbh.add(params)
-    # Set a barrier for other workers to wait.
-    mv.barrier()
-else:
-    # Wait the master worker to finish setting.
-    mv.barrier()
-    # Get the initial model from the server.
-    params = tbh.get()
+    # validate your model
+    # print your validation results
 ```
 
 Similar strategies are also applied in `theano_ext.sharedvar` and `lasagne_ext.param_manager` during initialization and already implemented in the constructors.
@@ -64,8 +57,6 @@ self.W = theano.shared(
 If you want to use multiverso, you can modify them like this.
 ```
 from multiverso.theano_ext import sharedvar
-# Only the master worker can initialize the shared value. The initial value from
-# other processes will be ignored
 W = sharedvar.mv_shared(
     value=numpy.zeros(
         (n_in, n_out),

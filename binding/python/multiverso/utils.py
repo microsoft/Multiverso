@@ -5,6 +5,7 @@ import ctypes
 import os
 import platform
 from ctypes.util import find_library
+import numpy as np
 
 PACKAGE_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -67,3 +68,10 @@ class Loader(object):
             cls.LIB = cls.load_lib()
             cls.LIB.MV_NumWorkers.restype = ctypes.c_int
         return cls.LIB
+
+
+def convert_data(data):
+    '''convert the data to float32 ndarray'''
+    if not isinstance(data, np.ndarray):
+        data = np.array(data)
+    return data.astype(np.float32)
