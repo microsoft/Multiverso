@@ -1,4 +1,4 @@
-# Multiverso Torch/Lua Binding
+# Multiverso Python/Theano/Lasagne Binding
 
 
 ## Introduction
