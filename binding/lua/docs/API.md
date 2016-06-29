@@ -53,13 +53,17 @@ Create a `ArrayTableHandler` for syncing array-like (one-dimensional) value.
 
 The `size` should be a `number` equal to the size of value we want to sync.
 
-#### ArrayTableHandler:add(data)
+#### ArrayTableHandler:add(data, sync)
 
 Add a array-like (one-dimensional) data to the server.
 
 The `data` should be a `torch.Tensor` or Lua `table`. During training process,
 the data should be the gradients (delta value). The size of `data` must be equal
 to the size specified in initialization.
+
+`sync` should be a boolean value. The default value is false. If `sync` is
+True, this call will blocked by IO until the call finish.  Otherwise it will
+return immediately
 
 #### ArrayTableHandler:get()
 
@@ -81,7 +85,7 @@ The `num_row` should be the number of rows and the `num_col` should be the
 number of columns. Both of them should be a `number` equal to the exact size of
 value we want to sync.
 
-#### MatrixTableHandler:add(data, row_ids)
+#### MatrixTableHandler:add(data, row_ids, sync)
 
 Add a matrix-like (two-dimensional) data to the server.
 
@@ -91,6 +95,10 @@ the exact value to it. The `row_ids` is an optional parameter and it should be
 an array of 'row_id' numbers when specified. If specified, multiverso will only
 update the value in specific rows and the size of `data` should be equal to the
 size of value we want to update.
+
+`sync` should be a boolean value. The default value is false. If `sync` is
+True, this call will blocked by IO until the call finish.  Otherwise it will
+return immediately
 
 #### MatrixTableHandler:get(row_ids)
 

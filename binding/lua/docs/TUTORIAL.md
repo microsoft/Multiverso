@@ -65,7 +65,8 @@ model of the master worker from the server.
 ```lua
 if multiverso.is_master then
     -- Only master worker will set the initial value.
-    tbh:add(params)
+    -- Sync should be true to make sure the initial values take effect
+    tbh:add(params, true)
     -- Set a barrier for other workers to wait.
     multiverso.barrier()
 else
@@ -83,7 +84,8 @@ fetch same initial models after finish the contributing phase.
 
 ```lua
 -- Contribute equally to the server.
-tbh:add(params / multiverso.num_workers)
+-- Sync should be true to make sure the initial values take effect
+tbh:add(params / multiverso.num_workers, true)
 -- Wait for finshing the contributing phase.
 multiverso.barrier()
 -- Fetch same initial model.
