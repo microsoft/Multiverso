@@ -122,31 +122,6 @@ namespace multiverso
 			}
 		}
 
-		void DataBlock::PrintDataBlock(int embedding_size){
-			std::vector<int> input_nodes(input_nodes.begin(), input_nodes.end());
-			std::vector<int> output_nodes(output_nodes.begin(),output_nodes.end());
-
-			for (int i = 0; i < input_nodes.size(); ++i)
-			//for (int i = 0; i < 2; ++i)
-			{
-				real* ptr = GetWeightIE(input_nodes[i]);
-				for (int j = 0; j < embedding_size; j++){
-					std::cout << ptr[j] << " ";
-				}
-				std::cout << std::endl;
-			}
-
-			
-			for (int i = 0; i < output_nodes.size(); ++i)
-			{
-				real* ptr = GetWeightEO(output_nodes[i]);
-				for (int j = 0; j < embedding_size; j++){
-					std::cout << ptr[j] << " ";
-				}
-				std::cout << std::endl;
-			}
-		}
-
 		void DataBlock::SetLastFlag(){
 			is_last_one_ = true;
 		}

@@ -29,12 +29,6 @@ namespace multiverso
 			total_words = 0;
 			max_preload_data_size = 8000000000LL;
 			use_adagrad = false;
-			//multiverso config
-			num_servers = 0;
-			num_aggregator = 1;
-			lock_option = 1;
-			num_lock = 100;
-			max_delay = 0;
 		}
 		//Input all the local model-arguments 
 		void Option::ParseArgs(int argc, char* argv[])
@@ -62,11 +56,6 @@ namespace multiverso
 				if (strcmp(argv[i], "-sw_file") == 0)  sw_file = argv[i + 1];
 				if (strcmp(argv[i], "-use_adagrad") == 0) use_adagrad = (atoi(argv[i + 1]) != 0);
 				if (strcmp(argv[i], "-is_pipeline") == 0) is_pipeline = (atoi(argv[i + 1]) != 0);
-				if (strcmp(argv[i], "-num_servers") == 0) num_servers = atoi(argv[i + 1]);
-				if (strcmp(argv[i], "-num_aggregator") == 0) num_aggregator = atoi(argv[i + 1]);
-				if (strcmp(argv[i], "-lock_option") == 0) lock_option = atoi(argv[i + 1]);
-				if (strcmp(argv[i], "-num_lock") == 0) num_lock = atoi(argv[i + 1]);
-				if (strcmp(argv[i], "-max_delay") == 0) max_delay = atoi(argv[i + 1]);
 
 			}
 		}
@@ -93,12 +82,7 @@ namespace multiverso
 			puts("-use_adagrad : 0 or 1, whether to use adagrad to adjust learnin rate");
 			puts("-data_block_size : default 1MB, the maximum bytes which a data block will store");
 			puts("-max_preload_data_size : default 8GB, the maximum data size(bytes) which multiverse_WordEmbedding will preload");
-			puts("-num_servers : default 0, the parameter of multiverso.Separately, 0 indicates all precesses are servers");
-			puts("-num_aggregator : default 1, number of aggregation threads in a process");
-			puts("-max_delay : default 0, the delay bound(max staleness)");
-			puts("-num_lock : default 100, number of locks in Locked option");
 			puts("-is_pipeline : 0 or 1, whether to use pipeline");
-			puts("-lock_option : default 0, Lock option. 0 : the trheads do not write and there is no contention; 1:there is no lock for thread contention; 2:normal lock for thread contention");
 			puts("-server_endpoint_file : default "", server ZMQ socket endpoint file in MPI - free version");
 		}
 
@@ -124,12 +108,7 @@ namespace multiverso
 			multiverso::Log::Info("max_preload_data_size: %lld\n", max_preload_data_size);
 			multiverso::Log::Info("init_learning_rate: %lf\n", init_learning_rate);
 			multiverso::Log::Info("data_block_size: %lld\n", data_block_size);
-			multiverso::Log::Info("num_servers: %d\n", num_servers);
-			multiverso::Log::Info("num_aggregator: %d\n", num_aggregator);
 			multiverso::Log::Info("is_pipeline: %d\n", is_pipeline);
-			multiverso::Log::Info("lock_option: %d\n", lock_option);
-			multiverso::Log::Info("num_lock: %d\n", num_lock);
-			multiverso::Log::Info("max_delay: %d\n", max_delay);
 			multiverso::Log::Info("endpoints_file: %s\n", endpoints_file);
 		}
 

@@ -17,7 +17,7 @@ namespace multiverso
 				FILE* fid = fopen(option_->sw_file, "r");
 				if (fid == nullptr)
 				{
-					//multiverso::Log::Fatal("Open sw_file failed!\n");
+					multiverso::Log::Fatal("Open sw_file failed!\n");
 					exit(1);
 				}
 				while (ReadWord(word_, fid))
@@ -31,7 +31,7 @@ namespace multiverso
 			file_ = fopen(input_file, "r");
 			if (file_ == nullptr)
 			{
-				//multiverso::Log::Fatal("Open train_file failed!\n");
+				multiverso::Log::Fatal("Open train_file failed!\n");
 				exit(1);
 			}
 		}

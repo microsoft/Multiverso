@@ -51,11 +51,11 @@ namespace multiverso
 			}
 		}
 
-		inline void Communicator::AddRows(MatrixWorkerTable<real>* table_, 
+		inline void Communicator::AddRows(MatrixWorkerTable<real>* table, 
 			std::vector<int> row_ids, std::vector<real *> ptrs, int size)
 		{
 			AddOption add_option;
-			table_->Add(row_ids, ptrs, size, &add_option);
+			table->Add(row_ids, ptrs, size, &add_option);
 		}
 
 		void Communicator::GetWorkerTableRows(std::vector<int> row_nums, 
@@ -64,10 +64,10 @@ namespace multiverso
 			worker_input_table_->Get(row_nums, blocks, embeding_size);
 		}
 
-		inline void Communicator::GetRows(MatrixWorkerTable<real>* table_, 
+		inline void Communicator::GetRows(MatrixWorkerTable<real>* table, 
 			std::vector<int> row_ids, std::vector<real *> ptrs, int size)
 		{
-			table_->Get(row_ids, ptrs, size);
+			table->Get(row_ids, ptrs, size);
 		}
 
 		inline void Communicator::RequestParameterByTableId(DataBlock *data_block, 

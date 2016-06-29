@@ -84,7 +84,7 @@ namespace multiverso
 			DataBlock* GetBlockAndPrepareParameter();
 
 			void SaveEmbedding(const char *file_path, bool is_binary);
-			void WriteToFile(bool is_binary, std::vector<real*> &blocks, FILE* fid);
+			void WriteToFile(bool is_binary, std::vector<real*> &blocks, FILE* fid, std::vector<int> &nodes);
 			const char* ChangeFileName(const char *file_path, int iteration);
 		};
 	}

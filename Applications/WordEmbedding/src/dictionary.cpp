@@ -130,10 +130,8 @@ namespace multiverso
 					size_t len = strlen(sz_label);
 					if (len > kMaxWordSize)
 					{
-						/*
 						multiverso::Log::Info("ignore super long term");
 						continue;
-						*/
 					}
 
 					char tri_letters[kMaxWordSize + 2];
@@ -223,14 +221,6 @@ namespace multiverso
 		std::vector<WordInfo>::iterator Dictionary::End()
 		{
 			return word_info_.end();
-		}
-
-		void Dictionary::PrintVocab(){
-			int i = 0;
-			for (auto temp = Begin(); temp != End(); ++temp){
-				std::cout << temp->word << " " << i << std::endl;
-				i++;
-			}
 		}
 	}
 }

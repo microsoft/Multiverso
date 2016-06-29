@@ -36,7 +36,7 @@ namespace multiverso
 			}
 			else
 			{
-				//multiverso::Log::Error("file open failed %s", filename);
+				multiverso::Log::Error("file open failed %s", filename);
 			}
 		}
 
@@ -86,7 +86,7 @@ namespace multiverso
 			}
 			else
 			{
-				//multiverso::Log::Error("file open failed %s", filename);
+				multiverso::Log::Error("file open failed %s", filename);
 			}
 		}
 		//Compare the second element of two pairs   
@@ -244,7 +244,7 @@ namespace multiverso
 			}
 			else
 			{
-				//multiverso::Log::Error("file open failed %s", filename);
+				multiverso::Log::Error("file open failed %s", filename);
 			}
 		}
 
