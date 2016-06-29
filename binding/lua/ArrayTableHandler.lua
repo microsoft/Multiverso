@@ -7,6 +7,7 @@ ffi.cdef[[
     void MV_NewArrayTable(int size, TableHandler* out);
     void MV_GetArrayTable(TableHandler handler, float* data, int size);
     void MV_AddArrayTable(TableHandler handler, float* data, int size);
+    void MV_AddAsyncArrayTable(TableHandler handler, float* data, int size);
 ]]
 
 function tbh:new(size)
@@ -29,9 +30,14 @@ function tbh:get()
     return util.cdata2tensor(cdata, tonumber(self._size))
 end
 
-function tbh:add(data)
+function tbh:add(data, sync)
+    sync = sync or false
     cdata = util.tensor2cdata(data)
-    libmv.MV_AddArrayTable(self._handler[0], cdata, self._size)
+    if sync then
+        libmv.MV_AddArrayTable(self._handler[0], cdata, self._size)
+    else
+        libmv.MV_AddAsyncArrayTable(self._handler[0], cdata, self._size)
+    end
 end
 
 return tbh
