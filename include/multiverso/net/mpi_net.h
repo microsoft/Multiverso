@@ -139,6 +139,10 @@ public:
 	return -1;
   }
   
+  void Close() override {
+    Log::Fatal("Shouldn't call this in MPI Net\n");
+  }
+
   bool active() const { return inited_ != 0; }
   int rank() const override { return rank_; }
   int size() const override { return size_; }
