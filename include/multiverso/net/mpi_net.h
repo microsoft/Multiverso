@@ -139,7 +139,7 @@ public:
 	return -1;
   }
   
-  void Close() override {
+  void Close(const char*) override {
     Log::Fatal("Shouldn't call this in MPI Net\n");
   }
 
