@@ -20,7 +20,7 @@ cmake .. && make && sudo make install
 
 **Windows**
 
-For windows users, please refer to README in windows folder.
+Open the `Multiverso.sln` with [Visual Studio 2013]() and build.
 
 Related Projects
 ----------
