@@ -33,6 +33,6 @@ luajit test.lua
 
 ## Documentation
 
-- [Tutorial](./docs/TUTORIAL.md)
-- [API](./docs/API.md)
-- [Benchmark](./docs/BENCHMARK.md)
+- [Tutorial](https://github.com/Microsoft/multiverso/wiki/Integrate-multiverso-into-torch-project)
+- [API](https://github.com/Microsoft/multiverso/wiki/Multiverso-Torch-Binding-API)
+- [Benchmark](https://github.com/Microsoft/multiverso/wiki/Multiverso-Torch-Binding-Benchmark)

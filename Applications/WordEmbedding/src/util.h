@@ -35,7 +35,6 @@ namespace multiverso
 			int64 total_words;
 			int64 max_preload_data_size;
 			real init_learning_rate;
-			int num_servers, num_aggregator, lock_option, num_lock, max_delay;
 
 			Option();
 			/*!

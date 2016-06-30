@@ -50,7 +50,7 @@ local tbh = multiverso.ArrayTableHandler:new(params:size(1))
 -- Set/Get the initial parameters.
 if multiverso.is_master then
   -- Only master worker set the initial value.
-  tbh:add(params)
+  tbh:add(params, true)
   -- Set a barrier for other workers to wait.
   multiverso.barrier()
 else

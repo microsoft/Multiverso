@@ -19,22 +19,21 @@ class MVSharedVariable(object):
         '''Constructor of the MVSharedVariable
 
         The constructor will create ArrayTableHandler and associate the shared
-        variable with it.  Only the master worker can initialize the
-        parameters. The initial value from other processes will be ignored
+        variable with it. The initial value of ArrayTableHandler will be same
+        as the value of SharedVariable. If different initial value is used in
+        different processes, the average of them will be used as the initial
+        value
         '''
         assert(isinstance(svobj, SharedVariable))
         self._svobj = svobj
-        self._mv_array = mv.ArrayTableHandler(self._svobj.get_value().size)
+        self._mv_array = mv.ArrayTableHandler(self._svobj.get_value().size,
+                                              init_value=self._svobj.get_value().reshape((-1,)))
 
+        mv.barrier()  # add barrier to make sure the initial values have token effect
         # _last_mv_data restore a copy of value. It will be used for calculate
         # the update for multiverso when calling mv_sync
-        if mv.is_master_worker():
-            self._mv_array.add(self._svobj.get_value().reshape((-1,)))
-            self._last_mv_data = self._svobj.get_value(borrow=False)
-        mv.barrier()
-        if not mv.is_master_worker():
-            self._last_mv_data = self._mv_array.get().reshape(self._svobj.get_value().shape)
-            self._svobj.set_value(self._last_mv_data, borrow=False)
+        self._last_mv_data = self._mv_array.get().reshape(self._svobj.get_value().shape)
+        self._svobj.set_value(self._last_mv_data, borrow=False)
 
     def mv_sync(self):
         ''' sync values with multiverso server

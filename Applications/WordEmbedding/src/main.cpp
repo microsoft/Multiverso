@@ -8,7 +8,6 @@
 #include "multiverso/multiverso.h"
 #include "distributed_wordembedding.h"
 #include "memory_manager.h"
-//#include <vld.h>
 #include "util.h"
 
 

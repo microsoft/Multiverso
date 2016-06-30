@@ -15,8 +15,9 @@ class MVNetParamManager(object):
         ''' The constructor of MVNetParamManager
 
         The constructor will associate the parameter with multiverso array
-        table.  Only the master worker can initialize the parameters. The
-        initial value from other processes will be ignored
+        table.  The initial value of ArrayTableHandler will be same as the
+        parameters of network. If different parameters are used in different
+        processes, the average of them will be used as the initial value
         '''
         self.shapes = []
         self.dtypes = []
@@ -34,16 +35,10 @@ class MVNetParamManager(object):
             self.all_param_list.extend([i for i in np.nditer(arr)])
         self.all_param_list = np.array(self.all_param_list)
 
-        self.tbh = mv.ArrayTableHandler(len(self.all_param_list))
-
-        # When it is master worker, the process will initialize the parameters.
-        # Others will get the values initialized by master worker.
-        if mv.is_master_worker():
-            self.tbh.add(self.all_param_list)
-        mv.barrier()
-        if not mv.is_master_worker():
-            self.all_param_list = self.tbh.get()
-            self._set_all_param_to_net()
+        self.tbh = mv.ArrayTableHandler(len(self.all_param_list), init_value=self.all_param_list)
+        mv.barrier()  # add barrier to make sure the initial values have token effect
+        self.all_param_list = self.tbh.get()
+        self._set_all_param_to_net()
 
     def _set_all_param_to_net(self):
         n = 0

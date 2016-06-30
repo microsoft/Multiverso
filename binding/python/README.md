@@ -1,4 +1,4 @@
-# Multiverso Torch/Lua Binding
+# Multiverso Python/Theano/Lasagne Binding
 
 
 ## Introduction
@@ -21,6 +21,6 @@ nosetests
 
 
 ## Documentation
-* [Tutorial](./docs/TUTORIAL.md)
+* [Tutorial](https://github.com/Microsoft/multiverso/wiki/How-to-write-python-code-with-multiverso)
 * Api documents are written as docstrings in the python source code.
-* [Benchmark](./docs/BENCHMARK.md)
+* [Benchmark](https://github.com/Microsoft/multiverso/wiki/Multiverso-Python-Binding-Benchmark)

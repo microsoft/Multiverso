@@ -39,11 +39,10 @@ namespace multiverso
 		void Distributed_wordembedding::StartLoadDataThread(Reader *reader, int64 file_size)
 		{
 			int data_block_count = 0;
-			int64 all = file_size / option_->data_block_size + 1;
 			for (int cur_epoch = 0; cur_epoch < option_->epoch; ++cur_epoch)
 			{
 				reader_->ResetStart();
-				for (int64 cur = 0; cur < all; ++cur)
+				for (int64 cur = 0; cur < file_size; cur += option_->data_block_size)
 				{
 					DataBlock *data_block = new (std::nothrow)DataBlock();
 					assert(data_block != nullptr);
@@ -99,26 +98,26 @@ namespace multiverso
 			data_block->MallocMemory(dictionary_->Size(), option_->use_adagrad);
 			PrepareData(data_block);
 			communicator_->RequestParameter(data_block);
-			//GetAllWordCount();
+			GetAllWordCount();
 			return data_block;
 		}
 
 		void Distributed_wordembedding::GetAllWordCount(){
 			WordEmbedding_->word_count_actual = communicator_->GetWordCount();
 			WordEmbedding_->UpdateLearningRate();
-			multiverso::Log::Info("Get all word count done.,word count actual is %lld\n", WordEmbedding_->word_count_actual);
+			multiverso::Log::Info("Get all word count done,word count actual is %lld\n", WordEmbedding_->word_count_actual);
 		}
 
 		void Distributed_wordembedding::AddDeltaWordCount(){
 			int64 temp_word_count = communicator_->GetWordCount();
 			temp_word_count = WordEmbedding_->word_count_actual - temp_word_count;
 			communicator_->AddWordCount(temp_word_count);
-			multiverso::Log::Info("Add word count done.word count delta is %lld\n", WordEmbedding_->word_count_actual);
+			multiverso::Log::Info("Add word count done.word count delta is %lld\n", temp_word_count);
 		}
 
 		void Distributed_wordembedding::StartWordCount()
 		{
-			multiverso::Log::Info("Rank %d Start word count thread",process_id_);
+			multiverso::Log::Info("Rank %d Start word count thread.\n",process_id_);
 			int64 total_word_count = 0, sum = 0;
 			while (is_running_)
 			{
@@ -205,11 +204,10 @@ namespace multiverso
 			data_block_count++;
 
 			StartCollectWordcountThread();
-			int64 all = file_size / option_->data_block_size + 1;
 			for (int cur_epoch = 0; cur_epoch < option_->epoch; ++cur_epoch)
 			{
 				clock_t start_epoch = clock();
-				for (int64 cur = 0; cur < all; ++cur)
+				for (int64 cur = 0; cur < file_size; cur += option_->data_block_size)
 				{
 					clock_t start_block = clock();
 
@@ -311,7 +309,7 @@ namespace multiverso
 
 				memory_mamanger_->RequestBlocks(kSaveBatch, blocks);
 				communicator_->GetWorkerTableRows(nodes, blocks,option_->embeding_size);
-				WriteToFile(is_binary, blocks,fid);
+				WriteToFile(is_binary, blocks, fid, nodes);
 				memory_mamanger_->ReturnBlocks(blocks);
 
 				blocks.clear();
@@ -325,7 +323,7 @@ namespace multiverso
 				}
 				memory_mamanger_->RequestBlocks(left, blocks);
 				communicator_->GetWorkerTableRows(nodes, blocks, option_->embeding_size);
-				WriteToFile(is_binary, blocks, fid);
+				WriteToFile(is_binary, blocks, fid, nodes);
 				memory_mamanger_->ReturnBlocks(blocks);
 			}
 
@@ -334,10 +332,11 @@ namespace multiverso
 				(clock() - start) / static_cast<double>(CLOCKS_PER_SEC));
 		}
 
-		void Distributed_wordembedding::WriteToFile(bool is_binary, std::vector<real*> &blocks, FILE* fid){
+		void Distributed_wordembedding::WriteToFile(bool is_binary, std::vector<real*> &blocks, FILE* fid, std::vector<int> &nodes){
 			for (int i = 0; i < blocks.size(); ++i)
 			{
-				fprintf(fid, "%s ", dictionary_->GetWordInfo(i)->word.c_str());
+				int id = nodes[i];
+				fprintf(fid, "%s ", dictionary_->GetWordInfo(id)->word.c_str());
 				for (int j = 0; j < option_->embeding_size; ++j)
 				{
 					if (is_binary){

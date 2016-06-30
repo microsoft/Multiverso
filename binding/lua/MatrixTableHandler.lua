@@ -7,8 +7,10 @@ ffi.cdef[[
     void MV_NewMatrixTable(int num_row, int num_col, TableHandler* out);
     void MV_GetMatrixTableAll(TableHandler handler, float* data, int size);
     void MV_AddMatrixTableAll(TableHandler handler, float* data, int size);
+    void MV_AddAsyncMatrixTableAll(TableHandler handler, float* data, int size);
     void MV_GetMatrixTableByRows(TableHandler handler, float* data, int size, int row_ids[], int row_ids_n);
     void MV_AddMatrixTableByRows(TableHandler handler, float* data, int size, int row_ids[], int row_ids_n);
+    void MV_AddAsyncMatrixTableByRows(TableHandler handler, float* data, int size, int row_ids[], int row_ids_n);
 ]]
 
 function tbh:new(num_row, num_col)
@@ -47,16 +49,27 @@ function tbh:get(row_ids)
     end
 end
 
-function tbh:add(data, row_ids)
+function tbh:add(data, row_ids, sync)
+    sync = sync or false
     cdata = util.tensor2cdata(data)
     if row_ids == nil then
-        libmv.MV_AddMatrixTableAll(self._handler[0], cdata, self._size)
+        if sync then
+            libmv.MV_AddMatrixTableAll(self._handler[0], cdata, self._size)
+        else
+            libmv.MV_AddAsyncMatrixTableAll(self._handler[0], cdata, self._size)
+        end
     else
         crow_ids = util.tensor2cdata(row_ids, 'int')
         crow_ids_n = ffi.new("int", #row_ids)
-        libmv.MV_AddMatrixTableByRows(self._handler[0], cdata,
-                                      crow_ids_n * self._num_col,
-                                      crow_ids, crow_ids_n)
+        if sync then
+            libmv.MV_AddMatrixTableByRows(self._handler[0], cdata,
+                                          crow_ids_n * self._num_col,
+                                          crow_ids, crow_ids_n)
+        else
+            libmv.MV_AddAsyncMatrixTableByRows(self._handler[0], cdata,
+                                          crow_ids_n * self._num_col,
+                                          crow_ids, crow_ids_n)
+        end
     end
 end
 
