@@ -1,0 +1,25 @@
+language: cpp
+sudo: required
+
+compiler:
+- g++
+
+os:
+- linux
+
+before_install:
+
+before_script:
+
+script: 
+
+after_success:
+
+branches:
+  only:
+  - master
+
+notifications:
+  email: false
+
+env:
