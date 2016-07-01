@@ -7,15 +7,15 @@ For more details about parameters setting and performance, please view our [Wiki
 
 #Why Distributed Word Embedding?
 
-1. For traning a large dataset.
+1. **For traning a large dataset.**
 
    The DMTK parameter server stores the parameters in a distributed way, which means that each machine just holds a partition of the entire parameter set. This allows the entire embedding vector to be very large. For example, in experiment on the ClueWeb data, the vocabulary size is 21 Million, and the parameter size reaches 6 Billion, which is the largest word embedding model ever reported in the literature,as far as we know. 
 
-2. For high quality word embedding. 
+2. **For high quality word embedding.**
 
    You can view the performance of Distributed Word Embedding in [Wiki](https://github.com/Microsoft/multiverso/wiki/Word-Embedding).
 
-3. For less traning time.
+3. **For less traning time.**
 
    Large dataset need long traning time. You can accelerate process of training by use multi-machines.
 
