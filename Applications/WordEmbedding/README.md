@@ -5,7 +5,7 @@ The Distributed Word Embedding tool is a parallelization of the Word2Vec algorit
 
 For more details about parameters setting and performance, please view our [Wiki](https://github.com/Microsoft/multiverso/wiki/Word-Embedding) and our website [DMTK](http://www.dmtk.io).
 
-#Why Distributed Word Embedding?
+##Why Distributed Word Embedding?
 
 1. **For traning a large dataset.**
 
@@ -19,7 +19,7 @@ For more details about parameters setting and performance, please view our [Wiki
 
    Large dataset need long traning time. You can accelerate process of training by use multi-machines.
 
-#How Distributed Word Embedding work?
+##How Distributed Word Embedding work?
 
    The DWE tool runs in the following manner:
 
@@ -37,13 +37,13 @@ For more details about parameters setting and performance, please view our [Wiki
 
       2). Aggregate parameter updates from different clients and merge them into the global parameters
 
-#Linux Installation
+##Linux Installation
 
 1. cmake ./CMakeLists.txt
 
 2. make
 
-# Windows Installation
+## Windows Installation
 
 1. Get and build the DMTK Framework [multiverso](https://github.com/Microsoft/multiverso.git).
 
