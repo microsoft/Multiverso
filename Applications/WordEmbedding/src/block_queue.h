@@ -7,23 +7,20 @@
 
 #include "data_block.h"
 
-namespace multiverso
-{
-	namespace wordembedding
-	{
-		class BlockQueue{
-		public:
-			void Push(DataBlock *data_block);
+namespace wordembedding {
 
-			void Pop(DataBlock *data_block);
+	class BlockQueue {
+	public:
+		void Push(DataBlock *data_block);
 
-			int const GetQueueSize();
+		DataBlock* Pop();
 
-		private:
-			std::queue <DataBlock *> queues_;
-			std::mutex mtx_;
-			std::condition_variable repo_not_empty_;
-		};
-	}
+		int const GetQueueSize();
+
+	private:
+		std::queue <DataBlock *> queues_;
+		std::mutex mtx_;
+		std::condition_variable repo_not_empty_;
+	};
 }
 #endif
