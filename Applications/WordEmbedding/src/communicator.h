@@ -1,5 +1,5 @@
-#ifndef DISTRIBUTED_WORD_EMBEDDING_COMMUNICATOR_H_
-#define DISTRIBUTED_WORD_EMBEDDING_COMMUNICATOR_H_
+#ifndef WORDEMBEDDING_COMMUNICATOR_H_
+#define WORDEMBEDDING_COMMUNICATOR_H_
 
 #include "multiverso/table/matrix_table.h"
 #include "multiverso/table/kv_table.h"

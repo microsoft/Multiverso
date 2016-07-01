@@ -49,13 +49,10 @@ namespace multiverso
 					LoadOneBlock(data_block, reader, option_->data_block_size);
 					data_block_count++;
 
-					std::unique_lock<std::mutex> lock(block_queue_->mtx);
-					(block_queue_->queues).push(data_block);
-					(block_queue_->repo_not_empty).notify_all();
-					lock.unlock();
+					block_queue_->Push(data_block);
 
 					//control the proload data
-					while (static_cast<int64>(block_queue_->queues.size()) * option_->data_block_size > option_->max_preload_data_size)
+					while (static_cast<int64>(block_queue_->GetQueueSize()) * option_->data_block_size > option_->max_preload_data_size)
 					{
 						std::chrono::milliseconds dura(200);
 						std::this_thread::sleep_for(dura);
@@ -66,27 +63,13 @@ namespace multiverso
 			DataBlock *data_block = new (std::nothrow)DataBlock();
 			assert(data_block != nullptr);
 			data_block->SetLastFlag();
-			std::unique_lock<std::mutex> lock(block_queue_->mtx);
-			(block_queue_->queues).push(data_block);
-			(block_queue_->repo_not_empty).notify_all();
-			lock.unlock();
+			block_queue_->Push(data_block);
 		}
 
 		DataBlock* Distributed_wordembedding::GetDataFromQueue()
 		{
-			std::unique_lock<std::mutex> lock(block_queue_->mtx);
-			// block queue is empty, just wait here.
-			while (block_queue_->queues.size() == 0) {
-				multiverso::Log::Debug("Rank %d Waiting For Loading Data Block...\n",
-					process_id_);
-				(block_queue_->repo_not_empty).wait(lock);
-			}
-
-			DataBlock *temp = block_queue_->queues.front();
-			multiverso::Log::Info("Rank %d Geting Data Block From Queue...\n",
-				process_id_);
-			block_queue_->queues.pop();
-			lock.unlock();
+			DataBlock *temp;
+			block_queue_->Pop(temp);
 			return temp;
 		}
 

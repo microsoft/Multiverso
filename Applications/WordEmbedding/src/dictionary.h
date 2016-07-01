@@ -1,5 +1,5 @@
-#ifndef DISTRIBUTED_WORD_EMBEDDING_DICTIONARY_H_
-#define DISTRIBUTED_WORD_EMBEDDING_DICTIONARY_H_
+#ifndef WORDEMBEDDING_DICTIONARY_H_
+#define WORDEMBEDDING_DICTIONARY_H_
 /*!
 * \brief Class dictionary stores the vocabulary and it's frequency
 */

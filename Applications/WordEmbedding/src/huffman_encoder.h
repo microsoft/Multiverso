@@ -1,5 +1,5 @@
-#ifndef DISTRIBUTED_WORD_EMBEDDING_HUFFMAN_ENCODER_H_
-#define DISTRIBUTED_WORD_EMBEDDING_HUFFMAN_ENCODER_H_
+#ifndef WORDEMBEDDING_HUFFMAN_ENCODER_H_
+#define WORDEMBEDDING_HUFFMAN_ENCODER_H_
 /*!
 * \brief Class Huffman_encoder stores the huffman_encode of the vocabulary according the dictionary
 */

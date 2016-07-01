@@ -3,7 +3,7 @@ Distributed Word Embedding
 
 The Distributed Word Embedding tool is a parallelization of the Word2Vec algorithm on top of our DMTK parameter server. It provides an efficient "scaling to industry size" solution for word embedding.
 
-For more details, please view our [wiki](https://github.com/Microsoft/multiverso/wiki/Word-Embedding) and our website [DMTK](http://www.dmtk.io).
+For more details, please view our [Wiki](https://github.com/Microsoft/multiverso/wiki/Word-Embedding) and our website [DMTK](http://www.dmtk.io).
 
 #Linux Installation
 

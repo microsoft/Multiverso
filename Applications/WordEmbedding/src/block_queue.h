@@ -1,5 +1,5 @@
-#ifndef DISTRIBUTED_WORD_EMBEDDING_BLOCK_QUEUE_H_
-#define DISTRIBUTED_WORD_EMBEDDING_BLOCK_QUEUE_H_
+#ifndef WORDEMBEDDING_BLOCK_QUEUE_H_
+#define WORDEMBEDDING_BLOCK_QUEUE_H_
 
 #include <condition_variable>
 #include <mutex>
@@ -13,14 +13,16 @@ namespace multiverso
 	{
 		class BlockQueue{
 		public:
-			std::queue <DataBlock *> queues;
-			std::mutex mtx;
-			std::condition_variable repo_not_empty;
+			void Push(DataBlock *data_block);
 
-			BlockQueue(){}
-			~BlockQueue(){
-				std::queue<DataBlock *>().swap(queues);
-			}
+			void Pop(DataBlock *data_block);
+
+			int const GetQueueSize();
+
+		private:
+			std::queue <DataBlock *> queues_;
+			std::mutex mtx_;
+			std::condition_variable repo_not_empty_;
 		};
 	}
 }

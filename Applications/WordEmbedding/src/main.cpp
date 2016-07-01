@@ -31,7 +31,6 @@ int main(int argc, char *argv[])
 	{
 		multiverso::Log::Info("Something wrong with other reason!\n");
 	}
-	system("PAUSE");
 	return 0;
 }
 

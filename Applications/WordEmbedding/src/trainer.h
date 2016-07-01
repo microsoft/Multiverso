@@ -1,5 +1,5 @@
-#ifndef DISTRIBUTED_WORD_EMBEDDING_TRAINER_H_
-#define DISTRIBUTED_WORD_EMBEDDING_TRAINER_H_
+#ifndef WORDEMBEDDING_TRAINER_H_
+#define WORDEMBEDDING_TRAINER_H_
 /*!
 * file trainer.h
 * \brief Class Trainer trains the model by every trainiteration

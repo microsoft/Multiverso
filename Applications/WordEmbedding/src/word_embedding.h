@@ -1,5 +1,5 @@
-#ifndef DISTRIBUTED_WORD_EMBEDDING_WORD_EMBEDDING_H_
-#define DISTRIBUTED_WORD_EMBEDDING_WORD_EMBEDDING_H_
+#ifndef WORDEMBEDDING_WORD_EMBEDDING_H_
+#define WORDEMBEDDING_WORD_EMBEDDING_H_
 /*!
 * file WordEmbedding.h
 * \brief Class WordEmbedding includes some functions and parameters about TrainNN

@@ -1,5 +1,5 @@
-#ifndef DISTRIBUTED_WORD_EMBEDDING_UTIL_H_
-#define DISTRIBUTED_WORD_EMBEDDING_UTIL_H_
+#ifndef WORDEMBEDDING_UTIL_H_
+#define WORDEMBEDDING_UTIL_H_
 /*!
 * file util.h
 * \brief Struct Option stores many general arguments in model

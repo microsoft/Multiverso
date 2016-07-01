@@ -1,5 +1,5 @@
-﻿#ifndef DISTRIBUTED_WORD_EMBEDDING_DISTRIBUTED_WORDEMBEDDING_H_
-#define DISTRIBUTED_WORD_EMBEDDING_DISTRIBUTED_WORDEMBEDDING_H_
+﻿#ifndef WORDEMBEDDING_DISTRIBUTED_WORDEMBEDDING_H_
+#define WORDEMBEDDING_DISTRIBUTED_WORDEMBEDDING_H_
 /*!
 * file distributed_wordembedding.h
 * \brief Class Distributed_wordembedding describles the main frame of Distributed WordEmbedding and some useful functions
