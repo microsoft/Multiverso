@@ -3,7 +3,7 @@ Distributed Word Embedding
 
 The Distributed Word Embedding tool is a parallelization of the Word2Vec algorithm on top of our DMTK parameter server. It provides an efficient "scaling to industry size" solution for word embedding.
 
-For more details, please view our [wiki](https://github.com/Microsoft/multiverso/wiki/Word-Embedding) and our website [DMTK](http://www.dmtk.io).
+For more details, please view our [Wiki](https://github.com/Microsoft/multiverso/wiki/Word-Embedding) and our website [DMTK](http://www.dmtk.io).
 
 #Linux Installation
 
@@ -19,16 +19,16 @@ For more details, please view our [wiki](https://github.com/Microsoft/multiverso
 
 3. Enable openmp 2.0 support.
 
-   To set this compiler option in the Visual Studio development environment
+   To set this **compiler** option in the Visual Studio development environment
   
-   1)Open the project's Property Pages dialog box. For details, see How to: Open Project Property Pages.
+   1)Open the **project's Property** Pages dialog box.
   
-   2)Expand the Configuration Properties node.
+   2)Expand the **Configuration Properties** node.
   
-   3)Expand the C/C++ node.
+   3)Expand the **C/C++** node.
   
-   4)Select the Language property page.
+   4)Select the **Language** property page.
   
-   5)Modify the OpenMP Support property.
+   5)Modify the **OpenMP Support property** to "yes".
    
 4. Build the solution.
