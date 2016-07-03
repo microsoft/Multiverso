@@ -1,11 +1,14 @@
 # Multiverso Torch Binding API
 
-## init()
+## init(sync)
 
 Initialize mutliverso.
 
 This should be called only once before training at the beginning of the whole
 project.
+
+If sync is `true`, a sync server will be created. Otherwise an async server
+will be created.
 
 ## barrier()
 
@@ -62,7 +65,7 @@ the data should be the gradients (delta value). The size of `data` must be equal
 to the size specified in initialization.
 
 `sync` should be a boolean value. The default value is false. If `sync` is
-True, this call will blocked by IO until the call finish.  Otherwise it will
+`true`, this call will blocked by IO until the call finish.  Otherwise it will
 return immediately
 
 #### ArrayTableHandler:get()
@@ -97,7 +100,7 @@ update the value in specific rows and the size of `data` should be equal to the
 size of value we want to update.
 
 `sync` should be a boolean value. The default value is false. If `sync` is
-True, this call will blocked by IO until the call finish.  Otherwise it will
+`true`, this call will blocked by IO until the call finish.  Otherwise it will
 return immediately
 
 #### MatrixTableHandler:get(row_ids)

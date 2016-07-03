@@ -28,8 +28,13 @@ libmv = ffi.load(libmv_path, 'true')
 mv.ArrayTableHandler = require('multiverso.ArrayTableHandler')
 mv.MatrixTableHandler = require('multiverso.MatrixTableHandler')
 
-function mv.init(args)
-    args = args or {}
+function mv.init(sync)
+    sync = sync or false  -- false for the default value of sync
+    -- the first argument will be ignored. So we put a placeholder here
+    args = {""}
+    if sync then
+        table.insert(args, "-sync=true")
+    end
     argc = ffi.new("int[1]", #args)
     argv = ffi.new("char*[?]", #args)
     for i = 1, #args do
