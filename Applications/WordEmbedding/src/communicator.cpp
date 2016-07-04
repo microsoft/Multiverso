@@ -19,7 +19,6 @@ namespace wordembedding {
     worker_output_table_ = new multiverso::MatrixWorkerTable<real>(row_size, column_size);
     server_input_table_ = new multiverso::MatrixServerTable<real>(row_size, column_size, -0.5f / embedding_size, 0.5f / embedding_size);
     server_output_table_ = new multiverso::MatrixServerTable<real>(row_size, column_size);
-
     worker_wordcount_table_ = new multiverso::KVWorkerTable<int, int64>();
     server_wordcount_table_ = new multiverso::KVServerTable<int, int64>();
 
@@ -236,10 +235,10 @@ namespace wordembedding {
     multiverso::Log::Info("Rank %d Add Parameters time:%lfs\n", process_id_, (clock() - start) / static_cast<double>(CLOCKS_PER_SEC));
   }
 
-  int64 Communicator::GetWordCount() {
-    std::unordered_map<int, int64> &kv_ = worker_wordcount_table_->raw();
+  int64 const Communicator::GetWordCount() {
+    std::unordered_map<int, int64> &kv = worker_wordcount_table_->raw();
     worker_wordcount_table_->Get(kWordCountId);
-    return kv_[kWordCountId];
+    return kv[kWordCountId];
   }
 
   void Communicator::AddWordCount(int64 word_count_num) {

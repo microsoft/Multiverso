@@ -14,7 +14,8 @@
 
 namespace wordembedding {
   /*!
-  * \brief The class DataBlock stores train for trainer and param_loader
+  * \brief The class DataBlock stores the input nodes ,output nodes
+  and their parameters.
   */
   class DataBlock {
   public:
@@ -56,7 +57,9 @@ namespace wordembedding {
     * \brief Release the memory which are using to store sentences
     */
     void ClearSentences();
-
+    /*!
+    * \brief Release the memory which are using to parameters
+    */
     void ClearParameters();
 
     void MallocMemory(int dictionary_size_, bool is_use_adagrad);

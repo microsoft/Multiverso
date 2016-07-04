@@ -2,7 +2,8 @@
 #define WORDEMBEDDING_DISTRIBUTED_WORDEMBEDDING_H_
 /*!
 * file distributed_wordembedding.h
-* \brief Class Distributed_wordembedding describles the main frame of Distributed WordEmbedding and some useful functions
+* \brief Class Distributed_wordembedding describles the main frame of 
+* WordEmbedding and some useful functions
 */
 
 #include <vector>
@@ -24,9 +25,6 @@
 namespace wordembedding {
 
   extern std::string g_log_suffix;
-  class Trainer;
-  class WordEmbedding;
-  class Comunicator;
 
   class DistributedWordembedding {
   public:

@@ -58,7 +58,7 @@ namespace wordembedding {
   void DataBlock::SetWeightEO(int output_node_id, real* ptr) {
     weight_EO_[output_node_id] = ptr;
   }
-  //Get the weight of output-embedding vector
+  //Get the weight of input-embedding vector
   real* DataBlock::GetWeightIE(int input_node_id) {
     return weight_IE_[input_node_id];
   }
@@ -66,7 +66,7 @@ namespace wordembedding {
   real* DataBlock::GetWeightEO(int output_node_id) {
     return weight_EO_[output_node_id];
   }
-
+  //Set the weight of SumGradient-input vector
   void DataBlock::SetSumGradient2IE(int input_node_id, real* ptr) {
     sum_gradient2_IE_[input_node_id] = ptr;
   }

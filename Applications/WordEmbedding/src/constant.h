@@ -12,6 +12,7 @@ namespace wordembedding {
   typedef uint64_t uint64;
   typedef float real;
 
+  //multiverso table id
   const int kInputEmbeddingTableId = 0;
   const int kEmbeddingOutputTableId = 1;
   const int kSumGradient2IETableId = 2;

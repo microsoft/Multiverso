@@ -18,7 +18,7 @@ namespace wordembedding {
     void RequestParameter(DataBlock *data_block);
     void AddDeltaParameter(DataBlock *data_block);
 
-    int64 GetWordCount();
+    int64 const GetWordCount();
     void AddWordCount(int64 word_count_num);
 
     void GetWorkerTableRows(std::vector<int> row_nums,
@@ -55,7 +55,6 @@ namespace wordembedding {
 
     void SetDataBlockEmbedding(DataBlock *data_block, std::vector<real*> &blocks,
       std::vector<int> &nodes, std::function<void(int, real*)> get_function);
-
 
     void AddRows(multiverso::MatrixWorkerTable<real>* table_, std::vector<int> row_ids,
       std::vector<real *> ptrs, int size);

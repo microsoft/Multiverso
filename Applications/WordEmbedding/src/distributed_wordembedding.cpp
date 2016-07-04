@@ -30,7 +30,8 @@ namespace wordembedding {
   }
 
   //start the load data thread
-  void DistributedWordembedding::StartLoadDataThread(Reader *reader, int64 file_size) {
+  void DistributedWordembedding::StartLoadDataThread(Reader *reader, 
+    int64 file_size) {
     for (int cur_epoch = 0; cur_epoch < option_->epoch; ++cur_epoch) {
       reader_->ResetStart();
       for (int64 cur = 0; cur < file_size; cur += option_->data_block_size) {
@@ -64,12 +65,10 @@ namespace wordembedding {
     if (data_block->Size() == 0) {
       return data_block;
     }
-    multiverso::Log::Info("test 1.\n");
     data_block->MallocMemory(dictionary_->Size(), option_->use_adagrad);
     PrepareData(data_block);
     communicator_->RequestParameter(data_block);
-    //GetAllWordCount();
-    multiverso::Log::Info("test 2.\n");
+    GetAllWordCount();
     return data_block;
   }
 
@@ -179,8 +178,9 @@ namespace wordembedding {
       for (int64 cur = 0; cur < file_size; cur += option_->data_block_size) {
         clock_t start_block = clock();
 
+        //if don't use pipeline, traning after get parameters. 
         if (option_->is_pipeline == false) {
-#pragma omp parallel for num_threads(option_->thread_cnt)
+          #pragma omp parallel for num_threads(option_->thread_cnt)
           for (int i = 0; i < option_->thread_cnt; ++i) {
             trainers_[i]->TrainIteration(data_block);
           }
@@ -195,8 +195,10 @@ namespace wordembedding {
           data_block = GetBlockAndPrepareParameter();
           data_block_count++;
         }
+        //if use pipeline, training this datablock and get parameters of next
+        //datablock in parallel. 
         else {
-#pragma omp parallel num_threads(option_->thread_cnt+1)
+           #pragma omp parallel num_threads(option_->thread_cnt+1)
           {
             if (omp_get_thread_num() == option_->thread_cnt) {
               next_block = GetBlockAndPrepareParameter();
@@ -240,14 +242,13 @@ namespace wordembedding {
     load_data_thread_.join();
     assert(data_block->isLast() == true);
     delete data_block;
-
     delete WordEmbedding_;
     delete block_queue_;
     for (auto trainer : trainers_) {
       delete trainer;
     }
   }
-
+  //change the file name according to different epoch
   const char* DistributedWordembedding::ChangeFileName(const char *file_path,
     int iteration) {
     std::string temp(file_path);
@@ -305,6 +306,7 @@ namespace wordembedding {
   void DistributedWordembedding::WriteToFile(bool is_binary,
     std::vector<real*> &blocks, FILE* fid, std::vector<int> &nodes){
     for (int i = 0; i < blocks.size(); ++i) {
+      //get word id
       int id = nodes[i];
       fprintf(fid, "%s ", dictionary_->GetWordInfo(id)->word.c_str());
       for (int j = 0; j < option_->embeding_size; ++j) {

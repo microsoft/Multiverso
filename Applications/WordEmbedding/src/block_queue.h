@@ -9,12 +9,14 @@
 
 namespace wordembedding {
 
+  /*!
+  * \brief The block queue push and pop the block data. Load data thread push 
+  * datablock in it and traning thread take datablock from it.
+  */
   class BlockQueue {
   public:
     void Push(DataBlock *data_block);
-
     DataBlock* Pop();
-
     int const GetQueueSize();
 
   private:
