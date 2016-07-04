@@ -106,23 +106,23 @@ namespace wordembedding {
         total_word_count = sum;
         if (!option_->use_adagrad) {
           multiverso::Log::Info("Rank %d Alpha: %lf Progress: %.2lf%% \
-                                                                WordCountActual:%lld Words/thread/second %lfk\n",
-                                                                multiverso::MV_Rank(), WordEmbedding_->learning_rate,
-                                                                WordEmbedding_->word_count_actual / (static_cast<double>\
-                                                                (option_->total_words) * option_->epoch + 1) * 100,
-                                                                WordEmbedding_->word_count_actual,
-                                                                total_word_count / (static_cast<double>(option_->thread_cnt)\
-                                                                * (clock() - start_) / CLOCKS_PER_SEC * 1000.0));
+                                WordCountActual:%lld Words/thread/second %lfk\n",
+                                multiverso::MV_Rank(), WordEmbedding_->learning_rate,
+                                WordEmbedding_->word_count_actual / (static_cast<double>\
+                                (option_->total_words) * option_->epoch + 1) * 100,
+                                WordEmbedding_->word_count_actual,
+                                total_word_count / (static_cast<double>(option_->thread_cnt)\
+                                * (clock() - start_) / CLOCKS_PER_SEC * 1000.0));
         }
         else {
           multiverso::Log::Info("Rank %d Progress: %.2lf%% WordCountActual: \
-                                                                %lld Words/thread/second %lfk\n",
-                                                                multiverso::MV_Rank(),
-                                                                WordEmbedding_->word_count_actual / (static_cast<double>\
-                                                                (option_->total_words) * option_->epoch + 1) * 100,
-                                                                WordEmbedding_->word_count_actual,
-                                                                total_word_count / (static_cast<double>(option_->thread_cnt)\
-                                                                * (clock() - start_) / CLOCKS_PER_SEC * 1000.0));
+                                %lld Words/thread/second %lfk\n",
+                                multiverso::MV_Rank(),
+                                WordEmbedding_->word_count_actual / (static_cast<double>\
+                                (option_->total_words) * option_->epoch + 1) * 100,
+                                WordEmbedding_->word_count_actual,
+                                total_word_count / (static_cast<double>(option_->thread_cnt)\
+                                * (clock() - start_) / CLOCKS_PER_SEC * 1000.0));
         }
       }
     }

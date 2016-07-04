@@ -15,7 +15,7 @@
 #include "constant.h"
 #include "util.h"
 #include "huffman_encoder.h"
-#include "word_embedding.h"
+#include "wordembedding.h"
 #include "data_block.h"
 #include "memory_manager.h"
 

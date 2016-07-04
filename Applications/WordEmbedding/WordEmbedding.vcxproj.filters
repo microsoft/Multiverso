@@ -13,7 +13,7 @@
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\trainer.h" />
     <ClInclude Include="src\util.h" />
-    <ClInclude Include="src\word_embedding.h" />
+    <ClInclude Include="src\wordembedding.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\communicator.cpp" />
@@ -26,7 +26,7 @@
     <ClCompile Include="src\reader.cpp" />
     <ClCompile Include="src\trainer.cpp" />
     <ClCompile Include="src\util.cpp" />
-    <ClCompile Include="src\word_embedding.cpp" />
     <ClCompile Include="src\block_queue.cpp" />
+    <ClCompile Include="src\wordembedding.cpp" />
   </ItemGroup>
 </Project>

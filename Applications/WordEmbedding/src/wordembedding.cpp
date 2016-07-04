@@ -1,4 +1,4 @@
-#include "word_embedding.h"
+#include "wordembedding.h"
 
 namespace wordembedding {
 

@@ -9,7 +9,6 @@
 
 #include "util.h"
 #include "huffman_encoder.h"
-#include "distributed_wordembedding.h"
 #include "constant.h"
 #include "data_block.h"
 

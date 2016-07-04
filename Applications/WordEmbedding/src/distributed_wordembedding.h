@@ -19,6 +19,7 @@
 #include "trainer.h"
 #include "block_queue.h"
 #include "communicator.h"
+#include "wordembedding.h"
 
 namespace wordembedding {
 
