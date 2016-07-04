@@ -19,39 +19,36 @@
 #include "data_block.h"
 #include "memory_manager.h"
 
-namespace multiverso
-{
-	namespace wordembedding
-	{
-		class WordEmbedding;
-		extern std::string g_log_suffix;
-		class Trainer{
-		public:
-			int64 word_count;
-			Trainer(int trainer_id, Option *option,
-				Dictionary* dictionary, WordEmbedding* WordEmbedding);
-			/*!
-			* /brief Train one datablock
-			*/
+namespace wordembedding {
 
-			~Trainer();
-			void TrainIteration(DataBlock * data_block);
+	class WordEmbedding;
+	extern std::string g_log_suffix;
+	class Trainer{
+	public:
+		int64 word_count;
+		Trainer(int trainer_id, Option *option,
+			Dictionary* dictionary, WordEmbedding* WordEmbedding);
+		/*!
+		* /brief Train one datablock
+		*/
 
-		private:
-			int process_count_;
-			int process_id_;
-			int trainer_id_;
-			Option *option_;
-			real *hidden_act_, *hidden_err_;
-			WordEmbedding* WordEmbedding_;
-			Dictionary* dictionary_;
-			int train_count_;
-			clock_t start_;
+		~Trainer();
+		void TrainIteration(DataBlock * data_block);
 
-			//No copying allowed
-			Trainer(const Trainer&);
-			void operator=(const Trainer&);
-		};
-	}
+	private:
+		int process_count_;
+		int process_id_;
+		int trainer_id_;
+		Option *option_;
+		real *hidden_act_, *hidden_err_;
+		WordEmbedding* WordEmbedding_;
+		Dictionary* dictionary_;
+		int train_count_;
+		clock_t start_;
+
+		//No copying allowed
+		Trainer(const Trainer&);
+		void operator=(const Trainer&);
+	};
 }
 #endif

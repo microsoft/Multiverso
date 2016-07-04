@@ -27,5 +27,6 @@
     <ClCompile Include="src\trainer.cpp" />
     <ClCompile Include="src\util.cpp" />
     <ClCompile Include="src\word_embedding.cpp" />
+    <ClCompile Include="src\block_queue.cpp" />
   </ItemGroup>
 </Project>

@@ -10,25 +10,17 @@
 #include "memory_manager.h"
 #include "util.h"
 
-
-using namespace multiverso;
 using namespace wordembedding;
 
-int main(int argc, char *argv[])
-{
-	try
-	{
-		Distributed_wordembedding *ptr = new (std::nothrow)Distributed_wordembedding();
-		assert(ptr != nullptr);
-		ptr->Run(argc, argv);
-		delete ptr;
+int main(int argc, char *argv[]) {
+	try {
+		Distributed_wordembedding dwe;
+		dwe.Run(argc, argv);
 	}
-	catch (std::bad_alloc &memExp)
-	{
+	catch (std::bad_alloc &memExp) {
 		multiverso::Log::Info("Something wrong with new() %s\n", memExp.what());
 	}
-	catch (...)
-	{
+	catch (...) {
 		multiverso::Log::Info("Something wrong with other reason!\n");
 	}
 	return 0;
