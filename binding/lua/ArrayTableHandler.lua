@@ -10,7 +10,7 @@ ffi.cdef[[
     void MV_AddAsyncArrayTable(TableHandler handler, float* data, int size);
 ]]
 
-function tbh:new(size)
+function tbh:new(size, init_value)
     tbh = {}
     size = size or 0
     setmetatable(tbh, self)
@@ -21,6 +21,13 @@ function tbh:new(size)
         tbh._size,
         tbh._handler
     )
+    local init = require 'multiverso.init'
+    if init_value ~= nil then
+        init_value = init_value:float()
+        -- sync add is used because we want to make sure that the initial value
+        -- has taken effect when the call returns.
+        self.add(tbh, init_value / init.num_workers(), true)
+    end
     return tbh
 end
 
