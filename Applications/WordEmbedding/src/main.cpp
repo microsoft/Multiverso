@@ -14,16 +14,16 @@
 using namespace wordembedding;
 
 int main(int argc, char *argv[]) {
-	try {
-		DistributedWordembedding dwe;
-		dwe.Run(argc, argv);
-	}
-	catch (std::bad_alloc &memExp) {
-		multiverso::Log::Info("Something wrong with new() %s\n", memExp.what());
-	}
-	catch (...) {
-		multiverso::Log::Info("Something wrong with other reason!\n");
-	}
-	return 0;
+  try {
+    DistributedWordembedding dwe;
+    dwe.Run(argc, argv);
+  }
+  catch (std::bad_alloc &memExp) {
+    multiverso::Log::Info("Something wrong with new() %s\n", memExp.what());
+  }
+  catch (...) {
+    multiverso::Log::Info("Something wrong with other reason!\n");
+  }
+  return 0;
 }
 

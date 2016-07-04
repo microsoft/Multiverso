@@ -9,18 +9,18 @@
 
 namespace wordembedding {
 
-	class BlockQueue {
-	public:
-		void Push(DataBlock *data_block);
+  class BlockQueue {
+  public:
+    void Push(DataBlock *data_block);
 
-		DataBlock* Pop();
+    DataBlock* Pop();
 
-		int const GetQueueSize();
+    int const GetQueueSize();
 
-	private:
-		std::queue <DataBlock *> queues_;
-		std::mutex mtx_;
-		std::condition_variable repo_not_empty_;
-	};
+  private:
+    std::queue <DataBlock *> queues_;
+    std::mutex mtx_;
+    std::condition_variable repo_not_empty_;
+  };
 }
 #endif
