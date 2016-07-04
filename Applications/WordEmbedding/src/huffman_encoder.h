@@ -12,7 +12,6 @@
 #include "constant.h"
 
 namespace wordembedding {
-
 	struct HuffLabelInfo
 	{   /*!
 		* \brief Internal node ids in the code path

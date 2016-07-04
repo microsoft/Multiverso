@@ -110,13 +110,12 @@ namespace wordembedding {
 
 		real** sum_gradient2_IE_ = nullptr;
 		real** sum_gradient2_EO_ = nullptr;
+
 		bool is_use_adagrad_ = false;
 		bool is_last_one_ = false;
 
 		// No copying allowed
 		DataBlock(const DataBlock&);
-
-		//void operator=(const DataBlock&);
 	};
 }
 #endif

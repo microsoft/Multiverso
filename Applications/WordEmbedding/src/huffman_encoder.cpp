@@ -89,7 +89,8 @@ namespace wordembedding {
 		ordered_words.reserve(dict_->Size());
 		ordered_words.clear();
 		for (int i = 0; i < dict_->Size(); ++i)
-			ordered_words.push_back(std::pair<int, int64>(i, dict_->GetWordInfo(i)->freq));
+			ordered_words.push_back(std::pair<int, int64>(i, 
+      dict_->GetWordInfo(i)->freq));
 		std::sort(ordered_words.begin(), ordered_words.end(), compare);
 
 		unsigned vocab_size = (unsigned)ordered_words.size();
@@ -101,7 +102,7 @@ namespace wordembedding {
 		assert(binary != nullptr);
 		memset(binary, 0, sizeof(unsigned)* (vocab_size * 2 + 1));
 
-		unsigned *parent_node = new (std::nothrow)unsigned[vocab_size * 2 + 1]; //
+		unsigned *parent_node = new (std::nothrow)unsigned[vocab_size * 2 + 1];
 		assert(parent_node != nullptr);
 		memset(parent_node, 0, sizeof(unsigned)* (vocab_size * 2 + 1));
 		unsigned code[kMaxCodeLength], point[kMaxCodeLength];
@@ -211,8 +212,7 @@ namespace wordembedding {
 			fclose(fid);
 
 			BuildHuffmanTreeFromDict();
-		}
-		else {
+		}else {
 			multiverso::Log::Error("file open failed %s", filename);
 		}
 	}

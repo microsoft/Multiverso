@@ -3,9 +3,10 @@
 #include <string>
 #include <new>
 
-#include "multiverso/util/log.h"
-#include "multiverso/util/log.h"
-#include "multiverso/multiverso.h"
+#include <multiverso/util/log.h>
+#include <multiverso/util/log.h>
+#include <multiverso/multiverso.h>
+
 #include "distributed_wordembedding.h"
 #include "memory_manager.h"
 #include "util.h"
@@ -14,7 +15,7 @@ using namespace wordembedding;
 
 int main(int argc, char *argv[]) {
 	try {
-		Distributed_wordembedding dwe;
+		DistributedWordembedding dwe;
 		dwe.Run(argc, argv);
 	}
 	catch (std::bad_alloc &memExp) {

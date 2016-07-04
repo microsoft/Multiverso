@@ -10,12 +10,11 @@
 #include <iostream>
 #include <cstring>
 
-#include "multiverso/util/log.h"
+#include <multiverso/util/log.h>
 
 #include "constant.h"
 
-namespace wordembedding {   
-	
+namespace wordembedding {
 	/*!
 	* \brief struct WordInfo stores the pair of word&freq
 	*/

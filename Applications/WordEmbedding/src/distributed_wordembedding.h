@@ -11,7 +11,7 @@
 #include <functional>
 #include <omp.h>
 
-#include "multiverso/multiverso.h"
+#include <multiverso/multiverso.h>
 
 #include "util.h"
 #include "huffman_encoder.h"
@@ -27,7 +27,7 @@ namespace wordembedding {
 	class WordEmbedding;
 	class Comunicator;
 
-	class Distributed_wordembedding {
+	class DistributedWordembedding {
 	public:
 		/*!
 		* \brief Run Function contains everything
@@ -80,7 +80,8 @@ namespace wordembedding {
 		DataBlock* GetBlockAndPrepareParameter();
 
 		void SaveEmbedding(const char *file_path, bool is_binary);
-		void WriteToFile(bool is_binary, std::vector<real*> &blocks, FILE* fid, std::vector<int> &nodes);
+		void WriteToFile(bool is_binary, std::vector<real*> &blocks, FILE* fid,
+      std::vector<int> &nodes);
 		const char* ChangeFileName(const char *file_path, int iteration);
 	};
 }

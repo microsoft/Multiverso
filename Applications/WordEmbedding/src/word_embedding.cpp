@@ -38,9 +38,11 @@ namespace wordembedding {
 	void WordEmbedding::UpdateLearningRate() {
 		if (option_->use_adagrad == false) {
 			learning_rate = static_cast<real>(option_->init_learning_rate *
-				(1 - word_count_actual / (static_cast<double>(option_->total_words * option_->epoch) + 1.0)));
+				(1 - word_count_actual / (static_cast<double>(option_->total_words *
+        option_->epoch) + 1.0)));
 			if (learning_rate < option_->init_learning_rate * 0.0001)
-				learning_rate = (static_cast<double>(option_->init_learning_rate) * 0.0001);
+				learning_rate = (static_cast<double>(option_->init_learning_rate)
+        * 0.0001);
 		}
 	}
 
@@ -52,7 +54,8 @@ namespace wordembedding {
 			&WordEmbedding::TrainSample, negativesample_pools);
 	}
 	//Train with forward direction and get  the input-hidden layer vector
-	void WordEmbedding::FeedForward(std::vector<int>& input_nodes, real* hidden_act) {
+	void WordEmbedding::FeedForward(std::vector<int>& input_nodes, 
+    real* hidden_act) {
 		for (int i = 0; i < input_nodes.size(); ++i) {
 			int &node_id = input_nodes[i];
 			real* input_embedding = GetWeightIE(node_id);
@@ -143,8 +146,8 @@ namespace wordembedding {
 				for (int j = 0; j < option_->embeding_size; ++j) {
 					sum_gradient2_row[j] += hidden_err[j] * hidden_err[j];
 					if (sum_gradient2_row[j] > 1e-10)
-						input_embedding_row[j] += hidden_err[j] * option_->init_learning_rate /
-						sqrt(sum_gradient2_row[j]);
+						input_embedding_row[j] += hidden_err[j] * 
+            option_->init_learning_rate / sqrt(sum_gradient2_row[j]);
 				}
 			}
 		}
@@ -173,7 +176,8 @@ namespace wordembedding {
 				data_block->GetSentence(i, sentence, sentence_length,
 					word_count_delta, next_random);
 
-				for (int sentence_position = 0; sentence_position < sentence_length; ++sentence_position) {
+				for (int sentence_position = 0; sentence_position < sentence_length;
+          ++sentence_position) {
 					data_block->input_nodes.insert(sentence[sentence_position]);
 				}
 			}
@@ -188,14 +192,16 @@ namespace wordembedding {
 				data_block->GetSentence(i, sentence, sentence_length,
 					word_count_delta, next_random);
 
-				for (int sentence_position = 0; sentence_position < sentence_length; ++sentence_position) {
+				for (int sentence_position = 0; sentence_position < sentence_length; 
+          ++sentence_position) {
 					data_block->input_nodes.insert(sentence[sentence_position]);
 				}
 			}
 			for (auto input_node : data_block->input_nodes) {
 				data_block->output_nodes.insert(input_node);
 			}
-			for (int d = 0; d < option_->negative_num * data_block->input_nodes.size(); d++) {
+			for (int d = 0; d < option_->negative_num * data_block->input_nodes.size();
+        d++) {
 				next_random = sampler_->GetNextRandom(next_random);
 				int target = sampler_->NegativeSampling(next_random);
 				data_block->output_nodes.insert(target);
@@ -214,7 +220,8 @@ namespace wordembedding {
 		int feat[kMaxSentenceLength + 1];
 		std::vector<int> input_nodes;
 		std::vector<std::pair<int, int> > output_nodes;
-		for (int sentence_position = 0; sentence_position < sentence_length; ++sentence_position) {
+		for (int sentence_position = 0; sentence_position < sentence_length;
+      ++sentence_position) {
 			if (sentence[sentence_position] == -1) continue;
 			next_random = sampler_->GetNextRandom(next_random);
 			int off = next_random % option_->window_size;
@@ -249,7 +256,8 @@ namespace wordembedding {
 	//Parse the windows's input&output nodes
 	inline void WordEmbedding::Parse(int *feat, int feat_cnt, int word_idx,
 		uint64 &next_random, std::vector<int>& input_nodes,
-		std::vector<std::pair<int, int> >& output_nodes, std::vector <int> &negativesample_pools) {
+		std::vector<std::pair<int, int> >& output_nodes, 
+    std::vector <int> &negativesample_pools) {
 		for (int i = 0; i < feat_cnt; ++i) {
 			input_nodes.push_back(feat[i]);
 		}

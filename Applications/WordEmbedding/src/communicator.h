@@ -1,9 +1,9 @@
 #ifndef WORDEMBEDDING_COMMUNICATOR_H_
 #define WORDEMBEDDING_COMMUNICATOR_H_
 
-#include "multiverso/table/matrix_table.h"
-#include "multiverso/table/kv_table.h"
-#include "multiverso/updater/updater.h"
+#include <multiverso/table/matrix_table.h>
+#include <multiverso/table/kv_table.h>
+#include <multiverso/updater/updater.h>
 
 #include "memory_manager.h"
 #include "block_queue.h"

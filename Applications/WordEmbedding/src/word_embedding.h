@@ -23,10 +23,6 @@ namespace wordembedding {
 		WordEmbedding(Option* option, HuffmanEncoder* huffmanEncoder,
 			Sampler* sampler, int dictionary_size);
 		/*!
-		* \brief Create memory for weight_IE_ weight_EO_ sum_gradient2_IE_ sum_gradient2_EO_
-		*/
-
-		/*!
 		* \brief TrainNN
 		* \param data_block represents the trainNNing datablock
 		* \param index_start the thread's starting index in the sentence vector
@@ -60,11 +56,16 @@ namespace wordembedding {
 		*/
 		real* GetWeightIE(int input_node_id);
 		real* GetWeightEO(int output_node_id);
-
+    /*!
+    * \brief Set the input(output) gradient-embeddding weight when using adagrad
+    */
+    void SetSumGradient2IE(int input_node_id, real* ptr);
+    void SetSumGradient2EO(int output_node_id, real* ptr);
+    /*!
+    * \brief Return the input(output) gradient-embeddding weight when using adagrad
+    */
 		real* GetSumGradient2IE(int input_node_id);
 		real* GetSumGradient2EO(int output_node_id);
-		void SetSumGradient2IE(int input_node_id, real* ptr);
-		void SetSumGradient2EO(int output_node_id, real* ptr);
 
 	private:
 		Option *option_ = nullptr;

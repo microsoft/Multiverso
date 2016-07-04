@@ -8,9 +8,9 @@
 #include <thread>
 #include <chrono>
 
-#include "multiverso/multiverso.h"
-#include "multiverso/updater/updater.h"
-#include "multiverso/table/matrix_table.h"
+#include <multiverso/multiverso.h>
+#include <multiverso/updater/updater.h>
+#include <multiverso/table/matrix_table.h>
 
 #include "constant.h"
 #include "util.h"

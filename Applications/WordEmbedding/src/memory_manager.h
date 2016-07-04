@@ -16,7 +16,7 @@ namespace wordembedding {
 
 	class MemoryManager {
 	public:
-		MemoryManager(int block_size);
+    explicit MemoryManager(int block_size);
 		/*!
 		* \brief Create memory for the blocks
 		* \param block_number the block quantity needed
