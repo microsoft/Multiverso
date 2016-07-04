@@ -51,7 +51,7 @@ public:
         endpoint_to_socket_[receiver_.endpoint] = receiver_.socket;
         CHECK(rc == 0);
         int linger = 0;
-        CHECK(zmq_setsockopt(receiver_.socket, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
+        // CHECK(zmq_setsockopt(receiver_.socket, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
       } else {
         Entity sender;
         sender.socket = zmq_socket(context_, ZMQ_DEALER);
@@ -61,7 +61,7 @@ public:
         CHECK(rc == 0);
         senders_.push_back(sender);
         int linger = 0;
-        CHECK(zmq_setsockopt(sender.socket, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
+        // CHECK(zmq_setsockopt(sender.socket, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
       }
     }
     CHECK_NOTNULL(receiver_.socket);
@@ -81,7 +81,7 @@ public:
     endpoint_to_socket_[receiver_.endpoint] = receiver_.socket;
     if (rc == 0) {
       int linger = 0;
-      CHECK(zmq_setsockopt(receiver_.socket, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
+      // CHECK(zmq_setsockopt(receiver_.socket, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
       return 0;
     }
     else {
@@ -125,6 +125,7 @@ public:
     auto it = endpoint_to_socket_.find(str_endpoint);
     if (it != endpoint_to_socket_.end()) {
       Log::Info("Close endpoint %s\n", it->first.c_str());
+      CHECK_NOTNULL(it->second);
       CHECK(zmq_close(it->second) == 0);
       endpoint_to_socket_.erase(it);
       if (endpoint_to_socket_.empty()) {
@@ -136,31 +137,35 @@ public:
   }
 
   void Finalize() override {
-    active_ = false;
-    for (auto entity : senders_) {
-      if (entity.socket != nullptr) {
-        zmq_disconnect(entity.socket, entity.endpoint.c_str());
-        Close(entity.endpoint.c_str());
-      }
-    }
-    zmq_unbind(receiver_.socket, receiver_.endpoint.c_str());
-    Close(receiver_.endpoint.c_str());
-    //for (int i = 0; i < senders_.size(); ++i) {
-    //  if (i != rank_) {
-    //    int linger = 0;
-    //    CHECK(zmq_setsockopt(senders_[i], ZMQ_LINGER, &linger, sizeof(linger)) == 0);
-    //    int rc = zmq_close(senders_[i]);
-    //    CHECK(rc == 0);
+    //active_ = false;
+    //for (auto entity : senders_) {
+    //  if (entity.socket != nullptr) {
+    //    zmq_disconnect(entity.socket, entity.endpoint.c_str());
+    //    Close(entity.endpoint.c_str());
     //  }
     //}
-    //int linger = 0;
-    //CHECK(zmq_setsockopt(receiver_, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
-    //int rc = zmq_close(receiver_);
-    //CHECK(rc == 0);
+    //zmq_unbind(receiver_.socket, receiver_.endpoint.c_str());
+    // Close(receiver_.endpoint.c_str());
+    for (int i = 0; i < senders_.size(); ++i) {
+      if (i != rank_) {
+        int linger = 0;
+        CHECK(zmq_setsockopt(senders_[i].socket, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
+        int rc = zmq_close(senders_[i].socket);
+        if (rc != 0) {
+          Log::Error("rc = %d, i = %d, rank = %d\n", rc, i, rank_);
+        }
+        CHECK(rc == 0);
+      }
+    }
+    int linger = 0;
+    CHECK(zmq_setsockopt(receiver_.socket, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
+    int rc = zmq_close(receiver_.socket);
+    CHECK(rc == 0);
 
-    //CHECK(zmq_ctx_shutdown(context_)==0);
-    //zmq_ctx_term(context_);
-    //Log::Info("zmq finalize: close context\n");
+    Log::Info("zmq finalize: before close context\n");
+    CHECK(zmq_ctx_shutdown(context_)==0);
+    zmq_ctx_term(context_);
+    Log::Info("zmq finalize: close context\n");
   }
 
   bool active() const override { return active_; }
