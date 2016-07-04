@@ -19,24 +19,6 @@ For more details about parameters setting and performance, please view our [Wiki
 
    Large dataset need long traning time. You can accelerate process of training by use multi-machines.
 
-##How DMTK Word Embedding work?
-
-   The DWE tool runs in the following manner:
-
-   On the client side (running on multiple nodes): three local training steps are executed repeatedly: 
-
-      1). Get the latest parameters from the DMTK parameter server
-
-      2). Run the CBOW/Skip-gram algorithm to generate updates to the current parameters
-
-      3). Send the parameter updates to the DMTK parameter server
-
-   On the server side, the DMTK parameter server acts as below:
-
-      1). Pack the requested parameters and send them to clients
-
-      2). Aggregate parameter updates from different clients and merge them into the global parameters
-
 ##Linux Installation
 
 1. cmake ./CMakeLists.txt
