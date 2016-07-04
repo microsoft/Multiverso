@@ -45,7 +45,7 @@ For more details about parameters setting and performance, please view our [Wiki
 
 ## Windows Installation
 
-1. Get and build the DMTK Framework [multiverso](https://github.com/Microsoft/multiverso.git).
+1. Get and build the DMTK Framework [Multiverso](https://github.com/Microsoft/multiverso.git).
 
 2. Open Multiverso.sln, change configuration and platform to Release and x64 of WordEmbedding(default setting), set the ```include``` and ```lib``` path of multiverso in project property.
 
