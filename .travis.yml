@@ -1,0 +1,50 @@
+language: cpp
+sudo: required
+dist: trusty
+
+compiler:
+- clang
+- gcc
+
+install:
+- sudo apt-get install -y libopenmpi-dev openmpi-bin build-essential
+
+# for testing python binding
+- sudo apt-get install -y cmake python-nose python-scipy python-numpy
+
+# for testing lua binding
+- curl -sk https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | bash -e
+- git clone https://github.com/torch/distro.git ~/torch --recursive
+- cd ~/torch; ./install.sh -b
+- source ~/.bashrc
+
+before_script:
+- cd $TRAVIS_BUILD_DIR
+- mkdir build && cd build && cmake ..
+
+script:
+- make && sudo make install
+# run cpp tests
+- mpirun -np 4 ./Test/multiverso.test kv
+- mpirun -np 4 ./Test/multiverso.test array
+- mpirun -np 4 ./Test/multiverso.test net
+- mpirun -np 4 ./Test/multiverso.test ip
+# - mpirun -np 4 ./Test/multiverso.test matrix  # TODO the matrix test won't stop
+- mpirun -np 4 ./Test/multiverso.test checkpoint
+- mpirun -np 4 ./Test/multiverso.test restore
+- mpirun -np 4 ./Test/multiverso.test allreduce
+# - mpirun -np 4 ./Test/multiverso.test TestSparsePerf # TODO TestSparsePerf takes too much time
+# - mpirun -np 4 ./Test/multiverso.test TestDensePerf # TODO TestDensePerf takes too much time
+
+# lua tests
+- cd ../binding/lua/
+- make install
+- make test
+
+# python tests
+- cd ../python/
+- sudo python setup.py install
+- sudo nosetests  # sudo is needed when testing python on travis
+
+notifications:
+  email: false
