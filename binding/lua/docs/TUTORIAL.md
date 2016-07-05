@@ -6,9 +6,9 @@
    according to this
    [guide](https://github.com/Microsoft/fb.resnet.torch/blob/multiverso/INSTALL.md).
 1. Install Multiverso shared object by referring to the
-   [Build](../../../README.md#build) instruction of multiverso project.
+   [Build](https://github.com/Microsoft/multiverso#build) instruction of multiverso project.
 1. Install multiverso torch package by referring to the
-   [Installation](../README.md#Installation) instruction of multiverso torch/lua
+   [Installation](https://github.com/Microsoft/multiverso/wiki/Multiverso-Torch-Lua-Binding#installation) instruction of multiverso torch/lua
    binding.
 
 ## Package Initialization
@@ -54,41 +54,19 @@ local tbh = multiverso.ArrayTableHandler:new(params:size(1))
 ## Model Initialization
 
 Before actual training, we also need to make sure each worker has the same
-initial model for better training performance. Two strageties are recommended
-here:
+initial model for better training performance.
 
-### Master stragety
-
-Only the master worker sync its model to the server, other workers copy the
-model of the master worker from the server.
+Multiverso use equality strategy to initialize model.  All workers contribute
+equally to the initial model on the server and then fetch same initial models
+after finishing the contributing phase.
 
 ```lua
-if multiverso.is_master then
-    -- Only master worker will set the initial value.
-    -- Sync should be true to make sure the initial values take effect
-    tbh:add(params, true)
-    -- Set a barrier for other workers to wait.
-    multiverso.barrier()
-else
-    -- Wait the master worker to finish setting.
-    multiverso.barrier()
-    -- Get the initial model from the server.
-    params:copy(tbh:get())
-end
-```
-
-### Equality stargety
-
-All workers contribute equally to the initial model on the server and then
-fetch same initial models after finish the contributing phase.
-
-```lua
--- Contribute equally to the server.
--- Sync should be true to make sure the initial values take effect
-tbh:add(params / multiverso.num_workers, true)
--- Wait for finshing the contributing phase.
+-- Create ArrayTableHandler for syncing parameters. In the constructor, All
+-- workers contribute equally to the initial model
+local tbh = multiverso.ArrayTableHandler:new(size, params)
+-- Wait for finishing the initializing phase.
 multiverso.barrier()
--- Fetch same initial model.
+-- Get the initial model from the server.
 params:copy(tbh:get())
 ```
 

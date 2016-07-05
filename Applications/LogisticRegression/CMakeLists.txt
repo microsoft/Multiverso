@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 PROJECT(LOGREG)
 
-set(MULTIVERSO_DIR ~/multiverso)
+set(MULTIVERSO_DIR ../../)
 
 find_package(MPI REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")

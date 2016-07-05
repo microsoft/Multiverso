@@ -41,9 +41,9 @@ class ArrayTableHandler(TableHandler):
         '''Constructor for syncing array-like (one-dimensional) value.
 
         The `size` should be a int equal to the size of value we want to sync.
-        If init_value is None, zeros will be used to initialize the tables,
+        If init_value is None, zeros will be used to initialize the table,
         otherwise the table will be initialized as the init_value.
-        Notice: if the init_value is different in different processes, the
+        *Notice*: if the init_value is different in different processes, the
         average of them will be used.
         '''
         self._handler = ctypes.c_void_p()
@@ -87,7 +87,7 @@ class MatrixTableHandler(TableHandler):
         The `num_row` should be the number of rows and the `num_col` should be
         the number of columns.
 
-        If init_value is None, zeros will be used to initialize the tables,
+        If init_value is None, zeros will be used to initialize the table,
         otherwise the table will be initialized as the init_value.
         Notice: if the init_value is different in different processes, the
         average of them will be used.
