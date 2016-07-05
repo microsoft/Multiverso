@@ -56,7 +56,7 @@ namespace wordembedding {
     void SetDataBlockEmbedding(DataBlock *data_block, std::vector<real*> &blocks,
       std::vector<int> &nodes, std::function<void(int, real*)> get_function);
 
-    void AddRows(multiverso::MatrixWorkerTable<real>* table_, std::vector<int> row_ids,
+    void AddRows(multiverso::MatrixWorkerTable<real>* table_, std::vector<int> &row_ids,
       std::vector<real *> ptrs, int size);
 
     void AddParameterByTableId(DataBlock *data_block, int table_id,

@@ -47,7 +47,7 @@ namespace wordembedding {
   }
 
   inline void Communicator::AddRows(multiverso::MatrixWorkerTable<real>* table,
-    std::vector<int> row_ids, std::vector<real *> ptrs, int size) {
+    std::vector<int> &row_ids, std::vector<real *> ptrs, int size) {
     multiverso::AddOption add_option;
     table->Add(row_ids, ptrs, size, &add_option);
   }
