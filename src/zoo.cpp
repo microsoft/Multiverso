@@ -50,6 +50,8 @@ void Zoo::Stop(bool finalize_net) {
   if (!MV_CONFIG_ma) { StopPS(); }
   // Stop the network
   if (finalize_net) net_util_->Finalize();
+  for (auto actor : zoo_) delete actor.second;
+  Log::Info("Multiverso Shutdown successfully\n");
 }
 
 int Zoo::rank() const { return NetInterface::Get()->rank(); }
@@ -150,7 +152,6 @@ void Zoo::FinishTrain() {
     msg->set_type(MsgType::Server_Finish_Train);
     SendTo(actor::kCommunicator, msg);
   }
-  Log::Debug("rank %d finish train\n", Zoo::Get()->rank());
 }
 
 

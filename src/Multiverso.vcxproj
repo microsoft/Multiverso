@@ -84,8 +84,8 @@
     <LibraryPath>$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_zmq|x64'">
-    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;$(ProjectDir)\..\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;</LibraryPath>
+    <IncludePath>D:\ZeroMQ\include;$(ProjectDir)\..\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;D:\ZeroMQ\lib;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <ClCompile>
@@ -154,13 +154,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>MULTIVERSO_USE_MPI;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <OpenMPSupport>true</OpenMPSupport>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>msmpi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
       <AdditionalDependencies>msmpi.lib;</AdditionalDependencies>
@@ -175,6 +176,7 @@
     <ClInclude Include="..\include\multiverso\blob.h" />
     <ClInclude Include="..\include\multiverso\communicator.h" />
     <ClInclude Include="..\include\multiverso\controller.h" />
+    <ClInclude Include="..\include\multiverso\c_api.h" />
     <ClInclude Include="..\include\multiverso\dashboard.h" />
     <ClInclude Include="..\include\multiverso\io\hdfs_stream.h" />
     <ClInclude Include="..\include\multiverso\io\io.h" />
@@ -215,6 +217,7 @@
     <ClCompile Include="blob.cpp" />
     <ClCompile Include="communicator.cpp" />
     <ClCompile Include="controller.cpp" />
+    <ClCompile Include="c_api.cpp" />
     <ClCompile Include="dashboard.cpp" />
     <ClCompile Include="io\hdfs_stream.cpp" />
     <ClCompile Include="io\io.cpp" />
