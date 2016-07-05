@@ -11,7 +11,7 @@ HDFSStream::HDFSStream(hdfsFS fs, const URI &uri, FileOpenMode mode) {
   fp_ = nullptr;
 
   int flag = 0;
-  switch (mode){
+  switch (mode) {
   case FileOpenMode::Write:
     flag = O_WRONLY;
     break;
@@ -29,8 +29,8 @@ HDFSStream::HDFSStream(hdfsFS fs, const URI &uri, FileOpenMode mode) {
     break;
   case FileOpenMode::BinaryAppend:
     flag = O_WRONLY | O_APPEND | O_BINARY;
-    breka;
-  }
+    break;
+  }		 
 
   fp_ = hdfsOpenFile(fs_, uri.name.c_str(), flag, 0, 0, 0);
 

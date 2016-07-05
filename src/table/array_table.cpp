@@ -44,6 +44,15 @@ void ArrayWorker<T>::Get(T* data, size_t size) {
 }
 
 template <typename T>
+int ArrayWorker<T>::GetAsync(T* data, size_t size) {
+  CHECK(size == size_);
+  data_ = data;
+  integer_t all_key = -1;
+  Blob whole_table(&all_key, sizeof(integer_t));
+  return WorkerTable::GetAsync(whole_table);
+}
+
+template <typename T>
 void ArrayWorker<T>::Add(T* data, size_t size, const AddOption* option) {
   CHECK(size == size_);
   integer_t all_key = -1;
@@ -52,6 +61,16 @@ void ArrayWorker<T>::Add(T* data, size_t size, const AddOption* option) {
   Blob val(data, sizeof(T) * size);
   WorkerTable::Add(key, val, option);
   Log::Debug("worker %d adding parameters with size of %d.\n", MV_Rank(), size);
+}
+
+template <typename T>
+int ArrayWorker<T>::AddAsync(T* data, size_t size, const AddOption* option) {
+  CHECK(size == size_);
+  integer_t all_key = -1;
+
+  Blob key(&all_key, sizeof(integer_t));
+  Blob val(data, sizeof(T) * size);
+  return WorkerTable::AddAsync(key, val, option);
 }
 
 template <typename T>

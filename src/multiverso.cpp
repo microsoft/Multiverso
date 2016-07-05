@@ -57,6 +57,14 @@ int  MV_NetConnect(int* ranks, char* endpoints[], int size) {
   return NetInterface::Get()->Connect(ranks, endpoints, size);
 }
 
+void MV_NetClose(const char* endpoint) {
+  NetInterface::Get()->Close(endpoint);
+}
+
+void MV_NetFinalize() {
+  NetInterface::Get()->Finalize();
+}
+
 template void MV_Aggregate<char>(char*, int);
 template void MV_Aggregate<int>(int*, int);
 template void MV_Aggregate<float>(float*, int);
