@@ -24,9 +24,9 @@ namespace wordembedding {
 
   int const BlockQueue::GetQueueSize() {
     int size = -1;
-    std::unique_lock<std::mutex> lock(mtx_);
+    //std::unique_lock<std::mutex> lock(mtx_);
     size = queues_.size();
-    lock.unlock();
+    //lock.unlock();
     return size;
   }
 }

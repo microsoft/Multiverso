@@ -62,7 +62,7 @@ namespace wordembedding {
     */
     void ClearParameters();
 
-    void MallocMemory(int dictionary_size_, bool is_use_adagrad);
+    void MallocMemory(int dictionary_size, bool is_use_adagrad);
 
     void  SetWeightIE(int input_node_id, real* ptr);
     void  SetWeightEO(int output_node_id, real* ptr);
@@ -73,8 +73,6 @@ namespace wordembedding {
     void SetSumGradient2EO(int output_node_id, real* ptr);
     real* GetSumGradient2IE(int input_node_id);
     real* GetSumGradient2EO(int output_node_id);
-
-    void PrintDataBlock(int embedding_size);
 
     void SetLastFlag();
     bool isLast();
