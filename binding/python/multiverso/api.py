@@ -16,6 +16,15 @@ def init(sync=False):
     whole project.
     If sync is True, a sync server will be created. Otherwise an async server
     will be created.
+    If a sync server is created, you **must** make sure every process call
+    `add` and `get` in the same order and for the same times. Otherwise some
+    processes will be blocked. In sync server mode, all `get` method will
+    return **exactly the same results**.
+    If a async server is created, there won't be limitations like a sync
+    server. But we can't make sure `get` method will return the same results.
+    If you want to get the same results in async server mode, you should use
+    `barrier` and `get` with the argument `sync` set to `True` to sync the
+    processes.
     '''
     args = [""]  # the first argument will be ignored. So we put a placeholder here
     if sync:

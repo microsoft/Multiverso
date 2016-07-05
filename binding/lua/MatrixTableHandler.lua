@@ -13,7 +13,7 @@ ffi.cdef[[
     void MV_AddAsyncMatrixTableByRows(TableHandler handler, float* data, int size, int row_ids[], int row_ids_n);
 ]]
 
-function tbh:new(num_row, num_col)
+function tbh:new(num_row, num_col, init_value)
     tbh = {}
     num_row = num_row or 0
     num_col = num_col or 0
@@ -28,6 +28,13 @@ function tbh:new(num_row, num_col)
         tbh._num_col,
         tbh._handler
     )
+    local init = require 'multiverso.init'
+    if init_value ~= nil then
+        init_value = init_value:float()
+        -- sync add is used because we want to make sure that the initial value
+        -- has taken effect when the call returns.
+        self.add(tbh, init_value / init.num_workers(), nil, true)
+    end
     return tbh
 end
 
