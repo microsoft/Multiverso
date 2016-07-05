@@ -178,7 +178,7 @@ namespace wordembedding {
       for (int64 cur = 0; cur < file_size; cur += option_->data_block_size) {
         clock_t start_block = clock();
 
-        //if don't use pipeline, traning after get parameters. 
+        //if don't use pipeline, traning after getting parameters. 
         if (option_->is_pipeline == false) {
           #pragma omp parallel for num_threads(option_->thread_cnt)
           for (int i = 0; i < option_->thread_cnt; ++i) {
@@ -195,7 +195,7 @@ namespace wordembedding {
           data_block = GetBlockAndPrepareParameter();
           data_block_count++;
         }
-        //if use pipeline, training this datablock and get parameters of next
+        //if use pipeline, training this datablock and getting parameters of next
         //datablock in parallel. 
         else {
            #pragma omp parallel num_threads(option_->thread_cnt+1)
@@ -260,7 +260,7 @@ namespace wordembedding {
 
   void DistributedWordembedding::SaveEmbedding(const char *file_path,
     bool is_binary) {
-    multiverso::Log::Info("Rank %d Begin to Save Embedding.s\n", process_id_);
+    multiverso::Log::Info("Rank %d Begin to Save Embeddings.\n", process_id_);
 
     clock_t start = clock();
     int epoch = dictionary_->Size() / kSaveBatch;

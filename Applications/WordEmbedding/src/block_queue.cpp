@@ -7,7 +7,6 @@ namespace wordembedding {
     queues_.push(data_block);
     repo_not_empty_.notify_all();
     lock.unlock();
-    multiverso::Log::Info("push block size %d\n", data_block->Size());
   }
 
   DataBlock* BlockQueue::Pop() {
