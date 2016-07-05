@@ -9,7 +9,7 @@ require 'nn'
 local multiverso = require 'multiverso'
 
 -- Init multiverso.
-multiverso.init()
+multiverso.init(false)
 
 -- Get some useful parameters from multiverso.
 -- 1) The total number of workers.
@@ -46,19 +46,11 @@ end
 local params, gradParams = model:getParameters()
 
 -- Create ArrayTableHandler for syncing parameters.
-local tbh = multiverso.ArrayTableHandler:new(params:size(1))
--- Set/Get the initial parameters.
-if multiverso.is_master then
-  -- Only master worker set the initial value.
-  tbh:add(params, true)
-  -- Set a barrier for other workers to wait.
-  multiverso.barrier()
-else
-  -- Wait the master worker to finish setting.
-  multiverso.barrier()
-  -- Get the initial model from the server.
-  params:copy(tbh:get())
-end
+local tbh = multiverso.ArrayTableHandler:new(params:size(1), params)
+-- Wait for finishing the initializing phase.
+multiverso.barrier()
+-- Get the initial model from the server.
+params:copy(tbh:get())
 
 for epoch=1,1000 do
   model:zeroGradParameters()

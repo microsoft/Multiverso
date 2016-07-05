@@ -10,6 +10,16 @@ project.
 If sync is `true`, a sync server will be created. Otherwise an async server
 will be created.
 
+If a sync server is created, you *must* make sure every process call
+`add` and `get` in the same order and for the same times. Otherwise some
+processes will be blocked. In sync server mode, all `get` method will
+return *exactly the same results*.
+If a async server is created, there won't be limitations like a sync
+server. But we can't make sure `get` method will return the same results.
+If you want to get the same results in async server mode, you should use
+`barrier` and `get` with the argument `sync` set to `true` to sync the
+processes.
+
 ## barrier()
 
 Set a barrier for all workers to wait.
@@ -56,6 +66,11 @@ Create a `ArrayTableHandler` for syncing array-like (one-dimensional) value.
 
 The `size` should be a `number` equal to the size of value we want to sync.
 
+If init_value is nil, zeros will be used to initialize the table, otherwise
+the table will be initialized as the init_value.
+*Notice*: if the init_value is different in different processes, the average of
+them will be used.
+
 #### ArrayTableHandler:add(data, sync)
 
 Add a array-like (one-dimensional) data to the server.
@@ -80,13 +95,18 @@ to assign the value to desired destination.
 
 `MatrixTableHandler` is used to sync matrix-like (two-dimensional) value.
 
-#### MatrixTableHandler:New(num_row, num_col)
+#### MatrixTableHandler:New(num_row, num_col, init_value)
 
 Create a `MatrixTableHandler` for syncing matrix-like (two-dimensional) value.
 
 The `num_row` should be the number of rows and the `num_col` should be the
 number of columns. Both of them should be a `number` equal to the exact size of
 value we want to sync.
+
+If init_value is nil, zeros will be used to initialize the table, otherwise
+the table will be initialized as the init_value.
+*Notice*: if the init_value is different in different processes, the average of
+them will be used.
 
 #### MatrixTableHandler:add(data, row_ids, sync)
 

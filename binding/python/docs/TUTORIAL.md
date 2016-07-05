@@ -22,6 +22,33 @@ print mv.is_master_worker()
 mv.shutdown()
 ```
 
+## About the sync server an async server
+
+When initializing multiverso, you can create a sync server or an async server by setting the `sync` argument. `mv.init(sync=True)` will create a sync server. `mv.init(sync=False)` will create an async server. An async server will created by default.
+
+If a sync server is created, you *must* make sure every process call `add` and `get` in the same order and for the same times. Otherwise some processes will be blocked. In sync server mode, all `get` method will return *exactly the same results*.
+
+If a async server is created, there won't be limitations like a sync server. But we can't make sure `get` method will return the same results.  If you want to get the same results in async server mode, you should use `barrier` and `get` with the argument `sync` set to `True` to sync the processes.
+
+
+## Model Initialization
+
+Before actual training, we also need to make sure each worker has the same initial model for better training performance.
+
+Multiverso use equality strategy to initialize model.  All workers contribute equally to the initial model on the server and then fetch same initial models after finishing the contributing phase.
+
+```python
+# Create ArrayTableHandler for syncing parameters. In the constructor, All
+# workers contribute equally to the initial model
+tbh = mv.ArrayTableHandler(size, params)
+# Wait for finishing the initializing phase.
+mv.barrier()
+# Get the initial model from the server.
+params = tbh.get()
+```
+Similar strategies are already implemented in the constructors in `theano_ext.sharedvar` and `lasagne_ext.param_manager` during initialization.
+
+
 ## About the master worker
 Some things should only be done in specific worker, such as validation, outputting the results and so on. So you can benefit from mv.is_master_worker() api to mark worker 0 as the master one to complete these tasks.
 For example, if you want to make sure only one process will output the validation results, you can write similar code below.
@@ -32,9 +59,6 @@ if mv.is_master_worker():
     # validate your model
     # print your validation results
 ```
-
-Similar strategies are also applied in `theano_ext.sharedvar` and `lasagne_ext.param_manager` during initialization and already implemented in the constructors.
-
 
 
 # How to use multiverso in theano
