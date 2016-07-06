@@ -1,6 +1,6 @@
 # How to write python code with multiverso
-1. You could start with the [test example](../multiverso/tests/test_multiverso.py) to learn the basic use of multiverso apis.
-1. Try the [examples](../examples/): The links of the original version are listed at the header part. All the modifications are commented with `# MULTIVERSO: XXX` and you can compare them with the original one.
+1. You could start with the [test example](https://github.com/Microsoft/multiverso/blob/master/binding/python/multiverso/tests/test_multiverso.py) to learn the basic use of multiverso apis.
+1. Try the [examples](https://github.com/Microsoft/multiverso/tree/master/binding/python/examples): The links of the original version are listed at the header part. All the modifications are commented with `# MULTIVERSO: XXX` and you can compare them with the original one.
 
 
 Here is a typical usage of multiverso python binding.
@@ -21,6 +21,35 @@ print mv.is_master_worker()
 # Shutdown multiverso
 mv.shutdown()
 ```
+
+Detailed api documents can be found in docstring of [api.py](https://github.com/Microsoft/multiverso/blob/master/binding/python/multiverso/api.py) and [tables.py](https://github.com/Microsoft/multiverso/blob/master/binding/python/multiverso/tables.py).
+
+## About the sync server an async server
+
+When initializing multiverso, you can create a sync server or an async server by setting the `sync` argument. `mv.init(sync=True)` will create a sync server. `mv.init(sync=False)` will create an async server. An async server will created by default.
+
+If a sync server is created, you *must* make sure every process call `add` and `get` in the same order and for the same times. Otherwise some processes will be blocked. In sync server mode, all `get` method will return *exactly the same results*.
+
+If a async server is created, there won't be limitations like a sync server. But we can't make sure `get` method will return the same results.  If you want to get the same results in async server mode, you should use `barrier` and `get` with the argument `sync` set to `True` to sync the processes.
+
+
+## Model Initialization
+
+Before actual training, we also need to make sure each worker has the same initial model for better training performance.
+
+Multiverso use equality strategy to initialize model.  All workers contribute equally to the initial model on the server and then fetch same initial models after finishing the contributing phase.
+
+```python
+# Create ArrayTableHandler for syncing parameters. In the constructor, All
+# workers contribute equally to the initial model
+tbh = mv.ArrayTableHandler(size, params)
+# Wait for finishing the initializing phase.
+mv.barrier()
+# Get the initial model from the server.
+params = tbh.get()
+```
+Similar strategies are already implemented in the constructors in `theano_ext.sharedvar` and `lasagne_ext.param_manager` during initialization.
+
 
 ## About the master worker
 Some things should only be done in specific worker, such as validation, outputting the results and so on. So you can benefit from mv.is_master_worker() api to mark worker 0 as the master one to complete these tasks.
@@ -74,13 +103,16 @@ W = sharedvar.mv_shared(
 W.mv_sync()
 
 
-# If you want to sync all variables created by `sharedvar.mv_shared`, you can use this function
+# If you want to sync all variables created by `sharedvar.mv_shared`, you can use this function.
+# It will add the gradients (delta value) to the server and update the latest value from the server.
 sharedvar.sync_all_mv_shared_vars()
 ```
 
 `mv_shared` is just a wrapper of `theano.shared`. It acts same as `theano.shared`, while making it more convenient to sync values.
 
 `add` and `get` can also be used to sync parameters if you don't use shared variables.
+
+Detailed api documents can be found in docstring of [sharedvar.py](https://github.com/Microsoft/multiverso/blob/master/binding/python/multiverso/theano_ext/sharedvar.py)
 
 
 # How to use multiverso in lasagne
@@ -105,6 +137,7 @@ mvnpm = param_manager.MVNetParamManager(network)
 mvnpm.sync_all_param()
 ```
 
+Detailed api documents can be found in docstring of [param_manager.py](https://github.com/Microsoft/multiverso/blob/master/binding/python/multiverso/theano_ext/lasagne_ext/param_manager.py)
 
 # Run your multiverso program with 4 processes
 Here is an example of running logistic regression with multi-process.

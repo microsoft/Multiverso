@@ -33,7 +33,7 @@ namespace wordembedding {
   void DistributedWordembedding::StartLoadDataThread(Reader *reader, 
     int64 file_size) {
     for (int cur_epoch = 0; cur_epoch < option_->epoch; ++cur_epoch) {
-      reader_->ResetStart();
+      reader->ResetStart();
       for (int64 cur = 0; cur < file_size; cur += option_->data_block_size) {
         DataBlock *data_block = new (std::nothrow)DataBlock();
         assert(data_block != nullptr);

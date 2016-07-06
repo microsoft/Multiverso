@@ -21,7 +21,7 @@ namespace wordembedding {
     int64 const GetWordCount();
     void AddWordCount(int64 word_count_num);
 
-    void GetWorkerTableRows(std::vector<int> row_nums,
+    void GetWorkerTableRows(std::vector<int> &row_nums,
       std::vector<real*> &blocks, int embeding_size);
 
     void PrepareParameterTables(int row_size, int column_size);
@@ -47,8 +47,8 @@ namespace wordembedding {
 
     void ClearParameterTables();
 
-    void GetRows(multiverso::MatrixWorkerTable<real>* table_, std::vector<int> row_ids,
-      std::vector<real *> ptrs, int size);
+    void GetRows(multiverso::MatrixWorkerTable<real>* table_, std::vector<int> &row_ids,
+      std::vector<real *> &ptrs, int size);
 
     void RequestParameterByTableId(DataBlock *data_block, int table_id,
       std::vector<int> &nodes, std::vector<real*> &blocks);
@@ -56,8 +56,8 @@ namespace wordembedding {
     void SetDataBlockEmbedding(DataBlock *data_block, std::vector<real*> &blocks,
       std::vector<int> &nodes, std::function<void(int, real*)> get_function);
 
-    void AddRows(multiverso::MatrixWorkerTable<real>* table_, std::vector<int> row_ids,
-      std::vector<real *> ptrs, int size);
+    void AddRows(multiverso::MatrixWorkerTable<real>* table, std::vector<int> &row_ids,
+      std::vector<real *> &ptrs, int size);
 
     void AddParameterByTableId(DataBlock *data_block, int table_id,
       std::vector<int> &nodes, std::vector<real*> &blocks,

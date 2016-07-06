@@ -8,6 +8,9 @@ Perform CIFAR-10 classification with torch resnet implementation.
 
 [Microsoft/fb.resnet.torch multiverso branch](https://github.com/Microsoft/fb.resnet.torch/tree/multiverso)
 
+## Setup
+Please follow [this guide](https://github.com/Microsoft/multiverso/wiki/Multiverso-Torch-Lua-Binding) to setup your environment.
+
 ## Hardware
 
 - **Hosts** : 1
@@ -36,5 +39,5 @@ Perform CIFAR-10 classification with torch resnet implementation.
 | 1P4G0M    | 1            | 4                   | 0              | 10.045            | 92.296 %   |
 | 4P1G1M    | 4            | 1                   | 1              |  6.303            | 91.390 %   |
 
-![top1error_vs_epoch](./imgs/top1error_vs_epoch.png)
-![top1error_vs_runningtime](./imgs/top1error_vs_runningtime.png)
+![top1error_vs_epoch](https://raw.githubusercontent.com/Microsoft/multiverso/master/binding/lua/docs/imgs/top1error_vs_epoch.png)
+![top1error_vs_runningtime](https://raw.githubusercontent.com/Microsoft/multiverso/master/binding/lua/docs/imgs/top1error_vs_runningtime.png)

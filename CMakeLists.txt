@@ -22,6 +22,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(Test)
+ADD_SUBDIRECTORY(Applications/LogisticRegression)
 
 # TODO: more header files should be installed. Only c_api.h is installed so far
 install (FILES ${PROJECT_SOURCE_DIR}/include/multiverso/c_api.h DESTINATION include/multiverso)
