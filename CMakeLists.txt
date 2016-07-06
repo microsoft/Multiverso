@@ -20,8 +20,10 @@ endif(USE_HDFS)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
+set(MULTIVERSO_DIR ${PROJECT_SOURCE_DIR})
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(Test)
+ADD_SUBDIRECTORY(Applications/WordEmbedding)
 ADD_SUBDIRECTORY(Applications/LogisticRegression)
 
 # TODO: more header files should be installed. Only c_api.h is installed so far
