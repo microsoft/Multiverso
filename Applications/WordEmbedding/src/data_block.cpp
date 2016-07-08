@@ -86,16 +86,16 @@ namespace wordembedding {
     return sum_gradient2_EO_[output_node_id];
   }
 
-  void DataBlock::MallocMemory(int dictionary_size_, bool is_use_adagrad){
-    weight_IE_ = new (std::nothrow)real*[dictionary_size_];
+  void DataBlock::MallocMemory(int dictionary_size, bool is_use_adagrad){
+    weight_IE_ = new (std::nothrow)real*[dictionary_size];
     assert(weight_IE_ != nullptr);
-    weight_EO_ = new (std::nothrow)real*[dictionary_size_];
+    weight_EO_ = new (std::nothrow)real*[dictionary_size];
     assert(weight_EO_ != nullptr);
     is_use_adagrad_ = is_use_adagrad;
 
     if (is_use_adagrad_) {
-      sum_gradient2_IE_ = new (std::nothrow)real*[dictionary_size_];
-      sum_gradient2_EO_ = new (std::nothrow)real*[dictionary_size_];
+      sum_gradient2_IE_ = new (std::nothrow)real*[dictionary_size];
+      sum_gradient2_EO_ = new (std::nothrow)real*[dictionary_size];
       assert(sum_gradient2_IE_ != nullptr);
       assert(sum_gradient2_EO_ != nullptr);
     }

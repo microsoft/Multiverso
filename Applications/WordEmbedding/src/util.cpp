@@ -9,12 +9,12 @@ namespace wordembedding {
     output_file = nullptr;
     sw_file = nullptr;
     endpoints_file = "";
-    hs = true;
-    negative_num = 0;
+    hs = false;
+    negative_num = 5;
     output_binary = false;
     sample = 0;
     cbow = true;
-    embeding_size = 0;
+    embeding_size = 100;
     thread_cnt = 1;
     window_size = 5;
     min_count = 5;
@@ -208,8 +208,10 @@ namespace wordembedding {
   void InitExpTable() {
     expTable = (real *)malloc((kExpTableSize + 1) * sizeof(real));
     for (int i = 0; i < kExpTableSize; i++) {
-      expTable[i] = exp((i / (real)kExpTableSize * 2 - 1) * kMaxExp); // Precompute the exp() table
-      expTable[i] = expTable[i] / (expTable[i] + 1);                   // Precompute f(x) = x / (x + 1)
+      // Precompute the exp() table
+      expTable[i] = exp((i / (real)kExpTableSize * 2 - 1) * kMaxExp);
+      // Precompute f(x) = x / (x + 1)
+      expTable[i] = expTable[i] / (expTable[i] + 1);
     }
   }
 }

@@ -4,7 +4,10 @@
 Perform CIFAR-10 classification with residual networks implementation based on Lasagne.
 
 ## Codebase
-[Deep_Residual_Learning_CIFAR-10](../examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
+[Deep_Residual_Learning_CIFAR-10](https://github.com/Microsoft/multiverso/blob/master/binding/python/examples/theano/lasagne/Deep_Residual_Learning_CIFAR-10.py)
+
+## Setup
+Please follow [this guide](https://github.com/Microsoft/multiverso/wiki/Multiverso-Python-Theano-Lasagne-Binding) to setup your environment.
 
 ## Hardware
 |||
@@ -56,5 +59,5 @@ The results of 4 experiments with different configurations are shown as followin
 |4P1G1M1S | 4 | 1 | 1 | 1 | 29.38 | 92.15 % |
 |4P1G1M3S | 4 | 1 | 1 | 3 | 27.46 | 89.61 % |
 
-![accuracy_epoch](./imgs/accuracy_epoch.png)
-![accuracy_time](./imgs/accuracy_time.png)
+![accuracy_epoch](https://raw.githubusercontent.com/Microsoft/multiverso/master/binding/python/docs/imgs/accuracy_epoch.png)
+![accuracy_time](https://raw.githubusercontent.com/Microsoft/multiverso/master/binding/python/docs/imgs/accuracy_time.png)

@@ -47,18 +47,18 @@ namespace wordembedding {
   }
 
   inline void Communicator::AddRows(multiverso::MatrixWorkerTable<real>* table,
-    std::vector<int> row_ids, std::vector<real *> ptrs, int size) {
+    std::vector<int> &row_ids, std::vector<real *> &ptrs, int size) {
     multiverso::AddOption add_option;
     table->Add(row_ids, ptrs, size, &add_option);
   }
 
-  void Communicator::GetWorkerTableRows(std::vector<int> row_nums,
+  void Communicator::GetWorkerTableRows(std::vector<int> &row_nums,
     std::vector<real*> &blocks, int embeding_size) {
     worker_input_table_->Get(row_nums, blocks, embeding_size);
   }
 
   inline void Communicator::GetRows(multiverso::MatrixWorkerTable<real>* table,
-    std::vector<int> row_ids, std::vector<real *> ptrs, int size) {
+    std::vector<int> &row_ids, std::vector<real *> &ptrs, int size) {
     table->Get(row_ids, ptrs, size);
   }
 

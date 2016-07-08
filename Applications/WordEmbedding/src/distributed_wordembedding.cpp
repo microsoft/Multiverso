@@ -33,7 +33,7 @@ namespace wordembedding {
   void DistributedWordembedding::StartLoadDataThread(Reader *reader, 
     int64 file_size) {
     for (int cur_epoch = 0; cur_epoch < option_->epoch; ++cur_epoch) {
-      reader_->ResetStart();
+      reader->ResetStart();
       for (int64 cur = 0; cur < file_size; cur += option_->data_block_size) {
         DataBlock *data_block = new (std::nothrow)DataBlock();
         assert(data_block != nullptr);
@@ -82,9 +82,11 @@ namespace wordembedding {
   void DistributedWordembedding::AddDeltaWordCount() {
     int64 temp_word_count = communicator_->GetWordCount();
     temp_word_count = WordEmbedding_->word_count_actual - temp_word_count;
-    communicator_->AddWordCount(temp_word_count);
-    multiverso::Log::Info("Add word count done.word count delta is %lld\n",
-      temp_word_count);
+    if (temp_word_count > 0) {
+      communicator_->AddWordCount(temp_word_count);
+      multiverso::Log::Info("Add word count done.word count delta is %lld\n",
+        temp_word_count);
+    }
   }
 
   void DistributedWordembedding::StartWordCount() {
@@ -195,7 +197,7 @@ namespace wordembedding {
           data_block = GetBlockAndPrepareParameter();
           data_block_count++;
         }
-        //if use pipeline, training this datablock and getting parameters of next
+        //if use pipeline, training datablock and getting parameters of next
         //datablock in parallel. 
         else {
            #pragma omp parallel num_threads(option_->thread_cnt+1)

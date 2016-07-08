@@ -6,12 +6,12 @@ This package can leverage multiple machines and GPUs to speed up the torch
 programs.
 
 ## Requirements
-Build multiverso successfully by following the [README > build](../../README.md#build).
+Build multiverso successfully by following the [README > build](https://github.com/Microsoft/multiverso/blob/master/README.md#build).
 
 ## Installation
 
 **NOTE**: Before installation, you need to make sure have `libmultiverso.so`
-build successfully according to [Requirements](README.md#Requirements).
+build successfully according to [Requirements](#requirements).
 
 ```
 make install
