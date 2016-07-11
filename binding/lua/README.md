@@ -2,8 +2,7 @@
 
 ## Introduction
 Multiverso is a parameter server framework for distributed machine learning.
-This package can leverage multiple machines and GPUs to speed up the torch
-programs.
+This package can enable parallel training of torch program over multiple machines and GPUs.
 
 ## Requirements
 Build multiverso successfully by following the [README > build](https://github.com/Microsoft/multiverso/blob/master/README.md#build).
@@ -11,7 +10,7 @@ Build multiverso successfully by following the [README > build](https://github.c
 ## Installation
 
 **NOTE**: Before installation, you need to make sure have `libmultiverso.so`
-build successfully according to [Requirements](#requirements).
+built successfully according to [Requirements](#requirements).
 
 ```
 make install
