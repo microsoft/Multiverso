@@ -32,6 +32,8 @@ int ParsePSRole(const std::string& ps_role) {
   if (ps_role == "default") return Role::ALL;
   return -1;
 }
+const int kController = 0;
+
 }  // namespace
 
 void Zoo::Start(int* argc, char** argv) {
@@ -75,7 +77,7 @@ void Zoo::StartPS() {
   mailbox_.reset(new MtQueue<MessagePtr>);
 
   // NOTE(feiga): the start order is non-trivial, communicator should be last.
-  if (rank() == 0) { Actor* controler = new Controller(); controler->Start(); }
+  if (rank() == kController) { Actor* controler = new Controller(); controler->Start(); }
   Actor* communicator = new Communicator();
   communicator->Start();
   // activate the system
@@ -110,7 +112,7 @@ void Zoo::StopPS() {
 void Zoo::RegisterNode() {
   MessagePtr msg(new Message());
   msg->set_src(rank());
-  msg->set_dst(0);
+  msg->set_dst(kController);
   msg->set_type(MsgType::Control_Register);
   msg->Push(Blob(&nodes_[rank()], sizeof(Node)));
   SendTo(actor::kCommunicator, msg);
@@ -158,7 +160,7 @@ void Zoo::FinishTrain() {
 void Zoo::Barrier() {
   MessagePtr msg(new Message());
   msg->set_src(rank());
-  msg->set_dst(0);  // rank 0 acts as the controller master.
+  msg->set_dst(kController); 
   msg->set_type(MsgType::Control_Barrier);
   SendTo(actor::kCommunicator, msg);
 
