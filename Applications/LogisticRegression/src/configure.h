@@ -67,7 +67,8 @@ public:
 
   // input data for test
   // the same format with train data
-  std::string test_file = "test.data";
+  // won't do test when file name is empty
+  std::string test_file = "";
   // path to save binary model data
   std::string output_model_file = "logreg.model";
   // path to save test result

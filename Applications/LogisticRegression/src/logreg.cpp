@@ -116,6 +116,9 @@ void SaveOutput(multiverso::Stream* stream, int num_output,
 
 template<typename EleType>
 double LogReg<EleType>::Test(const std::string& test_file, EleType**result) {
+  if (test_file == "") {
+    return 0.0;
+  }
   Log::Write(Info, "Test with file %s\n", test_file.c_str());
 
   int buffer_size = config_->read_buffer_size;

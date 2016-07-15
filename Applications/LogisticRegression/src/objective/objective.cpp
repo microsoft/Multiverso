@@ -96,7 +96,7 @@ void Objective<EleType>::Predict(Sample<EleType>*sample,
 template<typename EleType>
 bool Objective<EleType>::Correct(const int label, EleType*output) {
   if (this->output_size_ == 1) {
-    return (label == *output);
+    return (*output - static_cast<int>(label == 1)) == 0;
   }
 
   EleType max = *(output++);
