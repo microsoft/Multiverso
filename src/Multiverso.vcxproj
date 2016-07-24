@@ -84,8 +84,8 @@
     <LibraryPath>$(MSMPI_LIB64);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug_zmq|x64'">
-    <IncludePath>D:\ZeroMQ\include;$(ProjectDir)\..\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;D:\ZeroMQ\lib;</LibraryPath>
+    <IncludePath>$(ThirdPartyPath)\ZeroMQ 4.0.4\include;D:\ZeroMQ\include;$(ProjectDir)\..\include;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>$(ThirdPartyPath)\ZeroMQ 4.0.4\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);D:\multiverso-next\lib;D:\ZeroMQ\lib;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <ClCompile>
