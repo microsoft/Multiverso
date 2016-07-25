@@ -14,6 +14,7 @@ public:
 private:
   double initial_learning_rate_;
   double learning_rate_;
+  double learning_rate_coef_;
   size_t update_count_;
   int minibatch_size_;
 };

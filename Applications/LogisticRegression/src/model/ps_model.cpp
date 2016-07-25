@@ -187,16 +187,16 @@ inline void PSModel<EleType>::UpdateTable(DataBlock<EleType>* delta) {
   network_timer_.Start();
   if (delta->sparse()) {
     if (this->ftrl_) {
-      ((FTRLWorkerTable<EleType>*)worker_table_)->Add(
+      ((FTRLWorkerTable<EleType>*)worker_table_)->AddAsync(
         (DataBlock<FTRLGradient<EleType>>*)delta);
     } else {
       this->updater_->Process(delta);
-      ((SparseWorkerTable<EleType>*)worker_table_)->Add(delta);
+      ((SparseWorkerTable<EleType>*)worker_table_)->AddAsync(delta);
     }
   } else {
     this->updater_->Process(delta);
     ((multiverso::ArrayWorker<EleType>*)worker_table_)
-      ->Add(static_cast<EleType*>(delta->raw()), delta->size());
+      ->AddAsync(static_cast<EleType*>(delta->raw()), delta->size());
   }
   push_time_ += network_timer_.ElapseMilliSeconds();
   DoesNeedSync();

@@ -144,7 +144,7 @@ double LogReg<EleType>::Test(const std::string& test_file, EleType**result) {
     multiverso::URI(config_->output_file), 
     multiverso::FileOpenMode::Write);
 
-  int correct_count = 0;
+  size_t correct_count = 0;
   size_t total_sample = 0;
   model_->SetKeys(reader->keys());
   do {

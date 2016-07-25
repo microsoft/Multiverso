@@ -205,7 +205,6 @@ void Model<EleType>::Store(const std::string& model_file) {
     stream->Write(table_->raw(), table_->size() * sizeof(EleType));
   }
   delete stream;
-  Log::Write(Info, "Save model to file %s\n", model_file.c_str());
 }
 
 template<typename EleType>

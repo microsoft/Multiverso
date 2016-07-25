@@ -38,6 +38,10 @@ public:
   double regular_coef = 0.0001;
   // initial learning rate
   double learning_rate = 0.8;
+  // learning rate = max(1e-3, 
+  //      initial - (update count - learning rate coef * minibatch size))
+  // one mini-batch update once
+  double learning_rate_coef = 1e6;
 
   // FTRL parameters
   double alpha = 0.005;

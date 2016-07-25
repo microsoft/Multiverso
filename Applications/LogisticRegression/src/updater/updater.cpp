@@ -44,6 +44,7 @@ template <typename EleType>
 SGDUpdater<EleType>::SGDUpdater(const Configure& config) :
 initial_learning_rate_(config.learning_rate),
 learning_rate_(config.learning_rate),
+learning_rate_coef_(config.learning_rate_coef),
 update_count_(0),
 minibatch_size_(config.minibatch_size) {
 }
@@ -63,8 +64,9 @@ void SGDUpdater<EleType>::Process(DataBlock<EleType>* delta) {
     }
   }
   ++update_count_;
-  learning_rate_ = max(1e-5,
-    initial_learning_rate_ - (update_count_ / (1e5 * minibatch_size_)));
+  learning_rate_ = max(1e-3,
+    initial_learning_rate_ - (update_count_ / 
+    (learning_rate_coef_ * minibatch_size_)));
   Log::Write(Debug, "SGD learning rate : %f\n", learning_rate_);
 }
 

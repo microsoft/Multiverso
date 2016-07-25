@@ -60,6 +60,7 @@ template <typename EleType>
 SampleReader<EleType>::~SampleReader() {
   FreeSamples(buffer_size_, buffer_);
 
+  delete cur_keys_;
   while (!keys_.Empty()) {
     keys_.Pop(cur_keys_);
     delete cur_keys_;
@@ -406,14 +407,13 @@ bool BSparseSampleReader<EleType>::ParseSample(int idx) {
     buf = data_chunk_.data();
   }
   buf += chunk_idx_;
-  for (size_t i = 0; i < size; ++i) {
-    data->keys[i] = *(reinterpret_cast<size_t*>(buf + sizeof(size_t)* i));
-    data->values[i] = (EleType)weight;
-  }
+
+  memcpy(data->keys.data(), buf, sizeof(size_t)* size);
   chunk_idx_ += static_cast<int>(sizeof(size_t)* size);
-  // for bias
-  data->values[size] = 1;
-  data->keys[size] = this->row_size_ - 1;
+  data->keys[size] = this->row_size_ - 1;  // bias
+
+  std::fill_n(data->values.data(), size + 1, (EleType)weight);
+
   for (int i = 0; i <= size; ++i) {
     size_t index = data->keys[i];
     for (int j = 0; j < this->output_size_; ++j) {
