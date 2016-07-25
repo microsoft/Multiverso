@@ -26,8 +26,7 @@ ADD_SUBDIRECTORY(Test)
 ADD_SUBDIRECTORY(Applications/WordEmbedding)
 ADD_SUBDIRECTORY(Applications/LogisticRegression)
 
-# TODO: more header files should be installed. Only c_api.h is installed so far
-install (FILES ${PROJECT_SOURCE_DIR}/include/multiverso/c_api.h DESTINATION include/multiverso)
+install (DIRECTORY ${PROJECT_SOURCE_DIR}/include/multiverso DESTINATION include)
 
 
 # uninstall target
