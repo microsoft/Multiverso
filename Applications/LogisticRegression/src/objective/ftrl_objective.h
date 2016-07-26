@@ -12,15 +12,15 @@ public:
 
   ~FTRLObjective();
 
-  void Gradient(Sample<EleType>* sample,
+  float Gradient(Sample<EleType>* sample,
     DataBlock<EleType>* model,
     DataBlock<EleType>* gradient);
 
-  void Predict(Sample<EleType>*sample,
+  float Predict(Sample<EleType>*sample,
     DataBlock<EleType>* model, EleType* predict);
 
 private:
-  void Predict(Sample<EleType>*sample,
+  float Predict(Sample<EleType>*sample,
     DataBlock<EleType>* model, EleType* predict, DataBlock<EleType>* w);
   EleType sgn(const EleType x);
   
