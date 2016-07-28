@@ -55,13 +55,14 @@ Model<EleType>::~Model() {
 }
 
 template<typename EleType>
-inline void Model<EleType>::GetGradient(Sample<EleType>* sample, 
+inline float Model<EleType>::GetGradient(Sample<EleType>* sample, 
   DataBlock<EleType>* delta) {
-  objective_->Gradient(sample, table_, delta);
+  return objective_->Gradient(sample, table_, delta);
 }
 
 template<typename EleType>
-void Model<EleType>::Update(int count, Sample<EleType>** samples) {
+float Model<EleType>::Update(int count, Sample<EleType>** samples) {
+  float train_loss = 0.0f;
   // process each batch
   for (int i = 0; i < count; i += minibatch_size_) {
     ++compute_count_;
@@ -71,7 +72,7 @@ void Model<EleType>::Update(int count, Sample<EleType>** samples) {
     int upper = i + minibatch_size_;
     upper = upper > count ? count : upper;
     for (int j = i; j < upper; ++j) {
-      GetGradient(samples[j], delta_);
+      train_loss += GetGradient(samples[j], delta_);
     }
     
     // calculate and average delta
@@ -106,6 +107,7 @@ void Model<EleType>::Update(int count, Sample<EleType>** samples) {
     // update delta
     UpdateTable(delta_);
   }
+  return train_loss;
 }
 
 template<typename EleType>
@@ -129,16 +131,11 @@ inline void Model<EleType>::UpdateTable(DataBlock<EleType>* delta) {
 }
 
 template<typename EleType>
-inline void Model<EleType>::Predict(Sample<EleType> *sample, EleType *predict) {
-  objective_->Predict(sample, table_, predict);
-}
-
-template<typename EleType>
 int Model<EleType>::Predict(int count, Sample<EleType>**samples, 
   EleType**predicts) {
   int correct(0);
   for (int i = 0; i < count; ++i) {
-    Predict(samples[i], predicts[i]);
+    this->objective_->Predict(samples[i], this->table_, predicts[i]);
     if (objective_->Correct(samples[i]->label, predicts[i])) {
       ++correct;
     }

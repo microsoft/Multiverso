@@ -10,17 +10,17 @@ class SigmoidObjective : public Objective<EleType> {
 public:
   explicit SigmoidObjective(const Configure& config);
 
-  void Gradient(Sample<EleType>* sample,
+  float Gradient(Sample<EleType>* sample,
     DataBlock<EleType>* model,
     DataBlock<EleType>* gradient);
 
-  void Predict(Sample<EleType>*sample,
+  float Predict(Sample<EleType>*sample,
     DataBlock<EleType>* model, EleType* predict);
 
 private:
-  double Sigmoid(Sample<EleType>* sample,
+  float Sigmoid(Sample<EleType>* sample,
     DataBlock<EleType>*model);
-  EleType Round(double x);
+  float Loss(Sample<EleType>*sample, EleType* predict);
 };
 
 }  // namespace logreg

@@ -10,13 +10,13 @@ class SoftmaxObjective : public Objective<EleType> {
 public:
   explicit SoftmaxObjective(const Configure& config);
 
-  virtual void Predict(Sample<EleType>*sample,
+  virtual float Predict(Sample<EleType>*sample,
     DataBlock<EleType>* model, EleType* predict);
 
 protected:
-  double Sigmoid(Sample<EleType>* sample,
+  float Sigmoid(Sample<EleType>* sample,
     DataBlock<EleType>*model, EleType*sigmoid);
-  EleType Round(double x);
+  float Loss(Sample<EleType>*sample, EleType* predict);
 };
 
 }  // namespace logreg 

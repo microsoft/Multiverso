@@ -13,6 +13,14 @@
 
 namespace logreg {
 
+inline float MathLog(float x) {
+  return log(x < 0.000001f ? 0.000001f : x);
+}
+
+inline int Round(float x) {
+  return x < 0.5 ? 0 : 1;
+}
+
 template<typename EleType>
 Objective<EleType>::Objective(const Configure &config) {
   this->input_size_ = config.input_size;
@@ -26,13 +34,30 @@ Objective<EleType>::~Objective() {
 }
 
 template<typename EleType>
-inline void Objective<EleType>::Gradient(Sample<EleType>* sample,
+inline float Objective<EleType>::Gradient(Sample<EleType>* sample,
   DataBlock<EleType>*model, DataBlock<EleType>* gradient) {
   EleType* loss = new EleType[this->output_size_];
-  Predict(sample, model, loss);
+  float train_loss = Predict(sample, model, loss);
+  
   Diff(sample->label, loss);
   AddRegularization(sample, model, loss, gradient);
   delete []loss;
+
+  return train_loss;
+}
+
+template<typename EleType>
+inline float Objective<EleType>::Loss(Sample<EleType>*sample,
+  EleType* predict) {
+  if (output_size_ == 1) {
+    return pow(static_cast<float>(*predict - (sample->label == 1 ? 1.0 : 0.0)), 2);
+  }
+
+  float ret = 0.0f;
+  for (int i = 0; i < output_size_; ++i) {
+    ret += pow(static_cast<float>(predict[i] - (sample->label == i ? 1 : 0)), 2);
+  }
+  return ret / output_size_;
 }
 
 template<typename EleType>
@@ -47,7 +72,7 @@ inline void Objective<EleType>::AddRegularization(Sample<EleType>*sample,
       // each input
       for (size_t j = 0; j < size; ++j) {
         size_t key = sample->keys[j] + offset;
-        EleType val = (EleType)(sample->values[j] * loss[i]) 
+        EleType val = static_cast<EleType>(sample->values[j] * loss[i])
           + regular_->Calculate(key, model);
         
         EleType* pval = gradient->Get(key);
@@ -66,7 +91,7 @@ inline void Objective<EleType>::AddRegularization(Sample<EleType>*sample,
     size_t index = 0;
     for (int i = 0; i < this->output_size_; ++i) {
       for (size_t j = 0; j < this->input_size_; ++j) {
-        rawgrad[index] += (EleType)(rawinput[j] * loss[i]
+        rawgrad[index] += static_cast<EleType>(rawinput[j] * loss[i]
           + regular_->Calculate(index, model));
         ++index;
       }
@@ -86,17 +111,18 @@ inline void Objective<EleType>::Diff(int label, EleType*diff) {
 }
 
 template<typename EleType>
-void Objective<EleType>::Predict(Sample<EleType>*sample,
+float Objective<EleType>::Predict(Sample<EleType>*sample,
   DataBlock<EleType>*model, EleType* predict) {
   for (int i = 0; i < this->output_size_; ++i) {
     predict[i] = Dot((size_t)i * this->input_size_, model, sample);
   }
+  return this->Loss(sample, predict);
 }
 
 template<typename EleType>
 bool Objective<EleType>::Correct(const int label, EleType*output) {
   if (this->output_size_ == 1) {
-    return (*output - static_cast<int>(label == 1)) == 0;
+    return (Round(static_cast<float>(*output)) - static_cast<int>(label == 1)) == 0;
   }
 
   EleType max = *(output++);
@@ -122,28 +148,35 @@ Objective<EleType>(config) {
 }
 
 template<typename EleType>
-inline void SigmoidObjective<EleType>::Gradient(Sample<EleType>* sample,
+inline float SigmoidObjective<EleType>::Gradient(Sample<EleType>* sample,
   DataBlock<EleType>*model, DataBlock<EleType>* gradient) {
-  EleType loss = (EleType)Sigmoid(sample, model);
+  EleType loss = static_cast<EleType>(Sigmoid(sample, model));
+  float train_loss = this->Loss(sample, &loss);
   this->Diff(sample->label, &loss);
   this->AddRegularization(sample, model, &loss, gradient);
+  return train_loss;
 }
 
 template<typename EleType>
-inline void SigmoidObjective<EleType>::Predict(Sample<EleType>* sample,
+inline float SigmoidObjective<EleType>::Predict(Sample<EleType>* sample,
   DataBlock<EleType>* model, EleType* predict) {
-  *predict = Round(Sigmoid(sample, model));
+  *predict = static_cast<EleType>(Sigmoid(sample, model));
+  return this->Loss(sample, predict);
 }
 
 template<typename EleType>
-inline double SigmoidObjective<EleType>::Sigmoid(Sample<EleType>* sample,
+inline float SigmoidObjective<EleType>::Sigmoid(Sample<EleType>* sample,
   DataBlock<EleType>*model) {
-  return 1.0 / (1.0 + exp(-Dot(0, model, sample)));
+  return static_cast<float>(1.0f / (1.0f + exp(-Dot(0, model, sample))));
 }
 
 template<typename EleType>
-inline EleType SigmoidObjective<EleType>::Round(double x) {
-  return x < 0.5 ? (EleType)0 : (EleType)1;
+inline float SigmoidObjective<EleType>::Loss(Sample<EleType>*sample,
+  EleType* predict) {
+  if (sample->label == 1) {
+    return -MathLog(static_cast<float>(*predict));
+  }
+  return -MathLog(1.0f - static_cast<float>(*predict));
 }
 
 DECLARE_TEMPLATE_CLASS_WITH_BASIC_TYPE(SigmoidObjective);
@@ -157,35 +190,46 @@ Objective<EleType>(config) {
 }
 
 template<typename EleType>
-inline void SoftmaxObjective<EleType>::Predict(Sample<EleType>* sample,
+inline float SoftmaxObjective<EleType>::Predict(Sample<EleType>* sample,
   DataBlock<EleType>* model, EleType* predict) {
-  double sum = Sigmoid(sample, model, predict);
+  float sum = Sigmoid(sample, model, predict);
   for (int i = 0; i < this->output_size_; ++i) {
-    predict[i] = (EleType)(predict[i] / sum);
+    predict[i] = static_cast<EleType>(predict[i] / sum);
   }
+   return this->Loss(sample, predict);
 }
 
 template<typename EleType>
-double SoftmaxObjective<EleType>::Sigmoid(Sample<EleType>* sample,
+float SoftmaxObjective<EleType>::Sigmoid(Sample<EleType>* sample,
   DataBlock<EleType>*model, EleType*sigmoid) {
   for (int i = 0; i < this->output_size_; ++i) {
     sigmoid[i] = Dot(i*this->input_size_, model, sample);
   }
-  double max = sigmoid[0];
+  float max = static_cast<float>(sigmoid[0]);
   for (int i = 1; i < this->output_size_; ++i) {
-    max = max < sigmoid[i] ? sigmoid[i] : max;
+    max = static_cast<float>(max < sigmoid[i] ? sigmoid[i] : max);
   }
-  double sum = 0.0;
+  float sum = 0.0f;
   for (int i = 0; i < this->output_size_; ++i) {
-    sigmoid[i] = (EleType)exp(sigmoid[i] - max);
-    sum += sigmoid[i];
+    sigmoid[i] = static_cast<EleType>(exp(sigmoid[i] - max));
+    sum += static_cast<float>(sigmoid[i]);
   }
   return sum;
 }
 
 template<typename EleType>
-inline EleType SoftmaxObjective<EleType>::Round(double x) {
-  return x < 0.5 ? (EleType)0 : (EleType)1;
+inline float SoftmaxObjective<EleType>::Loss(Sample<EleType>*sample,
+  EleType* predict) {
+  float ret = 0.0f;
+  for (int i = 0; i < this->output_size_; ++i) {
+    if (sample->label == i){
+      ret -= MathLog(static_cast<float>(predict[i]));
+    }
+    else {
+      ret -= MathLog(1.0f - static_cast<float>(predict[i]));
+    }
+  }
+  return ret / this->output_size_;
 }
 
 DECLARE_TEMPLATE_CLASS_WITH_BASIC_TYPE(SoftmaxObjective)
@@ -214,13 +258,14 @@ FTRLObjective<EleType>::~FTRLObjective() {
 }
 
 template<typename EleType>
-void FTRLObjective<EleType>::Gradient(Sample<EleType>* sample,
+float FTRLObjective<EleType>::Gradient(Sample<EleType>* sample,
   DataBlock<EleType>* model,
   DataBlock<EleType>* gradient) {
   EleType* loss = new EleType[this->output_size_];
   auto w_ = DataBlock<EleType>::GetBlock(true, model->size());
 
-  Predict(sample, model, loss, w_);
+  float train_loss = Predict(sample, model, loss, w_);
+
   this->Diff(sample->label , loss);
 
   auto g = (DataBlock<FTRLGradient<EleType>>*)gradient;
@@ -229,10 +274,10 @@ void FTRLObjective<EleType>::Gradient(Sample<EleType>* sample,
   for (int i = 0; i < this->output_size_; ++i) {
     size_t size = sample->keys.size();
     for (size_t j = 0; j < size; ++j) {
-      double delta_z;
+      EleType delta_z;
 
-      double delta_g = sample->values[j] * loss[i];
-      double square_g = delta_g * delta_g;
+      EleType delta_g = sample->values[j] * loss[i];
+      EleType square_g = static_cast<EleType>(pow(delta_g, 2));
 
       size_t key = sample->keys[j] + offset;
       EleType *w = w_->Get(key);
@@ -241,32 +286,35 @@ void FTRLObjective<EleType>::Gradient(Sample<EleType>* sample,
       } else {
         FTRLEntry<EleType> *en = entry->Get(key);
         if (en == nullptr) {
-          delta_z = alpha_ * delta_g;
+          delta_z = static_cast<EleType>(alpha_ * delta_g);
         } else {
-          delta_z = alpha_ * (sqrt(en->n + square_g) - en->sqrtn);
+          delta_z = static_cast<EleType>(alpha_ * (sqrt(en->n + square_g) - en->sqrtn));
         }
         delta_z = delta_z * (*w) - delta_g;
       }
       // delta_n
       delta_g = -square_g;
-      g->Set(key, FTRLGradient<EleType>((EleType)delta_z, (EleType)delta_g));
+      g->Set(key, FTRLGradient<EleType>(static_cast<EleType>(delta_z), 
+        static_cast<EleType>(delta_g)));
     }
     offset += this->input_size_;
   }
   delete[]loss;
   delete w_;
+  return train_loss;
 }
 
 template<typename EleType>
-void FTRLObjective<EleType>::Predict(Sample<EleType>* sample,
+float FTRLObjective<EleType>::Predict(Sample<EleType>* sample,
   DataBlock<EleType>* model, EleType* predict) {
   auto w = DataBlock<EleType>::GetBlock(true, model->size());
-  Predict(sample, model, predict, w);
+  float test_loss = Predict(sample, model, predict, w);
   delete w;
+  return test_loss;
 }
 
 template<typename EleType>
-void FTRLObjective<EleType>::Predict(Sample<EleType>*sample,
+float FTRLObjective<EleType>::Predict(Sample<EleType>*sample,
   DataBlock<EleType>* model, EleType* predict, DataBlock<EleType>* w) {
   auto entry = (DataBlock<FTRLEntry<EleType>>*)model;
   w->Clear();
@@ -276,7 +324,7 @@ void FTRLObjective<EleType>::Predict(Sample<EleType>*sample,
     for (size_t j = 0; j < sample->values.size(); ++j) {
       FTRLEntry<EleType> *en = entry->Get(sample->keys[j] + offset);
       if (en != nullptr && abs(en->z) > lambda1_) {
-        EleType val = (EleType)((sgn(en->z) * lambda1_ - en->z)
+        EleType val = static_cast<EleType>((sgn(en->z) * lambda1_ - en->z)
           / ((beta_ + en->sqrtn) * alpha_ + lambda2_));
         w->Set(sample->keys[j] + offset, val);
       }
@@ -284,12 +332,12 @@ void FTRLObjective<EleType>::Predict(Sample<EleType>*sample,
     offset += this->input_size_;
   }
 
-  objective_->Predict(sample, w, predict);
+  return objective_->Predict(sample, w, predict);
 }
 
 template<typename EleType>
 EleType FTRLObjective<EleType>::sgn(const EleType x) {
-  return (EleType)(x > 0 ? 1 : (x < 0 ? -1 : 0));
+  return static_cast<EleType>(x > 0 ? 1 : (x < 0 ? -1 : 0));
 }
 
 DECLARE_TEMPLATE_CLASS_WITH_BASIC_TYPE(FTRLObjective);

@@ -13,8 +13,7 @@ public:
   }
   void Update(size_t num_element, T* data, T* delta,
               AddOption*, size_t offset) override {
-#pragma omp parallel for schedule(static) num_threads(MV_CONFIG_omp_threads)
-    for (long long index = 0; (unsigned long long)index < num_element; ++index) {
+    for (size_t index = 0; index < num_element; ++index) {
       data[index + offset] -= delta[index];
     }
   }
