@@ -44,11 +44,33 @@ import pickle
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                     os.path.pardir, os.path.pardir, os.path.pardir)))
 
+import argparse
+# Parsing the arguments
+parser = argparse.ArgumentParser(usage="Trains a Deep Residual Learning network\
+ on cifar-10 using Lasagne.\nNetwork architecture and training parameters are as\
+ in section 4.2 in 'Deep Residual Learning for Image Recognition'.")
+
+parser.add_argument('-n', type=int, help="N: Number of stacked residual\
+ building blocks per feature map (default: 5)", default=5)
+parser.add_argument('-m', '--model', type=str, help="saved model file to load\
+ (for validation) (default: None)", default=None)
+parser.add_argument('-lr', type=float, help="initial learning rate (default:\
+ 0.1)", default=0.1)
+parser.add_argument('-s', '--sync', type=bool, help="run multiverso in sync \
+ mode (default: False)", default=False)
+parser.add_argument('-b', '--batch-size', type=int, help="batch size (default:\
+ False)", default=128)
+parser.add_argument('-e', '--epoches', type=int, help="Number of epoches(default:\
+ 82)", default=82)
+args = parser.parse_args()
+print(args)
+
+
 # MULTIVERSO: import multiverso
 import multiverso as mv
 
 # MULTIVERSO: you should call mv.init before call multiverso apis
-mv.init()
+mv.init(sync=args.sync)
 # MULTIVERSO: every process has distinct worker id
 worker_id = mv.worker_id()
 # MULTIVERSO: mv.workers_num will return the number of workers
@@ -223,7 +245,7 @@ def iterate_minibatches(inputs, targets, batchsize, shuffle=False, augment=False
 
 # ############################## Main program ################################
 
-def main(n=5, num_epochs=82, model=None):
+def main(batch_size=128, lr=0.1, sync=False, n=5, num_epochs=82, model=None):
     # Check if cifar data exists
     if not os.path.exists("./cifar-10-batches-py"):
         print("CIFAR-10 dataset can not be found. Please download the dataset from 'https://www.cs.toronto.edu/~kriz/cifar.html'.")
@@ -264,7 +286,6 @@ def main(n=5, num_epochs=82, model=None):
         # Create update expressions for training
         # Stochastic Gradient Descent (SGD) with momentum
         params = lasagne.layers.get_all_params(network, trainable=True)
-        lr = 0.1
         sh_lr = theano.shared(lasagne.utils.floatX(lr))
         updates = lasagne.updates.momentum(
                 loss, params, learning_rate=sh_lr, momentum=0.9)
@@ -302,7 +323,7 @@ def main(n=5, num_epochs=82, model=None):
             train_err = 0
             train_batches = 0
             start_time = time.time()
-            for batch in iterate_minibatches(rand_X_train, rand_Y_train, 128, shuffle=True, augment=True):
+            for batch in iterate_minibatches(rand_X_train, rand_Y_train, batch_size, shuffle=True, augment=True):
                 train_batches += 1
                 inputs, targets = batch
                 train_err += train_fn(inputs, targets)
@@ -389,17 +410,5 @@ def array_list(arr_list):
 
 
 if __name__ == '__main__':
-    if ('--help' in sys.argv) or ('-h' in sys.argv):
-        print("Trains a Deep Residual Learning network on cifar-10 using Lasagne.")
-        print("Network architecture and training parameters are as in section 4.2 in 'Deep Residual Learning for Image Recognition'.")
-        print("Usage: %s [N [MODEL]]" % sys.argv[0])
-        print()
-        print("N: Number of stacked residual building blocks per feature map (default: 5)")
-        print("MODEL: saved model file to load (for validation) (default: None)")
-    else:
-        kwargs = {}
-        if len(sys.argv) > 1:
-            kwargs['n'] = int(sys.argv[1])
-        if len(sys.argv) > 2:
-            kwargs['model'] = sys.argv[2]
-        main(**kwargs)
+    main(batch_size=args.batch_size, lr=args.lr, sync=args.sync, n=args.n,
+        num_epochs=args.epoches, model=args.model)
