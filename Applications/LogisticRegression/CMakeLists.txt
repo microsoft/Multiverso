@@ -32,6 +32,6 @@ aux_source_directory(${SRCDIR}/updater SRC_UPDATER)
 aux_source_directory(${SRCDIR}/util SRC_UTIL)
 set(SRC ${SRC_MODEL} ${SRC_OBJECTIVE} ${SRC_REGULAR} ${SRC_UPDATER} ${SRC_UTIL} ${MULTIVERSO_SRC}/table/array_table.cpp ${SRC_ROOT})
 
-add_executable(LogReg ${SRC})
+add_executable(LogisticRegression ${SRC})
 
-target_link_libraries(LogReg multiverso ${MPI_CXX_LIBRARIES})
+target_link_libraries(LogisticRegression multiverso ${MPI_CXX_LIBRARIES})

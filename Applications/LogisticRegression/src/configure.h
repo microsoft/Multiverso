@@ -27,7 +27,7 @@ public:
   // number of epoch when train
   int train_epoch = 1;
   // minibatch size for sgds
-  int minibatch_size = 1;
+  int minibatch_size = 20;
   // buffer size for async reader
   int read_buffer_size = 2048;
   // show statistic time after process each # sample
@@ -35,7 +35,7 @@ public:
   int show_time_per_sample = 10000;
 
   // coefficient for regularization term 
-  double regular_coef = 0.0001;
+  double regular_coef = 0.0005;
   // initial learning rate
   double learning_rate = 0.8;
   // learning rate = max(1e-3, 

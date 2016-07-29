@@ -31,7 +31,7 @@ SampleReader<EleType>::SampleReader(
     row_size_(row_size),
     output_size_(output_size),
     // use 2x size buffer
-    buffer_size_(max_row_buffer_count << 1),
+    buffer_size_(max_row_buffer_count << 2),
     sample_batch_size_(update_per_sample),
     sample_count_(0) {
   // parse files

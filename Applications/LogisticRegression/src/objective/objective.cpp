@@ -25,7 +25,7 @@ template<typename EleType>
 Objective<EleType>::Objective(const Configure &config) {
   this->input_size_ = config.input_size;
   this->output_size_ = config.output_size;
-  regular_ = new Regular<EleType>(config);
+  regular_ = Regular<EleType>::Get(config);
 }
 
 template<typename EleType>
