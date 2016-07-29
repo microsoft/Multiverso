@@ -54,6 +54,7 @@ Configure::Configure(const std::string& config_file) {
 
   CONFIG_PARSE_DOUBLE(regular_coef);
   CONFIG_PARSE_DOUBLE(learning_rate);
+  CONFIG_PARSE_DOUBLE(learning_rate_coef);
 
   CONFIG_PARSE_DOUBLE(lambda1);
   CONFIG_PARSE_DOUBLE(lambda2);

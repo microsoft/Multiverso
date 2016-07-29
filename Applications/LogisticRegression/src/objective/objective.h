@@ -19,16 +19,16 @@ public:
   //  regular type
   explicit Objective(const Configure& config);
   virtual ~Objective();
-  
-  virtual void Gradient(Sample<EleType>* sample,
+  // return train loss
+  virtual float Gradient(Sample<EleType>* sample,
     DataBlock<EleType>* model,
     DataBlock<EleType>* gradient);
-
-  virtual void Predict(Sample<EleType>*sample,
+  // return test loss
+  virtual float Predict(Sample<EleType>*sample,
     DataBlock<EleType>* model, EleType* predict);
 
-  virtual bool Correct(const int label, EleType*output);
-
+  virtual bool Correct(const int label, EleType*predict);
+  
   // factory method to get a new instance
   // \param config should contain objective type
   //  and params for Objective initialization
@@ -41,6 +41,7 @@ protected:
     DataBlock<EleType>* model,
     EleType* loss,
     DataBlock<EleType>* gradient);
+  virtual float Loss(Sample<EleType>*sample, EleType* predict);
 
 protected:
   Regular<EleType> *regular_;

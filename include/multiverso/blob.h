@@ -14,7 +14,7 @@ namespace multiverso {
 class Blob {
 public:
   // an empty blob
-  Blob() : data_(nullptr) {}
+  Blob() : data_(nullptr), size_(0) {}
 
   explicit Blob(size_t size);
 

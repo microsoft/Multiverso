@@ -38,9 +38,9 @@ LocalStream::LocalStream(const URI& uri, FileOpenMode mode) {
     mode_str = "ab";
   }
 #ifdef _MSC_VER
-  fopen_s(&fp_, uri.name.c_str(), mode_str.c_str());
+  fopen_s(&fp_, uri.path.c_str(), mode_str.c_str());
 #else
-  fp_ = fopen(uri.name.c_str(), mode_str.c_str());
+  fp_ = fopen(uri.path.c_str(), mode_str.c_str());
 #endif
 
   if (fp_ == nullptr) {

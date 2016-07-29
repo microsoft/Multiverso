@@ -59,10 +59,10 @@ public:
     Wait(GetAsync(keys, data));
   }
   
-  virtual void Add(DataBlock<EleType>* data) {
+  virtual int AddAsync(DataBlock<EleType>* data) {
     size_t size = data->size();
     if (size == 0) {
-      return;
+      return -1;
     }
 
     Blob key(size * sizeof(size_t));
@@ -77,8 +77,9 @@ public:
       *(vals++) = *iter.Value();
     }
 
-    WorkerTable::Add(key, val);
+    return WorkerTable::AddAsync(key, val);
   }
+
   virtual int Partition(const std::vector<Blob>& kv, multiverso::MsgType,
     std::unordered_map<int, std::vector<Blob> >* out) {
     DEBUG_CHECK(kv.size() == 1 || kv.size() == 2);
