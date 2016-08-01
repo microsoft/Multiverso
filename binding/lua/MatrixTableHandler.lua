@@ -32,8 +32,15 @@ function tbh:new(num_row, num_col, init_value)
     if init_value ~= nil then
         init_value = init_value:float()
         -- sync add is used because we want to make sure that the initial value
-        -- has taken effect when the call returns.
-        self.add(tbh, init_value / init.num_workers(), nil, true)
+        -- has taken effect when the call returns. No matter whether it is
+        -- master worker,  we should call add to make sure it works in sync
+        -- mode
+
+        if init.worker_id() == 0 then
+            self.add(tbh, init_value, nil, true)
+        else
+            self.add(tbh, init_value:clone:zero(), nil, true)
+        end
     end
     return tbh
 end
