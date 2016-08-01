@@ -31,7 +31,7 @@ function tbh:new(size, init_value)
         if init.worker_id() == 0 then
             self.add(tbh, init_value, true)
         else
-            self.add(tbh, init_value:clone:zero(), true)
+            self.add(tbh, init_value:clone():zero(), true)
         end
     end
     return tbh

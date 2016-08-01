@@ -39,7 +39,7 @@ function tbh:new(num_row, num_col, init_value)
         if init.worker_id() == 0 then
             self.add(tbh, init_value, nil, true)
         else
-            self.add(tbh, init_value:clone:zero(), nil, true)
+            self.add(tbh, init_value:clone():zero(), nil, true)
         end
     end
     return tbh
