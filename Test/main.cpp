@@ -431,11 +431,11 @@ void TestmatrixPerformance(int argc, char* argv[],
           float expected = (float) i * num_col + col;
           float actual = *(row_start + col);
           if (i % 10 <= percent) {
-            assert(expected, actual); // << "Should be updated after adding, worker_id:"
+            assert(expected == actual); // << "Should be updated after adding, worker_id:"
               //<< worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
           }
           else {
-            assert(0, *(row_start + col)); // << "Should be 0 for non update row values, worker_id:"
+            assert(0 == *(row_start + col)); // << "Should be 0 for non update row values, worker_id:"
               // << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
           }
         }
