@@ -54,7 +54,7 @@ supported, namely `ArrayTableHandler` and `MatrixTableHandler`.
 
 `ArrayTableHandler` is used to sync array-like (one-dimensional) value.
 
-Although our model tends to be a matrix, when using `torch.nn` package we can
+Although the model tends to be a matrix, when using `torch.nn` package we can
 get the flattened parameters and gradients with
 [module.getParameters()](https://github.com/torch/nn/blob/master/doc/module.md#flatparameters-flatgradparameters-getparameters).
 So in most cases, we should use `ArrayTableHandler` instead of
@@ -68,8 +68,7 @@ The `size` should be a `number` equal to the size of value we want to sync.
 
 If init_value is nil, zeros will be used to initialize the table, otherwise
 the table will be initialized as the init_value.
-*Notice*: if the init_value is different in different processes, the average of
-them will be used.
+*Notice*: Only the init_value from the master will be used!
 
 #### ArrayTableHandler:add(data, sync)
 

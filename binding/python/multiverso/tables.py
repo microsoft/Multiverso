@@ -43,8 +43,7 @@ class ArrayTableHandler(TableHandler):
         The `size` should be a int equal to the size of value we want to sync.
         If init_value is None, zeros will be used to initialize the table,
         otherwise the table will be initialized as the init_value.
-        *Notice*: if the init_value is different in different processes, the
-        average of them will be used.
+        *Notice*: Only the init_value from the master will be used!
         '''
         self._handler = ctypes.c_void_p()
         self._size = size
@@ -52,8 +51,10 @@ class ArrayTableHandler(TableHandler):
         if init_value is not None:
             init_value = convert_data(init_value)
             # sync add is used because we want to make sure that the initial
-            # value has taken effect when the call returns.
-            self.add(init_value / api.workers_num(), sync=True)
+            # value has taken effect when the call returns. No matter whether
+            # it is master worker,  we should call add to make sure it works in
+            # sync mode
+            self.add(init_value if api.is_master_worker() else np.zeros(init_value.shape), sync=True)
 
     def get(self):
         '''get the latest value from multiverso ArrayTable
@@ -89,8 +90,7 @@ class MatrixTableHandler(TableHandler):
 
         If init_value is None, zeros will be used to initialize the table,
         otherwise the table will be initialized as the init_value.
-        Notice: if the init_value is different in different processes, the
-        average of them will be used.
+        *Notice*: Only the init_value from the master will be used!
         '''
         self._handler = ctypes.c_void_p()
         self._num_row = num_row
@@ -100,8 +100,10 @@ class MatrixTableHandler(TableHandler):
         if init_value is not None:
             init_value = convert_data(init_value)
             # sync add is used because we want to make sure that the initial
-            # value has taken effect when the call returns.
-            self.add(init_value / api.workers_num(), sync=True)
+            # value has taken effect when the call returns. No matter whether
+            # it is master worker,  we should call add to make sure it works in
+            # sync mode
+            self.add(init_value if api.is_master_worker() else np.zeros(init_value.shape), sync=True)
 
     def get(self, row_ids=None):
         '''get the latest value from multiverso MatrixTable

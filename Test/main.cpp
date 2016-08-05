@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
+#include <cassert>
 
 #include <mpi.h>
 
@@ -24,9 +25,6 @@
 #include <multiverso/table/sparse_matrix_table.h>
 #include <multiverso/updater/updater.h>
 #include <multiverso/table_factory.h>
-
-
-#include <gtest/gtest.h>
 
 using namespace multiverso;
 
@@ -281,8 +279,8 @@ void TestMatrix(int argc, char* argv[]){
           expected += (int)(i * num_col + j + 1) * count * MV_NumWorkers();
         }
         int actual = data[0][i* num_col + j];
-        ASSERT_EQ(expected, actual) << "Should be equal after adding, row: " 
-        << i << ", col:" << j << ", expected: " << expected << ", actual: " << actual;
+        assert(expected == actual); // << "Should be equal after adding, row: " 
+        // << i << ", col:" << j << ", expected: " << expected << ", actual: " << actual;
       }
     }
 
@@ -433,12 +431,12 @@ void TestmatrixPerformance(int argc, char* argv[],
           float expected = (float) i * num_col + col;
           float actual = *(row_start + col);
           if (i % 10 <= percent) {
-            ASSERT_FLOAT_EQ(expected, actual) << "Should be updated after adding, worker_id:"
-              << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
+            assert(expected == actual); // << "Should be updated after adding, worker_id:"
+              //<< worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
           }
           else {
-            ASSERT_FLOAT_EQ(0, *(row_start + col)) << "Should be 0 for non update row values, worker_id:"
-              << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
+            assert(0 == *(row_start + col)); // << "Should be 0 for non update row values, worker_id:"
+              // << worker_id << ",row: " << i << ",col:" << col << ",expected: " << expected << ",actual: " << actual;
           }
         }
       }
@@ -501,10 +499,8 @@ int main(int argc, char* argv[]) {
 
   if (argc == 1){
     multiverso::MV_Init();
-    ::testing::InitGoogleTest(&argc, argv);
-    auto res = RUN_ALL_TESTS();
     multiverso::MV_ShutDown();
-    return res;
+    return 0;
   } else {
     if (strcmp(argv[1], "kv") == 0) TestKV(argc, argv);
     else if (strcmp(argv[1], "array") == 0) TestArray(argc, argv);
