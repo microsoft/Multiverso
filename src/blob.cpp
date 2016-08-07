@@ -23,7 +23,9 @@ Blob::Blob(void* data, size_t size) : size_(size) {
 }
 
 Blob::Blob(const Blob& rhs) {
-  Allocator::Get()->Refer(rhs.data_);
+  if (rhs.size() != 0) {
+    Allocator::Get()->Refer(rhs.data_);
+  }
   this->data_ = rhs.data_;
   this->size_ = rhs.size_;
 }
@@ -36,7 +38,9 @@ Blob::~Blob() {
 
 // Shallow copy by default. Call \ref CopyFrom for a deep copy
 void Blob::operator=(const Blob& rhs) {
-  Allocator::Get()->Refer(rhs.data_);
+  if (rhs.size() != 0) {
+    Allocator::Get()->Refer(rhs.data_);
+  }
   this->data_ = rhs.data_;
   this->size_ = rhs.size_;
 }
