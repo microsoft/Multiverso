@@ -22,7 +22,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 set(MULTIVERSO_DIR ${PROJECT_SOURCE_DIR})
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(Test)
-ADD_SUBDIRECTORY(Test/UnitTests)
+ADD_SUBDIRECTORY(Test/unittests)
 ADD_SUBDIRECTORY(Applications/WordEmbedding)
 ADD_SUBDIRECTORY(Applications/LogisticRegression)
 
