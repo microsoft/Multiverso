@@ -10,6 +10,9 @@ before_install:
 install:
 - sudo apt-get install -y libopenmpi-dev openmpi-bin build-essential
 
+# for boost unit test
+- sudo apt-get install -y libboost-test-dev
+
 # for testing python binding
 - sudo apt-get install -y cmake python-nose python-scipy python-numpy
 
