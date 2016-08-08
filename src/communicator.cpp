@@ -76,11 +76,9 @@ void Communicator::ProcessMessage(MessagePtr& msg) {
 void Communicator::Communicate() {
   while (is_working_) {
     MessagePtr msg(new Message());
-    size_t size = net_util_->Recv(&msg);
+    int size = net_util_->Recv(&msg);
     if (size == -1) {
       continue;
-      // Log::Debug("recv return -1\n");
-      // break;
     }
     if (size > 0) {
       // a message received

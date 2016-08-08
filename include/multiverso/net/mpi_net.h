@@ -192,7 +192,7 @@ public:
   //  return size;
   //}
 
-  size_t Send(MessagePtr& msg) override {
+  int Send(MessagePtr& msg) override {
     if (msg.get()) { send_queue_.Push(msg); }
     
     if (last_handle_.get() != nullptr && !last_handle_->Test()) {
@@ -227,7 +227,7 @@ public:
   //  return RecvMsgFrom(status.MPI_SOURCE, msg);
   //}
 
-  size_t Recv(MessagePtr* msg) override {
+  int Recv(MessagePtr* msg) override {
     MPI_Status status;
     int flag;
     // non-blocking probe whether message comes
@@ -286,11 +286,11 @@ public:
     MV_MPI_CALL(MPI_Wait(&send_request, &status));
   }
 
-  size_t SerializeAndSend(MessagePtr& msg, MPIMsgHandle* msg_handle) {
+  int SerializeAndSend(MessagePtr& msg, MPIMsgHandle* msg_handle) {
 
     CHECK_NOTNULL(msg_handle);
     MONITOR_BEGIN(MPI_NET_SEND_SERIALIZE);
-    size_t size = sizeof(size_t) + Message::kHeaderSize;
+    int size = sizeof(size_t) + Message::kHeaderSize;
     for (auto& data : msg->data()) size += sizeof(size_t) + data.size();
     if (size > send_size_) {
       send_buffer_ = (char*)realloc(send_buffer_, size);
@@ -315,7 +315,7 @@ public:
     return size;
   }
 
-  size_t RecvAndDeserialize(int src, int count, MessagePtr* msg_ptr) {
+  int RecvAndDeserialize(int src, int count, MessagePtr* msg_ptr) {
     if (!msg_ptr->get()) msg_ptr->reset(new Message());
     MessagePtr& msg = *msg_ptr;
     msg->data().clear();
@@ -418,9 +418,9 @@ private:
   std::unique_ptr<MPIMsgHandle> last_handle_;
   MtQueue<MessagePtr> send_queue_;
   char* send_buffer_;
-  size_t send_size_;
+  long long send_size_;
   char* recv_buffer_;
-  size_t recv_size_;
+  long long recv_size_;
 };
 
 }

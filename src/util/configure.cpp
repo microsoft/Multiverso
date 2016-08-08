@@ -18,10 +18,10 @@ void ParseCMDFlags(int* argc, char* argv[]) {
 
   for (int i = 0; i < *argc; ++i) {
     line = argv[i];
-    if (line.find("-") != -1) {
+    if (line.find("-") != std::string::npos) {
 
       pos = line.find("=");
-      CHECK(pos != -1);
+      CHECK(pos != std::string::npos);
 
       key = line.substr(1, pos - 1);
       value = line.substr(pos + 1);
