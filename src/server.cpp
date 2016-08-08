@@ -38,7 +38,7 @@ void Server::ProcessGet(MessagePtr& msg) {
   if (msg->data().size() != 0) {
     MessagePtr reply(msg->CreateReplyMessage());
     int table_id = msg->table_id();
-    CHECK(table_id >= 0 && table_id < store_.size());
+    CHECK(table_id >= 0 && table_id < static_cast<int>(store_.size()));
     store_[table_id]->ProcessGet(msg->data(), &reply->data());
     SendTo(actor::kCommunicator, reply);
   }
@@ -50,7 +50,7 @@ void Server::ProcessAdd(MessagePtr& msg) {
   if (msg->data().size() != 0) {
     MessagePtr reply(msg->CreateReplyMessage());
     int table_id = msg->table_id();
-    CHECK(table_id >= 0 && table_id < store_.size());
+    CHECK(table_id >= 0 && table_id < static_cast<int>(store_.size()));
     store_[table_id]->ProcessAdd(msg->data());
     SendTo(actor::kCommunicator, reply);
   }
