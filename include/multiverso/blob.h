@@ -1,10 +1,10 @@
 #ifndef MULTIVERSO_BLOB_H_
 #define MULTIVERSO_BLOB_H_
 
-#include <memory>
-#include <string>
 #include <cstring>
 #include <iostream>
+#include <memory>
+#include <string>
 
 namespace multiverso {
 
@@ -47,9 +47,7 @@ public:
   inline size_t size() const { return size_; }
 
 private:
-
   // Memory is shared and auto managed
-  //std::shared_ptr<char> data_;
   char *data_;
   size_t size_;
 };
