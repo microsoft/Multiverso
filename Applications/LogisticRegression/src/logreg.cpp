@@ -21,7 +21,7 @@ LogReg<EleType>::LogReg(const std::string &config_file) {
   config_->input_size += 1;
 
   if (config_->read_buffer_size % config_->minibatch_size != 0) {
-    config_->read_buffer_size += config_->read_buffer_size
+    config_->read_buffer_size += config_->minibatch_size
       - (config_->read_buffer_size % config_->minibatch_size);
   }
   // read buffer size should not be too small
