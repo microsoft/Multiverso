@@ -54,7 +54,7 @@ Similar strategies are already implemented in the constructors in `theano_ext.sh
 ## About the master worker
 Some things should only be done in specific worker, such as validation, outputting the results and so on. So you can benefit from mv.is_master_worker() api to mark worker 0 as the master one to complete these tasks.
 For example, if you want to make sure only one process will output the validation results, you can write similar code below.
-```
+```python
 import multiverso as mv
 # train your model
 if mv.is_master_worker():
@@ -72,7 +72,7 @@ First, similarly, add `mv.init()`, `mv.shutdown()` and `mv.barrier()` mentioned 
 In theano, parameters are usually stored in sharedVariables.
 
 For example, sharedVariables can be created like this in a theano script.
-```
+```python
 self.W = theano.shared(
     value=numpy.zeros(
         (n_in, n_out),
@@ -84,7 +84,7 @@ self.W = theano.shared(
 ```
 
 If you want to use multiverso, you can modify them like this.
-```
+```python
 from multiverso.theano_ext import sharedvar
 W = sharedvar.mv_shared(
     value=numpy.zeros(
@@ -99,12 +99,14 @@ W = sharedvar.mv_shared(
 
 # train the model
 
-# When you are ready to add the delta of the variable to parameter server and sync the latest value, you can run this function
+# When you are ready to add the delta of the variable to parameter
+# server and sync the latest value, you can run this function
 W.mv_sync()
 
 
-# If you want to sync all variables created by `sharedvar.mv_shared`, you can use this function.
-# It will add the gradients (delta value) to the server and update the latest value from the server.
+# If you want to sync all variables created by `sharedvar.mv_shared`,
+# you can use this function. It will add the gradients (delta value)
+# to the server and update the latest value from the server.
 sharedvar.sync_all_mv_shared_vars()
 ```
 
@@ -122,7 +124,7 @@ Lasagne provides many functions to build models in theano. Multiverso python bin
 
 You can write code like this to manage your parameters.
 A typical usage of managing the parameters is shown as below.
-```
+```python
 from multiverso.theano_ext.lasagne_ext import param_manager
 
 network = build_model()  # build_model is a function you implement to build model
@@ -133,7 +135,8 @@ mvnpm = param_manager.MVNetParamManager(network)
 
 # Train the model
 
-# When you are ready to add the delta of the variable in this model to the parameter server and get the latest value, you can run this function
+# When you are ready to add the delta of the variable in this model to the parameter
+# server and get the latest value, you can run this function
 mvnpm.sync_all_param()
 ```
 
@@ -155,7 +158,7 @@ Second, run the program with multiverso in multiple processes.
 
 Here is an example to make different processes use different GPUs.
 In this example, the i-th worker will use the i-th GPU. You need to add code like this before `import theano`.
-```
+```python
 import multiverso as mv
 mv.init()
 worker_id = mv.worker_id()
