@@ -129,18 +129,45 @@ from multiverso.theano_ext.lasagne_ext import param_manager
 
 network = build_model()  # build_model is a function you implement to build model
 
-# The MVNetParamManager will initialize the parameters and sync them with
+# The LasagneParamManager will initialize the parameters and sync them with
 # parameter server
-mvnpm = param_manager.MVNetParamManager(network)
+lpm = param_manager.LasagneParamManager(network)
 
 # Train the model
 
 # When you are ready to add the delta of the variable in this model to the parameter
 # server and get the latest value, you can run this function
-mvnpm.sync_all_param()
+lpm.sync_all_param()
 ```
 
-Detailed api documents can be found in docstring of [param_manager.py](https://github.com/Microsoft/multiverso/blob/master/binding/python/multiverso/theano_ext/lasagne_ext/param_manager.py)
+Detailed api documents can be found in docstring of [param_manager.py](https://github.com/Microsoft/multiverso/blob/master/binding/python/multiverso/theano_ext/param_manager.py)
+
+
+# How to use multiverso in Keras
+First, add `mv.init()`, `mv.shutdown()` and `mv.barrier()` mentioned above in your codebase.
+
+Keras provides many functions to build models. Multiverso python binding provides a callback function to make managing and synchronizing the parameters in Keras more easily.
+This callback function will synchronize the parameters every mini-batch.
+
+A typical usage of the callback function is shown as below.
+```python
+from multiverso.theano_ext.keras_ext.callbacks import MVCallback
+
+model = Sequential()
+# build and compile your model here
+
+# Train the model
+model.fit(X_train, Y_train,
+          batch_size=batch_size,
+          nb_epoch=nb_epoch,
+          validation_data=(X_test, Y_test),
+          shuffle=True,
+          callbacks=[MVCallback(model)])  # The only difference is that you add callbacks here
+```
+
+The only difference from the normal keras program is that you add an extra callback function. This callback function will sync parameters every mini batch.
+
+Detailed api documents can be found in docstring of [param_manager.py](https://github.com/Microsoft/multiverso/blob/master/binding/python/multiverso/theano_ext/param_manager.py) and [callbacks.py](https://github.com/Microsoft/multiverso/blob/master/binding/python/multiverso/theano_ext/keras_ext/callbacks.py)
 
 # Run your multiverso program with 4 processes
 Here is an example of running logistic regression with multi-process.
