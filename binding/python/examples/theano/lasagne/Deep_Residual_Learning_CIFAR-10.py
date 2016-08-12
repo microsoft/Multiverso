@@ -268,9 +268,9 @@ def main(batch_size=128, lr=0.1, sync=False, n=5, num_epochs=82, model=None):
     network = build_cnn(input_var, n)
     print("number of parameters in model: %d" % lasagne.layers.count_params(network, trainable=True))
 
-    # MULTIVERSO: MVNetParamManager is a parameter manager which can
+    # MULTIVERSO: LasagneParamManager is a parameter manager which can
     # synchronize parameters of Lasagne with multiverso.
-    mvnpm = param_manager.MVNetParamManager(network)
+    lpm = param_manager.LasagneParamManager(network)
 
     if model is None:
         # Create a loss expression for training, i.e., a scalar objective we want
@@ -328,10 +328,10 @@ def main(batch_size=128, lr=0.1, sync=False, n=5, num_epochs=82, model=None):
                 inputs, targets = batch
                 train_err += train_fn(inputs, targets)
                 # MULTIVERSO: when you want to commit all the delta of
-                # parameters manage by MVNetParamManager and update the latest
+                # parameters manage by LasagneParamManager and update the latest
                 # parameters from parameter server, you can call this function to
                 # synchronize the values
-                mvnpm.sync_all_param()
+                lpm.sync_all_param()
 
             # And a full pass over the validation data:
             # MULTIVERSO: all the workers will synchronize at the place you call barrier
@@ -368,7 +368,7 @@ def main(batch_size=128, lr=0.1, sync=False, n=5, num_epochs=82, model=None):
         mv.barrier()
         if mv.is_master_worker():
             # MULTIVERSO: update the parameters before save the model
-            mvnpm.sync_all_param()
+            lpm.sync_all_param()
             # dump the network weights to a file :
             np.savez('cifar10_deep_residual_model.npz', *lasagne.layers.get_all_param_values(network))
     else:
