@@ -25,6 +25,7 @@ MV_DEFINE_bool(ma, false, "model average, will not start server if true");
 MV_DECLARE_bool(sync);
 
 namespace {
+
 int ParsePSRole(const std::string& ps_role) {
   if (ps_role == "none")    return Role::NONE;
   if (ps_role == "worker")  return Role::WORKER; 
@@ -32,6 +33,7 @@ int ParsePSRole(const std::string& ps_role) {
   if (ps_role == "default") return Role::ALL;
   return -1;
 }
+
 const int kController = 0;
 
 }  // namespace
@@ -77,7 +79,10 @@ void Zoo::StartPS() {
   mailbox_.reset(new MtQueue<MessagePtr>);
 
   // NOTE(feiga): the start order is non-trivial, communicator should be last.
-  if (rank() == kController) { Actor* controler = new Controller(); controler->Start(); }
+  if (rank() == kController) { 
+    Actor* controler = new Controller(); 
+    controler->Start(); 
+  }
   Actor* communicator = new Communicator();
   communicator->Start();
   // activate the system
@@ -92,7 +97,7 @@ void Zoo::StartPS() {
     worker->Start();
   }
   Barrier();
-  Log::Info("Rank %d: Zoo start sucessfully\n", rank());
+  Log::Info("Rank %d: Multiverso start sucessfully\n", rank());
 }
 
 void Zoo::StopPS() {
