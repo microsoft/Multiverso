@@ -37,11 +37,11 @@ If a async server is created, there won't be limitations like a sync server. But
 
 Before actual training, we also need to make sure each worker has the same initial model for better training performance.
 
-Multiverso use equality strategy to initialize model.  All workers contribute equally to the initial model on the server and then fetch same initial models after finishing the contributing phase.
+Multiverso use master strategy to initialize model. Only the init_value from the master will be used in the initial model on the server and then all workers fetch same initial models.
 
 ```python
-# Create ArrayTableHandler for syncing parameters. In the constructor, All
-# workers contribute equally to the initial model
+# Create ArrayTableHandler for syncing parameters. In the constructor, Only
+# the init_value from the master worker will be used in the initial model
 tbh = mv.ArrayTableHandler(size, params)
 # Wait for finishing the initializing phase.
 mv.barrier()

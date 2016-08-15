@@ -33,7 +33,7 @@ multiverso.is_master = multiverso.worker_id == 0
 
 Create a Table Handlder as an interface for syncing issues.
 
-#### Assumptions and Clarifications:
+#### Note:
 
 1. `model` variable is a
    [Module](https://github.com/torch/nn/blob/master/doc/module.md#module)
@@ -56,13 +56,13 @@ local tbh = multiverso.ArrayTableHandler:new(params:size(1))
 Before actual training, we also need to make sure each worker has the same
 initial model for better training performance.
 
-Multiverso use equality strategy to initialize model.  All workers contribute
-equally to the initial model on the server and then fetch same initial models
-after finishing the contributing phase.
+Multiverso use master strategy to initialize model.  Only the init_value from
+the master will be used in the initial model on the server and then all workers
+fetch same initial models.
 
 ```lua
--- Create ArrayTableHandler for syncing parameters. In the constructor, All
--- workers contribute equally to the initial model
+-- Create ArrayTableHandler for syncing parameters. In the constructor, Only
+-- the init_value from the master worker will be used in the initial model
 local tbh = multiverso.ArrayTableHandler:new(size, params)
 -- Wait for finishing the initializing phase.
 multiverso.barrier()
@@ -80,7 +80,7 @@ needed:
 
 #### Assumptions and Clarifications:
 
-1. `learingRate` variable is the learing rate maintained by ourselves.
+1. `learingRate` variable is the learing rate maintained by the program.
 1. Only gradients (delta value) should be passed to the table handler.
 1. This step should overwrite other changes to `params` variable, so we use
    `params:copy()` here.

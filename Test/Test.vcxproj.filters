@@ -2,18 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="test_filter.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="test_example.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="gtest\gtest-all.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="test_async_buffer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
