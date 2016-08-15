@@ -29,21 +29,21 @@ before_script:
 script:
 - make && sudo make install
 # run cpp tests
-- mpirun -np 4 ./Test/multiverso.test kv
-- mpirun -np 4 ./Test/multiverso.test array
-- mpirun -np 4 ./Test/multiverso.test allreduce
+# - mpirun -np 4 ./Test/multiverso.test kv
+# - mpirun -np 4 ./Test/multiverso.test array
+# - mpirun -np 4 ./Test/multiverso.test allreduce
 
 - ./Test/unittests/multiverso.ut --log_level=test_suite
 
 # lua tests
 - cd ../binding/lua/
 - make install
-- make test
+# - make test
 
 # python tests
 - cd ../python/
 - sudo python setup.py install
-- sudo nosetests  # sudo is needed when testing python on travis
+# - sudo nosetests  # sudo is needed when testing python on travis
 
 notifications:
   email: false
