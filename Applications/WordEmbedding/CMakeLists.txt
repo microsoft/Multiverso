@@ -19,6 +19,6 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC_ROOT)
 
 set(SRC ${MULTIVERSO_SRC} ${SRC_ROOT})
 
-add_executable(WORDEMBEDDING ${SRC})
+add_executable(wordembedding ${SRC})
 
-target_link_libraries(WORDEMBEDDING multiverso ${MPI_CXX_LIBRARIES})
+target_link_libraries(wordembedding multiverso ${MPI_CXX_LIBRARIES})
