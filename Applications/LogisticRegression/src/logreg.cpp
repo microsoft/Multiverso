@@ -16,16 +16,15 @@ LogReg<EleType>::LogReg(const std::string &config_file) {
   config_ = new Configure(config_file);
 
   LR_CHECK((config_->input_size > 0) 
+    && config_->read_buffer_size > 0
     && (!config_->sparse || config_->output_size > 0));
   // for delat
   config_->input_size += 1;
 
   if (config_->read_buffer_size % config_->minibatch_size != 0) {
-    config_->read_buffer_size += config_->read_buffer_size
+    config_->read_buffer_size += config_->minibatch_size
       - (config_->read_buffer_size % config_->minibatch_size);
   }
-  // read buffer size should not be too small
-  LR_CHECK(config_->read_buffer_size >= config_->minibatch_size);
   LR_CHECK(!config_->use_ps || !config_->pipeline || !config_->sparse || 
     (config_->read_buffer_size >= config_->minibatch_size * config_->sync_frequency));
 
