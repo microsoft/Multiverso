@@ -1,6 +1,6 @@
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/Test)
 
-SET(MULTIVERSO_TEST_SRC main.cpp)
+SET(MULTIVERSO_TEST_SRC test_allreduce.cpp test_array_table.cpp test_kv_table.cpp test_matrix_perf.cpp test_matrix_table.cpp test_net.cpp main.cpp)
 
 SET(CMAKE_CXX_COMPILER mpicxx)
 

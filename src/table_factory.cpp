@@ -12,6 +12,7 @@ void FreeServerTables() {
   for (auto table : server_tables) {
     delete table;
   }
+  server_tables.clear();
 }
 
 void PushServerTable(ServerTable*table) {
