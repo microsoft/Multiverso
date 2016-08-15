@@ -11,7 +11,6 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
 
 if(USE_HDFS)
     ADD_DEFINITIONS(-DMULTIVERSO_USE_HDFS)
-    # TODO: I think these paths should not be hard coded
     SET(JVM_LIB /usr/local/java/default/jre/lib/amd64/server)
     SET(HDFS_LIB /usr/local/hadoop/lib/native)
     LINK_DIRECTORIES(${HDFS_LIB})
@@ -23,6 +22,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 set(MULTIVERSO_DIR ${PROJECT_SOURCE_DIR})
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(Test)
+ADD_SUBDIRECTORY(Test/unittests)
 ADD_SUBDIRECTORY(Applications/WordEmbedding)
 ADD_SUBDIRECTORY(Applications/LogisticRegression)
 

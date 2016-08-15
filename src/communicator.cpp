@@ -11,6 +11,7 @@
 namespace multiverso {
 
 namespace message {
+
 bool to_server(MsgType type) {
   return (static_cast<int>(type)) > 0 &&
          (static_cast<int>(type)) < 32;
@@ -24,6 +25,7 @@ bool to_worker(MsgType type) {
 bool to_controler(MsgType type) {
   return (static_cast<int>(type)) > 32;
 }
+
 }  // namespace message
 
 Communicator::Communicator() : Actor(actor::kCommunicator) {
@@ -32,12 +34,11 @@ Communicator::Communicator() : Actor(actor::kCommunicator) {
   net_util_ = NetInterface::Get();
 }
 
-Communicator::~Communicator() {
-}
+Communicator::~Communicator() { }
 
 void Communicator::Main() {
   is_working_ = true;
-  // TODO(feiga): join the thread, make sure it exit properly
+
   switch (net_util_->thread_level_support()) {
   case NetThreadLevel::THREAD_MULTIPLE: {
     recv_thread_.reset(new std::thread(&Communicator::Communicate, this));
@@ -76,11 +77,9 @@ void Communicator::ProcessMessage(MessagePtr& msg) {
 void Communicator::Communicate() {
   while (is_working_) {
     MessagePtr msg(new Message());
-    size_t size = net_util_->Recv(&msg);
+    int size = net_util_->Recv(&msg);
     if (size == -1) {
       continue;
-      // Log::Debug("recv return -1\n");
-      // break;
     }
     if (size > 0) {
       // a message received
@@ -88,7 +87,7 @@ void Communicator::Communicate() {
       LocalForward(msg);
     }
   }
-  Log::Info("Comm recv thread exit\n");
+  Log::Debug("Comm recv thread exit\n");
 }
 
 void Communicator::LocalForward(MessagePtr& msg) {

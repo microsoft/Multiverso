@@ -10,6 +10,9 @@ before_install:
 install:
 - sudo apt-get install -y libopenmpi-dev openmpi-bin build-essential
 
+# for boost unit test
+- sudo apt-get install -y libboost-test-dev
+
 # for testing python binding
 - sudo apt-get install -y cmake python-nose python-scipy python-numpy
 
@@ -26,26 +29,21 @@ before_script:
 script:
 - make && sudo make install
 # run cpp tests
-- mpirun -np 4 ./Test/multiverso.test kv
-- mpirun -np 4 ./Test/multiverso.test array
-- mpirun -np 4 ./Test/multiverso.test net
-- mpirun -np 4 ./Test/multiverso.test ip
-# - mpirun -np 4 ./Test/multiverso.test matrix  # TODO the matrix test won't stop
-- mpirun -np 4 ./Test/multiverso.test checkpoint
-- mpirun -np 4 ./Test/multiverso.test restore
-- mpirun -np 4 ./Test/multiverso.test allreduce
-# - mpirun -np 4 ./Test/multiverso.test TestSparsePerf # TODO TestSparsePerf takes too much time
-# - mpirun -np 4 ./Test/multiverso.test TestDensePerf # TODO TestDensePerf takes too much time
+# - mpirun -np 4 ./Test/multiverso.test kv
+# - mpirun -np 4 ./Test/multiverso.test array
+# - mpirun -np 4 ./Test/multiverso.test allreduce
+
+- ./Test/unittests/multiverso.ut --log_level=test_suite
 
 # lua tests
 - cd ../binding/lua/
 - make install
-- make test
+# - make test
 
 # python tests
 - cd ../python/
 - sudo python setup.py install
-- sudo nosetests  # sudo is needed when testing python on travis
+# - sudo nosetests  # sudo is needed when testing python on travis
 
 notifications:
   email: false

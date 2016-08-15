@@ -2,5 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="test_blob.cpp" />
+    <ClCompile Include="test_node.cpp" />
+    <ClCompile Include="test_multiverso.cpp" />
+    <ClCompile Include="test_message.cpp" />
+    <ClCompile Include="test_array.cpp" />
   </ItemGroup>
 </Project>

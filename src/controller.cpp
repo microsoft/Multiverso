@@ -15,7 +15,7 @@ public:
 
   void Control(MessagePtr& msg) {
     tasks_.push_back(std::move(msg));
-    if (tasks_.size() == Zoo::Get()->size()) {
+    if (static_cast<int>(tasks_.size()) == Zoo::Get()->size()) {
       MessagePtr my_reply;  // my reply should be the last one
       for (auto& msg : tasks_) {
         MessagePtr reply(msg->CreateReplyMessage());
@@ -46,7 +46,7 @@ public:
   void Control(MessagePtr& msg) {
     int src = msg->src();
     CHECK(msg->size() == 1);
-    CHECK(src < all_nodes_.size() && src >= 0);
+    CHECK(src < static_cast<int>(all_nodes_.size()) && src >= 0);
     all_nodes_[src] = *(reinterpret_cast<Node*>(msg->data()[0].data()));
     if (node::is_worker(all_nodes_[src].role))
       all_nodes_[src].worker_id = num_worker_++;

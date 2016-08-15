@@ -30,7 +30,7 @@ void Allreduce(Typename* data, size_t elem_count) {
   CHECK(NetInterface::Get()->active());
   MPINetWrapper::Allreduce(data, elem_count);
 #else
-
+  Log::Fatal("Not implemented yet");
 #endif
 }
 
