@@ -211,7 +211,7 @@ public:
     MessagePtr sending_msg;
     CHECK(send_queue_.TryPop(sending_msg));
 
-    size_t size = SerializeAndSend(sending_msg, last_handle_.get());
+    int size = SerializeAndSend(sending_msg, last_handle_.get());
     return size;
   }
 
@@ -291,7 +291,8 @@ public:
     CHECK_NOTNULL(msg_handle);
     MONITOR_BEGIN(MPI_NET_SEND_SERIALIZE);
     int size = sizeof(size_t) + Message::kHeaderSize;
-    for (auto& data : msg->data()) size += sizeof(size_t) + data.size();
+    for (auto& data : msg->data()) 
+      size += static_cast<int>(sizeof(size_t) + data.size());
     if (size > send_size_) {
       send_buffer_ = (char*)realloc(send_buffer_, size);
       send_size_ = size;

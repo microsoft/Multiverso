@@ -1,11 +1,12 @@
 #ifndef MULTIVERSO_KV_TABLE_H_
 #define MULTIVERSO_KV_TABLE_H_
 
-#include "multiverso/table_interface.h"
-#include "multiverso/util/log.h"
-
 #include <unordered_map>
 #include <vector>
+
+#include "multiverso/multiverso.h"
+#include "multiverso/table_interface.h"
+#include "multiverso/util/log.h"
 
 namespace multiverso {
 
