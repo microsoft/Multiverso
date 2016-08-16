@@ -34,10 +34,10 @@ public:
   // virtual void Allreduce(void* data, size_t count, int type, int type_size);
 
   // \return 1. > 0 sended size 2. = 0 not sended 3. < 0 net error
-  virtual int Send(MessagePtr& msg) = 0;
+  virtual size_t Send(MessagePtr& msg) = 0;
 
   // \return 1. > 0 received size 2. = 0 not received 3. < 0 net error
-  virtual int Recv(MessagePtr* msg) = 0;
+  virtual size_t Recv(MessagePtr* msg) = 0;
 
   // Blocking, send raw data to rank
   virtual void SendTo(int rank, char* buf, int len) const = 0;
