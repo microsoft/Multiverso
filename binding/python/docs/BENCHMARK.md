@@ -13,9 +13,9 @@ Please follow [this guide](https://github.com/Microsoft/multiverso/wiki/Multiver
 |||
 | -------- |:--------:|
 |Hosts|1|
-|GPU|GeForce GTX TITAN X * 4|
-|CPU|Intel(R) Core(TM) i7-5960X CPU @ 3.00GHz  * 1|
-|Memory| 128GB |
+|GPU|Tesla K40m * 8|
+|CPU|Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz|
+|Memory| 251GB |
 
 
 ## Theano settings
@@ -50,14 +50,13 @@ Clarification
 
 
 # The results
-The results of 4 experiments with different configurations are shown as following.
+The results of 3 experiments with different configurations are shown as following.
 
-|Short Name | # Process(es) | #GPU(s) per Process | Use multiverso | Sync every X minibatches | Seconds per epoch |  Best model validation accuracy |
-| :---- | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
-| 1P1G0M | 1 | 1 | 0 | -- | 100.02 | 92.61 % |
-|1P1G1M1S | 1 | 1 | 1 | 1 | 109.78 | 93.03 % |
-|4P1G1M1S | 4 | 1 | 1 | 1 | 29.38 | 92.15 % |
-|4P1G1M3S | 4 | 1 | 1 | 3 | 27.46 | 89.61 % |
+|Short Name | # Process(es) | #GPU(s) per Process | Use multiverso | Batch size | Initial learning rate | Seconds per epoch | Best model validation accuracy |
+| :---- | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
+| 1P1G0M | 1 | 1 | 0 | 128 | 0.1 | 175.4 | 92.69 % |
+| 1P1G1M | 1 | 1 | 1 | 128 | 0.1 | 194.4 | 92.53 % |
+| 8P1G1M | 8 | 1 | 1 | 64 | 0.05 | 34.1 | 92.11 % |
 
 ![accuracy_epoch](https://raw.githubusercontent.com/Microsoft/multiverso/master/binding/python/docs/imgs/accuracy_epoch.png)
 ![accuracy_time](https://raw.githubusercontent.com/Microsoft/multiverso/master/binding/python/docs/imgs/accuracy_time.png)

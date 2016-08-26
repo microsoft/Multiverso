@@ -14,13 +14,12 @@ Please follow [this guide](https://github.com/Microsoft/multiverso/wiki/Multiver
 ## Hardware
 
 - **Hosts** : 1
-- **GPU** : GeForce GTX TITAN X * 4
-- **CPU** : Intel(R) Core(TM) i7-5960X CPU @ 3.00GHz
-- **Memory** : 128GB
+- **GPU** : Tesla K40m * 8
+- **CPU** : Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz
+- **Memory** : 251GB
 
 ## Common settings
 
-- batchSize 128
 - depth 32
 - nEpochs 164
 - learningRate 0.1(epoch <= 80), 0.01(81 <= epoch <= 121), 0.001(121 <= epoch)
@@ -33,11 +32,11 @@ Please follow [this guide](https://github.com/Microsoft/multiverso/wiki/Multiver
 
 ## Results
 
-| Code Name | #Process(es) | #GPU(s) per Process | Use multiverso | Seconds per epoch | Best Model |
-| :-------: | :----------: | :-----------------: | :------------: | :---------------: | :--------: |
-| 1P1G0M    | 1            | 1                   | 0              | 20.366            | 92.712 %   |
-| 1P4G0M    | 1            | 4                   | 0              | 10.045            | 92.296 %   |
-| 4P1G1M    | 4            | 1                   | 1              |  6.303            | 91.390 %   |
+| Code Name | #Process(es) | #GPU(s) per Process | Use multiverso | Batch size | Initial learning rate | Seconds per epoch | Best Model |
+| :-------: | :----------: | :-----------------: | :------------: | :--------: | :-------------------: | :---------------: | :--------: |
+| 1P1G0M    | 1            | 1                   | 0              | 128        | 0.1                   | 55.57             | 92.435 %   |
+| 1P8G0M    | 1            | 8                   | 0              | 128        | 0.1                   | 28.38             | 92.464 %   |
+| 8P1G1M    | 8            | 1                   | 1              | 64         | 0.05                  | 11.37             | 92.449 %   |
 
 ![top1error_vs_epoch](https://raw.githubusercontent.com/Microsoft/multiverso/master/binding/lua/docs/imgs/top1error_vs_epoch.png)
 ![top1error_vs_runningtime](https://raw.githubusercontent.com/Microsoft/multiverso/master/binding/lua/docs/imgs/top1error_vs_runningtime.png)

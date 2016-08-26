@@ -4,10 +4,12 @@ PROJECT(MULTIVERSO)
 
 OPTION(USE_HDFS "won't use hdfs on default, set ON to enable" OFF)
 OPTION(TEST "Build all tests." ON)
+OPTION(USE_ZMQ "weather to build with ZeroMQ.(default: OFF)" OFF)
 
 find_package(MPI REQUIRED)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 if(USE_HDFS)
     ADD_DEFINITIONS(-DMULTIVERSO_USE_HDFS)

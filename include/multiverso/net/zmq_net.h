@@ -88,7 +88,7 @@ public:
     CHECK_NOTNULL(context_);
     size_ = size;
     senders_.resize(size_);
-    for (int i = 0; i < size; ++i) {
+    for (auto i = 0; i < size; ++i) {
       int rank = ranks[i];
       std::string ip_port(endpoints[i]);
       if (ip_port == receiver_.endpoint) {
@@ -109,7 +109,7 @@ public:
   }
 
   void Finalize() override {
-    for (int i = 0; i < senders_.size(); ++i) {
+    for (auto i = 0; i < senders_.size(); ++i) {
       if (i != rank_) {
         int linger = 0;
         CHECK(zmq_setsockopt(senders_[i].socket, ZMQ_LINGER, &linger, sizeof(linger)) == 0);
