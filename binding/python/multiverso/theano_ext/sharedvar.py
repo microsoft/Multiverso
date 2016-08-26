@@ -20,9 +20,8 @@ class MVSharedVariable(object):
 
         The constructor will create ArrayTableHandler and associate the shared
         variable with it. The initial value of ArrayTableHandler will be same
-        as the value of SharedVariable. If different initial value is used in
-        different processes, the average of them will be used as the initial
-        value
+        as the value of SharedVariable. 
+        *Notice*: Only the `init_value` from the master will be used!
         '''
         assert(isinstance(svobj, SharedVariable))
         self._svobj = svobj

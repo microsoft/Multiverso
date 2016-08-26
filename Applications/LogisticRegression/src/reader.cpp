@@ -31,7 +31,7 @@ SampleReader<EleType>::SampleReader(
     row_size_(row_size),
     output_size_(output_size),
     // use 2x size buffer
-    buffer_size_(max_row_buffer_count << 2),
+    buffer_size_(max_row_buffer_count * 3),
     sample_batch_size_(update_per_sample),
     sample_count_(0) {
   // parse files
@@ -61,10 +61,7 @@ SampleReader<EleType>::~SampleReader() {
   FreeSamples(buffer_size_, buffer_);
 
   delete cur_keys_;
-  while (!keys_.Empty()) {
-    keys_.Pop(cur_keys_);
-    delete cur_keys_;
-  }
+  DeleteKeys();
 
   buffer_size_ = 0;
   thread_->join();
@@ -78,6 +75,7 @@ void SampleReader<EleType>::Reset() {
   reading_file_ = 0;
   delete reader_;
   reader_ = new TextReader(URI(files_[0]), 1024);
+  DeleteKeys();
   start_ = end_ = 0;
   length_ = read_length_ = 0;
   eof_ = false;
@@ -164,6 +162,15 @@ void SampleReader<EleType>::Main() {
     eof_ = true;
   }
   Log::Write(Debug, "End reader thread\n");
+}
+
+template<typename EleType>
+void SampleReader<EleType>::DeleteKeys() {
+  SparseBlock<bool> *tmp;
+  while (!keys_.Empty()) {
+    keys_.Pop(tmp);
+    delete tmp;
+  }
 }
 
 template<typename EleType>
@@ -315,9 +322,10 @@ void BSparseSampleReader<EleType>::Reset() {
   this->stream_ = multiverso::StreamFactory::GetStream(URI(this->files_[0]), FileOpenMode::BinaryRead);
   this->start_ = this->end_ = 0;
   this->length_ = this->read_length_ = 0;
-  this->eof_ = false;
   chunk_idx_ = 0;
   chunk_size_ = 0;
+  this->DeleteKeys();
+  this->eof_ = false;
   Log::Write(Debug, "BSparseSampleReader reset\n");
 }
 

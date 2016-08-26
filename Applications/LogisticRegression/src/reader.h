@@ -57,6 +57,7 @@ class SampleReader {
 protected:
   virtual void Main();
   virtual void ParseLine(const std::string&line, int idx);
+  void DeleteKeys();
 
 protected:
   using TextReader = multiverso::TextReader;
