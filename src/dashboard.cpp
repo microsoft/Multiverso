@@ -17,6 +17,12 @@ void Dashboard::AddMonitor(const std::string& name, Monitor* monitor) {
   record_[name] = monitor;
 }
 
+void Dashboard::RemoveMonitor(const std::string& name) {
+  std::lock_guard<std::mutex> l(m_);
+  CHECK_NOTNULL(record_[name]);
+  record_.erase(name);
+}
+
 std::string Dashboard::Watch(const std::string& name) {
   std::lock_guard<std::mutex> l(m_);
   std::string result;

@@ -33,7 +33,7 @@ script:
 # - mpirun -np 4 ./Test/multiverso.test array
 # - mpirun -np 4 ./Test/multiverso.test allreduce
 
-- ./Test/unittests/multiverso.ut --log_level=test_suite
+# - ./Test/unittests/multiverso.ut --log_level=test_suite
 
 # lua tests
 - cd ../binding/lua/

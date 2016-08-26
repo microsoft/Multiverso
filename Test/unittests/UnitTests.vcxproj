@@ -153,7 +153,6 @@
     <ClCompile Include="test_blob.cpp" />
     <ClCompile Include="test_kv.cpp" />
     <ClCompile Include="test_message.cpp" />
-    <ClCompile Include="test_monitor.cpp" />
     <ClCompile Include="test_multiverso.cpp" />
     <ClCompile Include="test_node.cpp" />
     <ClCompile Include="test_sync.cpp" />
