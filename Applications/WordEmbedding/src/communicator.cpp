@@ -19,8 +19,9 @@ namespace wordembedding {
     worker_output_table_ = new multiverso::MatrixWorkerTable<real>(row_size, column_size);
     server_input_table_ = new multiverso::MatrixServerTable<real>(row_size, column_size, -0.5f / embedding_size, 0.5f / embedding_size);
     server_output_table_ = new multiverso::MatrixServerTable<real>(row_size, column_size);
-    worker_wordcount_table_ = new multiverso::KVWorkerTable<int, int64>();
-    server_wordcount_table_ = new multiverso::KVServerTable<int, int64>();
+    multiverso::KVTableOption<int, int64> option;
+    worker_wordcount_table_ = multiverso::MV_CreateTable(option); // new multiverso::KVWorkerTable<int, int64>();
+    // server_wordcount_table_ = new multiverso::KVServerTable<int, int64>();
 
     if (option_->use_adagrad){
       worker_input_gradient_table_ = new multiverso::MatrixWorkerTable<real>(row_size, column_size);

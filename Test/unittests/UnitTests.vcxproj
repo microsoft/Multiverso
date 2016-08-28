@@ -102,7 +102,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE_PATH);$(SolutionDir)\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,7 +137,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(BOOST_INCLUDE_PATH)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_INCLUDE_PATH);$(SolutionDir)\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,9 +151,14 @@
   <ItemGroup>
     <ClCompile Include="test_array.cpp" />
     <ClCompile Include="test_blob.cpp" />
+    <ClCompile Include="test_kv.cpp" />
     <ClCompile Include="test_message.cpp" />
     <ClCompile Include="test_multiverso.cpp" />
     <ClCompile Include="test_node.cpp" />
+    <ClCompile Include="test_sync.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="multiverso_env.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

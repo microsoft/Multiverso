@@ -7,6 +7,11 @@
 #include "winsock2.h"
 #include "iphlpapi.h"
 #pragma comment(lib, "IPHLPAPI.lib")
+#else
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
 #endif
 
 namespace multiverso {
@@ -66,9 +71,28 @@ void GetLocalIPAddress(std::unordered_set<std::string>* result) {
 #else
 
 void GetLocalIPAddress(std::unordered_set<std::string>* result) {
-CHECK(false);
-return;
-// todo
+  CHECK_NOTNULL(result);
+  result->clear();
+  struct ifaddrs* if_addr_struct = nullptr;
+  struct ifaddrs* ifa = nullptr;
+  void* tmp_addr_ptr = nullptr;
+
+  getifaddrs(&if_addr_struct);
+  for (ifa = if_addr_struct; ifa != nullptr; ifa = ifa->ifa_next) {
+    if (!ifa->ifa_addr) continue;
+
+    if (ifa->ifa_addr->sa_family == AF_INET &&
+       (ifa->ifa_flags & IFF_LOOPBACK) == 0) {
+      tmp_addr_ptr = &((struct sockaddr_in*)ifa->ifa_addr)->sin_addr;
+      char address_buffer[INET_ADDRSTRLEN];
+      inet_ntop(AF_INET, tmp_addr_ptr, address_buffer, INET_ADDRSTRLEN);
+
+      std::string ip(address_buffer);
+      result->insert(ip);
+    }
+  }
+  if (if_addr_struct != nullptr) freeifaddrs(if_addr_struct);
+  return;
 }
 
 #endif  // _MSC_VER

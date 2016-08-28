@@ -4,6 +4,7 @@
 #include "multiverso/net.h"
 #include "multiverso/zoo.h"
 #include "multiverso/table_factory.h"
+#include "multiverso/util/configure.h"
 
 namespace multiverso {
 
@@ -44,6 +45,11 @@ int  MV_ServerIdToRank(int server_id) {
   return Zoo::Get()->server_id_to_rank(server_id);
 }
 
+template <typename T>
+void MV_SetFlag(const std::string& name, const T& value) {
+  SetCMDFlag(name, value);
+}
+
 template <typename ElemType>
 void MV_Aggregate(ElemType* data, int size) {
   net::Allreduce(data, size);
@@ -65,5 +71,10 @@ template void MV_Aggregate<char>(char*, int);
 template void MV_Aggregate<int>(int*, int);
 template void MV_Aggregate<float>(float*, int);
 template void MV_Aggregate<double>(double*, int);
+
+template void MV_SetFlag<int>(const std::string&, const int&);
+template void MV_SetFlag<bool>(const std::string&, const bool&);
+template void MV_SetFlag<std::string>(const std::string&, const std::string&);
+template void MV_SetFlag<double>(const std::string&, const double&);
 
 }  // namespace multiverso

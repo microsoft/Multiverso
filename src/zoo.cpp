@@ -55,6 +55,7 @@ void Zoo::Stop(bool finalize_net) {
   // Stop the network
   if (finalize_net) net_util_->Finalize();
   for (auto actor : zoo_) delete actor.second;
+  zoo_.clear();
   Log::Info("Multiverso Shutdown successfully\n");
 }
 
