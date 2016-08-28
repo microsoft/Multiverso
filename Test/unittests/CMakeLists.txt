@@ -2,7 +2,7 @@ enable_testing()
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
-SET(MULTIVERSO_UNITTEST_SRC test_array.cpp test_blob.cpp test_kv.cpp test_message.cpp test_monitor.cpp test_multiverso.cpp test_node.cpp test_sync.cpp)
+SET(MULTIVERSO_UNITTEST_SRC test_array.cpp test_blob.cpp test_kv.cpp test_message.cpp test_multiverso.cpp test_node.cpp test_sync.cpp)
 
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 
