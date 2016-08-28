@@ -75,7 +75,7 @@ void GetLocalIPAddress(std::unordered_set<std::string>* result) {
   result->clear();
   struct ifaddrs* if_addr_struct = nullptr;
   struct ifaddrs* ifa = nullptr;
-  void* tmp_addr_ptr = nullptr
+  void* tmp_addr_ptr = nullptr;
 
   getifaddrs(&if_addr_struct);
   for (ifa = if_addr_struct; ifa != nullptr; ifa = ifa->ifa_next) {
