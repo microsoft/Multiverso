@@ -29,14 +29,14 @@ namespace MultiversoCLR {
     generic <class Type>
       static void Get(int table_id, array<Type>^ p_value);
 
-      generic <class Type>
-        static void Get(int table_id, int row_id, array<Type>^ p_value);
+    generic <class Type>
+    static void Get(int table_id, int row_id, array<Type>^ p_value);
 
-        generic <class Type>
-          static void Add(int table_id, array<Type>^ p_update);
+    generic <class Type>
+    static void Add(int table_id, array<Type>^ p_update);
 
-          generic <class Type>
-            static void Add(int table_id, int row_id, array<Type>^ p_value);
+    generic <class Type>
+    static void Add(int table_id, int row_id, array<Type>^ p_value);
 
   private:
     static void Init();
