@@ -2,11 +2,11 @@
 <package >
   <metadata>
     <id>MultiversoCLR</id>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <authors>feiga</authors>
     <owners>feiga</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
+    <licenseUrl>http://github.com/Microsoft/multiverso/blob/master/LICENSE</licenseUrl>
+    <projectUrl>http://github.com/Microsoft/multiverso</projectUrl>
     <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>MultiversoCLR</description>

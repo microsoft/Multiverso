@@ -29,4 +29,8 @@
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\NuGet\GenerateNugetPackage.ps1" />
+    <None Include="multiverso.snk" />
+  </ItemGroup>
 </Project>
