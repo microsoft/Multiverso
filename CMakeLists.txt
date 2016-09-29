@@ -5,6 +5,7 @@ PROJECT(MULTIVERSO)
 OPTION(USE_HDFS "won't use hdfs on default, set ON to enable" OFF)
 OPTION(TEST "Build all tests." ON)
 OPTION(USE_ZMQ "weather to build with ZeroMQ.(default: OFF)" OFF)
+OPTION(INSTALL_MULTIVERSO "whether install Multiverso to /usr/local/lib" ON)
 
 find_package(MPI REQUIRED)
 
@@ -28,7 +29,9 @@ ADD_SUBDIRECTORY(Test/unittests)
 ADD_SUBDIRECTORY(Applications/WordEmbedding)
 ADD_SUBDIRECTORY(Applications/LogisticRegression)
 
-install (DIRECTORY ${PROJECT_SOURCE_DIR}/include/multiverso DESTINATION include)
+if(USE_INSTALL_MULTIVERSO)
+    install (DIRECTORY ${PROJECT_SOURCE_DIR}/include/multiverso DESTINATION include)
+endif(USE_INSTALL_MULTIVERSO)
 
 
 # uninstall target

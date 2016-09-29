@@ -12,7 +12,6 @@ MESSAGE(${Boost_INCLUDE_DIRS})
 ADD_EXECUTABLE(multiversotests ${MULTIVERSO_UNITTEST_SRC})
 
 TARGET_INCLUDE_DIRECTORIES(multiversotests PRIVATE ${Boost_INCLUDE_DIRS})
-target_compile_definitions(multiversotests PRIVATE "BOOST_TEST_DYN_LINK=1")
 TARGET_LINK_LIBRARIES(multiversotests multiverso ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 SET_PROPERTY(TARGET multiversotests PROPERTY CXX_STANDARD 11)
