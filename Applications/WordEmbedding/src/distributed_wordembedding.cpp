@@ -350,6 +350,9 @@ namespace wordembedding {
     communicator_->PrepareParameterTables(dictionary_->Size(),
       option_->embeding_size);
 
+	#ifdef _DEBUG
+	multiverso::Log::ResetLogLevel(multiverso::LogLevel::Debug);
+	#endif
     //start to train
     TrainNeuralNetwork();
 

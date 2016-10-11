@@ -23,7 +23,7 @@ namespace wordembedding {
 
   const int kMaxWordSize = 901;
   const int kMaxCodeLength = 100;
-  const int kMaxString = 100;
+  const int kMaxString = 500;
   const int kMaxSentenceLength = 1000;
   const int kMaxExp = 6;
 

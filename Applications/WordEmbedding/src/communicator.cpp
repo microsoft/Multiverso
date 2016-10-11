@@ -49,17 +49,29 @@ namespace wordembedding {
 
   inline void Communicator::AddRows(multiverso::MatrixWorkerTable<real>* table,
     std::vector<int> &row_ids, std::vector<real *> &ptrs, int size) {
-    multiverso::AddOption add_option;
-    table->Add(row_ids, ptrs, size, &add_option);
+	if (row_ids.size() ==0){
+		multiverso::Log::Debug("Warnning: add rows size is zeor in AddRows function.");
+		return;
+	}
+	multiverso::AddOption add_option;
+	table->Add(row_ids, ptrs, size, &add_option);
   }
 
   void Communicator::GetWorkerTableRows(std::vector<int> &row_nums,
     std::vector<real*> &blocks, int embeding_size) {
-    worker_input_table_->Get(row_nums, blocks, embeding_size);
+	if (row_nums.size() == 0) {
+		multiverso::Log::Debug("Warnning: add rows size is zeor in GetWorkerTableRows function.");
+		return;
+	}
+	worker_input_table_->Get(row_nums, blocks, embeding_size);
   }
 
   inline void Communicator::GetRows(multiverso::MatrixWorkerTable<real>* table,
     std::vector<int> &row_ids, std::vector<real *> &ptrs, int size) {
+	if (row_ids.size() == 0) {
+		multiverso::Log::Debug("Warnning: add rows size is zeor in GetRows function.");
+		return;
+	}
     table->Get(row_ids, ptrs, size);
   }
 
@@ -193,7 +205,7 @@ namespace wordembedding {
   //Add delta to local buffer and send it to the parameter sever
   void Communicator::AddDeltaParameter(DataBlock *data_block){
     if (data_block == nullptr) {
-      multiverso::Log::Info("Rank %d has null DataBlcok.\n", process_id_);
+	  multiverso::Log::Debug("Rank %d has null DataBlcok.\n", process_id_);
       return;
     }
 
