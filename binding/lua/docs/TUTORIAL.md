@@ -135,3 +135,6 @@ multiverso.shutdown()
 ```
 
 ## Happy using multiverso (torch/lua binding)
+There are some examples demonstrating how to use multiverso torch/lua binding.
+* [XOR demo](https://github.com/Microsoft/multiverso/tree/master/binding/lua/demos/xor)
+* [ResNet demo](https://github.com/Microsoft/fb.resnet.torch)
