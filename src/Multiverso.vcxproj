@@ -319,7 +319,6 @@
     <ClCompile Include="util\log.cpp" />
     <ClCompile Include="util\configure.cpp" />
     <ClCompile Include="util\net_util.cpp" />
-    <ClCompile Include="util\quantization_util.cpp" />
     <ClCompile Include="worker.cpp" />
     <ClCompile Include="zoo.cpp" />
   </ItemGroup>

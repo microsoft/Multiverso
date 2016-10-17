@@ -86,7 +86,7 @@ public:
   void Fatal(const char *format, ...);
 
 private:
-  void Write(LogLevel level, const char* format, va_list* val);
+  void WriteImpl(LogLevel level, const char* format, va_list* val);
   void CloseLogFile();
   // Returns current system time as a string.
   std::string GetSystemTime();

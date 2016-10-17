@@ -188,9 +188,6 @@
     <ClCompile Include="util\configure.cpp">
       <Filter>util</Filter>
     </ClCompile>
-    <ClCompile Include="util\quantization_util.cpp">
-      <Filter>util</Filter>
-    </ClCompile>
     <ClCompile Include="updater\updater.cpp">
       <Filter>updater</Filter>
     </ClCompile>
