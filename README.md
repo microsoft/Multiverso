@@ -29,8 +29,9 @@ Related Projects
 Current distributed systems based on multiverso:
 
 * [lightLDA](https://github.com/Microsoft/lightlda): Scalable, fast, lightweight system for large scale topic modeling
-* [distributed_word_embedding](https://github.com/Microsoft/distributed_word_embedding) Distributed system for word embedding
-* [distributed_skipgram_mixture](https://github.com/Microsoft/distributed_skipgram_mixture) Distributed skipgram mixture for multi-sense word embedding
+* [distributed_word_embedding](https://github.com/Microsoft/multiverso/tree/master/Applications/WordEmbedding) Distributed system for word embedding
+* [distributed_word_embedding(deprecated)](https://github.com/Microsoft/distributed_word_embedding) Distributed system for word embedding
+* [distributed_skipgram_mixture(deprecated)](https://github.com/Microsoft/distributed_skipgram_mixture) Distributed skipgram mixture for multi-sense word embedding
 
 Microsoft Open Source Code of Conduct
 ------------
