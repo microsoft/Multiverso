@@ -1,0 +1,3 @@
+[submodule "src/updater/dcasgd"]
+	path = src/updater/dcasgd
+	url = https://github.com/Microsoft/Delayed-Compensation-Asynchronous-Stochastic-Gradient-Descent-for-Multiverso.git
