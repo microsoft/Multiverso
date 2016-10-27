@@ -15,7 +15,7 @@ class BruckMap {
 public:
   /*! \brief The communication times for one all gather operation */
   int k;
-  /*! \brief in_ranks[i] means the incomming rank on i-th communication */
+  /*! \brief in_ranks[i] means the incoming rank on i-th communication */
   std::vector<int> in_ranks;
   /*! \brief out_ranks[i] means the out rank on i-th communication */
   std::vector<int> out_ranks;
@@ -32,7 +32,7 @@ public:
 
 /*!
 * \brief node type on recursive halving algorithm
-* When number of machines is not power of 2, need group maiches into power of 2 group.
+* When number of machines is not power of 2, need group matches into power of 2 group.
 * And we can let each group has at most 2 machines.
 * if the group only has 1 machine. this machine is the normal node
 * if the grou has 2 machines, this group will have two type of nodes, one is the leader.
@@ -47,7 +47,7 @@ enum RecursiveHalvingNodeType {
 /*! \brief Network structure for recursive halving algorithm */
 class RecursiveHalvingMap {
 public:
-  /*! \brief Communication times for one recursize halving algorithm  */
+  /*! \brief Communication times for one recursive halving algorithm  */
   int k;
   /*! \brief Node type */
   RecursiveHalvingNodeType type;

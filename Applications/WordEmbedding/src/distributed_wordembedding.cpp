@@ -180,7 +180,7 @@ namespace wordembedding {
       for (int64 cur = 0; cur < file_size; cur += option_->data_block_size) {
         clock_t start_block = clock();
 
-        //if don't use pipeline, traning after getting parameters. 
+        //if don't use pipeline, training after getting parameters. 
         if (option_->is_pipeline == false) {
           #pragma omp parallel for num_threads(option_->thread_cnt)
           for (int i = 0; i < option_->thread_cnt; ++i) {
@@ -237,7 +237,7 @@ namespace wordembedding {
       }
     }
 
-    multiverso::Log::Info("Rank %d Finish Traning %d Block.\n", process_id_,
+    multiverso::Log::Info("Rank %d Finish Training %d Block.\n", process_id_,
       data_block_count);
 
     StopCollectWordcountThread();

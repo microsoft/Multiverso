@@ -33,7 +33,7 @@ public:
    * \brief Pop an element from the queue, if the queue is empty, thread
    *        call pop would be blocked
    * \param result the returned result
-   * \return true when pop sucessfully; false when the queue is exited
+   * \return true when pop successfully; false when the queue is exited
    */
   bool Pop(T& result);
 
@@ -44,7 +44,7 @@ public:
    * \brief Get the front element from the queue, if the queue is empty,
    *        threat who call front would be blocked. Not move semantics.
    * \param result the returned result
-   * \return true when pop sucessfully; false when the queue is exited
+   * \return true when pop successfully; false when the queue is exited
    */
   bool Front(T& result);
 

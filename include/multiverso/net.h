@@ -31,7 +31,7 @@ public:
   virtual int size() const = 0;
   virtual int rank() const = 0;
 
-  // \return 1. > 0 sended size 2. = 0 not sended 3. < 0 net error
+  // \return 1. > 0 sent size 2. = 0 not sent 3. < 0 net error
   virtual int Send(MessagePtr& msg) = 0;
 
   // \return 1. > 0 received size 2. = 0 not received 3. < 0 net error

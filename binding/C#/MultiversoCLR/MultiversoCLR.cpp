@@ -55,7 +55,7 @@ namespace MultiversoCLR {
   }
   void MultiversoWrapper::Shutdown() {
     // The false means finalize_net = false
-    // We finalize the net resource seperately by calling MultiversoWrapper.NetFinalize
+    // We finalize the net resource separately by calling MultiversoWrapper.NetFinalize
     multiverso::MV_ShutDown(false);
   }
 

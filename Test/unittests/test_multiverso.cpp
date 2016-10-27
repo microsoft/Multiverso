@@ -1,5 +1,5 @@
 #ifndef _WIN32
-// Use dynamic library on linux
+// Use dynamic library on Linux
 #define BOOST_TEST_DYN_LINK
 #endif
 

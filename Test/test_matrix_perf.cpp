@@ -171,4 +171,4 @@ void TestDensePerf(int argc, char* argv[]) {
 }
 
 }  // namespace test
-}  // namesapce multiverso
+}  // namespace multiverso

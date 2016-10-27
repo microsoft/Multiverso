@@ -11,7 +11,7 @@ namespace wordembedding {
 
   /*!
   * \brief The block queue push and pop the block data. Load data thread push 
-  * datablock in it and traning thread take datablock from it.
+  * datablock in it and training thread take datablock from it.
   */
   class BlockQueue {
   public:

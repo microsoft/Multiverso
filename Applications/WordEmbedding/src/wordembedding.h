@@ -36,8 +36,6 @@ namespace wordembedding {
     /*!
     * \brief PrepareParameter for parameterloader threat
     * \param data_block datablock for parameterloader to parse
-    * \param input_nodes  input_nodes represent the parameter which input_layer includes
-    * \param output_nodes output_nodes represent the parameter which output_layer inclueds
     */
     void PrepareData(DataBlock *data_block);
     /*!
@@ -45,7 +43,7 @@ namespace wordembedding {
     */
     void UpdateLearningRate();
     /*!
-    * \brief Set the input(output)-embeddding weight
+    * \brief Set the input(output)-embedding weight
     */
     void SetWeightIE(int input_node_id, real* ptr);
     void SetWeightEO(int output_node_id, real* ptr);
@@ -56,12 +54,12 @@ namespace wordembedding {
     real* GetWeightIE(int input_node_id);
     real* GetWeightEO(int output_node_id);
     /*!
-    * \brief Set the input(output) gradient-embeddding weight when using adagrad
+    * \brief Set the input(output) gradient-embedding weight when using adagrad
     */
     void SetSumGradient2IE(int input_node_id, real* ptr);
     void SetSumGradient2EO(int output_node_id, real* ptr);
     /*!
-    * \brief Return the input(output) gradient-embeddding weight when using adagrad
+    * \brief Return the input(output) gradient-embedding weight when using adagrad
     */
     real* GetSumGradient2IE(int input_node_id);
     real* GetSumGradient2EO(int output_node_id);
@@ -86,7 +84,7 @@ namespace wordembedding {
       std::vector<int>& input_nodes,
       std::vector<std::pair<int, int> >& output_nodes, std::vector <int> &negativesample_pools);
     /*!
-    * \brief Parse a sentence and deepen into two branchs
+    * \brief Parse a sentence and deepen into two branches
     * \one for TrainNN,the other one is for Parameter_parse&request
     */
     void ParseSentence(int* sentence, int sentence_length,
@@ -104,8 +102,8 @@ namespace wordembedding {
     * \param label record the label of every output-embedding vector
     * \param word_idx the index of the output-embedding vector
     * \param classifier store the output-embedding vector
-    * \param store the hidden layer vector
-    * \param store the hidden-error which is used
+    * \param hidden_act store the hidden layer vector
+    * \param hidden_err store the hidden-error which is used
     * \to update the input-embedding vector
     */
     void BPOutputLayer(int label, int word_idx, real* classifier,
@@ -113,9 +111,9 @@ namespace wordembedding {
 
     /*!
     * \brief Train a window sample and update the
-    * \input-embedding&output-embedding vectors
+    * \input-embedding & output-embedding vectors
     * \param input_nodes represent the input nodes
-    * \param output_nodes represent the ouput nodes
+    * \param output_nodes represent the output nodes
     * \param hidden_act  store the hidden layer vector
     * \param hidden_err  store the hidden layer error
     */

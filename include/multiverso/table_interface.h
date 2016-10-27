@@ -64,7 +64,7 @@ public:
   virtual void Load(Stream* s) = 0;
 };
 
-// discribe the server parameter storage data structure and related method
+// describe the server parameter storage data structure and related method
 class ServerTable : public Serializable {
 public:
   ServerTable();

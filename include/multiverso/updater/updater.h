@@ -9,7 +9,7 @@ namespace multiverso {
 
 struct AddOption {
 public:
-  // TODO(qiwye): make these default value more flexiable
+  // TODO(qiwye): make these default value more flexible
   AddOption(){
     data_[0].i = MV_WorkerId(); 
     data_[1].f = 0.0f;
@@ -71,7 +71,7 @@ private:
 
 struct GetOption {
 public:
-  // TODO(qiwye): to make these Option configuable 
+  // TODO(qiwye): to make these Option configurable 
   GetOption(){
     data_[0].i = MV_WorkerId();
   }
