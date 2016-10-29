@@ -147,7 +147,7 @@ template <typename T>
 void MatrixWorker<T>::Add(T* data, size_t size, const AddOption* option) {
   CHECK(size == num_col_ * num_row_);
   if (is_sparse_ && true) {
-    // REVIEW[qiwye] does this pre-optimation bring too much overhead?
+    // REVIEW[qiwye] does this pre-optimization bring too much overhead?
     std::vector<integer_t> row_ids;
     for (auto i = 0; i < num_row_; i++) {
       auto zero_count = std::count(data + (i * num_col_), data + ((i + 1) * num_col_), (T)0);

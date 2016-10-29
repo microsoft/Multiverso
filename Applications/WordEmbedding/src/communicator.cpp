@@ -50,7 +50,7 @@ namespace wordembedding {
   inline void Communicator::AddRows(multiverso::MatrixWorkerTable<real>* table,
     std::vector<int> &row_ids, std::vector<real *> &ptrs, int size) {
 	if (row_ids.size() ==0){
-		multiverso::Log::Debug("Warnning: add rows size is zeor in AddRows function.");
+		multiverso::Log::Debug("Warning: add rows size is zeor in AddRows function.");
 		return;
 	}
 	multiverso::AddOption add_option;
@@ -60,7 +60,7 @@ namespace wordembedding {
   void Communicator::GetWorkerTableRows(std::vector<int> &row_nums,
     std::vector<real*> &blocks, int embeding_size) {
 	if (row_nums.size() == 0) {
-		multiverso::Log::Debug("Warnning: add rows size is zeor in GetWorkerTableRows function.");
+		multiverso::Log::Debug("Warning: add rows size is zeor in GetWorkerTableRows function.");
 		return;
 	}
 	worker_input_table_->Get(row_nums, blocks, embeding_size);
@@ -69,7 +69,7 @@ namespace wordembedding {
   inline void Communicator::GetRows(multiverso::MatrixWorkerTable<real>* table,
     std::vector<int> &row_ids, std::vector<real *> &ptrs, int size) {
 	if (row_ids.size() == 0) {
-		multiverso::Log::Debug("Warnning: add rows size is zeor in GetRows function.");
+		multiverso::Log::Debug("Warning: add rows size is zeor in GetRows function.");
 		return;
 	}
     table->Get(row_ids, ptrs, size);

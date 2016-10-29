@@ -289,7 +289,7 @@ void Hopscotch<EleType>::Insert(Bucket* home, size_t key, EleType *val) {
     ++move;
   }
 
-  // outside neighbour
+  // outside neighbor
   if ((move - home) >= neighbour_size_) {
     // try displace
     move = Displace(home, move);

@@ -26,10 +26,10 @@ BruckMap BruckMap::Construct(int rank, int num_machines) {
   }
   BruckMap bruckMap(k);
   for (int j = 0; j < k; ++j) {
-    // set incoming rank at k-th commuication
+    // set incoming rank at k-th communication
     const int in_rank = (rank + distance[j]) % num_machines;
     bruckMap.in_ranks[j] = in_rank;
-    // set outgoing rank at k-th commuication
+    // set outgoing rank at k-th communication
     const int out_rank = (rank - distance[j] + num_machines) % num_machines;
     bruckMap.out_ranks[j] = out_rank;
   }
@@ -45,7 +45,7 @@ RecursiveHalvingMap::RecursiveHalvingMap(RecursiveHalvingNodeType _type, int n) 
   k = n;
   if (type != RecursiveHalvingNodeType::Other) {
     for (int i = 0; i < n; ++i) {
-      // defalut set as -1
+      // default set as -1
       ranks.push_back(-1);
       send_block_start.push_back(-1);
       send_block_len.push_back(-1);

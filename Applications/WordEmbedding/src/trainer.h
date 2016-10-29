@@ -2,7 +2,7 @@
 #define WORDEMBEDDING_TRAINER_H_
 /*!
 * file trainer.h
-* \brief Class Trainer trains the model by every trainiteration
+* \brief Class Trainer trains the model by every train iteration
 */
 
 #include <thread>

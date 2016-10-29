@@ -51,7 +51,7 @@ namespace wordembedding {
     /*!
     * \brief Insert word-freq pair to the dictionary
     * \param word the word string
-    * \param cnt  the word's freqency
+    * \param cnt the word's frequency
     */
     void Insert(const char* word, int64 cnt = 1);
     /*!

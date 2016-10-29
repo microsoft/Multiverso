@@ -71,7 +71,7 @@ public:
 
   /*!
   * \brief read data from Stream
-  * \param buf pointer to a memory buffe;
+  * \param buf pointer to a memory buffer;
   * \param size the size of buf
   */
   virtual size_t Read(void *buf, size_t size) = 0;

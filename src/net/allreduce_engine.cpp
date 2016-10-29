@@ -126,7 +126,7 @@ void AllreduceEngine::ReduceScatter(char* input, int input_size, int, int* block
       linkers_->SendTo(recursive_halving_map_.neighbor, input, input_size);
     }
     else if (recursive_halving_map_.type == RecursiveHalvingNodeType::GroupLeader) {
-      //recieve neighbor data first
+      //receive neighbor data first
       int need_recv_cnt = input_size;
       linkers_->RecvFrom(recursive_halving_map_.neighbor, output, need_recv_cnt);
       reducer(output, input, input_size);

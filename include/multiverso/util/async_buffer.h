@@ -18,7 +18,7 @@ public:
     : buffer_writer_{ fill_buffer_action } {
     CHECK_NOTNULL(buffer0);
     CHECK_NOTNULL(buffer1);
-    //[TODO(qiwye)] to make buffer number configuable.
+    //[TODO(qiwye)] to make buffer number configurable.
     buffers_.resize(2);
     buffers_[0] = buffer0;
     buffers_[1] = buffer1;

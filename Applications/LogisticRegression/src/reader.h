@@ -15,7 +15,7 @@
 
 namespace logreg {
 
-// a async reader for reading matrix data
+// an async reader for reading matrix data
 // each line as a row
 template<typename EleType>
 class SampleReader {

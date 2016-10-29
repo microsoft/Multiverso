@@ -61,7 +61,7 @@ private:
 #define REGISTER_MONITOR(name)           \
   static Monitor g_##name##_monitor(#name);
 
-// Guard with MONITOR macro in the code to monitor it's excuation
+// Guard with MONITOR macro in the code to monitor it's execution
 // Usage:
 // MONITOR_BEGIN(your_code_short_description)
 // your code

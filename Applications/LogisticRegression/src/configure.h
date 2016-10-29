@@ -51,8 +51,8 @@ public:
 
   // when provided, will load model data when LogReg init
   std::string init_model_file = "";
-  // input data for trainning
-  // use ; to seperate different files
+  // input data for training
+  // use ; to separate different files
   std::string train_file = "train.data";
   // default / weight / ftrl
   // [default]
@@ -62,7 +62,7 @@ public:
   //    2. dense data use format as
   //      label value value ...
   // [weight]
-  //  the first colum is label:weight(double)
+  //  the first column is label:weight(double)
   //  others the same to default
   // [bsparse]
   //  for sparse data, read binary file, each sample as:

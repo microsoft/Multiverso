@@ -6,7 +6,7 @@
 #include <string>
 
 namespace multiverso {
-// Creates a Logger intance writing messages into STDOUT.
+// Creates a Logger instance writing messages into STDOUT.
 Logger::Logger(LogLevel level) {
   level_ = level;
   file_ = nullptr;
@@ -131,7 +131,7 @@ std::string Logger::GetLevelStr(LogLevel level) {
   default: return "UNKNOW";
   }
 }
-//-- End of Logger rountine ----------------------------------------------/
+//-- End of Logger routine ----------------------------------------------/
 
 Logger Log::logger_;    // global (in process) static Logger instance
 

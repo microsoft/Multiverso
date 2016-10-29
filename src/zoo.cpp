@@ -98,7 +98,7 @@ void Zoo::StartPS() {
     worker->Start();
   }
   Barrier();
-  Log::Info("Rank %d: Multiverso start sucessfully\n", rank());
+  Log::Info("Rank %d: Multiverso start successfully\n", rank());
 }
 
 void Zoo::StopPS() {

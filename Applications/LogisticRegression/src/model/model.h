@@ -48,7 +48,7 @@ public:
   static Model<EleType>* Get(Configure& config);
 
 protected:
-  // copmpute update delta
+  // compute update delta
   virtual float GetGradient(Sample<EleType>* sample, DataBlock<EleType>* delta);
   // update table
   virtual void UpdateTable(DataBlock<EleType>* delta);
