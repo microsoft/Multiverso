@@ -8,11 +8,11 @@
 *.TXT text
 *.yml text
 *.yml.bak text
-*.config
+*.config text
 
 Makefile text
 CMakeLists.txt
-*.in
+*.cmake.in text
 *.sln text
 *.pyproj text
 *.vcxproj text
