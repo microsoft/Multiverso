@@ -23,40 +23,40 @@ Stream* StreamFactory::GetStream(const URI& uri,
 std::map<std::string, std::shared_ptr<StreamFactory> > StreamFactory::instances_;
 
 TextReader::TextReader(const URI& uri, size_t buf_size) {
-	stream_ = StreamFactory::GetStream(uri, FileOpenMode::Read);
-	buf_size_ = buf_size;
+    stream_ = StreamFactory::GetStream(uri, FileOpenMode::Read);
+    buf_size_ = buf_size;
   pos_ = length_ = 0;
   buf_ = new char[buf_size_];
   assert(buf_ != nullptr);
 }
 
 size_t TextReader::GetLine(std::string &line) {
-	line.clear();
-	bool isEnd = false;
-	while (!isEnd) {
-		while(pos_ < length_) {
-			char & c = buf_[pos_++];
-			if (c == '\n') {
-				isEnd = true;
-				break;
-			} else {
-				line += c;
-			}
-		}
-		if (isEnd || LoadBuffer() == 0)  break; 
-	}
-	return line.size();
+    line.clear();
+    bool isEnd = false;
+    while (!isEnd) {
+        while(pos_ < length_) {
+            char & c = buf_[pos_++];
+            if (c == '\n') {
+                isEnd = true;
+                break;
+            } else {
+                line += c;
+            }
+        }
+        if (isEnd || LoadBuffer() == 0)  break; 
+    }
+    return line.size();
 }
 
 size_t TextReader::LoadBuffer() {
-	assert (pos_ == length_);
-	pos_ = length_ = 0;
-	return length_ = stream_->Read(buf_, buf_size_ - 1);
+    assert (pos_ == length_);
+    pos_ = length_ = 0;
+    return length_ = stream_->Read(buf_, buf_size_ - 1);
 }
 
 TextReader::~TextReader() {
   delete stream_;
-	delete [] buf_;
+    delete [] buf_;
 }
 
 }

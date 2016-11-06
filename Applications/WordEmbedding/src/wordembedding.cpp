@@ -209,7 +209,7 @@ namespace wordembedding {
       }
     }
 
-	multiverso::Log::Debug("PrepareData input_nodes size is %d , output_nodes size is %d", data_block->input_nodes.size(), data_block->output_nodes.size());
+  multiverso::Log::Debug("PrepareData input_nodes size is %d , output_nodes size is %d", data_block->input_nodes.size(), data_block->output_nodes.size());
   }
 
   //Parse the sentence and deepen into two branches

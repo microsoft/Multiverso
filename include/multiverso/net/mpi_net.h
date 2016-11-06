@@ -131,12 +131,12 @@ public:
 
   int Bind(int, char*) override { 
     Log::Fatal("Shouldn't call this in MPI Net\n"); 
-	return -1;
+  return -1;
   }
 
   int Connect(int*, char* [], int) override { 
     Log::Fatal("Shouldn't call this in MPI Net\n"); 
-	return -1;
+  return -1;
   }
   
   bool active() const { return inited_ != 0; }
@@ -247,7 +247,7 @@ public:
     if (len <= 0) {
       return;
     }
-    MPI_Request	send_request;
+    MPI_Request send_request;
     MPI_Status status;
     MV_MPI_CALL(MPI_Isend(buf, len, MPI_BYTE, rank, 0, 
                           MPI_COMM_WORLD, &send_request));
@@ -268,7 +268,7 @@ public:
 
   void SendRecv(int send_rank, char* send_data, int send_len,
     int recv_rank, char* recv_data, int recv_len) const {
-    MPI_Request	send_request;
+    MPI_Request send_request;
     // send first, non-blocking
     MV_MPI_CALL(MPI_Isend(send_data, send_len, MPI_BYTE, send_rank, 
                           0, MPI_COMM_WORLD, &send_request));

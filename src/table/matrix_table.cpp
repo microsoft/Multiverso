@@ -246,7 +246,7 @@ int MatrixWorkerTable<T>::Partition(const std::vector<Blob>& kv,
       int rank = MV_ServerIdToRank(i);
       (*out)[rank].push_back(kv[0]);
     }
-    if (kv.size() >= 2) {	 // process add values
+    if (kv.size() >= 2) {  // process add values
       for (integer_t i = 0; i < num_server_; ++i){
         int rank = MV_ServerIdToRank(i);
         Blob blob(kv[1].data() + server_offsets_[i] * row_size_,
@@ -371,16 +371,16 @@ MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col) :
 template <typename T>
 MatrixServerTable<T>::MatrixServerTable(integer_t num_row, integer_t num_col, float min_value,float max_value) :
 MatrixServerTable<T>::MatrixServerTable(num_row, num_col) {
-	if (typeid(T) == typeid(float)){
-		std::random_device rd;
-		std::mt19937 gen(rd());
-		std::uniform_real_distribution<float> dis(min_value,max_value);
+  if (typeid(T) == typeid(float)){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(min_value,max_value);
 
-		for (int i = 0; i<storage_.size(); i++)
-		{
-			storage_[i] = static_cast<T>(dis(gen));
-		}
-	}
+    for (int i = 0; i<storage_.size(); i++)
+    {
+      storage_[i] = static_cast<T>(dis(gen));
+    }
+  }
 }
 
 template <typename T>

@@ -12,9 +12,9 @@
 
 struct Option
 {
-	const char* train_file;
-	const char* save_vocab_file;
-	int min_count;
+    const char* train_file;
+    const char* save_vocab_file;
+    int min_count;
 
-	void ParseArgs(int argc, char *argv[]);
+    void ParseArgs(int argc, char *argv[]);
 }; 
