@@ -2,10 +2,14 @@
 
 #include <time.h>
 #include <stdarg.h>
-
 #include <string>
 
+#include "multiverso/util/configure.h"
+
 namespace multiverso {
+
+MV_DEFINE_bool(logtostderr, false, "whether output log to stderr");
+
 // Creates a Logger instance writing messages into STDOUT.
 Logger::Logger(LogLevel level) {
   level_ = level;
@@ -83,9 +87,14 @@ inline void Logger::WriteImpl(LogLevel level,
     va_list val_copy;
     va_copy(val_copy, *val);
     // write to STDOUT
-    printf("[%s] [%s] ", level_str.c_str(), time_str.c_str());
-    vprintf(format, *val);
-    fflush(stdout);
+    if (MV_CONFIG_logtostderr) {
+      fprintf(stderr, "[%s] [%s] ", level_str.c_str(), time_str.c_str());
+      vfprintf(stderr, format, *val);
+    } else {
+      printf("[%s] [%s] ", level_str.c_str(), time_str.c_str());
+      vprintf(format, *val);
+      fflush(stdout);
+    }
     // write to log file
     if (file_ != nullptr) {
       fprintf(file_, "[%s] [%s] ", level_str.c_str(), time_str.c_str());

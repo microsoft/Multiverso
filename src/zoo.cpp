@@ -107,8 +107,6 @@ void Zoo::StopPS() {
   }
   Barrier();
 
-  Dashboard::Display();
-
   // Stop all actors
   for (auto actor : zoo_) { 
     actor.second->Stop(); 
