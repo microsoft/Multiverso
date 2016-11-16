@@ -2,10 +2,10 @@
 # coding:utf8
 
 import ctypes
-from utils import Loader
-from utils import convert_data
+from .utils import Loader
+from .utils import convert_data
 import numpy as np
-import api
+from . import api
 
 
 mv_lib = Loader.get_lib()
