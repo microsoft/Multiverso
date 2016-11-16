@@ -2,7 +2,7 @@
 # coding:utf8
 
 import ctypes
-from utils import Loader
+from .utils import Loader
 import numpy as np
 
 
@@ -26,9 +26,9 @@ def init(sync=False):
     `barrier` and `get` with the argument `sync` set to `True` to sync the
     processes.
     '''
-    args = [""]  # the first argument will be ignored. So we put a placeholder here
+    args = [b""]  # the first argument will be ignored. So we put a placeholder here
     if sync:
-        args.append("-sync=true")
+        args.append(b"-sync=true")
     n = len(args)
     args_type = ctypes.c_char_p * n
     mv_lib.MV_Init(ctypes.pointer(ctypes.c_int(n)), args_type(*[ctypes.c_char_p(arg) for arg in args]))
