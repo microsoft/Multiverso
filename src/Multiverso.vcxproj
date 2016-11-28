@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup Label="ProjectConfigurations">
+<Project DefaultTargets="Build" InitialTargets="CheckDependencies" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations" Condition="'$(CNTK_ENABLE_ASGD)'!='false'">
     <ProjectConfiguration Include="Debug_CpuOnly|x64">
       <Configuration>Debug_CpuOnly</Configuration>
       <Platform>x64</Platform>
@@ -22,7 +22,7 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <PropertyGroup Label="Globals">
+  <PropertyGroup Label="Globals" Condition="'$(CNTK_ENABLE_ASGD)'!='false'">
     <ProjectGuid>{16F14058-B116-49D9-8BA0-209F3AFFE849}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Multiverso</RootNamespace>
@@ -302,4 +302,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <Target Name="CheckDependencies">
+    <Warning Condition="'$(CNTK_ENABLE_ASGD)'=='false'" ContinueOnError="false" Text="DataParallelASGD was disabled." />
+  </Target>
 </Project>
