@@ -17,8 +17,8 @@ public:
     tasks_.push_back(std::move(msg));
     if (static_cast<int>(tasks_.size()) == Zoo::Get()->size()) {
       MessagePtr my_reply;  // my reply should be the last one
-      for (auto& msg : tasks_) {
-        MessagePtr reply(msg->CreateReplyMessage());
+      for (auto& task_msg : tasks_) {
+        MessagePtr reply(task_msg->CreateReplyMessage());
         if (reply->dst() != Zoo::Get()->rank()) {
           parent_->SendTo(actor::kCommunicator, reply);
         } else {

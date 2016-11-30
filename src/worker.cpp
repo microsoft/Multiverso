@@ -38,14 +38,14 @@ void Worker::ProcessGet(MessagePtr& msg) {
   cache_[table_id]->Reset(msg_id, num);
 
   for (auto& it : partitioned_key) {
-    MessagePtr msg(new Message());
-    msg->set_src(Zoo::Get()->rank());
-    msg->set_dst(it.first);
-    msg->set_type(MsgType::Request_Get);
-    msg->set_msg_id(msg_id);
-    msg->set_table_id(table_id);
-    msg->set_data(it.second);
-    SendTo(actor::kCommunicator, msg);
+    MessagePtr new_msg(new Message());
+    new_msg->set_src(Zoo::Get()->rank());
+    new_msg->set_dst(it.first);
+    new_msg->set_type(MsgType::Request_Get);
+    new_msg->set_msg_id(msg_id);
+    new_msg->set_table_id(table_id);
+    new_msg->set_data(it.second);
+    SendTo(actor::kCommunicator, new_msg);
   }
   MONITOR_END(WORKER_PROCESS_GET)
 }
