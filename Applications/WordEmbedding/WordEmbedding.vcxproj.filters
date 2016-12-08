@@ -10,7 +10,6 @@
     <ClInclude Include="src\huffman_encoder.h" />
     <ClInclude Include="src\memory_manager.h" />
     <ClInclude Include="src\reader.h" />
-    <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\trainer.h" />
     <ClInclude Include="src\util.h" />
     <ClInclude Include="src\wordembedding.h" />

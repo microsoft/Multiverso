@@ -63,14 +63,14 @@ void Worker::ProcessAdd(MessagePtr& msg) {
   cache_[table_id]->Reset(msg_id, num);
 
   for (auto& it : partitioned_kv) {
-    MessagePtr msg(new Message());
-    msg->set_src(Zoo::Get()->rank());
-    msg->set_dst(it.first); 
-    msg->set_type(MsgType::Request_Add);
-    msg->set_msg_id(msg_id);
-    msg->set_table_id(table_id);
-    msg->set_data(it.second);
-    SendTo(actor::kCommunicator, msg);
+    MessagePtr kv_msg(new Message());
+	kv_msg->set_src(Zoo::Get()->rank());
+	kv_msg->set_dst(it.first);
+	kv_msg->set_type(MsgType::Request_Add);
+	kv_msg->set_msg_id(msg_id);
+	kv_msg->set_table_id(table_id);
+	kv_msg->set_data(it.second);
+    SendTo(actor::kCommunicator, kv_msg);
   }
   MONITOR_END(WORKER_PROCESS_ADD)
 }
