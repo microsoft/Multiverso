@@ -4,9 +4,7 @@
 
 #include "multiverso/updater/adagrad_updater.h"
 #include "multiverso/updater/momentum_updater.h"
-#ifdef ENABLE_DCASGD
 #include "multiverso/updater/dcasgd/dcasgd_updater.h"
-#endif
 #include "multiverso/updater/sgd_updater.h"
 #include "multiverso/util/configure.h"
 #include "multiverso/util/log.h"

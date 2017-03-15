@@ -121,6 +121,9 @@
     <ClInclude Include="..\include\multiverso\table\matrix.h">
       <Filter>table</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\multiverso\updater\dcasgd\dcasgd_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="system">

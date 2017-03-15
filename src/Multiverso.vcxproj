@@ -252,6 +252,7 @@
     <ClInclude Include="..\include\multiverso\table_factory.h" />
     <ClInclude Include="..\include\multiverso\table_interface.h" />
     <ClInclude Include="..\include\multiverso\updater\adagrad_updater.h" />
+    <ClInclude Include="..\include\multiverso\updater\dcasgd\dcasgd_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\sgd_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\momentum_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\updater.h" />
