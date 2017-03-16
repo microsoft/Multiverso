@@ -124,6 +124,9 @@
     <ClInclude Include="..\include\multiverso\updater\dcasgd\dcasgd_updater.h">
       <Filter>updater</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\multiverso\util\common.h">
+      <Filter>util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="system">

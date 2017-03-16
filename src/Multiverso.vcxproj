@@ -257,6 +257,7 @@
     <ClInclude Include="..\include\multiverso\updater\momentum_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\updater.h" />
     <ClInclude Include="..\include\multiverso\util\allocator.h" />
+    <ClInclude Include="..\include\multiverso\util\common.h" />
     <ClInclude Include="..\include\multiverso\util\configure.h" />
     <ClInclude Include="..\include\multiverso\util\async_buffer.h" />
     <ClInclude Include="..\include\multiverso\util\log.h" />
