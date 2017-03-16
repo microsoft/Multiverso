@@ -114,8 +114,11 @@ void SetCMDFlag(const std::string& name, const T& value) {
 #define MV_DECLARE_double(name)  \
   DECLARE_CONFIGURE(double, name)
 
-int mixtreeps_[] = {0,1};
+#define MV_DEFINE_array(name, default_value, text) \
+  DEFINE_CONFIGURE(int[], name, default_value, text)
 
+#define MV_DECLARE_array(name)  \
+  DECLARE_CONFIGURE(int[], name)
 }  // namespace multiverso
 
 #endif  // MULTIVERSO_UTIL_CONFIGURE_H_
