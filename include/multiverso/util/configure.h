@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "multiverso/util/log.h"
 
@@ -112,6 +113,9 @@ void SetCMDFlag(const std::string& name, const T& value) {
 
 #define MV_DECLARE_double(name)  \
   DECLARE_CONFIGURE(double, name)
+
+int mixtreeps_[] = {0,1};
+
 }  // namespace multiverso
 
 #endif  // MULTIVERSO_UTIL_CONFIGURE_H_
