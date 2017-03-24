@@ -127,6 +127,9 @@
     <ClInclude Include="..\include\multiverso\util\common.h">
       <Filter>util</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\multiverso\updater\treesgd\tree_updater.h">
+      <Filter>updater</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="system">

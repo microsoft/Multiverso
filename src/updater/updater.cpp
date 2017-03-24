@@ -9,6 +9,8 @@
 #include "multiverso/util/configure.h"
 #include "multiverso/util/log.h"
 
+#include "multiverso/updater/treesgd/tree_updater.h"
+
 
 namespace multiverso {
 
@@ -47,6 +49,7 @@ Updater<T>* Updater<T>::GetUpdater(size_t size) {
   if (type == "adagrad") return new AdaGradUpdater<T>(size);
   if (type == "momentum_sgd") return new MomentumUpdater<T>(size);
   if (type == "dcasgd") return new DCASGDUpdater<T>(size, MV_CONFIG_is_pipelined);
+  if (type == "tree") return new TreeUpdater<T>(size);
   // Default: simple updater
   return new Updater<T>();
 }

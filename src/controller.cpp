@@ -6,6 +6,7 @@
 #include "multiverso/node.h"
 #include "multiverso/util/log.h"
 #include "multiverso/zoo.h"
+#include "multiverso/multiverso.h"
 
 namespace multiverso {
 
@@ -48,10 +49,17 @@ public:
     CHECK(msg->size() == 1);
     CHECK(src < static_cast<int>(all_nodes_.size()) && src >= 0);
     all_nodes_[src] = *(reinterpret_cast<Node*>(msg->data()[0].data()));
+    printf("register rank:%d\n", MV_Rank());
     if (node::is_worker(all_nodes_[src].role))
-      all_nodes_[src].worker_id = num_worker_++;
+    {
+        all_nodes_[src].worker_id = src;
+        num_worker_++;
+    }
     if (node::is_server(all_nodes_[src].role))
-      all_nodes_[src].server_id = num_server_++;
+    {
+        all_nodes_[src].server_id = src;
+        num_server_++;
+    }
     if (++num_registered_ == Zoo::Get()->size()) {  // all nodes is registered
       Log::Info("All nodes registered. System contains %d nodes. num_worker = "
         "%d, num_server = %d\n", Zoo::Get()->size(), num_worker_, num_server_);

@@ -255,6 +255,7 @@
     <ClInclude Include="..\include\multiverso\updater\dcasgd\dcasgd_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\sgd_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\momentum_updater.h" />
+    <ClInclude Include="..\include\multiverso\updater\treesgd\tree_updater.h" />
     <ClInclude Include="..\include\multiverso\updater\updater.h" />
     <ClInclude Include="..\include\multiverso\util\allocator.h" />
     <ClInclude Include="..\include\multiverso\util\common.h" />
