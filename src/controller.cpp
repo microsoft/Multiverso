@@ -49,7 +49,6 @@ public:
     CHECK(msg->size() == 1);
     CHECK(src < static_cast<int>(all_nodes_.size()) && src >= 0);
     all_nodes_[src] = *(reinterpret_cast<Node*>(msg->data()[0].data()));
-    printf("register rank:%d\n", MV_Rank());
     if (node::is_worker(all_nodes_[src].role))
     {
         all_nodes_[src].worker_id = src;

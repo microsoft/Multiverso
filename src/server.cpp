@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iterator>
 
 #include "multiverso/actor.h"
 #include "multiverso/dashboard.h"
@@ -13,15 +14,14 @@
 #include "multiverso/util/configure.h"
 #include "multiverso/util/mt_queue.h"
 #include "multiverso/zoo.h"
-#include "multiverso/util/common.h"
 
 
 namespace multiverso {
     MV_DEFINE_bool(sync, false, "sync or async");
     MV_DEFINE_int(backup_worker_ratio, 0, "ratio% of backup workers, set 20 means 20%");
     MV_DEFINE_bool(mix, false, "tree server or not");
-
-
+    MV_DEFINE_string(treeps, "0", "tree ps structure");
+    
     Server::Server() : Actor(actor::kServer) {
         RegisterHandler(MsgType::Request_Get, std::bind(
             &Server::ProcessGet, this, std::placeholders::_1));
@@ -233,6 +233,17 @@ namespace multiverso {
             RegisterHandler(MsgType::Server_Finish_Train, std::bind(
                 &TreeServer::ProcessFinishTrain, this, std::placeholders::_1));
             int num_worker = Zoo::Get()->num_workers();
+            auto strmixtree = split(MV_CONFIG_treeps, ',');
+            mixtreeps_.clear();
+            for (auto vecstr : strmixtree)
+                mixtreeps_.push_back(std::stoi(vecstr));
+            leafnum_ = mixtreeps_.size();
+
+            CHECK(leafnum_ == num_worker);
+            CHECK(check_mixtree_valid());
+
+
+
             mid_nodes_ = find_mid_node();
             int num_mid_node = mid_nodes_.size();
 
@@ -535,36 +546,53 @@ namespace multiverso {
             }
             return mid_node;
         }
+
+        bool check_mixtree_valid()
+        {
+            std::vector<int> mid_node(leafnum_, 0);
+            for (int worker : mixtreeps_)
+                if (worker < 0 || worker >= leafnum_)
+                    return false;
+                else
+                    mid_node[worker]++;
+            bool zero_flag = false;
+            for (int i = 1; i < leafnum_; ++i)
+            {
+                if (mid_node[i] == 0)
+                    zero_flag = true;
+                else if (mid_node[i] == 1)
+                    return false;
+                else if (zero_flag)
+                    return false;
+            }
+            return true;
+        }
+
+        template<typename Out>
+        void split(const std::string &s, char delim, Out result) {
+            std::stringstream ss;
+            ss.str(s);
+            std::string item;
+            while (std::getline(ss, item, delim)) {
+                *(result++) = item;
+            }
+        }
+
+        std::vector<std::string> split(const std::string &s, char delim) {
+            std::vector<std::string> elems;
+            split(s, delim, std::back_inserter(elems));
+            return elems;
+        }
+
+        int leafnum_;
+        std::vector<int> mixtreeps_;
     };
 
-    bool check_mixtree_valid()
-    {
-        std::vector<int> mid_node(leafnum_, 0);
-        for (int worker : mixtreeps_)
-            if (worker < 0 || worker >= leafnum_)
-                return false;
-            else
-                mid_node[worker]++;
-        bool zero_flag = false;
-        for (int i = 1; i < leafnum_; ++i)
-        {
-            if (mid_node[i] == 0)
-                zero_flag = true;
-            else if (mid_node[i] == 1)
-                return false;
-            else if (zero_flag)
-                return false;
-        }
-        return true;
-    }
+
 
     Server* Server::GetServer() {
         if (MV_CONFIG_mix)
         {
-            CHECK(leafnum_ == Zoo::Get()->num_workers());
-            if (!check_mixtree_valid())
-                return nullptr;
-            
             Log::Info("Create a tree server\n");
             return new TreeServer();
         }

@@ -18,10 +18,11 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
-
-#include "multiverso/util/common.h"
+#include <iterator>
 
 namespace multiverso {
+MV_DEFINE_string(treeps_, "0", "tree ps structure");
+
     template <typename T>
     class TreeUpdater : public Updater<T> {
     public:
@@ -92,6 +93,13 @@ namespace multiverso {
             Log::Info("[TREEUpdater] Init. \n");
 
             int num_worker = multiverso::MV_NumWorkers();
+            auto strmixtree = split(MV_CONFIG_treeps_, ',');
+            mixtreeps_.clear();
+            for (auto vecstr : strmixtree)
+                mixtreeps_.push_back(std::stoi(vecstr));
+            leafnum_ = mixtreeps_.size();
+
+
             mid_nodes_ = find_mid_node();
             int num_mid_node = mid_nodes_.size();
             worker_add_clocks_ = new std::unique_ptr<VectorClock>[num_mid_node];
@@ -259,6 +267,25 @@ namespace multiverso {
             }
             return mid_node;
         }
+
+        template<typename Out>
+        void split(const std::string &s, char delim, Out result) {
+            std::stringstream ss;
+            ss.str(s);
+            std::string item;
+            while (std::getline(ss, item, delim)) {
+                *(result++) = item;
+            }
+        }
+
+        std::vector<std::string> split(const std::string &s, char delim) {
+            std::vector<std::string> elems;
+            split(s, delim, std::back_inserter(elems));
+            return elems;
+        }
+
+        int leafnum_;
+        std::vector<int> mixtreeps_;
     };
 }
 
