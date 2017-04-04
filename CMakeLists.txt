@@ -30,9 +30,9 @@ ADD_SUBDIRECTORY(Test/unittests)
 ADD_SUBDIRECTORY(Applications/WordEmbedding)
 ADD_SUBDIRECTORY(Applications/LogisticRegression)
 
-if(USE_INSTALL_MULTIVERSO)
+if(INSTALL_MULTIVERSO)
     install (DIRECTORY ${PROJECT_SOURCE_DIR}/include/multiverso DESTINATION include)
-endif(USE_INSTALL_MULTIVERSO)
+endif(INSTALL_MULTIVERSO)
 
 
 # uninstall target
