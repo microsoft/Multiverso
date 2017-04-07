@@ -32,6 +32,7 @@ ADD_SUBDIRECTORY(Applications/LogisticRegression)
 
 if(INSTALL_MULTIVERSO)
     install (DIRECTORY ${PROJECT_SOURCE_DIR}/include/multiverso DESTINATION include)
+    install (DIRECTORY ${PROJECT_SOURCE_DIR}/Test DESTINATION Test)
 endif(INSTALL_MULTIVERSO)
 
 
