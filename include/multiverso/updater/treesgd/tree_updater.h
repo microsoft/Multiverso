@@ -136,7 +136,7 @@ MV_DEFINE_string(treeps_, "0", "tree ps structure");
                         acc_gradients_[index + offset] /= mid_nodes_[mixtreeps_[worker]].size();
 
                         /******************************ASGD*********************************/
-                        //data[index + offset] -= option->learning_rate() * acc_gradients_[index + offset];
+                        data[index + offset] -= option->learning_rate() * acc_gradients_[index + offset];
 
                         /******************************DC-ASGD-c*********************************/
                         //data[index + offset] -= option->learning_rate() *
@@ -145,13 +145,13 @@ MV_DEFINE_string(treeps_, "0", "tree ps structure");
                         //    (data[index + offset] - midnode_copies_[mixtreeps_[worker]][index + offset]));
 
                         /******************************DC-ASGD-a*********************************/
-                        midnode_meansquare_[mixtreeps_[worker]][index + offset] *= option->momentum();
-                        midnode_meansquare_[mixtreeps_[worker]][index + offset] += (1 - option->momentum()) * 
-                            acc_gradients_[index + offset] * acc_gradients_[index + offset];
-                        data[index + offset] -= option->learning_rate() *
-                            (acc_gradients_[index + offset] + option->lambda() / sqrt(midnode_meansquare_[mixtreeps_[worker]][index + offset] + e)*
-                                acc_gradients_[index + offset] * acc_gradients_[index + offset] *
-                                (data[index + offset] - midnode_copies_[mixtreeps_[worker]][index + offset]));
+                        //midnode_meansquare_[mixtreeps_[worker]][index + offset] *= option->momentum();
+                        //midnode_meansquare_[mixtreeps_[worker]][index + offset] += (1 - option->momentum()) * 
+                        //    acc_gradients_[index + offset] * acc_gradients_[index + offset];
+                        //data[index + offset] -= option->learning_rate() *
+                        //    (acc_gradients_[index + offset] + option->lambda() / sqrt(midnode_meansquare_[mixtreeps_[worker]][index + offset] + e)*
+                        //        acc_gradients_[index + offset] * acc_gradients_[index + offset] *
+                        //        (data[index + offset] - midnode_copies_[mixtreeps_[worker]][index + offset]));
 
                         //caching each worker's latest version of parameter
                         acc_gradients_[index + offset] = 0;
@@ -173,7 +173,7 @@ MV_DEFINE_string(treeps_, "0", "tree ps structure");
                     T g = delta[index] / option->learning_rate();
 
                     /******************************ASGD*********************************/
-                    //data[index + offset] -= option->learning_rate() * g;
+                    data[index + offset] -= option->learning_rate() * g;
 
                     /******************************DC-ASGD-c*********************************/
                     //data[index + offset] -= option->learning_rate() *
@@ -182,12 +182,12 @@ MV_DEFINE_string(treeps_, "0", "tree ps structure");
 
 
                     /******************************DC-ASGD-a*********************************/
-                    mean_square_[option->worker_id()][index + offset] *= option->momentum();
-                    mean_square_[option->worker_id()][index + offset] += (1 - option->momentum()) * g * g;
-                    data[index + offset] -= option->learning_rate() *
-                        (g + option->lambda() / sqrt(mean_square_[option->worker_id()][index + offset] + e)*
-                            g * g *
-                            (data[index + offset] - shadow_copies_[option->worker_id()][index + offset]));
+                    //mean_square_[option->worker_id()][index + offset] *= option->momentum();
+                    //mean_square_[option->worker_id()][index + offset] += (1 - option->momentum()) * g * g;
+                    //data[index + offset] -= option->learning_rate() *
+                    //    (g + option->lambda() / sqrt(mean_square_[option->worker_id()][index + offset] + e)*
+                    //        g * g *
+                    //        (data[index + offset] - shadow_copies_[option->worker_id()][index + offset]));
 
                     ///******************************ASGD-dev*********************************/
                     //data[index + offset] -= option->learning_rate() *
