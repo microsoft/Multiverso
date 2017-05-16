@@ -19,7 +19,7 @@ For more details about parameters setting and performance, please view our [Wiki
 
    Large dataset need long traning time. You can accelerate process of training by use multi-machines.
 
-##Linux Installation
+## Linux Installation
 
 1. cmake ./CMakeLists.txt
 
