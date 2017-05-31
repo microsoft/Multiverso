@@ -270,3 +270,4 @@ _Pvt_Extensions
 
 # Python
 *.pyc
+*.egg
