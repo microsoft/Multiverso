@@ -8,6 +8,8 @@ multiverso/theano_ext/param_manager.py
 multiverso/theano_ext/sharedvar.py
 multiverso/theano_ext/lasagne_ext/__init__.py
 multiverso/theano_ext/lasagne_ext/param_manager.py
+multiverso/torch_ext/__init__.py
+multiverso/torch_ext/torchmodel.py
 multiverso_python.egg-info/PKG-INFO
 multiverso_python.egg-info/SOURCES.txt
 multiverso_python.egg-info/dependency_links.txt

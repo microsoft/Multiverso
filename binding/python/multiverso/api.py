@@ -9,7 +9,7 @@ import numpy as np
 mv_lib = Loader.get_lib()
 
 
-def init(sync=False):
+def init(sync=False, updater='sgd'):
     '''Initialize mutliverso.
 
     This should be called only once before training at the beginning of the
@@ -29,6 +29,7 @@ def init(sync=False):
     args = [b""]  # the first argument will be ignored. So we put a placeholder here
     if sync:
         args.append(b"-sync=true")
+    args.append(b"-updater=sgd")
     n = len(args)
     args_type = ctypes.c_char_p * n
     mv_lib.MV_Init(ctypes.pointer(ctypes.c_int(n)), args_type(*[ctypes.c_char_p(arg) for arg in args]))
