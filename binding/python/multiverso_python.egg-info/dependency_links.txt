@@ -1,1 +1,0 @@
-https://github.com/Lasagne/Lasagne/tarball/master#egg=lasagne-0.2.dev1

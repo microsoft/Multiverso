@@ -30,8 +30,6 @@ class MVTorchModel(object):
         for mv_param, last_mv_param, param in zip(self._mv_params, self._last_mv_params, self._tmobj.parameters()):
             mv_param.add(last_mv_param - param.data.numpy().reshape((-1,)))
 
-        mv.barrier()
-
         for mv_param, last_mv_param, param in zip(self._mv_params, self._last_mv_params, self._tmobj.parameters()):
             last_mv_param = mv_param.get()
             param=Variable(torch.from_numpy(last_mv_param.reshape(param.data.numpy().shape)))
