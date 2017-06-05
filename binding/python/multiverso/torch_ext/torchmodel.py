@@ -24,15 +24,15 @@ class MVTorchModel(object):
         for mv_param in self._mv_params:
             self._last_mv_params.append(mv_param.get())
         for param, last_mv_param in zip(self._tmobj.parameters(), self._last_mv_params):
-            param=Variable(torch.from_numpy(last_mv_param.reshape(param.data.numpy().shape)))
+            param.data=torch.from_numpy(last_mv_param.reshape(param.data.numpy().shape))
 
     def mv_sync(self):
         for mv_param, last_mv_param, param in zip(self._mv_params, self._last_mv_params, self._tmobj.parameters()):
-            mv_param.add(last_mv_param - param.data.numpy().reshape((-1,)))
+            mv_param.add( param.data.numpy().reshape((-1,)) - last_mv_param)
 
-        for mv_param, last_mv_param, param in zip(self._mv_params, self._last_mv_params, self._tmobj.parameters()):
-            last_mv_param = mv_param.get()
-            param=Variable(torch.from_numpy(last_mv_param.reshape(param.data.numpy().shape)))
+        for i, (mv_param, last_mv_param, param) in enumerate(zip(self._mv_params, self._last_mv_params, self._tmobj.parameters())):
+            self._last_mv_params[i]=mv_param.get()
+            param.data=torch.from_numpy(self._last_mv_params[i].reshape(param.data.numpy().shape))
 
     def __call__(self, *args, **kwargs):
         return self._tmobj(*args, **kwargs)
