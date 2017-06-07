@@ -17,10 +17,10 @@ install:
 - sudo apt-get install -y cmake python-nose python-scipy python-numpy
 
 # for testing lua binding
-- curl -sk https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | bash -e
-- git clone https://github.com/torch/distro.git ~/torch --recursive
-- cd ~/torch; ./install.sh -b
-- source ~/.bashrc
+#- curl -sk https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | bash -e
+#- git clone https://github.com/torch/distro.git ~/torch --recursive
+#- cd ~/torch; ./install.sh -b
+#- source ~/.bashrc
 
 before_script:
 - cd $TRAVIS_BUILD_DIR
@@ -36,8 +36,8 @@ script:
 # - ./Test/unittests/multiverso.ut --log_level=test_suite
 
 # lua tests
-- cd ../binding/lua/
-- make install
+#- cd ../binding/lua/
+#- make install
 # - make test
 
 # python tests
