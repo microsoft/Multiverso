@@ -65,7 +65,7 @@ class ArrayTableHandler(TableHandler):
         mv_lib.MV_GetArrayTable(self._handler, data.ctypes.data_as(C_FLOAT_P), self._size)
         return data
 
-    def add(self, data, sync=False):
+    def add(self, data, sync=False, lr=0.1, mom=0.0, rho=0.0, lam=0.0):
         '''add the data to the multiverso ArrayTable
 
         Data type of `data` is numpy.ndarray with one-dimensional
@@ -76,9 +76,13 @@ class ArrayTableHandler(TableHandler):
         data = convert_data(data)
         assert(data.size == self._size)
         if sync:
-            mv_lib.MV_AddArrayTable(self._handler, data.ctypes.data_as(C_FLOAT_P), self._size)
+            # mv_lib.MV_AddArrayTable(self._handler, data.ctypes.data_as(C_FLOAT_P), self._size)
+            mv_lib.MV_AddArrayTableOption(self._handler, data.ctypes.data_as(C_FLOAT_P), self._size,
+                                          ctypes.c_float(lr), ctypes.c_float(mom), ctypes.c_float(rho), ctypes.c_float(lam))
         else:
-            mv_lib.MV_AddAsyncArrayTable(self._handler, data.ctypes.data_as(C_FLOAT_P), self._size)
+            # mv_lib.MV_AddAsyncArrayTable(self._handler, data.ctypes.data_as(C_FLOAT_P), self._size)
+            mv_lib.MV_AddAsyncArrayTableOption(self._handler, data.ctypes.data_as(C_FLOAT_P), self._size,
+                                         ctypes.c_float(lr), ctypes.c_float(mom), ctypes.c_float(rho), ctypes.c_float(lam))
 
 
 class MatrixTableHandler(TableHandler):

@@ -21,6 +21,10 @@ if(USE_HDFS)
     LINK_DIRECTORIES(${JVM_LIB})
 endif(USE_HDFS)
 
+if(ENABLE_DCASGD)
+    add_definitions(-DENABLE_DCASGD)
+endif(ENABLE_DCASGD)
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 set(MULTIVERSO_DIR ${PROJECT_SOURCE_DIR})
@@ -43,4 +47,4 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-add_definitions(-DENABLE_DCASGD)
+

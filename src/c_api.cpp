@@ -4,6 +4,7 @@
 #include "multiverso/table/array_table.h"
 #include "multiverso/table/matrix_table.h"
 #include "multiverso/util/log.h"
+#include "multiverso/updater/updater.h"
 
 
 extern "C" {
@@ -46,11 +47,32 @@ void MV_AddArrayTable(TableHandler handler, float* data, int size) {
   worker->Add(data, size);
 }
 
+void MV_AddArrayTableOption(TableHandler handler, float* data, int size, float lr, float mom, float rho, float lambda) {
+	auto worker = reinterpret_cast<multiverso::ArrayWorker<float>*>(handler);
+	multiverso::AddOption option;
+	option.set_worker_id(multiverso::MV_WorkerId());
+	option.set_learning_rate(lr);
+	option.set_momentum(mom);
+	option.set_rho(rho);
+	option.set_lambda(lambda);
+	worker->Add(data, size, &option);
+}
+
 void MV_AddAsyncArrayTable(TableHandler handler, float* data, int size) {
   auto worker = reinterpret_cast<multiverso::ArrayWorker<float>*>(handler);
   worker->AddAsync(data, size);
 }
 
+void MV_AddAsyncArrayTableOption(TableHandler handler, float* data, int size, float lr, float mom, float rho, float lambda) {
+	auto worker = reinterpret_cast<multiverso::ArrayWorker<float>*>(handler);
+	multiverso::AddOption option;
+	option.set_worker_id(multiverso::MV_WorkerId());
+	option.set_learning_rate(lr);
+	option.set_momentum(mom);
+	option.set_rho(rho);
+	option.set_lambda(lambda);
+	worker->AddAsync(data, size, &option);
+}
 
 // MatrixTable
 void MV_NewMatrixTable(int num_row, int num_col, TableHandler* out) {
