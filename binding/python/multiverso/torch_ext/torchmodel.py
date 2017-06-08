@@ -37,10 +37,15 @@ class MVTorchModel(object):
     def __call__(self, *args, **kwargs):
         return self._tmobj(*args, **kwargs)
 
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        del odict['_mv_params']
+        return odict
+
     def __getattribute__(self, attr):
         if attr in ['_tmobj', '_mv_params', '_last_mv_params']:
             return object.__getattribute__(self, attr)
-        elif attr in ['mv_sync', '__call__']:
+        elif attr in ['mv_sync', '__call__','__getstate__']:
             return getattr(MVTorchModel, attr).__get__(self)
         else:
             return getattr(self._tmobj, attr)
