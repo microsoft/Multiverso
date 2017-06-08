@@ -32,8 +32,11 @@ DllExport void MV_GetArrayTable(TableHandler handler, float* data, int size);
 
 DllExport void MV_AddArrayTable(TableHandler handler, float* data, int size);
 
+DllExport void MV_AddArrayTableOption(TableHandler handler, float* data, int size, float lr, float mom, float rho, float lambda);
+
 DllExport void MV_AddAsyncArrayTable(TableHandler handler, float* data, int size);
 
+DllExport void MV_AddAsyncArrayTableOption(TableHandler handler, float* data, int size, float lr, float mom, float rho, float lambda);
 
 // Matrix Table
 DllExport void MV_NewMatrixTable(int num_row, int num_col, TableHandler* out);

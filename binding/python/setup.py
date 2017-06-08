@@ -16,7 +16,7 @@ setup(name='multiverso-python',
       url='https://github.com/Microsoft/multiverso',
       author='Microsoft',
       license='MIT',
-      packages=['multiverso', 'multiverso.theano_ext', 'multiverso.theano_ext.lasagne_ext'],
+      packages=['multiverso', 'multiverso.torch_ext', 'multiverso.theano_ext', 'multiverso.theano_ext.lasagne_ext'],
       # TODO: The lasagne on pypi is too old. multiverso need some functions in
       # lasagne-0.2 which is not released yet. Please replace the dev version
       # with the stable release later.

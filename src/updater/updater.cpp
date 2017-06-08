@@ -16,9 +16,6 @@ namespace multiverso {
 
 MV_DEFINE_string(updater_type, "default", "multiverso server updater type");
 MV_DEFINE_int(omp_threads, 4 , "#theads used by openMP for updater");
-#ifdef ENABLE_DCASGD
-MV_DEFINE_bool(is_pipelined, false, "Only used for CNTK - DCASGD");
-#endif
 
 template <typename T>
 void Updater<T>::Update(size_t num_element, T* data, T* delta,
@@ -51,9 +48,10 @@ Updater<T>* Updater<T>::GetUpdater(size_t size) {
   if (type == "adagrad") return new AdaGradUpdater<T>(size);
   if (type == "momentum_sgd") return new MomentumUpdater<T>(size);
 #ifdef ENABLE_DCASGD
-  if (type == "dcasgd") return new DCASGDUpdater<T>(size, MV_CONFIG_is_pipelined);
+  if (type == "dcasgd") return new DCASGDUpdater<T>(size);
 #endif
   // Default: simple updater
+  Log::Info("[Updater] Init. \n");
   return new Updater<T>();
 }
 

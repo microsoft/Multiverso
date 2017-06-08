@@ -270,3 +270,5 @@ _Pvt_Extensions
 
 # Python
 *.pyc
+*.egg
+binding/python/multiverso_python.egg-info/
