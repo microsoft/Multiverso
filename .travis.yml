@@ -41,7 +41,7 @@ script:
 # - make test
 
 # python tests
-- cd ../python/
+- cd ../binding/python/
 - sudo python setup.py install
 # - sudo nosetests  # sudo is needed when testing python on travis
 
