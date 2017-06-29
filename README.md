@@ -14,7 +14,7 @@ Build
 
 ```
 sudo apt-get install libopenmpi-dev openmpi-bin build-essential cmake git
-git clone https://github.com/Microsoft/multiverso.git && cd multiverso
+git clone https://github.com/Microsoft/multiverso.git --recursive && cd multiverso
 mkdir build && cd build
 cmake .. && make && sudo make install
 ```
