@@ -14,7 +14,7 @@ install:
 - sudo apt-get install -y libboost-test-dev
 
 # for testing python binding
-- sudo apt-get install -y libblas-dev liblapack-dev libatlas-base-dev gfortran
+- sudo apt-get install -y gfortran libblas-dev liblapack-dev libatlas-base-dev 
 - sudo apt-get install -y cmake python-numpy python-scipy python-nose
 
 # for testing lua binding
