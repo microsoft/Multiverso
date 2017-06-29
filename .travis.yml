@@ -15,7 +15,7 @@ install:
 
 # for testing python binding
 - sudo apt-get install -y libblas-dev liblapack-dev libatlas-base-dev gfortran
-- sudo apt-get install -y cmake python-nose python-scipy python-numpy
+- sudo apt-get install -y cmake python-numpy python-scipy python-nose
 
 # for testing lua binding
 #- curl -sk https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | bash -e
