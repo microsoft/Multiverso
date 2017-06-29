@@ -42,8 +42,8 @@ script:
 # - make test
 
 # python tests
-- cd ../binding/python/
-- sudo python setup.py install
+# - cd ../binding/python/
+# - sudo python setup.py install
 # - sudo nosetests  # sudo is needed when testing python on travis
 
 notifications:
