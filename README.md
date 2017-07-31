@@ -16,7 +16,7 @@ Build
 sudo apt-get install libopenmpi-dev openmpi-bin build-essential cmake git
 git clone https://github.com/Microsoft/multiverso.git --recursive && cd multiverso
 mkdir build && cd build
-cmake .. && make && sudo make install
+cmake .. && make && sudo make install  # use "cmake -DWITHOUT_LDCONFIG=TRUE .." if you do not have root access to /etc/ld.so.cache, and add your libmultiverso.so to LD_LIBRARY_PATH after "make install"
 ```
 
 **Windows**
