@@ -26,6 +26,6 @@ else()
 endif()
 
 install (TARGETS multiverso DESTINATION lib)
-if (UNIX)
+if (NOT WITHOUT_LDCONFIG AND UNIX)
     install(CODE "execute_process(COMMAND ldconfig)")  # run ldconfig. Otherwise ld.so.cache won't be created.
 endif()
