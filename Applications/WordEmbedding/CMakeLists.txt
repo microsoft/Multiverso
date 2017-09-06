@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 2.8)
 PROJECT(WORDEMBEDDING)
 
 find_package(MPI REQUIRED)
+
+set(MULTIVERSO_DIR ../../)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -Wno-sign-compare -fno-omit-frame-pointer -fopenmp")
 
 set(MULTIVERSO_INC ${MULTIVERSO_DIR}/include)
