@@ -40,7 +40,7 @@ void ParseCMDFlags(int* argc, char* argv[]) {
         continue;
       }
 
-      transform(value.begin(), value.end(), value.begin(), ::tolower);
+      transform(value.begin(), value.end(), value.begin(), [](char c) { return (char)::tolower(c); });
       boolval = (value == "true");
       if (configure::FlagRegister<bool>::Get()->SetFlagIfFound(key, boolval)) {
         continue;
