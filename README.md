@@ -10,10 +10,10 @@ For more details, please view our website [http://www.dmtk.io](http://www.dmtk.i
 Build
 ----------
 
-**Linux** (Tested on Ubuntu 14.04)
+**Linux** (Tested on Ubuntu 14.04 & 16.04)
 
 ```
-sudo apt-get install libopenmpi-dev openmpi-bin build-essential cmake git
+sudo apt-get install libopenmpi-dev openmpi-bin build-essential cmake git libboost-dev libboost-test-dev
 git clone https://github.com/Microsoft/multiverso.git --recursive && cd multiverso
 mkdir build && cd build
 cmake .. && make && sudo make install
