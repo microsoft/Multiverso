@@ -8,7 +8,7 @@
 * \brief The implement of hdfs io interface.
 */
 
-#include "multiverso/util/io.h"
+#include "multiverso/io/io.h"
 #include "hdfs.h"
 
 #include <cstring>

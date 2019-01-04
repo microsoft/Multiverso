@@ -13,12 +13,16 @@ find_package(MPI REQUIRED)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
+# add for sake of errors like 'undefined reference to `hdfsWrite`'
 if(USE_HDFS)
     ADD_DEFINITIONS(-DMULTIVERSO_USE_HDFS)
     SET(JVM_LIB /usr/local/java/default/jre/lib/amd64/server)
     SET(HDFS_LIB /usr/local/hadoop/lib/native)
+    SET(HDFS_INCLUDE /usr/local/hadoop/include)
     LINK_DIRECTORIES(${HDFS_LIB})
     LINK_DIRECTORIES(${JVM_LIB})
+    include_directories(${HDFS_INCLUDE})
+    link_libraries(hdfs)
 endif(USE_HDFS)
 
 if(ENABLE_DCASGD)

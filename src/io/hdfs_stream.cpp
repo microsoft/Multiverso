@@ -1,8 +1,13 @@
 #ifdef MULTIVERSO_USE_HDFS
 
-#include "multiverso/util/hdfs_stream.h"
+#include "multiverso/io/hdfs_stream.h"
 
 namespace multiverso {
+
+// add O_BINARY define, for no difference for text/binary in unix*
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
 HDFSStream::HDFSStream(hdfsFS fs, const URI &uri, FileOpenMode mode) {
   using namespace std;
