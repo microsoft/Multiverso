@@ -44,7 +44,7 @@ SampleReader<EleType>::SampleReader(
   }
   files_.push_back(files.substr(prev));
 
-  buffer_ = CeateSamples<EleType>(buffer_size_, row_size, sparse);
+  buffer_ = CreateSamples<EleType>(buffer_size_, row_size, sparse);
 
 
   if (init) {

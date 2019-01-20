@@ -46,7 +46,7 @@ inline EleType* MatrixRow(EleType*matrix, int row_id, size_t num_col) {
 }
 
 template <typename EleType>
-Sample<EleType>** CeateSamples(int num, size_t size, bool sparse) {
+Sample<EleType>** CreateSamples(int num, size_t size, bool sparse) {
   Sample<EleType>**samples = new Sample<EleType>*[num];
   for (int i = 0; i < num; ++i) {
     samples[i] = new Sample<EleType>(sparse, size);
